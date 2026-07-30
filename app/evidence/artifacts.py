@@ -60,6 +60,21 @@ def events_of_type(history_dict: dict[str, Any], event_type: str) -> list[dict[s
     return [e for e in history_dict.get("events", []) if e.get("eventType") == event_type]
 
 
+def workflow_status_name(status: Any) -> str:
+    """Readable name for a Temporal ``WorkflowExecutionStatus``.
+
+    ``WorkflowExecutionStatus`` is an ``IntEnum``, so ``str(status)`` is ``"2"``,
+    not ``"COMPLETED"``. Formatting it into an assertion or an evidence record
+    therefore produces something that looks like a value but carries no meaning —
+    CI run 30577856007 reported "terminal status was 2" for a workflow that had in
+    fact completed perfectly.
+
+    Assertions should compare against the enum member; this is for *recording* a
+    status a human will read.
+    """
+    return getattr(status, "name", str(status))
+
+
 class EvidenceError(AssertionError):
     """Raised when an infrastructure claim could not be evidenced."""
 

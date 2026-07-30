@@ -34,6 +34,7 @@ from app.evidence.artifacts import (  # noqa: E402
     event_types,
     events_of_type,
     require,
+    workflow_status_name,
     write_evidence,
     write_history,
 )
@@ -75,7 +76,7 @@ def start_worker(identity: str, marker: Path) -> subprocess.Popen:
 
 
 async def main() -> int:
-    from temporalio.client import Client
+    from temporalio.client import Client, WorkflowExecutionStatus
 
     settings = load_settings()
     settings.ensure_directories()
@@ -159,8 +160,8 @@ async def main() -> int:
             "workflow did not complete",
         )
         require(
-            str(described.status).endswith("COMPLETED"),
-            f"terminal status was {described.status}",
+            described.status == WorkflowExecutionStatus.COMPLETED,
+            f"terminal status was {workflow_status_name(described.status)}",
         )
 
         # Backoff bound: 1s + 2s + 4s = 7s of waiting, plus execution. A generous
@@ -194,7 +195,7 @@ async def main() -> int:
                 "consequential_effect_count": committed,
                 "elapsed_seconds": round(elapsed, 3),
                 "backoff_bound_seconds": max_backoff_seconds,
-                "terminal_status": str(described.status),
+                "terminal_status": workflow_status_name(described.status),
                 "history_event_types": types,
                 "effect_ledger": effect_rows(ledger_path, run_key),
                 "history_artifact": str(history_path),

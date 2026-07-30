@@ -32,6 +32,7 @@ from app.evidence.artifacts import (  # noqa: E402
     event_types,
     events_of_type,
     require,
+    workflow_status_name,
     write_evidence,
     write_history,
 )
@@ -72,7 +73,7 @@ def start_worker(identity: str, marker: Path) -> subprocess.Popen:
 
 
 async def main() -> int:
-    from temporalio.client import Client
+    from temporalio.client import Client, WorkflowExecutionStatus
 
     settings = load_settings()
     settings.ensure_directories()
@@ -138,8 +139,9 @@ async def main() -> int:
             "an activity timeout must never be classified as a rejected patch",
         )
         require(
-            str(described.status).endswith("COMPLETED"),
-            f"workflow should complete after handling the timeout, was {described.status}",
+            described.status == WorkflowExecutionStatus.COMPLETED,
+            "workflow should complete after handling the timeout, was "
+            f"{workflow_status_name(described.status)}",
         )
 
         # The reliability layer must agree, independently of the workflow.
@@ -172,7 +174,7 @@ async def main() -> int:
                 "workflow_classification": result["classification"],
                 "reliability_layer_classification": decision,
                 "misclassified_as_rejected": result["classification"] == "rejected",
-                "terminal_status": str(described.status),
+                "terminal_status": workflow_status_name(described.status),
                 "history_event_types": types,
                 "spans_recorded": sorted(ledger.names),
                 "history_artifact": str(history_path),

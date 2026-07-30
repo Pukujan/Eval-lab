@@ -41,6 +41,7 @@ from app.evidence.artifacts import (  # noqa: E402
     event_types,
     events_of_type,
     require,
+    workflow_status_name,
     write_evidence,
     write_history,
 )
@@ -59,7 +60,7 @@ async def main() -> int:
     parser.add_argument("--timeout", type=int, default=DEFAULT_TIMEOUT_SECONDS)
     args = parser.parse_args()
 
-    from temporalio.client import Client
+    from temporalio.client import Client, WorkflowExecutionStatus
     from temporalio.worker import Worker
 
     settings = load_settings()
@@ -122,8 +123,8 @@ async def main() -> int:
             f"workflow did not complete; terminal events were {types[-3:]}",
         )
         require(
-            str(described.status).endswith("COMPLETED"),
-            f"terminal status was {described.status}",
+            described.status == WorkflowExecutionStatus.COMPLETED,
+            f"terminal status was {workflow_status_name(described.status)}",
         )
 
         activity_completions = events_of_type(history_dict, "EVENT_TYPE_ACTIVITY_TASK_COMPLETED")
@@ -174,7 +175,7 @@ async def main() -> int:
                 "graph_phases_reached": span_names,
                 "validation_edge_crossed": "inspect-repository" in span_names,
                 "diagnosis_edge_crossed": "generate-repair-candidates" in span_names,
-                "terminal_status": str(described.status),
+                "terminal_status": workflow_status_name(described.status),
                 "history_artifact": str(history_path),
                 "verified": True,
             },

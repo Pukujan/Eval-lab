@@ -161,3 +161,44 @@ async def test_converted_diagnosis_preserves_its_selection() -> None:
     assert result["diagnosis"]["hypothesis_id"] == "H-supported"
     assert result["diagnosis"]["probe_supported"] is True
     assert result["span_names"] == ["establish-diagnosis"]
+
+
+# ---------------------------------------------------------------------------
+# A second, unrelated trap found by the same CI run
+# ---------------------------------------------------------------------------
+
+
+def test_workflow_status_is_never_asserted_by_string_formatting() -> None:
+    """``WorkflowExecutionStatus`` is an IntEnum: ``str(status)`` is ``"2"``.
+
+    Run 30577856007 reported "terminal status was 2" for a workflow that had
+    completed perfectly — the verification, not the workflow, was wrong. Any
+    ``str(status).endswith("COMPLETED")`` is dead code that can only ever fail,
+    so this scans the verification scripts for the pattern.
+    """
+    import re
+    from pathlib import Path
+
+    pattern = re.compile(r"str\([a-z_]*\.?status\)\.endswith")
+    offenders = [
+        str(path)
+        for path in Path("scripts").glob("verify_*.py")
+        if pattern.search(path.read_text(encoding="utf-8"))
+    ]
+    assert not offenders, (
+        f"{offenders} compare a workflow status by string. WorkflowExecutionStatus "
+        "is an IntEnum, so str() yields its number and the check can never pass. "
+        "Compare against the enum member and render with workflow_status_name()."
+    )
+
+
+def test_workflow_status_name_renders_the_readable_name() -> None:
+    from temporalio.client import WorkflowExecutionStatus
+
+    from app.evidence.artifacts import workflow_status_name
+
+    assert workflow_status_name(WorkflowExecutionStatus.COMPLETED) == "COMPLETED"
+    assert workflow_status_name(WorkflowExecutionStatus.RUNNING) == "RUNNING"
+    assert str(WorkflowExecutionStatus.COMPLETED) == "2", (
+        "if this ever stops being true the trap is gone and the guard above can go"
+    )

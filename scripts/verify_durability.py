@@ -37,6 +37,7 @@ from app.evidence.artifacts import (  # noqa: E402
     event_types,
     events_of_type,
     require,
+    workflow_status_name,
     write_evidence,
     write_history,
 )
@@ -92,7 +93,7 @@ def kill_worker(process: subprocess.Popen) -> int:
 
 
 async def main() -> int:
-    from temporalio.client import Client
+    from temporalio.client import Client, WorkflowExecutionStatus
 
     settings = load_settings()
     settings.ensure_directories()
@@ -148,8 +149,9 @@ async def main() -> int:
         # The workflow must still be open with no worker polling.
         described = await handle.describe()
         require(
-            str(described.status).endswith("RUNNING"),
-            f"workflow should still be RUNNING while no worker polls, was {described.status}",
+            described.status == WorkflowExecutionStatus.RUNNING,
+            "workflow should still be RUNNING while no worker polls, was "
+            f"{workflow_status_name(described.status)}",
         )
 
         # -- resume under a new worker ---------------------------------------
@@ -181,8 +183,8 @@ async def main() -> int:
             "expected exactly two completed activities in history",
         )
         require(
-            str(described_final.status).endswith("COMPLETED"),
-            f"workflow did not reach COMPLETED, was {described_final.status}",
+            described_final.status == WorkflowExecutionStatus.COMPLETED,
+            f"workflow did not reach COMPLETED, was {workflow_status_name(described_final.status)}",
         )
         require(
             checkpoint_effects == 1,
@@ -205,7 +207,7 @@ async def main() -> int:
                 "task_queue": DURABILITY_TASK_QUEUE,
                 "history_event_count": len(types),
                 "history_event_types": types,
-                "terminal_status": str(described_final.status),
+                "terminal_status": workflow_status_name(described_final.status),
                 "first_worker": {
                     "identity": "durability-worker-a",
                     "pid": worker_a_pid,
