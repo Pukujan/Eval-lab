@@ -135,8 +135,13 @@ jobs:
         timeout-minutes: 6
         run: |
           set -o pipefail
-          timeout 300 docker compose exec -T worker \
-            python scripts/verify_workflow_smoke.py --timeout 240 2>&1 \
+          # Runs on the HOST, like the other verify_* scripts, so its evidence is
+          # written into EVIDENCE_DIR and reaches the uploaded artifact. Run 5 had
+          # this step pass in-container while the manifest still reported MISS,
+          # because the container writes to its own EVIDENCE_DIR. Container-side
+          # execution stays covered by verify_compose.py's DNS probes and by the
+          # in-container evaluation step below.
+          timeout 300 python scripts/verify_workflow_smoke.py --timeout 240 2>&1 \
             | tee artifacts/logs/workflow-smoke.log
 
       - name: Diagnose a failed workflow smoke
@@ -226,13 +231,29 @@ jobs:
             --log-dir evals/logs --display plain 2>&1 | tee artifacts/logs/inspect.log
           cp -r evals/logs artifacts/reports/inspect-logs || true
 
+      # Promptfoo exits 100 when any assertion fails. Here that is the DESIGNED
+      # result, not an error: identity-c (mock-minimalist) proposes only two
+      # distinct mechanism classes and is supposed to fail the diversity
+      # assertion. The deliverable is the comparison report, not a pass/fail gate,
+      # so 0 and 100 are both success and anything else is a real failure.
+      # Treating 100 as a failure would force us to weaken the assertion that
+      # makes the comparison meaningful.
       - name: Promptfoo evaluation (mock provider)
         run: |
-          set -o pipefail
           cd evals/promptfoo
+          set +e
           PROMPTFOO_PYTHON="$(which python)" promptfoo eval -c promptfooconfig.yaml \
             --no-cache -o "$GITHUB_WORKSPACE/artifacts/reports/promptfoo-report.json" 2>&1 \
             | tee "$GITHUB_WORKSPACE/artifacts/logs/promptfoo.log"
+          status=${PIPESTATUS[0]}
+          set -e
+          echo "promptfoo exit status: $status"
+          if [ "$status" -ne 0 ] && [ "$status" -ne 100 ]; then
+            echo "::error::promptfoo failed to run (exit $status), not an assertion failure"
+            exit "$status"
+          fi
+          test -s "$GITHUB_WORKSPACE/artifacts/reports/promptfoo-report.json" \
+            || { echo "::error::promptfoo produced no comparison report"; exit 1; }
 
       # -- restart behaviour with EXISTING volumes -------------------------
       - name: Restart the stack and verify state persisted
