@@ -147,6 +147,25 @@ failure mode is classified as and why, and
 [`docs/limitations.md`](docs/limitations.md) for the four earlier runs that failed
 first — three of them faults in the verification rather than in the system.
 
+## Evidence for an external verifier
+
+Task 2A's result is frozen in
+[`docs/verification-baseline.md`](docs/verification-baseline.md) and its
+machine-readable twin `verification/task-2a-baseline.json`: the commit, run,
+artifact and digest it was demonstrated on, the public meaning of each of the 15
+criteria, and what each one does **not** establish.
+
+```
+make evidence-bundle    # collect raw evidence + hash every file
+make verify-bundle      # recompute every checksum in an exported bundle
+```
+
+The exporter copies and hashes. It reaches no verdict, writes no `verified: true`
+of its own, and refuses to produce a bundle at all when evidence is missing, a
+checksum does not match, a workflow ID maps to two run IDs, or evidence is
+malformed. Grading is the verifier's job, and their holdouts are deliberately not
+in this repository — if they were, the verification would be circular.
+
 ## Status
 
 Task 1 (walking skeleton) and Task 2A (durable execution and reproducible

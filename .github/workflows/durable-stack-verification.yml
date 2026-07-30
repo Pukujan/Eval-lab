@@ -285,12 +285,40 @@ jobs:
         if: always()
         run: python scripts/build_completion_manifest.py 2>&1 | tee artifacts/logs/manifest.log
 
+      # -- raw-evidence bundle for an external verifier ---------------------
+      # Deliberately unconditional-free: no `if: always()`. When an earlier step
+      # failed the evidence is incomplete, and an export that succeeds anyway
+      # would hand a verifier a bundle that looks whole. Skipping is the honest
+      # outcome; the artifacts above still upload either way.
+      #
+      # This packages evidence that already exists. It evaluates no criterion.
+      - name: Export the raw-evidence bundle
+        run: |
+          set -o pipefail
+          python scripts/export_evidence_bundle.py \
+            --source artifacts \
+            --destination evidence-bundle \
+            --commit "${GITHUB_SHA}" \
+            --github-run-id "${GITHUB_RUN_ID}" 2>&1 \
+            | tee artifacts/logs/evidence-bundle.log
+          python scripts/export_evidence_bundle.py --verify evidence-bundle 2>&1 \
+            | tee -a artifacts/logs/evidence-bundle.log
+
       - name: Upload verification artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: durable-stack-verification
           path: artifacts/
+          retention-days: 30
+
+      - name: Upload the raw-evidence bundle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidence-bundle
+          path: evidence-bundle/
+          if-no-files-found: ignore
           retention-days: 30
 
       # -- 15. clean shutdown ----------------------------------------------

@@ -17,7 +17,7 @@ export PROMPTFOO_DISABLE_TELEMETRY := 1
 export PROMPTFOO_DISABLE_UPDATE := 1
 
 .PHONY: setup up up-local health test eval eval-inspect eval-promptfoo demo traces down clean \
-        lint format typecheck security ci-local help
+        lint format typecheck security evidence-bundle verify-bundle ci-local help
 
 help:
 	@echo "setup   install pinned dependencies into $(VENV)"
@@ -84,6 +84,14 @@ eval-promptfoo:
 
 demo:
 	$(PY) scripts/demo.py
+
+# Package raw evidence for an external verifier. Copies and hashes; decides
+# nothing. See docs/verification-baseline.md.
+evidence-bundle:
+	$(PY) scripts/export_evidence_bundle.py --source artifacts --destination evidence-bundle
+
+verify-bundle:
+	$(PY) scripts/export_evidence_bundle.py --verify evidence-bundle
 
 traces:
 	@$(PY) scripts/traces.py
