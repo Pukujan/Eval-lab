@@ -126,6 +126,28 @@ jobs:
       # need the fixture working copy on the same filesystem as the worker that
       # executes them, and running here also exercises container DNS
       # (worker -> temporal / litellm / phoenix) on the real path.
+      # Runs BEFORE the full evaluation on purpose. It is the smallest execution
+      # that still crosses both conditional edges and an activity node, so a
+      # structural workflow error (the run_in_executor / NotImplementedError class)
+      # fails here in under a minute instead of surfacing as a ten-minute hang.
+      - name: Bounded workflow smoke (real Temporal, both conditional edges)
+        id: workflow_smoke
+        timeout-minutes: 6
+        run: |
+          set -o pipefail
+          timeout 300 docker compose exec -T worker \
+            python scripts/verify_workflow_smoke.py --timeout 240 2>&1 \
+            | tee artifacts/logs/workflow-smoke.log
+
+      - name: Diagnose a failed workflow smoke
+        if: failure() && steps.workflow_smoke.outcome == 'failure'
+        run: |
+          echo "=== worker log ==="
+          docker compose logs --no-color --tail 200 worker || true
+          echo "=== open workflows ==="
+          docker compose exec -T temporal temporal workflow list \
+            --address 127.0.0.1:7233 --limit 20 || true
+
       # `timeout` matters here: a workflow that cannot make progress is retried by
       # Temporal until its execution timeout, so a stuck run looks like a slow one.
       # Failing fast and dumping the worker log turns that into a diagnosis.

@@ -123,7 +123,7 @@ def _evidence_record(
 # ---------------------------------------------------------------------------
 
 
-def validate_specification(state: InvestigationState) -> dict[str, Any]:
+async def validate_specification(state: InvestigationState) -> dict[str, Any]:
     """Reject a request that cannot be investigated before spending anything on it."""
     specification = state.get("specification") or {}
     problems: list[str] = []
@@ -388,7 +388,7 @@ def _interpret(
     return (ProbeOutcome.INCONCLUSIVE, EvidencePolarity.NEUTRAL, "Probe produced no verdict.")
 
 
-def establish_diagnosis(state: InvestigationState) -> dict[str, Any]:
+async def establish_diagnosis(state: InvestigationState) -> dict[str, Any]:
     """Select a hypothesis that survived its probes, or abstain."""
     results = state.get("probe_results") or []
     hypotheses = state.get("hypotheses") or []
@@ -462,7 +462,7 @@ def generate_repair_candidates(state: InvestigationState) -> dict[str, Any]:
     return {"candidates": candidates, "span_names": ["generate-repair-candidates"]}
 
 
-def abstain(state: InvestigationState) -> dict[str, Any]:
+async def abstain(state: InvestigationState) -> dict[str, Any]:
     """Terminal node for an investigation that cannot reach a diagnosis."""
     return {
         "abstained": True,
@@ -476,11 +476,19 @@ def abstain(state: InvestigationState) -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 
-def _route_after_validation(state: InvestigationState) -> str:
+# Conditional-edge callbacks run in workflow context and MUST be coroutines.
+# LangGraph's `_branch._aroute` offloads a sync route function through
+# `run_in_executor()`, which Temporal's workflow event loop cannot provide. This is
+# easy to miss because routing callbacks are not nodes and carry no `execute_in`
+# metadata — nothing about their registration hints that they execute inside the
+# workflow. `tests/unit/test_workflow_context_callables.py` asserts it instead.
+
+
+async def _route_after_validation(state: InvestigationState) -> str:
     return "abstain" if state.get("abstained") else "inspect_repository"
 
 
-def _route_after_diagnosis(state: InvestigationState) -> str:
+async def _route_after_diagnosis(state: InvestigationState) -> str:
     return "abstain" if state.get("abstained") else "generate_repair_candidates"
 
 
@@ -518,6 +526,15 @@ def build_investigation_graph() -> StateGraph:
     # They still append their span name to the graph state, and `app.runner` emits
     # the corresponding spans once the graph returns, so Phoenix still receives the
     # complete required tree.
+    #
+    # They are also `async def`, and that is load-bearing rather than stylistic.
+    # LangGraph runs a *synchronous* callable by handing it to
+    # `langchain_core.runnables.config.run_in_executor`, which calls
+    # `asyncio.get_running_loop().run_in_executor(...)`. Temporal's deterministic
+    # workflow event loop has no executor and raises `NotImplementedError`, the
+    # workflow task fails, and Temporal retries it forever — indistinguishable from
+    # a hang. A coroutine is awaited directly and never reaches the executor path.
+    # CI run 30573185257 died exactly this way, on the conditional edge below.
     graph.add_node(
         "validate_specification",
         validate_specification,

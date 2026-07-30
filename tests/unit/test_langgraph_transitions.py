@@ -71,24 +71,24 @@ def test_graph_is_bounded() -> None:
     assert MAX_PROBES <= 10
 
 
-def test_validation_failure_routes_to_abstain() -> None:
-    assert _route_after_validation({"abstained": True}) == "abstain"
-    assert _route_after_validation({}) == "inspect_repository"
+async def test_validation_failure_routes_to_abstain() -> None:
+    assert await _route_after_validation({"abstained": True}) == "abstain"
+    assert await _route_after_validation({}) == "inspect_repository"
 
 
-def test_diagnosis_failure_routes_to_abstain() -> None:
-    assert _route_after_diagnosis({"abstained": True}) == "abstain"
-    assert _route_after_diagnosis({}) == "generate_repair_candidates"
+async def test_diagnosis_failure_routes_to_abstain() -> None:
+    assert await _route_after_diagnosis({"abstained": True}) == "abstain"
+    assert await _route_after_diagnosis({}) == "generate_repair_candidates"
 
 
-def test_incomplete_specification_abstains_before_spending_anything() -> None:
-    result = validate_specification({"specification": {"repository_path": ""}})
+async def test_incomplete_specification_abstains_before_spending_anything() -> None:
+    result = await validate_specification({"specification": {"repository_path": ""}})
     assert result["abstained"] is True
     assert "repository path" in result["abstention_reason"]
 
 
-def test_valid_specification_proceeds() -> None:
-    result = validate_specification(
+async def test_valid_specification_proceeds() -> None:
+    result = await validate_specification(
         {
             "specification": {
                 "repository_path": "/tmp/repo",
@@ -101,7 +101,7 @@ def test_valid_specification_proceeds() -> None:
     assert result["span_names"] == ["validate-specification"]
 
 
-def test_diagnosis_abstains_when_every_hypothesis_is_falsified() -> None:
+async def test_diagnosis_abstains_when_every_hypothesis_is_falsified() -> None:
     state = {
         "hypotheses": [{"hypothesis_id": "H-1"}, {"hypothesis_id": "H-2"}],
         "probe_results": [
@@ -109,12 +109,12 @@ def test_diagnosis_abstains_when_every_hypothesis_is_falsified() -> None:
             {"hypothesis_id": "H-2", "outcome": "falsified", "evidence_ids": ["E-2"]},
         ],
     }
-    result = establish_diagnosis(state)
+    result = await establish_diagnosis(state)
     assert result["abstained"] is True
     assert result["diagnosis"]["hypothesis_id"] is None
 
 
-def test_diagnosis_prefers_an_actively_supported_survivor() -> None:
+async def test_diagnosis_prefers_an_actively_supported_survivor() -> None:
     """ "A probe predicted this and it held" beats "nothing disproved it"."""
     state = {
         "hypotheses": [
@@ -125,7 +125,7 @@ def test_diagnosis_prefers_an_actively_supported_survivor() -> None:
             {"hypothesis_id": "H-supported", "outcome": "supported", "evidence_ids": ["E-1"]},
         ],
     }
-    result = establish_diagnosis(state)
+    result = await establish_diagnosis(state)
     assert result["diagnosis"]["hypothesis_id"] == "H-supported"
     assert result["diagnosis"]["probe_supported"] is True
     assert result["diagnosis"]["supporting_evidence_ids"] == ["E-1"]

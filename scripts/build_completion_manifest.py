@@ -39,6 +39,11 @@ CRITERIA: dict[str, tuple[str, str]] = {
         "durability-recovery",
         "A real Temporal workflow appears on the server and completes",
     ),
+    "coding_workflow_executes_under_temporal": (
+        "workflow-smoke",
+        "CodingEvaluationWorkflow crosses both conditional edges, runs an activity "
+        "node, and completes with a non-empty history",
+    ),
     "worker_interruption_recovery": (
         "durability-recovery",
         "A worker-interruption test demonstrates recovery without repeating effects",
