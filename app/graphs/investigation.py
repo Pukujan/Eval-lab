@@ -507,14 +507,25 @@ def build_investigation_graph() -> StateGraph:
     graph: StateGraph = StateGraph(InvestigationState)
 
     # Pure decisions run in the workflow: no I/O, deterministic, replay-safe.
+    #
+    # These are deliberately NOT wrapped in `traced()`. Workflow-side nodes execute
+    # inside Temporal's workflow sandbox, which restricts the non-deterministic
+    # calls the OpenTelemetry SDK makes (wall-clock reads, in particular). Emitting
+    # a span here does not fail loudly — the workflow task fails and is retried
+    # forever, so the run simply hangs until its execution timeout. That is exactly
+    # what happened on the first real Temporal execution (CI run 30571557402).
+    #
+    # They still append their span name to the graph state, and `app.runner` emits
+    # the corresponding spans once the graph returns, so Phoenix still receives the
+    # complete required tree.
     graph.add_node(
         "validate_specification",
-        traced("validate-specification")(validate_specification),
+        validate_specification,
         metadata={"execute_in": "workflow"},
     )
     graph.add_node(
         "establish_diagnosis",
-        traced("establish-diagnosis")(establish_diagnosis),
+        establish_diagnosis,
         metadata={"execute_in": "workflow"},
     )
     graph.add_node("abstain", abstain, metadata={"execute_in": "workflow"})

@@ -126,12 +126,28 @@ jobs:
       # need the fixture working copy on the same filesystem as the worker that
       # executes them, and running here also exercises container DNS
       # (worker -> temporal / litellm / phoenix) on the real path.
+      # `timeout` matters here: a workflow that cannot make progress is retried by
+      # Temporal until its execution timeout, so a stuck run looks like a slow one.
+      # Failing fast and dumping the worker log turns that into a diagnosis.
       - name: Known-good and duct-tape evaluations (durable execution, in-container)
+        id: evaluations
+        timeout-minutes: 12
         run: |
           set -o pipefail
-          docker compose exec -T \
+          timeout 600 docker compose exec -T \
             -e EXECUTION_MODE=temporal \
             worker python scripts/demo.py 2>&1 | tee artifacts/logs/demo.log
+
+      - name: Diagnose a stuck or failed evaluation
+        if: failure() && steps.evaluations.outcome == 'failure'
+        run: |
+          echo "=== worker log ==="
+          docker compose logs --no-color --tail 200 worker || true
+          echo "=== temporal log ==="
+          docker compose logs --no-color --tail 100 temporal || true
+          echo "=== open workflows ==="
+          docker compose exec -T temporal temporal workflow list \
+            --address 127.0.0.1:7233 --limit 20 || true
 
       - name: Copy reliability reports out of the worker container
         run: |

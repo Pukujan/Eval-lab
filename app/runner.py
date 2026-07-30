@@ -258,6 +258,18 @@ async def run_evaluation(request: RunRequest | None = None) -> ReliabilityReport
             else:
                 investigation = await _run_investigation_local(state)
 
+            # Emit spans for phases the graph reported but this process did not
+            # trace itself. Two cases produce those: activity nodes that ran in a
+            # different process (their ledger is not ours), and workflow-side
+            # nodes, which must not touch the OpenTelemetry SDK at all because
+            # Temporal's workflow sandbox restricts the non-deterministic calls it
+            # makes. Replaying them here keeps Phoenix's tree complete without
+            # putting a wall-clock read inside a workflow.
+            for name in investigation.get("span_names", []):
+                if name not in ledger.names:
+                    with span(name, ledger, {"investigation.node": name, "span.replayed": True}):
+                        pass
+
             # -- persist the investigation -------------------------------
             audit.record_run(run)
             for record in investigation.get("evidence", []):
