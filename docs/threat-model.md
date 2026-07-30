@@ -86,6 +86,28 @@ denied by egress policy, so what was actually exercised is **process-level, not
 kernel-level, isolation**. Acceptable because the fixture is a repository we wrote;
 **not** acceptable for third-party patches. See ADR-0007.
 
+### T-9 — The Temporal dev-server container runs as root · **Accepted, scoped**
+
+`docker-compose.yml` sets `user: "0:0"` on the `temporal` service. A fresh named
+volume is owned by `root:root`, and the image's default user could not create its
+SQLite database there — the server died at startup with SQLite `CANTOPEN`
+(diagnosed in CI run `30571203398`).
+
+Why this is a bounded decision rather than a broad one:
+
+- It applies to **one** container: a Temporal **development** server, in a
+  local-first lab, holding workflow history for a fixture we wrote.
+- It does **not** apply to the container that matters for T-4. The application
+  worker — the process that applies patches and executes fixture test code — is
+  still unprivileged (`uid 10001`, set in the `Dockerfile`).
+- The Temporal container executes no patch-supplied code.
+
+The tidier alternatives were rejected as guesswork: chowning via an entrypoint
+override assumes a shell in the image, and mounting at the image's own writable
+home assumes a path we cannot verify without pulling the config blob (blocked by
+egress policy in the build environment). A production deployment would not use
+`start-dev` at all, so this decision does not travel.
+
 ### T-5 — Credential leakage into traces or logs (A-4) · **Mitigated**
 
 - `.env` is gitignored; only `.env.example` is committed, with no real values.

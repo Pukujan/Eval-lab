@@ -69,6 +69,46 @@ not be pulled, so the stack was never started here. Phoenix and LiteLLM were
 instead run as local processes at the **same pinned versions**, which verifies the
 integration but not the container packaging.
 
+## Task 2A — what moved from "not verified" to "verified"
+
+The rows above describe the **build sandbox**, where container registries and
+`temporal.download` are blocked. Task 2A moved the infrastructure proof to a clean
+GitHub-hosted runner via `.github/workflows/durable-stack-verification.yml`, where
+those hosts are reachable.
+
+Read the run's `completion-manifest.json` artifact for the authoritative
+per-criterion status — it is generated mechanically from the evidence files and
+marks anything without an artifact as `not_demonstrated` rather than omitting it.
+
+What Task 2A does **not** change:
+
+- **Correctness expectations are untouched.** `scripts/verify_outcomes.py`
+  re-asserts exactly what Task 1 asserted (duct tape rejected on the effect
+  counter; known-good `accepted_for_review` and nothing stronger) and additionally
+  requires `execution_mode=temporal`. No expectation was relaxed to make an
+  infrastructure test pass.
+- **No new models, bug categories, scorers, or providers** were added.
+- Still **one fixture and one bug class**. Durable execution now works; that says
+  nothing about coverage.
+
+New limitations introduced by Task 2A itself:
+
+- **The Temporal container runs as root** (`user: "0:0"`) so it can create its
+  SQLite database in a fresh named volume. Scoped to the dev server; the worker
+  that executes patched fixture code is still unprivileged (threat model T-9).
+- **Recovery is proved for worker loss only.** Losing the Temporal server itself,
+  or its volume, is not exercised.
+- **Retry evidence is bounded by what Temporal records.** Temporal does not write
+  a history event per failed activity attempt, so the attempt count comes from
+  `ActivityTaskStarted.attempt` cross-checked against our own durable ledger.
+  There is no per-attempt history to point at, and claiming otherwise would
+  misrepresent what the platform stores.
+- **`start-dev` remains a development server.** Proving durability against it does
+  not prove anything about a production Temporal deployment.
+- **Cross-process span nesting is still unverified.** Spans from activity-side
+  nodes are exported, but correct parent/child nesting under Temporal depends on
+  the OTel interceptor and was not asserted.
+
 ## Design limitations that are real, not environmental
 
 ### Patch bodies come from the fixture, not from a model
