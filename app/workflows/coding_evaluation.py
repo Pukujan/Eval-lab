@@ -63,24 +63,40 @@ def build_plugin():
     )
 
 
+def run_scoped_task_queue(settings: Settings, run_id: str) -> str:
+    """A task queue private to one inline-worker run.
+
+    The investigation's probe activities operate on a working copy on the local
+    filesystem. The long-lived Compose worker also polls the shared queue, and if
+    it picked up one of those activities it would be handed a path that does not
+    exist inside its container — an infrastructure failure that would look
+    exactly like a flaky evaluation.
+
+    Scoping the queue to the run guarantees that the worker which created the
+    working copy is the only one that can be given work referring to it.
+    """
+    return f"{settings.temporal_task_queue}-{run_id}"
+
+
 async def execute_investigation_workflow(
     settings: Settings, state: dict[str, Any], run_id: str
 ) -> dict[str, Any]:
-    """Connect, run a worker, and execute one workflow to completion.
+    """Connect, run an inline worker, and execute one workflow to completion.
 
-    A worker is started inline because the walking skeleton runs as a single
-    command. In the Compose deployment the worker is a long-lived service and this
-    function simply starts the workflow against it.
+    The worker is inline because the walking skeleton runs as a single command and
+    because the investigation's activities are filesystem-bound to the working copy
+    this process created — see :func:`run_scoped_task_queue`.
     """
     from temporalio.client import Client
     from temporalio.worker import Worker
 
     plugin = build_plugin()
     client = await Client.connect(settings.temporal_address, namespace=settings.temporal_namespace)
+    task_queue = run_scoped_task_queue(settings, run_id)
 
     async with Worker(
         client,
-        task_queue=settings.temporal_task_queue,
+        task_queue=task_queue,
         workflows=[CodingEvaluationWorkflow],
         plugins=[plugin],
     ):
@@ -88,7 +104,7 @@ async def execute_investigation_workflow(
             CodingEvaluationWorkflow.run,
             state,
             id=f"coding-evaluation-{run_id}",
-            task_queue=settings.temporal_task_queue,
+            task_queue=task_queue,
             execution_timeout=WORKFLOW_EXECUTION_TIMEOUT,
         )
 

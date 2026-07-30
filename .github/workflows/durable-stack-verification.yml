@@ -1,0 +1,242 @@
+name: Durable stack verification
+
+# Task 2A: prove, on a clean hosted runner, the infrastructure behaviour the
+# walking skeleton could previously only assert statically — a real Compose stack,
+# a real Temporal server, real workflow history, real recovery, retries, timeouts
+# and replay.
+#
+# Nothing here is mocked. If the runner cannot reach a registry, this workflow
+# FAILS as an infrastructure requirement rather than falling back to static
+# validation.
+#
+# No paid credentials: the model path is the deterministic mock provider.
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: "3.12"
+  PROMPTFOO_VERSION: "0.121.19"
+  PROMPTFOO_DISABLE_TELEMETRY: "1"
+  PROMPTFOO_DISABLE_UPDATE: "1"
+  LITELLM_MASTER_KEY: sk-local-mock-only
+  TEMPORAL_ADDRESS: localhost:7233
+  TEMPORAL_NAMESPACE: default
+  LITELLM_BASE_URL: http://localhost:4000
+  PHOENIX_ENDPOINT: http://localhost:6006
+  PHOENIX_PROJECT_NAME: reliability-walking-skeleton
+  EVIDENCE_DIR: ${{ github.workspace }}/artifacts/evidence
+
+permissions:
+  contents: read
+
+jobs:
+  durable-stack:
+    name: Clean-runner Compose + Temporal durability proof
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+
+    steps:
+      # -- 1. checkout ----------------------------------------------------
+      - name: Check out the repository
+        uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+
+      - name: Prepare artifact directories
+        run: mkdir -p artifacts/evidence artifacts/logs artifacts/reports artifacts/histories
+
+      # -- 2. verify pinned dependencies and images -----------------------
+      - name: Verify pins (no floating versions anywhere)
+        run: |
+          python -m pip install --upgrade pip==25.3
+          pip install -e ".[dev]"
+          npm install -g promptfoo@${{ env.PROMPTFOO_VERSION }}
+          python scripts/verify_pins.py | tee artifacts/logs/pin-verification.log
+
+      # -- 3. pull required images ----------------------------------------
+      # An unreachable registry is a FAILED INFRASTRUCTURE REQUIREMENT here.
+      # There is deliberately no static-validation fallback.
+      - name: Pull pinned container images
+        run: |
+          set -o pipefail
+          docker compose config --quiet
+          docker compose pull --quiet 2>&1 | tee artifacts/logs/image-pull.log
+          docker compose images | tee -a artifacts/logs/image-pull.log
+
+      # -- 4. start the complete stack from empty volumes -----------------
+      - name: Start the Compose stack (clean volumes)
+        id: stack_up
+        run: |
+          set -o pipefail
+          docker volume prune -f || true
+          docker compose up -d --build --wait --wait-timeout 300 2>&1 \
+            | tee artifacts/logs/compose-up-clean.log
+
+      - name: Diagnose a failed bring-up
+        if: failure() && steps.stack_up.outcome == 'failure'
+        run: |
+          echo "=== compose ps ==="; docker compose ps -a || true
+          for s in temporal phoenix litellm worker; do
+            echo "=== $s health ==="
+            cid=$(docker compose ps -q "$s" || true)
+            [ -n "$cid" ] && docker inspect --format '{{json .State}}' "$cid" || echo "no container"
+            echo "=== $s logs ==="
+            docker compose logs --no-color "$s" 2>&1 | tail -80 || true
+          done
+
+      # -- 5. explicit service health checks ------------------------------
+      - name: Wait for and verify explicit service health
+        run: |
+          set -o pipefail
+          python scripts/health.py | tee artifacts/logs/health.log
+
+      - name: Verify compose networking, dependencies and persistence
+        run: |
+          set -o pipefail
+          python scripts/verify_compose.py --phase clean 2>&1 \
+            | tee artifacts/logs/compose-verification-clean.log
+
+      # -- 6. schema / state initialisation -------------------------------
+      - name: Initialise application stores and Temporal namespace
+        run: |
+          set -o pipefail
+          python scripts/init_state.py 2>&1 | tee artifacts/logs/state-init.log
+
+      # -- 7. the Temporal worker is already running as a Compose service --
+      - name: Confirm the worker registered with Temporal
+        run: |
+          set -o pipefail
+          docker compose logs --no-color worker | tail -40 | tee artifacts/logs/worker-startup.log
+          docker compose exec -T temporal temporal task-queue describe \
+            --task-queue reliability-walking-skeleton --address 127.0.0.1:7233 \
+            2>&1 | tee artifacts/logs/task-queue-describe.log
+
+      # -- 8/9. the two evaluation cases, through the real Temporal server -
+      # Run INSIDE the worker container. The investigation's probe activities
+      # need the fixture working copy on the same filesystem as the worker that
+      # executes them, and running here also exercises container DNS
+      # (worker -> temporal / litellm / phoenix) on the real path.
+      - name: Known-good and duct-tape evaluations (durable execution, in-container)
+        run: |
+          set -o pipefail
+          docker compose exec -T \
+            -e EXECUTION_MODE=temporal \
+            worker python scripts/demo.py 2>&1 | tee artifacts/logs/demo.log
+
+      - name: Copy reliability reports out of the worker container
+        run: |
+          docker compose cp worker:/srv/evals/reports/. artifacts/reports/ || true
+          ls -la artifacts/reports/ || true
+
+      - name: Verify both outcomes and durable execution
+        run: |
+          set -o pipefail
+          python scripts/verify_outcomes.py --reports artifacts/reports 2>&1 \
+            | tee artifacts/logs/outcome-verification.log
+
+      # -- 10. worker-interruption recovery --------------------------------
+      - name: Worker-interruption recovery (SIGKILL, resume under a new worker)
+        run: |
+          set -o pipefail
+          python scripts/verify_durability.py 2>&1 | tee artifacts/logs/durability.log
+
+      # -- 11. retry and timeout ------------------------------------------
+      - name: Activity retry behaviour (real history)
+        run: |
+          set -o pipefail
+          python scripts/verify_retry.py 2>&1 | tee artifacts/logs/retry.log
+
+      - name: Activity timeout behaviour (real history)
+        run: |
+          set -o pipefail
+          python scripts/verify_timeout.py 2>&1 | tee artifacts/logs/timeout.log
+
+      # -- 12. replay / determinism ---------------------------------------
+      - name: Replay and determinism verification
+        run: |
+          set -o pipefail
+          python scripts/verify_replay.py 2>&1 | tee artifacts/logs/replay.log
+
+      # -- 13. Phoenix trace completeness ----------------------------------
+      - name: Confirm Phoenix holds the complete required span tree
+        run: |
+          set -o pipefail
+          python scripts/verify_phoenix_trace.py 2>&1 | tee artifacts/logs/phoenix-trace.log
+
+      # -- integration tests, Inspect and Promptfoo against the live stack --
+      - name: Integration tests against the live stack
+        run: |
+          set -o pipefail
+          pytest tests/integration -q -rs --junit-xml=artifacts/reports/integration.xml 2>&1 \
+            | tee artifacts/logs/integration-tests.log
+
+      - name: Inspect AI evaluation (mock provider)
+        run: |
+          set -o pipefail
+          mkdir -p evals/logs
+          inspect eval evals/inspect/coding_eval.py --model mockllm/model \
+            --log-dir evals/logs --display plain 2>&1 | tee artifacts/logs/inspect.log
+          cp -r evals/logs artifacts/reports/inspect-logs || true
+
+      - name: Promptfoo evaluation (mock provider)
+        run: |
+          set -o pipefail
+          cd evals/promptfoo
+          PROMPTFOO_PYTHON="$(which python)" promptfoo eval -c promptfooconfig.yaml \
+            --no-cache -o "$GITHUB_WORKSPACE/artifacts/reports/promptfoo-report.json" 2>&1 \
+            | tee "$GITHUB_WORKSPACE/artifacts/logs/promptfoo.log"
+
+      # -- restart behaviour with EXISTING volumes -------------------------
+      - name: Restart the stack and verify state persisted
+        run: |
+          set -o pipefail
+          docker compose stop 2>&1 | tee artifacts/logs/compose-stop.log
+          docker compose up -d --wait --wait-timeout 300 2>&1 \
+            | tee artifacts/logs/compose-up-restart.log
+          python scripts/health.py | tee -a artifacts/logs/health.log
+          python scripts/verify_compose.py --phase restart 2>&1 \
+            | tee artifacts/logs/compose-verification-restart.log
+          python scripts/verify_persistence.py 2>&1 \
+            | tee artifacts/logs/persistence.log
+
+      # -- 14. collect everything ------------------------------------------
+      - name: Collect Temporal histories and container logs
+        if: always()
+        run: |
+          mkdir -p artifacts/histories artifacts/logs/containers
+          cp -f artifacts/evidence/*.history.json artifacts/histories/ 2>/dev/null || true
+          for s in temporal phoenix litellm worker; do
+            docker compose logs --no-color --timestamps "$s" \
+              > "artifacts/logs/containers/$s.log" 2>&1 || true
+          done
+          docker compose ps -a > artifacts/logs/containers/compose-ps.txt 2>&1 || true
+          cp -f var/*.db artifacts/ 2>/dev/null || true
+
+      - name: Build the completion manifest
+        if: always()
+        run: python scripts/build_completion_manifest.py 2>&1 | tee artifacts/logs/manifest.log
+
+      - name: Upload verification artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: durable-stack-verification
+          path: artifacts/
+          retention-days: 30
+
+      # -- 15. clean shutdown ----------------------------------------------
+      - name: Shut the stack down cleanly
+        if: always()
+        run: |
+          docker compose down -v 2>&1 | tee -a artifacts/logs/compose-down.log || true
+          docker compose ps -a || true

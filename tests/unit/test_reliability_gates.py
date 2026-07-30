@@ -200,7 +200,8 @@ def test_infrastructure_failure_is_not_a_rejection() -> None:
         "run-2", _context(), infrastructure_failed=True, infrastructure_detail="disk full"
     )
     assert decision.outcome == "infrastructure_failure"
-    assert "says nothing about the patch" in decision.rationale
+    assert "says nothing about whether the patch is correct" in decision.rationale
+    assert "no patch verdict was reached" in decision.rationale
 
 
 def test_observational_failure_outranks_abstention() -> None:

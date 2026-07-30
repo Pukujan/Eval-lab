@@ -15,15 +15,21 @@ services:
   temporal:
     image: temporalio/temporal:1.8.1@sha256:59561b9ef060eaeb1f46cb6a1842d6cbdd8a393eb3b6d315ecef5fe2f0b1d7a6
     container_name: rws-temporal
+    # Flags kept to the minimal, well-established set. An earlier revision also
+    # passed `--ui-ip` and `--namespace=default`; the container exited during
+    # startup on a clean runner (CI run 30569302260) and Compose reported it
+    # unhealthy within ~31s — far too fast to have exhausted the retry budget,
+    # which is the signature of the process dying rather than being slow.
+    # `--ui-ip` defaults to `--ip`, and the `default` namespace is always created
+    # by `start-dev`, so neither flag bought anything.
     command:
       - server
       - start-dev
       - --ip=0.0.0.0
       - --port=7233
-      - --ui-ip=0.0.0.0
       - --ui-port=8233
       - --db-filename=/data/temporal.db
-      - --namespace=default
+      - --log-level=info
     ports:
       - "7233:7233"   # gRPC frontend
       - "8233:8233"   # Web UI
@@ -33,10 +39,10 @@ services:
       # The Temporal CLI ships in this image, so the check exercises the real
       # cluster health RPC rather than merely proving a port is open.
       test: ["CMD", "temporal", "operator", "cluster", "health", "--address", "127.0.0.1:7233"]
-      interval: 10s
+      interval: 5s
       timeout: 5s
-      retries: 12
-      start_period: 20s
+      retries: 30
+      start_period: 30s
     restart: unless-stopped
 
   # Trace collection, storage and UI. SQLite-backed, volume-persisted.

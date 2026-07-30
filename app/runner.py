@@ -40,7 +40,12 @@ from app.domain.fixtures import build_problem_specification, is_prohibited
 from app.domain.schemas import EvaluationRun, ExecutionMode, ModelRole
 from app.graphs.investigation import build_investigation_graph, get_ledger
 from app.models.blinding import blind_models
-from app.reliability.gates import DiagnosisClaim, GateContext, decide
+from app.reliability.gates import (
+    DiagnosisClaim,
+    GateContext,
+    InfrastructureIncident,
+    decide,
+)
 from app.reliability.report import ReliabilityReport, build_manifest
 from app.storage.audit import AuditStore
 from app.storage.privileged import PrivilegedAccess, PrivilegedIdentityStore
@@ -102,13 +107,48 @@ async def _temporal_available(settings: Settings) -> bool:
     return True
 
 
-async def _resolve_mode(settings: Settings, requested: str | None) -> ExecutionMode:
+async def _resolve_mode(
+    settings: Settings, requested: str | None
+) -> tuple[ExecutionMode, tuple[str, ...]]:
+    """Pick an execution mode and report any infrastructure incident it implies.
+
+    ``auto`` falling back to local is a documented degradation, not an incident.
+    But an **explicit** request for durable execution that cannot be honoured is
+    an infrastructure failure: the caller asked for a guarantee the harness could
+    not provide, and pretending otherwise would let a non-durable run masquerade
+    as a durable one (ADR-0012).
+    """
     mode = (requested or settings.execution_mode or "auto").lower()
-    if mode == "temporal":
-        return ExecutionMode.TEMPORAL
+
     if mode == "local":
-        return ExecutionMode.LOCAL
-    return ExecutionMode.TEMPORAL if await _temporal_available(settings) else ExecutionMode.LOCAL
+        return ExecutionMode.LOCAL, ()
+
+    available = await _temporal_available(settings)
+
+    if mode == "temporal":
+        if not available:
+            return ExecutionMode.LOCAL, (InfrastructureIncident.TEMPORAL_UNAVAILABLE.value,)
+        return ExecutionMode.TEMPORAL, ()
+
+    return (ExecutionMode.TEMPORAL, ()) if available else (ExecutionMode.LOCAL, ())
+
+
+def _phoenix_incidents(settings: Settings) -> tuple[str, ...]:
+    """Phoenix configured but unreachable is an incident, not a silent no-op.
+
+    Tracing that was asked for and did not happen leaves the run without its
+    mandatory observability artifacts, which must block acceptance.
+    """
+    if not settings.phoenix_endpoint:
+        return ()
+    unreachable = (InfrastructureIncident.PHOENIX_UNAVAILABLE.value,)
+    try:
+        import httpx
+
+        response = httpx.get(f"{settings.phoenix_endpoint.rstrip('/')}/healthz", timeout=3.0)
+    except Exception:  # noqa: BLE001 - any transport failure means unreachable
+        return unreachable
+    return () if response.status_code == 200 else unreachable
 
 
 async def _run_investigation_local(state: dict[str, Any]) -> dict[str, Any]:
@@ -134,7 +174,8 @@ async def run_evaluation(request: RunRequest | None = None) -> ReliabilityReport
 
     run_id = request.run_id or f"run-{secrets.token_hex(6)}"
     run_seed = secrets.randbelow(2**31)
-    mode = await _resolve_mode(settings, request.execution_mode)
+    mode, mode_incidents = await _resolve_mode(settings, request.execution_mode)
+    incidents: list[str] = [*mode_incidents, *_phoenix_incidents(settings)]
 
     configure_tracing(
         endpoint=settings.phoenix_endpoint, project_name=settings.phoenix_project_name
@@ -319,6 +360,7 @@ async def run_evaluation(request: RunRequest | None = None) -> ReliabilityReport
                     audit_run_recorded=audit.has_run(run_id),
                     durable_execution=mode is ExecutionMode.TEMPORAL,
                     caveats=tuple(caveats),
+                    infrastructure_incidents=tuple(incidents),
                 )
 
                 decision = decide(

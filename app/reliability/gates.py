@@ -17,6 +17,7 @@ because deduplicating output is exactly what the tempting wrong patch does.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from enum import StrEnum
 
 from app.domain.schemas import GateResult, ReliabilityDecision, VerificationResult
 
@@ -61,6 +62,46 @@ class DiagnosisClaim:
     surviving_hypothesis_ids: frozenset[str] = frozenset()
 
 
+class InfrastructureIncident(StrEnum):
+    """Conditions that are the harness's fault, never the patch's.
+
+    Enumerated rather than free-text so a coding failure cannot be laundered into
+    an infrastructure excuse: :func:`classify_infrastructure_incident` refuses any
+    kind not on this list.
+    """
+
+    TEMPORAL_UNAVAILABLE = "temporal_unavailable"
+    PHOENIX_UNAVAILABLE = "phoenix_unavailable"
+    MISSING_MANDATORY_TRACE = "missing_mandatory_trace"
+    WORKER_FAILURE_WITHOUT_RECOVERY = "worker_failure_without_recovery"
+    CORRUPT_EVALUATION_ARTIFACT = "corrupt_evaluation_artifact"
+    ACTIVITY_TIMEOUT = "activity_timeout"
+    HARNESS_ERROR = "harness_error"
+
+
+INFRASTRUCTURE_INCIDENT_KINDS: frozenset[str] = frozenset(
+    incident.value for incident in InfrastructureIncident
+)
+
+
+def classify_infrastructure_incident(kind: str, *, detail: str = "") -> str:
+    """Map an infrastructure incident to its terminal outcome.
+
+    Always ``infrastructure_failure`` — that is the point. The value of this
+    function is the guard: an unrecognised ``kind`` raises rather than quietly
+    becoming an infrastructure excuse for something that was actually a patch
+    failure.
+    """
+    del detail
+    if kind not in INFRASTRUCTURE_INCIDENT_KINDS:
+        raise ValueError(
+            f"'{kind}' is not a recognised infrastructure incident; known kinds: "
+            f"{sorted(INFRASTRUCTURE_INCIDENT_KINDS)}. Refusing to classify an "
+            "unknown condition as infrastructure_failure."
+        )
+    return "infrastructure_failure"
+
+
 @dataclass(frozen=True)
 class GateContext:
     """Everything the gates are allowed to look at."""
@@ -73,6 +114,10 @@ class GateContext:
     audit_run_recorded: bool = False
     durable_execution: bool = True
     caveats: tuple[str, ...] = field(default_factory=tuple)
+    #: Infrastructure incidents observed during the run, as
+    #: :class:`InfrastructureIncident` values. Any entry forces
+    #: ``infrastructure_failure`` and short-circuits every patch verdict.
+    infrastructure_incidents: tuple[str, ...] = field(default_factory=tuple)
 
 
 # ---------------------------------------------------------------------------
@@ -233,7 +278,9 @@ def required_artifacts_present(ctx: GateContext) -> GateResult:
     )
 
 
-#: Evaluated in order; all must pass for the run to be eligible for review.
+#: Gates that judge **the patch**. All must pass for a run to be eligible for
+#: review. `required_artifacts_present` is deliberately NOT here — a missing trace
+#: says nothing about the patch (ADR-0012).
 REJECTION_GATES = (
     build_succeeds,
     no_test_regression,
@@ -242,8 +289,37 @@ REJECTION_GATES = (
     evidence_supports_diagnosis,
     no_prohibited_file_changes,
     not_symptom_suppression,
-    required_artifacts_present,
 )
+
+#: Preconditions on the harness itself. Failing one blocks acceptance — but as
+#: `infrastructure_failure`, never as `rejected` (ADR-0012).
+INFRASTRUCTURE_GATES = (required_artifacts_present,)
+
+#: Human-readable detail per incident kind, used when composing the decision.
+_INCIDENT_DETAIL: dict[str, str] = {
+    InfrastructureIncident.TEMPORAL_UNAVAILABLE.value: (
+        "the Temporal server could not be reached, so no durable execution occurred"
+    ),
+    InfrastructureIncident.PHOENIX_UNAVAILABLE.value: (
+        "the Phoenix collector could not be reached, so the trace is incomplete"
+    ),
+    InfrastructureIncident.MISSING_MANDATORY_TRACE.value: (
+        "a mandatory observability artifact is missing; acceptance is blocked, but "
+        "this implies nothing about whether the patch is correct"
+    ),
+    InfrastructureIncident.WORKER_FAILURE_WITHOUT_RECOVERY.value: (
+        "a worker failed and no replacement resumed the workflow"
+    ),
+    InfrastructureIncident.CORRUPT_EVALUATION_ARTIFACT.value: (
+        "an evaluation artifact could not be read or failed validation"
+    ),
+    InfrastructureIncident.ACTIVITY_TIMEOUT.value: ("an activity exceeded its configured timeout"),
+    InfrastructureIncident.HARNESS_ERROR.value: "the evaluation harness failed",
+}
+
+#: Every gate, for the record. Both sets are always evaluated and reported; only
+#: the routing of a failure differs.
+ALL_GATES = REJECTION_GATES + INFRASTRUCTURE_GATES
 
 #: Gates that are **direct observations of the patched repository's behaviour**
 #: and need no diagnosis to interpret. If one of these fails, the system has
@@ -267,7 +343,23 @@ OBSERVATIONAL_GATE_NAMES: frozenset[str] = frozenset(
 
 def evaluate_gates(ctx: GateContext) -> tuple[GateResult, ...]:
     """Run every gate. All of them, always — a full picture beats a fast exit."""
-    return tuple(gate(ctx) for gate in REJECTION_GATES)
+    return tuple(gate(ctx) for gate in ALL_GATES)
+
+
+def infrastructure_incidents(ctx: GateContext) -> tuple[str, ...]:
+    """Every infrastructure incident implied by this context.
+
+    Combines incidents the caller observed (an unreachable Temporal server, a
+    worker that never recovered) with those implied by the artifacts themselves
+    (a missing mandatory span).
+    """
+    incidents = list(ctx.infrastructure_incidents)
+    if not required_artifacts_present(ctx).passed:
+        incidents.append(InfrastructureIncident.MISSING_MANDATORY_TRACE.value)
+    # Validate every kind; an unknown one raises rather than silently excusing.
+    for kind in incidents:
+        classify_infrastructure_incident(kind)
+    return tuple(dict.fromkeys(incidents))
 
 
 # ---------------------------------------------------------------------------
@@ -324,7 +416,11 @@ def decide(
     Order matters, and it is:
 
     1. **Infrastructure failure.** A broken harness must never be reported as a
-       failed patch.
+       failed patch. This covers an explicit harness error, an unreachable
+       Temporal or Phoenix, a worker that never recovered, a corrupt artifact —
+       and, since ADR-0012, a **missing mandatory observability artifact**. A
+       missing trace blocks acceptance but implies nothing about the patch, so
+       routing it to ``rejected`` would have been a fabricated coding verdict.
     2. **Observational rejection.** If a direct measurement of the patched
        repository failed — it does not build, a test regressed, hidden tests
        failed, the invariant is violated, a prohibited file changed, or the effect
@@ -345,26 +441,42 @@ def decide(
             "demonstrates nothing about crash recovery or retry behaviour"
         )
 
-    if infrastructure_failed:
+    results = evaluate_gates(ctx)
+    failed = [gate.gate_name for gate in results if not gate.passed]
+
+    # Step 1: anything wrong with the harness, before any verdict on the patch.
+    incidents = infrastructure_incidents(ctx)
+    if infrastructure_failed or incidents:
+        if infrastructure_failed and InfrastructureIncident.HARNESS_ERROR.value not in incidents:
+            incidents = (*incidents, InfrastructureIncident.HARNESS_ERROR.value)
+
+        detail = infrastructure_detail or "the evaluation harness failed"
+        incident_results = tuple(
+            GateResult(
+                gate_name=f"infrastructure:{kind}",
+                passed=False,
+                detail=(
+                    detail
+                    if kind == InfrastructureIncident.HARNESS_ERROR.value
+                    else _INCIDENT_DETAIL.get(kind, kind)
+                ),
+            )
+            for kind in incidents
+        )
         return ReliabilityDecision(
             run_id=run_id,
             outcome="infrastructure_failure",
-            gate_results=(
-                GateResult(
-                    gate_name="infrastructure",
-                    passed=False,
-                    detail=infrastructure_detail or "the evaluation harness failed",
-                ),
-            ),
+            # Patch-level gate results are still reported, so a reader can see
+            # what was measured — but none of them decided this outcome.
+            gate_results=incident_results + results,
             rationale=(
-                "The harness could not complete the evaluation. This says nothing about the patch."
+                "The harness could not complete the evaluation "
+                f"({', '.join(incidents)}). This says nothing about whether the "
+                "patch is correct: no patch verdict was reached."
             ),
             caveats=tuple(caveats),
             durable_execution=ctx.durable_execution,
         )
-
-    results = evaluate_gates(ctx)
-    failed = [gate.gate_name for gate in results if not gate.passed]
 
     # Step 2: a direct measurement that failed outranks "we could not tell".
     observational_failures = [name for name in failed if name in OBSERVATIONAL_GATE_NAMES]
