@@ -136,12 +136,23 @@ can be replayed against a real recorded execution.
 If the runner cannot reach a registry, that workflow fails as an infrastructure
 requirement. There is no static-validation fallback.
 
+Latest green run: [`30580082420`](https://github.com/pukujan/eval-lab/actions/runs/30580082420)
+on commit `a1017b2` — all steps passed and the completion manifest reported
+**15/15 criteria demonstrated**. The manifest is generated from the evidence files
+rather than from step exit codes, and it is per-run: a green badge is not a
+standing guarantee, and the artifact from the run you care about is the answer.
+
 See [`docs/failure-and-recovery.md`](docs/failure-and-recovery.md) for what each
-failure mode is classified as and why.
+failure mode is classified as and why, and
+[`docs/limitations.md`](docs/limitations.md) for the four earlier runs that failed
+first — three of them faults in the verification rather than in the system.
 
 ## Status
 
 Task 1 (walking skeleton) and Task 2A (durable execution and reproducible
-packaging) are complete. **Deferred:** live frontier models, confidence
-calibration, autonomous patch selection, and historical benchmark ingestion. See
+packaging) are complete, the latter evidenced by run `30580082420`. This remains a
+walking skeleton: **not calibrated, not production-ready, not generally reliable**,
+exercised on one fixture with one planted bug against deterministic mock models.
+**Deferred:** live frontier models, confidence calibration, autonomous patch
+selection, and historical benchmark ingestion. See
 [`docs/limitations.md`](docs/limitations.md).

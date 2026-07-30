@@ -29,8 +29,8 @@ strictly apart.
 | Phoenix trace collection, SQLite-backed | **Verified** — 2 traces, all 14 required spans, server 19.10.0 run locally |
 | Inspect AI evaluation, both outcomes | **Verified** — `matches_expected_outcome` accuracy 1.000 |
 | Promptfoo comparison across 3 mock identities | **Verified** — report generated, diversity failure correctly attributed |
-| **Temporal workflow execution** | **NOT verified here** — see below |
-| **Docker Compose stack startup** | **NOT verified here** — see below |
+| **Temporal workflow execution** | **NOT verified in this sandbox** — verified on a hosted runner in Task 2A, see below |
+| **Docker Compose stack startup** | **NOT verified in this sandbox** — verified on a hosted runner in Task 2A, see below |
 | Inspect AI Docker sandbox | **NOT verified here** — same registry block |
 
 ### Temporal was not executed in this environment
@@ -76,9 +76,53 @@ The rows above describe the **build sandbox**, where container registries and
 GitHub-hosted runner via `.github/workflows/durable-stack-verification.yml`, where
 those hosts are reachable.
 
+**Result: run [`30580082420`](https://github.com/pukujan/eval-lab/actions/runs/30580082420)
+on commit `a1017b2` — every step succeeded and the completion manifest reported
+`15/15 criteria demonstrated`.** The Compose stack started from digest-pinned
+images, a real `CodingEvaluationWorkflow` executed on a real Temporal server,
+history was persisted and fetched, a SIGKILLed worker's workflow resumed under a
+second worker without repeating a committed effect, SDK `Replayer` accepted the
+real history and rejected a deliberately incompatible workflow variation, Phoenix
+received the full trace, and both candidate evaluations reached the same outcomes
+as Task 1 under `execution_mode=temporal`.
+
 Read the run's `completion-manifest.json` artifact for the authoritative
 per-criterion status — it is generated mechanically from the evidence files and
 marks anything without an artifact as `not_demonstrated` rather than omitting it.
+A green run is not a standing claim: the manifest is per-run, and a later run can
+report fewer criteria.
+
+The path to that run is itself worth recording, because three of the four earlier
+failures were faults in the *verification*, not in the system:
+
+1. **Run `30569302260` / `30571203398` — Temporal container unhealthy.** A fresh
+   named volume is root-owned, so the dev server could not create its SQLite
+   database: `unable to create SQLite admin DB: ... out of memory (14)`. SQLite
+   error 14 is `CANTOPEN`, not memory exhaustion; the message sends you the wrong
+   way. Fixed with `user: "0:0"` on that one service (T-9).
+2. **Runs `30571557402` / `30573185257` — the evaluation hung for ten minutes.**
+   LangGraph runs a *synchronous* callable through
+   `run_in_executor()`, which Temporal's deterministic workflow event loop cannot
+   provide (`NotImplementedError`). The workflow task then failed and Temporal
+   retried it forever, so a structurally broken workflow presented as a slow one.
+   Fixed by making every workflow-context callable `async def` — **including the
+   conditional-edge routing callbacks**, which carry no `execute_in` metadata and
+   are the easy ones to miss. Guarded by
+   `tests/unit/test_workflow_context_callables.py` and by a bounded smoke test
+   (`scripts/verify_workflow_smoke.py`) that fails in seconds instead of at the
+   execution timeout.
+3. **Run `30577856007` — "terminal status was 2".** The workflow had completed
+   perfectly; the assertion was wrong. `WorkflowExecutionStatus` is an `IntEnum`,
+   so `str(status)` is `"2"` and `str(status).endswith("COMPLETED")` was dead code
+   in four verification scripts. Fixed with enum comparison plus
+   `workflow_status_name()` for display, and a regression test that scans for the
+   pattern.
+4. **Run `30578849933` — 13/15.** Two CI-harness faults, no system fault: the
+   smoke test ran inside the container so its evidence never reached the host
+   `EVIDENCE_DIR`, and Promptfoo's exit code 100 (*some assertions failed*) was
+   treated as an error. Exit 100 is the designed result here — one identity fails
+   the diversity assertion by construction — so treating it as failure would have
+   put pressure on the assertion that makes the comparison meaningful.
 
 What Task 2A does **not** change:
 
