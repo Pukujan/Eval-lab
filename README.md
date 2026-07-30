@@ -87,6 +87,8 @@ Full detail in [`ARCHITECTURE.md`](ARCHITECTURE.md); who owns what and why in
 | [`docs/build-vs-integrate.md`](docs/build-vs-integrate.md) | Integrate by default; every piece of custom code justified |
 | [`docs/threat-model.md`](docs/threat-model.md) | Assets, boundaries, eight threats, accepted residuals |
 | [`docs/implementation-plan.md`](docs/implementation-plan.md) | The staged build |
+| [`docs/local-operation.md`](docs/local-operation.md) | Running the stack, service roles, troubleshooting |
+| [`docs/failure-and-recovery.md`](docs/failure-and-recovery.md) | Classification, worker interruption, retries, timeouts, replay |
 | [`docs/limitations.md`](docs/limitations.md) | **What this does not establish** |
 
 ## Pinned versions
@@ -112,8 +114,34 @@ Read [`docs/threat-model.md`](docs/threat-model.md) for what is *not* covered â€
 notably that fixture isolation is process-level, not kernel-level, in environments
 without a container runtime.
 
+## Durable execution
+
+Task 1 shipped the Temporal and Compose paths **written but unrun** â€” the build
+sandbox denied every container registry and `temporal.download`. Task 2A moved
+that proof onto a clean GitHub-hosted runner:
+
+```
+.github/workflows/durable-stack-verification.yml
+```
+
+It starts the full Compose stack from empty volumes, waits for explicit health
+checks, then proves against **real Temporal history** that a workflow survives a
+`SIGKILL`ed worker and resumes under a new one without repeating a committed
+effect; that retries follow the configured policy; that a timeout is recorded and
+classified as infrastructure rather than as a bad patch; and that replay accepts
+the genuine workflow while **rejecting a deliberately incompatible variant**. Every
+step writes an evidence artifact, and the histories are uploaded so a future change
+can be replayed against a real recorded execution.
+
+If the runner cannot reach a registry, that workflow fails as an infrastructure
+requirement. There is no static-validation fallback.
+
+See [`docs/failure-and-recovery.md`](docs/failure-and-recovery.md) for what each
+failure mode is classified as and why.
+
 ## Status
 
-Task 1 (this walking skeleton) is complete. **Deferred to Task 2:** live frontier
-models, confidence calibration, autonomous patch selection, and historical
-benchmark ingestion. See [`docs/limitations.md`](docs/limitations.md).
+Task 1 (walking skeleton) and Task 2A (durable execution and reproducible
+packaging) are complete. **Deferred:** live frontier models, confidence
+calibration, autonomous patch selection, and historical benchmark ingestion. See
+[`docs/limitations.md`](docs/limitations.md).

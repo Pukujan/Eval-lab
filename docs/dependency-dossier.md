@@ -11,6 +11,45 @@ source of that exact pinned version (see "Documentation access" below).
 
 ---
 
+## Task 2A addendum — what is now executed rather than declared
+
+Task 1 shipped this stack with Temporal and Compose **unrun**: the build sandbox
+denied `temporal.download` and every container registry. Task 2A moved that proof
+onto a clean GitHub-hosted runner, where those hosts are reachable.
+
+Capabilities exercised for the first time, with the surface each one uses:
+
+| Capability | Owner | Surface used | Evidence artifact |
+|---|---|---|---|
+| Durable execution across worker loss | Temporal | `Client.start_workflow`, `handle.signal`, `handle.fetch_history` | `durability-recovery.json` + `.history.json` |
+| Activity retry policy | Temporal | `RetryPolicy` on `execute_activity`; read back from `ActivityTaskScheduled.retryPolicy` | `retry-behaviour.json` |
+| Activity timeout | Temporal | `start_to_close_timeout`; `ActivityTaskTimedOut` in history | `timeout-behaviour.json` |
+| Replay / determinism | Temporal | **`temporalio.worker.Replayer`** + `WorkflowHistory.from_json` | `replay-determinism.json` |
+| Trace completeness | Phoenix | GraphQL query (its supported surface, not its database) | `phoenix-trace.json` |
+| Container health, DNS, dependencies, volumes | Docker Compose | `compose config/ps/exec`, `docker inspect .State.Health` | `compose-verification-*.json` |
+
+Two additions worth noting because they are *not* new dependencies:
+
+* **`WorkflowHistory.to_json_dict()`** is used for every history artifact and every
+  history assertion. We deliberately did not write a history parser — the SDK
+  ships the serialisation and the replayer, so both are used as given.
+* **The Temporal CLI inside `temporalio/temporal:1.8.1`** provides the health check
+  (`temporal operator cluster health`) and the worker-registration check
+  (`temporal task-queue describe`). No custom health protocol was invented.
+
+### Correction to the Temporal service definition
+
+The Task 1 compose file passed `--ui-ip` and `--namespace=default` to
+`temporal server start-dev`. On a clean runner the container exited during startup
+and Compose reported it unhealthy within ~31 seconds — far too fast to have
+exhausted a 12-retry budget, which is the signature of a process dying rather than
+being slow (CI run `30569302260`). `--ui-ip` defaults to `--ip`, and `start-dev`
+always creates the `default` namespace, so neither flag was buying anything. Both
+were removed and the health budget widened. Recorded here because the dossier's
+"known limitation" column is where a reader would look for it.
+
+---
+
 ## Documentation access — read this before trusting the "docs consulted" column
 
 This build ran inside a sandbox whose egress policy **denies all documentation

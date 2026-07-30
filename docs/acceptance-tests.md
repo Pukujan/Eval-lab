@@ -60,6 +60,33 @@ causal mechanism cannot be tied to the patch.
 |---|---|---|
 | **AT-16** | For any interleaving of at-least-once deliveries, the fixed processor commits at most one result per job id, and the known-bad one does not | `tests/property/test_invariant_property.py` (Hypothesis) |
 
+## Task 2A — infrastructure acceptance (CI-only)
+
+These cannot be demonstrated on a machine without a container runtime. They are
+decided by `.github/workflows/durable-stack-verification.yml` on a clean hosted
+runner, and each writes an evidence artifact.
+
+| ID | Statement | Deciding check | Evidence |
+|---|---|---|---|
+| **AT-17** | The full Compose stack starts from empty volumes and every service reports healthy | `docker compose up --wait` + `scripts/verify_compose.py --phase clean` | `compose-verification-clean.json` |
+| **AT-18** | Containers resolve and reach each other by service name | `scripts/verify_compose.py` DNS probes (resolve **and** connect) | same |
+| **AT-19** | A real Temporal workflow executes and its history is persisted on the server | `scripts/verify_durability.py` | `durability-recovery.history.json` |
+| **AT-20** | A workflow survives an abrupt worker loss and resumes under a new worker | `scripts/verify_durability.py` — SIGKILL, then resume | `durability-recovery.json` |
+| **AT-21** | The recovered workflow does **not** repeat a committed external effect | effect ledger reads 1 after recovery | same |
+| **AT-22** | Activity retries follow the configured policy, bounded | `scripts/verify_retry.py` — history `retryPolicy` + `ActivityTaskStarted.attempt`, cross-checked against a durable ledger | `retry-behaviour.json` |
+| **AT-23** | An activity timeout is recorded and classified as infrastructure, not as a bad patch | `scripts/verify_timeout.py` — `ActivityTaskTimedOut` present, classification `infrastructure_failure` | `timeout-behaviour.json` |
+| **AT-24** | Replay accepts the genuine workflow **and rejects** a deliberately incompatible variant | `scripts/verify_replay.py` using `temporalio.worker.Replayer` | `replay-determinism.json` |
+| **AT-25** | Phoenix holds every required span | `scripts/verify_phoenix_trace.py` (GraphQL) | `phoenix-trace.json` |
+| **AT-26** | Outcomes are unchanged under durable execution | `scripts/verify_outcomes.py --require-durable` | `evaluation-outcomes.json` |
+| **AT-27** | Temporal and Phoenix state survive a stack restart | `scripts/verify_persistence.py` after `stop` + `up` | `persistence-across-restart.json` |
+| **AT-28** | Every dependency and image is exactly pinned | `scripts/verify_pins.py` | `pin-verification.json` |
+
+Classification is additionally tested deterministically, with no services, in
+`tests/unit/test_failure_classification.py`: a missing mandatory trace yields
+`infrastructure_failure` rather than `rejected`, and
+`classify_infrastructure_incident` refuses to launder an unknown condition
+(e.g. `hidden_tests_failed`) into an infrastructure excuse.
+
 ## Non-goals for this task
 
 Not claimed, not tested, deferred to Task 2: calibration, live frontier models,

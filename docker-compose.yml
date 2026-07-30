@@ -15,13 +15,24 @@ services:
   temporal:
     image: temporalio/temporal:1.8.1@sha256:59561b9ef060eaeb1f46cb6a1842d6cbdd8a393eb3b6d315ecef5fe2f0b1d7a6
     container_name: rws-temporal
+    # Runs as root SOLELY so it can create its SQLite database in the mounted
+    # volume. A fresh named volume is owned by root:root, and this image's default
+    # user could not write to it — the container died on startup with
+    #   failed setting up schema: unable to create SQLite admin DB:
+    #   unable to open database file: out of memory (14)
+    # SQLite error 14 is CANTOPEN; "out of memory" is its misleading text for it.
+    # (Diagnosed from CI run 30571203398, after run 30569302260 showed only the
+    # symptom — a container reported unhealthy ~31s in, far too fast to have
+    # exhausted a 12-retry budget, i.e. the process was dying, not starting slowly.)
+    #
+    # Scope of this decision: the Temporal DEV server only. The application worker
+    # still runs unprivileged as uid 10001, which is the container that executes
+    # patched fixture code. See docs/threat-model.md.
+    user: "0:0"
     # Flags kept to the minimal, well-established set. An earlier revision also
-    # passed `--ui-ip` and `--namespace=default`; the container exited during
-    # startup on a clean runner (CI run 30569302260) and Compose reported it
-    # unhealthy within ~31s — far too fast to have exhausted the retry budget,
-    # which is the signature of the process dying rather than being slow.
-    # `--ui-ip` defaults to `--ip`, and the `default` namespace is always created
-    # by `start-dev`, so neither flag bought anything.
+    # passed `--ui-ip` and `--namespace=default`; both were redundant (`--ui-ip`
+    # defaults to `--ip`, and `start-dev` always creates the `default` namespace)
+    # and were removed while chasing the failure above.
     command:
       - server
       - start-dev
@@ -68,10 +79,12 @@ services:
         - python
         - -c
         - import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:6006/healthz',timeout=4).status==200 else 1)
-      interval: 10s
+      interval: 5s
       timeout: 5s
-      retries: 12
-      start_period: 20s
+      retries: 30
+      # Phoenix runs migrations before it binds; on a cold runner that took
+      # longer than the previous 20s budget.
+      start_period: 60s
     restart: unless-stopped
 
   # The model gateway. Mock models are registered through custom_provider_map.
