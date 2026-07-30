@@ -1,0 +1,100 @@
+[project]
+name = "reliability-walking-skeleton"
+version = "0.1.0"
+description = "Local-first AI coding-correctness evaluation laboratory — reliability walking skeleton"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+
+# Every version is an exact pin. See docs/dependency-dossier.md for the
+# capability, integration surface, and known limitation behind each one.
+dependencies = [
+    # Orchestration — Temporal owns durability; the langgraph extra ships the
+    # official temporalio.contrib.langgraph plugin (ADR-0002).
+    "temporalio[langgraph,opentelemetry,pydantic]==1.31.0",
+    "langgraph==1.2.10",
+    # Schemas — the single schema-validation library (ADR-0003).
+    "pydantic==2.13.4",
+    # Model gateway — client side only; the proxy runs as a service (ADR-0004).
+    "litellm==1.94.0",
+    # Telemetry — client side only; the Phoenix server is out-of-process (ADR-0010).
+    "arize-phoenix-otel==0.16.1",
+    "openinference-instrumentation-langchain==0.1.68",
+    "opentelemetry-sdk==1.44.0",
+    "opentelemetry-exporter-otlp-proto-http==1.44.0",
+    # Evaluation
+    "inspect-ai==0.3.251",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==9.1.1",
+    "pytest-asyncio==1.4.0",
+    "hypothesis==6.164.0",
+    "ruff==0.16.0",
+    "mypy==2.3.0",
+    "bandit==1.9.4",
+]
+
+[build-system]
+requires = ["setuptools==80.9.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*", "evals*"]
+
+[tool.pytest.ini_options]
+# asyncio_mode must be set explicitly or async tests silently skip.
+asyncio_mode = "auto"
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+markers = [
+    "integration: needs a running local service (skipped when unreachable)",
+    "acceptance: end-to-end behavioural acceptance",
+    "property: Hypothesis property-based test",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+exclude = [".venv", ".venv-phoenix", "fixtures/duplicate-job-processing/reference"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "S"]
+# S101 (assert) is the point of a test file; S603/S607 are subprocess calls that
+# are deliberate and path-confined (ADR-0007).
+ignore = ["S603", "S607"]
+
+[tool.ruff.lint.per-file-ignores]
+# S101: asserts are the point of a test file.
+# S108: hard-coded /tmp paths are test *inputs* — the strings a path-confinement
+#       test feeds in to prove they are refused, not paths anything writes to.
+"tests/**" = ["S101", "S108"]
+"fixtures/**" = ["S101"]
+"evals/**" = ["S101"]
+
+[tool.mypy]
+python_version = "3.12"
+packages = ["app"]
+warn_unused_ignores = true
+no_implicit_optional = true
+# temporalio.contrib and litellm ship partial stubs; we do not fail on their gaps.
+ignore_missing_imports = true
+
+[tool.bandit]
+exclude_dirs = [".venv", ".venv-phoenix", ".venv-litellm", "tests", "fixtures"]
+
+# Each skip below is a reviewed decision, not a convenience. Anything not listed
+# here still fails the scan — which is the point of keeping the list short and
+# explaining it.
+#
+# B404/B603/B607 — subprocess: running the fixture's build and tests IS the job.
+#   Calls are path-confined to a temp working copy, take an argument list (never
+#   a shell string), carry a hard timeout, and inherit an environment allowlist
+#   rather than the parent env (app/activities/probes.py::scrubbed_environment).
+#   See ADR-0007 and threat model T-4, which state plainly that this is
+#   process-level isolation, not kernel-level.
+# B405/B314 — xml.etree: the only XML parsed is a JUnit report this process just
+#   asked pytest to write into its own working copy. Not third-party input.
+# B311 — random: seeds the per-run candidate shuffle, which must be REPRODUCIBLE
+#   from the run id. Pseudonyms, which must be unpredictable, use `secrets`.
+skips = ["B404", "B603", "B607", "B405", "B314", "B311"]

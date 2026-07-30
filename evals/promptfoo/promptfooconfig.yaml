@@ -1,0 +1,143 @@
+# Promptfoo cross-provider comparison matrix.
+#
+# Three mock identities receive IDENTICAL structured tasks. Every assertion is
+# deterministic: JSON validity, schema shape, required evidence fields, and
+# mechanism diversity.
+#
+# What this deliberately does NOT do: score correctness by majority vote. Agreement
+# between models is a measure of shared bias, not of truth. Correctness lives in
+# `app/reliability/gates.py`, decided from observed behaviour (ADR-0009).
+#
+# Requires no credentials. Optional live providers can be appended without any
+# application change; see the commented block at the end.
+
+description: Hypothesis-quality comparison across blinded mock model identities
+
+providers:
+  - id: file://provider_bridge.py
+    label: identity-a
+    config:
+      model: mock-analyst
+      pseudonym: model-a1a1a1a1
+  - id: file://provider_bridge.py
+    label: identity-b
+    config:
+      model: mock-skeptic
+      pseudonym: model-b2b2b2b2
+  - id: file://provider_bridge.py
+    label: identity-c
+    config:
+      model: mock-minimalist
+      pseudonym: model-c3c3c3c3
+
+prompts:
+  - |
+    {
+      "task_type": "generate_hypotheses",
+      "reported_symptom": "{{symptom}}",
+      "expected_behaviour": "{{expected}}",
+      "delivery_model": "at-least-once",
+      "minimum_distinct_mechanisms": 3
+    }
+
+defaultTest:
+  assert:
+    # Structural validity — the response must be machine-usable at all.
+    - type: is-json
+    - type: javascript
+      value: |
+        const body = JSON.parse(output);
+        if (!Array.isArray(body.hypotheses)) {
+          return { pass: false, score: 0, reason: 'no hypotheses array returned' };
+        }
+        if (body.hypotheses.length < 3) {
+          return {
+            pass: false, score: 0,
+            reason: `only ${body.hypotheses.length} hypotheses returned, need at least 3`,
+          };
+        }
+        return { pass: true, score: 1, reason: `${body.hypotheses.length} hypotheses returned` };
+
+    # Required evidence fields. A hypothesis without a falsification condition is
+    # a story, not a hypothesis.
+    - type: javascript
+      value: |
+        const required = [
+          'causal_mechanism',
+          'assumptions',
+          'predicted_observations',
+          'falsification_condition',
+          'proposed_probe_id',
+        ];
+        const body = JSON.parse(output);
+        const missing = [];
+        for (const h of body.hypotheses || []) {
+          for (const field of required) {
+            const v = h[field];
+            const empty = v === undefined || v === null || v === '' ||
+                          (Array.isArray(v) && v.length === 0);
+            if (empty) missing.push(`${h.hypothesis_id || '?'}.${field}`);
+          }
+        }
+        return missing.length === 0
+          ? { pass: true, score: 1, reason: 'all required evidence fields present' }
+          : { pass: false, score: 0, reason: `missing required fields: ${missing.join(', ')}` };
+
+    # Causal diversity. Three restatements of one mechanism are one hypothesis
+    # wearing three hats — this is what separates identity-c from the others.
+    - type: javascript
+      value: |
+        const body = JSON.parse(output);
+        const classes = new Set((body.hypotheses || []).map((h) => h.mechanism_class));
+        const score = Math.min(classes.size / 3, 1);
+        return {
+          pass: classes.size >= 3,
+          score,
+          reason: `${classes.size} distinct mechanism classes: ${[...classes].join(', ')}`,
+        };
+
+    # Determinism: the mock must key off the request, not ignore it.
+    - type: javascript
+      value: |
+        const body = JSON.parse(output);
+        return /^[0-9a-f]{64}$/.test(body.request_digest || '')
+          ? { pass: true, score: 1, reason: 'response is bound to a request digest' }
+          : { pass: false, score: 0, reason: 'response carries no request digest' };
+
+    # Blinding: no response may name a real vendor or model family.
+    - type: javascript
+      value: |
+        const tokens = ['openai','gpt','anthropic','claude','gemini','llama','mistral','deepseek','qwen'];
+        const lowered = output.toLowerCase();
+        const leaked = tokens.filter((t) => new RegExp(`(?<![a-z0-9])${t}(?![a-z0-9])`).test(lowered));
+        return leaked.length === 0
+          ? { pass: true, score: 1, reason: 'no vendor identity present' }
+          : { pass: false, score: 0, reason: `vendor identity leaked: ${leaked.join(', ')}` };
+
+tests:
+  - description: Duplicate processing under at-least-once delivery
+    vars:
+      symptom: >-
+        Under at-least-once delivery a job occasionally appears twice in the
+        committed results and downstream systems observe the effect twice.
+      expected: >-
+        Redelivery of a job identifier must not produce a second committed
+        processing result or a second externally visible effect.
+
+  - description: Duplicate processing observed only under concurrency
+    vars:
+      symptom: >-
+        Duplicate results appear only when two workers handle the same job
+        identifier at the same time; sequential redelivery behaves correctly.
+      expected: >-
+        Concurrent delivery of one job identifier must commit at most one result.
+
+# Optional live providers. Uncomment and set ENABLE_LIVE_PROVIDERS=true plus the
+# relevant key in .env. Deliberately left disabled: this task does not integrate
+# live frontier models, and CI must never require a paid key.
+#
+#   - id: file://provider_bridge.py
+#     label: identity-live
+#     config:
+#       model: live-primary
+#       pseudonym: model-d4d4d4d4

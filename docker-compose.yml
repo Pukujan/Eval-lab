@@ -1,0 +1,136 @@
+# Local-first stack for the reliability walking skeleton.
+#
+# Every image is DIGEST-pinned: the tag is kept for readability, but the digest is
+# what actually resolves. A tag can be re-pointed; a digest cannot.
+#
+# Deliberately absent (see docs/dependency-dossier.md): Kubernetes, Redis,
+# PostgreSQL, Prometheus, Grafana, and any cloud service. Temporal runs its dev
+# server with SQLite persistence, which is why no separate database is needed
+# (ADR-0005).
+
+name: reliability-walking-skeleton
+
+services:
+  # Temporal dev server + Web UI + SQLite persistence, in one container.
+  temporal:
+    image: temporalio/temporal:1.8.1@sha256:59561b9ef060eaeb1f46cb6a1842d6cbdd8a393eb3b6d315ecef5fe2f0b1d7a6
+    container_name: rws-temporal
+    command:
+      - server
+      - start-dev
+      - --ip=0.0.0.0
+      - --port=7233
+      - --ui-ip=0.0.0.0
+      - --ui-port=8233
+      - --db-filename=/data/temporal.db
+      - --namespace=default
+    ports:
+      - "7233:7233"   # gRPC frontend
+      - "8233:8233"   # Web UI
+    volumes:
+      - temporal-data:/data
+    healthcheck:
+      # The Temporal CLI ships in this image, so the check exercises the real
+      # cluster health RPC rather than merely proving a port is open.
+      test: ["CMD", "temporal", "operator", "cluster", "health", "--address", "127.0.0.1:7233"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    restart: unless-stopped
+
+  # Trace collection, storage and UI. SQLite-backed, volume-persisted.
+  phoenix:
+    image: arizephoenix/phoenix:version-19.10.0@sha256:3092f5543a3ddd35db7390cf971027c33be6be1f171274d57f3c8658c2193d67
+    container_name: rws-phoenix
+    environment:
+      PHOENIX_WORKING_DIR: /data
+      PHOENIX_SQL_DATABASE_URL: sqlite:////data/phoenix.db
+      PHOENIX_PORT: "6006"
+      PHOENIX_GRPC_PORT: "4317"
+      PHOENIX_PROJECT_NAME: reliability-walking-skeleton
+      # Prometheus is on the prohibited list for this task.
+      PHOENIX_ENABLE_PROMETHEUS: "false"
+    ports:
+      - "6006:6006"   # UI + OTLP/HTTP
+      - "4317:4317"   # OTLP/gRPC
+    volumes:
+      - phoenix-data:/data
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:6006/healthz',timeout=4).status==200 else 1)
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    restart: unless-stopped
+
+  # The model gateway. Mock models are registered through custom_provider_map.
+  litellm:
+    image: ghcr.io/berriai/litellm:v1.94.0@sha256:65d84a2282137b4dc73bbe184650a7c807177c533e4223b3bfbc87963fe3fabe
+    container_name: rws-litellm
+    command: ["--config", "/app/config.yaml", "--port", "4000", "--num_workers", "1"]
+    environment:
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:-sk-local-mock-only}
+      # No provider credentials are set: the mock path needs none.
+      LITELLM_MODE: PRODUCTION
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./config/litellm-config.yaml:/app/config.yaml:ro
+      # The custom provider handler is imported by config_file_path-relative
+      # dotted path, so the application package must be visible to the proxy.
+      - ./app:/app/app:ro
+    healthcheck:
+      # /health requires a virtual key in this version; /health/readiness does not.
+      test:
+        - CMD
+        - python
+        - -c
+        - import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:4000/health/readiness',timeout=4).status==200 else 1)
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    restart: unless-stopped
+
+  # The Temporal worker hosting the LangGraph investigation graph.
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rws-worker
+    environment:
+      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_NAMESPACE: default
+      TEMPORAL_TASK_QUEUE: reliability-walking-skeleton
+      LITELLM_BASE_URL: http://litellm:4000
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:-sk-local-mock-only}
+      PHOENIX_ENDPOINT: http://phoenix:6006
+      PHOENIX_PROJECT_NAME: reliability-walking-skeleton
+      EXECUTION_MODE: temporal
+      VAR_DIR: /var/rws
+    volumes:
+      - worker-data:/var/rws
+    depends_on:
+      temporal:
+        condition: service_healthy
+      phoenix:
+        condition: service_healthy
+      litellm:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import app.config; app.config.load_settings()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    restart: unless-stopped
+
+volumes:
+  temporal-data:
+  phoenix-data:
+  worker-data:

@@ -1,0 +1,59 @@
+# LiteLLM Proxy configuration.
+#
+# Three deterministic mock models, served through LiteLLM's own custom-provider
+# extension point. Verified against the pinned source
+# (litellm/proxy/proxy_server.py L4478-4490): `custom_provider_map` entries are
+# resolved with `get_instance_fn(value=..., config_file_path=...)`, so the
+# `custom_handler` string is a dotted path to a module-level instance, imported
+# relative to this file's directory.
+#
+# No credentials are required or read for the mock path.
+
+model_list:
+  - model_name: mock-analyst
+    litellm_params:
+      model: reliability-mock/mock-analyst
+      api_key: "not-needed"
+  - model_name: mock-skeptic
+    litellm_params:
+      model: reliability-mock/mock-skeptic
+      api_key: "not-needed"
+  - model_name: mock-minimalist
+    litellm_params:
+      model: reliability-mock/mock-minimalist
+      api_key: "not-needed"
+
+  # Optional live provider. Add entries here only; no application code changes.
+  # Left commented because this task deliberately does not integrate live models.
+  # - model_name: live-primary
+  #   litellm_params:
+  #     model: openai/gpt-4o-mini
+  #     api_key: os.environ/OPENAI_API_KEY
+
+litellm_settings:
+  custom_provider_map:
+    - provider: reliability-mock
+      custom_handler: app.models.mock_provider.reliability_mock
+
+  # Benchmark determinism. Temporal owns retry (ADR-0002); two independently
+  # configured retry layers silently multiply into N x M attempts, so this one
+  # is switched off rather than merely lowered.
+  num_retries: 0
+  request_timeout: 60
+  drop_params: false
+  set_verbose: false
+
+router_settings:
+  # No fallback between named models during benchmark runs. A silently
+  # substituted model still produces a result, which is worse than an error.
+  fallbacks: []
+  context_window_fallbacks: []
+  allowed_fails: 0
+  num_retries: 0
+  routing_strategy: simple-shuffle
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  # /health/readiness and /health/liveliness stay unauthenticated so container
+  # healthchecks work without minting a virtual key.
+  health_check_details: false
