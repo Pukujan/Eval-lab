@@ -396,6 +396,11 @@ class EvaluationRun(_Base):
     anonymous_identities: tuple[AnonymousModelIdentity, ...] = ()
     trace_id: str | None = None
     workflow_id: str | None = None
+    #: Temporal's *execution* run id, which is not the harness ``run_id`` above.
+    #: Both are needed to tie a report to exactly one history file: a workflow id
+    #: can be reused across executions, and a serialised history carries the run
+    #: id but not the workflow id (``WorkflowHistory.to_json_dict`` omits it).
+    workflow_run_id: str | None = None
 
 
 class ReleaseManifest(_Base):

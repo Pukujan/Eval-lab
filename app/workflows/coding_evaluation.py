@@ -16,6 +16,7 @@ Determinism rules apply: no clock, no RNG, no I/O here. Those live in activities
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from datetime import timedelta
 from typing import Any
 
@@ -78,14 +79,33 @@ def run_scoped_task_queue(settings: Settings, run_id: str) -> str:
     return f"{settings.temporal_task_queue}-{run_id}"
 
 
+@dataclass(frozen=True)
+class WorkflowExecutionRef:
+    """Which Temporal execution produced a result.
+
+    Both halves are needed downstream. A workflow id can be reused across
+    executions, and a serialised history records the *run* id but not the workflow
+    id (``WorkflowHistory.to_json_dict`` omits it by design), so neither identifier
+    alone ties a reliability report to exactly one history file.
+    """
+
+    workflow_id: str
+    run_id: str | None
+
+
 async def execute_investigation_workflow(
     settings: Settings, state: dict[str, Any], run_id: str
-) -> dict[str, Any]:
+) -> tuple[dict[str, Any], WorkflowExecutionRef]:
     """Connect, run an inline worker, and execute one workflow to completion.
 
     The worker is inline because the walking skeleton runs as a single command and
     because the investigation's activities are filesystem-bound to the working copy
     this process created — see :func:`run_scoped_task_queue`.
+
+    Started rather than executed in one call: ``client.execute_workflow`` returns
+    only the result, and the run id lives on the handle. Without it a report names
+    a workflow but not the execution of it, which is exactly the linkage an
+    external verifier needs.
     """
     from temporalio.client import Client
     from temporalio.worker import Worker
@@ -93,6 +113,7 @@ async def execute_investigation_workflow(
     plugin = build_plugin()
     client = await Client.connect(settings.temporal_address, namespace=settings.temporal_namespace)
     task_queue = run_scoped_task_queue(settings, run_id)
+    workflow_id = f"coding-evaluation-{run_id}"
 
     async with Worker(
         client,
@@ -100,13 +121,19 @@ async def execute_investigation_workflow(
         workflows=[CodingEvaluationWorkflow],
         plugins=[plugin],
     ):
-        return await client.execute_workflow(
+        handle = await client.start_workflow(
             CodingEvaluationWorkflow.run,
             state,
-            id=f"coding-evaluation-{run_id}",
+            id=workflow_id,
             task_queue=task_queue,
             execution_timeout=WORKFLOW_EXECUTION_TIMEOUT,
         )
+        result = await handle.result()
+        reference = WorkflowExecutionRef(
+            workflow_id=workflow_id,
+            run_id=handle.result_run_id or handle.first_execution_run_id,
+        )
+        return result, reference
 
 
 async def run_worker(settings: Settings) -> None:

@@ -159,8 +159,12 @@ async def _run_investigation_local(state: dict[str, Any]) -> dict[str, Any]:
 
 async def _run_investigation_temporal(
     settings: Settings, state: dict[str, Any], run_id: str
-) -> dict[str, Any]:
-    """Primary path: the LangGraph graph inside a Temporal workflow."""
+) -> tuple[dict[str, Any], Any]:
+    """Primary path: the LangGraph graph inside a Temporal workflow.
+
+    Returns the investigation result and the identity of the execution that
+    produced it, so the report can name the exact history it came from.
+    """
     from app.workflows.coding_evaluation import execute_investigation_workflow
 
     return await execute_investigation_workflow(settings, state, run_id)
@@ -221,6 +225,8 @@ async def run_evaluation(request: RunRequest | None = None) -> ReliabilityReport
     infrastructure_detail = ""
     investigation: dict[str, Any] = {}
     trace_id: str | None = None
+    workflow_id: str | None = None
+    workflow_run_id: str | None = None
     caveats: list[str] = []
 
     if mode is ExecutionMode.LOCAL:
@@ -254,7 +260,11 @@ async def run_evaluation(request: RunRequest | None = None) -> ReliabilityReport
             }
 
             if mode is ExecutionMode.TEMPORAL:
-                investigation = await _run_investigation_temporal(settings, state, run_id)
+                investigation, execution = await _run_investigation_temporal(
+                    settings, state, run_id
+                )
+                workflow_id = execution.workflow_id
+                workflow_run_id = execution.run_id
             else:
                 investigation = await _run_investigation_local(state)
 
@@ -404,7 +414,12 @@ async def run_evaluation(request: RunRequest | None = None) -> ReliabilityReport
         force_flush()
 
     run = run.model_copy(
-        update={"finished_at": datetime.now(UTC).isoformat(), "trace_id": trace_id}
+        update={
+            "finished_at": datetime.now(UTC).isoformat(),
+            "trace_id": trace_id,
+            "workflow_id": workflow_id,
+            "workflow_run_id": workflow_run_id,
+        }
     )
     audit.record_run(run)
 

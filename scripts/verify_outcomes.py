@@ -83,6 +83,10 @@ def main() -> int:
                 "execution_mode": run["execution_mode"],
                 "durable_execution": decision["durable_execution"],
                 "workflow_id": run.get("workflow_id"),
+                # Temporal's execution run id, not the harness run id. Recorded so
+                # this evidence names one execution rather than one workflow name.
+                "workflow_run_id": run.get("workflow_run_id"),
+                "harness_run_id": run.get("run_id"),
                 "trace_id": run.get("trace_id"),
                 "failed_gates": [
                     g["gate_name"] for g in decision["gate_results"] if not g["passed"]

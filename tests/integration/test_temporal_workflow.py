@@ -109,7 +109,7 @@ def test_workflow_executes_against_a_running_server() -> None:
             "specification": specification.model_dump(mode="json"),
             "working_copy_path": str(working_copy.path),
         }
-        result = asyncio.run(
+        result, execution = asyncio.run(
             execute_investigation_workflow(settings, state, "temporal-integration")
         )
     finally:
@@ -117,6 +117,10 @@ def test_workflow_executes_against_a_running_server() -> None:
 
     assert result["diagnosis"]["hypothesis_id"] == "H-1"
     assert len(result["candidates"]) >= 2
+    # Both identifiers, because a history file records the run id but not the
+    # workflow id — a report needs both to name one execution.
+    assert execution.workflow_id == "coding-evaluation-temporal-integration"
+    assert execution.run_id
 
 
 @pytest.mark.integration
@@ -133,3 +137,5 @@ def test_full_run_uses_temporal_when_available() -> None:
     assert str(report.run.execution_mode) == "temporal"
     assert report.decision.durable_execution is True
     assert report.decision.outcome == "accepted_for_review"
+    assert report.run.workflow_id
+    assert report.run.workflow_run_id
