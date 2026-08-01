@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.eval-lab.invalid/jobspec-reference/1.0.0.schema.json",
+  "title": "jobspec-reference/1.0.0",
+  "description": "How Eval-lab names a JobSpec it does not hold. Agent-workbench owns the JobSpec format; this schema describes the *reference* to one, never the JobSpec itself. It deliberately carries no task description, no prompt, no repository contents, no test command output, no credentials and no hidden-test material: everything here is either a digest or a field that is already public on both sides of the boundary. A reader who wants the JobSpec must ask Agent-workbench for the bytes whose sha256 is jobspec_digest, and can then prove they got the right ones.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "jobspec_id",
+    "jobspec_digest",
+    "jobspec_format_version",
+    "task_kind",
+    "retry_budget",
+    "declared_visible_test_command"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "jobspec-reference/1.0.0",
+      "description": "Pinned. A reference declaring any other version is rejected rather than reinterpreted, because a consumer that guesses at an unknown version is how two sides come to disagree silently about a field."
+    },
+    "jobspec_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "description": "Agent-workbench's opaque identifier. Never parsed for meaning."
+    },
+    "jobspec_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "sha256 over the exact JobSpec bytes Agent-workbench serialised. This is the identity of the job; the id is only a label."
+    },
+    "jobspec_format_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "The version of Agent-workbench's own JobSpec format. Recorded so a digest stays interpretable later; Eval-lab does not validate against it."
+    },
+    "task_kind": {
+      "enum": [
+        "bug_fix",
+        "feature",
+        "refactor",
+        "analysis"
+      ],
+      "description": "The one public classification Eval-lab is allowed to see. It selects which deterministic checks apply and nothing else."
+    },
+    "retry_budget": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10,
+      "description": "How many attempts the job was permitted. Public because attempt lineage cannot be checked for boundedness without it."
+    },
+    "declared_visible_test_command": {
+      "type": "string",
+      "maxLength": 512,
+      "pattern": "^[^\\u0000-\\u0008\\u000b\\u000c\\u000e-\\u001f\\u007f\\u200e\\u200f\\u202a-\\u202e\\u2066-\\u2069]*$",
+      "description": "The visible-test command Agent-workbench says it ran. Recorded for provenance and never executed by Eval-lab: a command string that arrives with the evidence is untrusted input, not an instruction."
+    }
+  }
+}

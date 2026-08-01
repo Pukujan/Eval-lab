@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.eval-lab.invalid/verifier-envelope/1.0.0.schema.json",
+  "title": "verifier-envelope/1.0.0",
+  "description": "The jointly frozen public boundary between Eval-lab and the sealed verifier. A document is either a request Eval-lab sends or a result/attestation the verifier returns, discriminated by record_type.\n\nThe request carries only digests and identifiers. It states nothing about what Eval-lab hopes to find, because a request that expresses intent invites a response shaped to it.\n\nThe result is deliberately impoverished. Apart from identifiers and digests it contains exactly one enum, and there is no free-text member, no array of per-test entries, no score, no count and no numeric field anywhere in it. That is not a stylistic choice: a rich pass/fail stream maps the hidden suite across repeated submissions, and a side channel read by an automated loop is a training signal. There is nowhere in this schema to put hidden-test detail, per-test output, a threshold, gold data or a private report, and additionalProperties false means an implementation cannot add one without failing validation.\n\nThis schema says what may cross the boundary. It says nothing about what happens behind it, and no consumer of it may attempt to infer that.",
+  "type": "object",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/request"
+    },
+    {
+      "$ref": "#/$defs/result"
+    }
+  ],
+  "$defs": {
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "envelope_version",
+        "record_type",
+        "request_id",
+        "nonce",
+        "evaluation_run_id",
+        "jobspec_digest",
+        "candidate_artifact_digests",
+        "issued_at"
+      ],
+      "properties": {
+        "envelope_version": {
+          "const": "verifier-envelope/1.0.0"
+        },
+        "record_type": {
+          "const": "request"
+        },
+        "request_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "description": "Identifies this request; the result must answer it."
+        },
+        "nonce": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{32}$",
+          "description": "Single-use, unpredictable, 128 bits of hex. A result echoing a nonce already spent is a replay, so a previously favourable attestation cannot be re-presented."
+        },
+        "evaluation_run_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+        },
+        "jobspec_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "Which job, by digest. Never the JobSpec itself."
+        },
+        "candidate_artifact_digests": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "description": "Which bytes to check. Digests only; no paths, no contents.",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "issued_at": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,6})?Z$"
+        }
+      }
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "envelope_version",
+        "record_type",
+        "request_id",
+        "nonce",
+        "bound_jobspec_digest",
+        "bound_artifact_digests",
+        "verdict",
+        "attestation_digest",
+        "completed_at"
+      ],
+      "properties": {
+        "envelope_version": {
+          "const": "verifier-envelope/1.0.0"
+        },
+        "record_type": {
+          "const": "result"
+        },
+        "request_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "description": "The request id this answers. A result for another request is refused."
+        },
+        "nonce": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{32}$",
+          "description": "Echoed from the request. Spent once; a repeat is a replay."
+        },
+        "bound_jobspec_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "Echoed from the request, and checked against it."
+        },
+        "bound_artifact_digests": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "verdict": {
+          "enum": [
+            "satisfied",
+            "not_satisfied",
+            "indeterminate"
+          ],
+          "description": "The entire substantive payload. 'satisfied' / 'not_satisfied' / 'indeterminate' -- three states, no gradations, so repeated submissions cannot be differenced into a map of the hidden suite. It is not a correctness claim and does not decide an Eval-lab outcome by itself."
+        },
+        "attestation_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "sha256 the verifier published over its own attestation record. Eval-lab stores the digest and never the record."
+        },
+        "completed_at": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,6})?Z$"
+        }
+      }
+    }
+  }
+}
