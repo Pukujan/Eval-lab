@@ -24,8 +24,8 @@ artifacts/
 .promptfoo/
 node_modules/
 
-# Scratch git worktrees created for isolated subagent runs. Working copies of
-# this repository, not content of it.
+# Agent worktrees. These are live checkouts of other branches created by the
+# harness; committing them would nest working copies inside the repository.
 .claude/worktrees/
 
 # Tooling caches
