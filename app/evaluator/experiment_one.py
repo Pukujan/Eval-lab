@@ -20,7 +20,11 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal
 
-from app.intake.bundle import IntakeBundle, IntakeRejected, intake_submission
+from app.intake.bundle import (
+    IntakeBundle,
+    IntakeRejected,
+    intake_submission,
+)
 from app.intake.schema_subset import schema_by_title, validate
 
 FIXTURE_ROOT = Path(__file__).resolve().parents[2] / "fixtures" / "duplicate-job-processing"
@@ -364,7 +368,10 @@ def evaluate_experiment_one(
             0,
             "intake",
             True,
-            "Schema, manifest, artifact, lineage, report, redaction, and model-audit checks passed.",
+            (
+                "Schema, manifest, artifact, lineage, report, redaction, "
+                "and model-audit checks passed."
+            ),
             "/",
         )
     ]
@@ -425,7 +432,8 @@ def evaluate_experiment_one(
             model_matches,
             (
                 f"requested={audit['requested_model']!r}, resolved={audit['resolved_model']!r}, "
-                f"client_retries={audit['client_retry_count']}, redirects={audit['redirects_followed']}"
+                f"client_retries={audit['client_retry_count']}, "
+                f"redirects={audit['redirects_followed']}"
             ),
             "/candidate_artifacts",
         )
@@ -531,7 +539,10 @@ def evaluate_experiment_one(
                 (
                     "Independent visible-test execution passed."
                     if visible_passed
-                    else f"Independent visible tests failed or timed out: {(visible.stdout + visible.stderr)[-500:]}"
+                    else (
+                        "Independent visible tests failed or timed out: "
+                        f"{(visible.stdout + visible.stderr)[-500:]}"
+                    )
                 ),
             )
         )
@@ -605,7 +616,10 @@ def evaluate_experiment_one(
             gates=gates,
             decided_at=decided,
             forced_outcome="infrastructure_failure",
-            forced_rationale="The evaluation harness failed; this outcome says nothing about the submitted patch.",
+            forced_rationale=(
+                "The evaluation harness failed; this outcome says nothing "
+                "about the submitted patch."
+            ),
         )
     finally:
         if workspace.exists():

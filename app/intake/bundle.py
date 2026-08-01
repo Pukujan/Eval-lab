@@ -4,12 +4,11 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from app.intake.schema_subset import SchemaViolation, schema_by_title, validate
+from app.intake.schema_subset import schema_by_title, validate
 
 INTAKE_SCHEMA = schema_by_title("evidence-intake/1.0.0")
 MAX_FILES = 64
