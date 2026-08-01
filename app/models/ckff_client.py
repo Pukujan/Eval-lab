@@ -56,6 +56,7 @@ import threading
 import time
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
+from enum import StrEnum
 from typing import Any, Final
 
 import httpx
@@ -63,6 +64,7 @@ import httpx
 from app.models.blinding import assert_blinded
 from app.models.sequential_plan import (
     DEFAULT_PROMPT_ID,
+    RunKind,
     RunLimits,
     SequentialRunPlan,
     alias_slug,
@@ -117,6 +119,20 @@ class ClientConfigurationError(CkffClientError):
 
 class ResolvedModelMismatchError(CkffClientError):
     """The gateway answered as a different model than the one requested."""
+
+
+class GatewayHttpError(CkffClientError):
+    """A non-200 from the gateway. Carries the status so it can be classified.
+
+    A 429 or a 503 is a *result*, not an accident to be retried away: ckff caps at
+    100 requests per minute account-wide, and an entire flat-rate lane has been
+    observed returning ``503 No available channel``. Both are recorded as the
+    outcome of that attempt.
+    """
+
+    def __init__(self, status_code: int, message: str) -> None:
+        super().__init__(message)
+        self.status_code = status_code
 
 
 class GatewayProtocolError(CkffClientError):
@@ -255,6 +271,86 @@ def build_http_client(
 # ---------------------------------------------------------------------------
 # Requests and records
 # ---------------------------------------------------------------------------
+
+
+class AttemptOutcome(StrEnum):
+    """How one attempt ended.
+
+    Every attempt gets one of these and every one is written to evidence. A slow
+    model, a rate-limited model, an unreachable channel and a timed-out model are
+    all *results*; dropping them would leave a campaign whose per-model coverage
+    silently varies, which reads as "these models were compared" when they were
+    not.
+    """
+
+    COMPLETED = "completed"
+    RATE_LIMITED = "rate_limited"
+    SERVICE_UNAVAILABLE = "service_unavailable"
+    HTTP_ERROR = "http_error"
+    TIMEOUT = "timeout"
+    TRANSPORT_ERROR = "transport_error"
+    PROTOCOL_ERROR = "protocol_error"
+    OUTPUT_LIMIT_EXCEEDED = "output_limit_exceeded"
+    MODEL_MISMATCH = "model_mismatch"
+    CONCURRENCY_VIOLATION = "concurrency_violation"
+
+
+#: Outcomes that stop the whole campaign rather than being recorded and moved on
+#: from. Both mean the run can no longer say what it measured: a substituted model
+#: means nobody knows which model answered, and overlapping requests mean the
+#: latency figures describe contention rather than the models.
+FATAL_OUTCOMES: Final[frozenset[AttemptOutcome]] = frozenset(
+    {AttemptOutcome.MODEL_MISMATCH, AttemptOutcome.CONCURRENCY_VIOLATION}
+)
+
+
+@dataclass(frozen=True)
+class FailedAttempt:
+    """One attempt that produced no usable completion. Still evidence."""
+
+    requested_alias: str
+    outcome: AttemptOutcome
+    detail: str
+    sequence_index: int = 0
+    http_status: int | None = None
+    latency_seconds: float | None = None
+
+    def as_document(self) -> dict[str, Any]:
+        return {
+            "requested_alias": self.requested_alias,
+            "outcome": str(self.outcome),
+            "detail": self.detail,
+            "sequence_index": self.sequence_index,
+            "http_status": self.http_status,
+            "latency_seconds": (
+                None if self.latency_seconds is None else round(self.latency_seconds, 4)
+            ),
+            "client_retry_count": CLIENT_RETRIES,
+            "attempt_repeated": False,
+        }
+
+
+def classify_failure(exc: Exception) -> tuple[AttemptOutcome, int | None]:
+    """Name what went wrong, without deciding whether it is acceptable."""
+    if isinstance(exc, ResolvedModelMismatchError):
+        return AttemptOutcome.MODEL_MISMATCH, None
+    if isinstance(exc, ConcurrentRequestError):
+        return AttemptOutcome.CONCURRENCY_VIOLATION, None
+    if isinstance(exc, GatewayHttpError):
+        if exc.status_code == 429:
+            return AttemptOutcome.RATE_LIMITED, exc.status_code
+        if exc.status_code == 503:
+            return AttemptOutcome.SERVICE_UNAVAILABLE, exc.status_code
+        return AttemptOutcome.HTTP_ERROR, exc.status_code
+    if isinstance(exc, OutputLimitExceededError):
+        return AttemptOutcome.OUTPUT_LIMIT_EXCEEDED, None
+    if isinstance(exc, GatewayProtocolError):
+        return AttemptOutcome.PROTOCOL_ERROR, None
+    if isinstance(exc, httpx.TimeoutException | TimeoutError):
+        return AttemptOutcome.TIMEOUT, None
+    if isinstance(exc, httpx.HTTPError | OSError):
+        return AttemptOutcome.TRANSPORT_ERROR, None
+    return AttemptOutcome.TRANSPORT_ERROR, None
 
 
 @dataclass(frozen=True)
@@ -469,9 +565,11 @@ class CkffSequentialClient:
         like the others and means something different.
         """
         if http_status != 200:
-            raise GatewayProtocolError(
+            raise GatewayHttpError(
+                http_status,
                 f"gateway returned HTTP {http_status} for {request.alias!r}; no retry and "
-                "no other model is attempted"
+                "no other model is substituted. This attempt is recorded as its own "
+                "result rather than repeated until it disappears",
             )
         if len(body) > self.limits.max_response_bytes:
             raise OutputLimitExceededError(
@@ -632,6 +730,7 @@ class SequentialRunResult:
     records_by_alias: dict[str, tuple[CallRecord, ...]]
     max_observed_in_flight: int
     elapsed_seconds: float
+    failures_by_alias: dict[str, tuple[FailedAttempt, ...]] = field(default_factory=dict)
     aborted_reason: str | None = None
 
     def evidence_documents(self) -> dict[str, dict[str, Any]]:
@@ -646,12 +745,15 @@ class SequentialRunResult:
         documents: dict[str, dict[str, Any]] = {}
         for alias in self.plan.model_aliases:
             records = self.records_by_alias.get(alias, ())
+            failed = self.failures_by_alias.get(alias, ())
             document = {
                 "document_kind": "task_2b_model_evidence",
                 "asserts": (
                     "Nothing about this model's quality. It records what was asked, "
                     "what answered, and under which bounds."
                 ),
+                "run_kind": str(self.plan.run_kind),
+                "is_benchmark_evidence": self.plan.run_kind is RunKind.FRONTIER_BENCHMARK,
                 "requested_alias": alias,
                 "alias_slug": alias_slug(alias),
                 "prompt_id": self.plan.prompt_id,
@@ -659,9 +761,17 @@ class SequentialRunResult:
                 "client_retry_count": CLIENT_RETRIES,
                 "retry_owner": "temporal",
                 "model_substitution_permitted": False,
+                "cross_model_fallback_permitted": False,
                 "concurrency": 1,
                 "calls": [record.as_document() for record in records],
                 "call_count": len(records),
+                # Failures are evidence, kept beside the successes rather than
+                # dropped. A model that was rate-limited, unreachable or slow has
+                # a result; omitting it would make the campaign look complete.
+                "failed_attempts": [attempt.as_document() for attempt in failed],
+                "failed_attempt_count": len(failed),
+                "attempts_total": len(records) + len(failed),
+                "attempts_requested": self.plan.limits.max_requests_per_model,
             }
             assert_no_secret_material(
                 json.dumps(document, sort_keys=True), context=f"evidence for {alias_slug(alias)}"
@@ -701,12 +811,14 @@ class SequentialRunner:
         """
         started = self._clock()
         records: dict[str, list[CallRecord]] = {alias: [] for alias in self.plan.model_aliases}
+        failures: dict[str, list[FailedAttempt]] = {alias: [] for alias in self.plan.model_aliases}
         limits = self.plan.limits
 
         def snapshot(reason: str | None) -> SequentialRunResult:
             return SequentialRunResult(
                 plan=self.plan,
                 records_by_alias={alias: tuple(values) for alias, values in records.items()},
+                failures_by_alias={alias: tuple(values) for alias, values in failures.items()},
                 max_observed_in_flight=self.guard.max_observed,
                 elapsed_seconds=self._clock() - started,
                 aborted_reason=reason,
@@ -739,12 +851,32 @@ class SequentialRunner:
                 request = ModelRequest(
                     alias=alias, prompt_id=self.plan.prompt_id, sequence_index=index
                 )
+                attempt_started = self._clock()
                 try:
                     with self.guard:
                         record = self._call(request)
-                except CkffClientError as exc:
-                    reason = f"{alias!r} request {index + 1}: {exc}"
-                    raise SequentialRunAborted(reason, snapshot(reason)) from exc
+                except Exception as exc:  # noqa: BLE001 - classified, never swallowed
+                    outcome, status = classify_failure(exc)
+                    issued += 1
+                    # Recorded, not skipped and never repeated. A 429 that is
+                    # retried until it disappears turns a real rate-limit result
+                    # into a fabricated success, and a model quietly dropped
+                    # because its channel was down leaves a comparison that reads
+                    # as complete and is not.
+                    failures[alias].append(
+                        FailedAttempt(
+                            requested_alias=alias,
+                            outcome=outcome,
+                            detail=str(exc),
+                            sequence_index=index,
+                            http_status=status,
+                            latency_seconds=self._clock() - attempt_started,
+                        )
+                    )
+                    if outcome in FATAL_OUTCOMES:
+                        reason = f"{alias!r} request {index + 1}: {exc}"
+                        raise SequentialRunAborted(reason, snapshot(reason)) from exc
+                    continue
 
                 issued += 1
                 if record.requested_alias != alias:

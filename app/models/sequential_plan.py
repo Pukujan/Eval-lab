@@ -6,12 +6,20 @@ red build; here it can produce a *green* build carrying evidence about a model
 that was never actually asked. So the plan is a separate, inspectable object with
 three properties that the rest of the harness depends on.
 
-**The evaluation set is an input, not a constant.** The gateway exposes many
-aliases and more keep appearing; which of them Task 2B evaluates is a research
-decision nobody has taken yet. Hard-coding a list here would freeze an unmade
-decision into code and make it look settled. :data:`OBSERVED_GATEWAY_ALIASES` is
-therefore what has been *seen*, explicitly not what will be *run*, and a plan
-cannot be constructed without a caller naming the models.
+**The evaluation set comes from a frozen snapshot, never from code.** An earlier
+version of this module carried eleven aliases "observed on the gateway" plus a
+flag to opt into anything outside them. Both are gone. The list in code went stale
+the moment the gateway grew, described *production* rather than the evaluation
+service, and — worst — read as authoritative. The opt-in flag was worse still: it
+turned "this alias is not in the frozen set" from a hard stop into a box someone
+ticks. A benchmark run now requires :mod:`app.models.alias_snapshot`, and the only
+thing that decides which aliases are evaluated is that hashed artifact.
+
+**The connectivity canary is not the benchmark.** One ``gpt-5.6-luna`` request
+proving the endpoint answers is a different kind of run from a frozen frontier
+campaign, and conflating them is how a smoke test ends up cited as evidence. They
+are separate :class:`RunKind` values: the canary needs no snapshot and its
+evidence is stamped as non-benchmark; the benchmark cannot start without one.
 
 **Aliases are opaque strings.** Several confirmed ones contain spaces and square
 brackets (``[aws]glm-5``, ``[grok] grok-4.5``). They are never split, globbed,
@@ -36,7 +44,11 @@ import hashlib
 import json
 import re
 from dataclasses import dataclass, field
-from typing import Any, Final
+from enum import StrEnum
+from typing import TYPE_CHECKING, Any, Final
+
+if TYPE_CHECKING:  # pragma: no cover - import cycle broken for runtime
+    from app.models.alias_snapshot import FrozenAliasSnapshot
 
 # ---------------------------------------------------------------------------
 # Blocked state
@@ -51,11 +63,32 @@ EXECUTION_BLOCKED: Final[bool] = True
 #: flags because neither condition is machine-checkable from inside this
 #: repository, and pretending otherwise would be a fake gate.
 BLOCKING_PRECONDITIONS: Final[tuple[str, ...]] = (
-    "PR #1 is green and merged",
-    "a confirmed CKFF route with zero hidden proxy retries exists for every alias "
-    "under evaluation; the gateway's documented five same-model retries make any "
-    "latency, failure, or cost figure unattributable",
+    "a current sanitized validator artifact from the evaluation service is on record, "
+    "with its timestamp and the deployment identifier it describes",
+    "that artifact shows the __canary_invalid route FAILED FAST rather than returning "
+    "200; a 200 means something silently fell back and no number from the service is "
+    "attributable",
+    "the five documented hidden-retry sources are each closed on the evaluation "
+    "service: litellm_settings.num_retries, router_settings.num_retries, multi-route "
+    "pooling of an alias, cooldowns parking a failing route, and client SDK defaults",
+    "drop_params is false, so a parameter the harness believes it sent was actually sent",
+    "a frozen ordered alias snapshot exists for the evaluation service, hashed, with "
+    "its retrieval timestamp, source, method and deployment identifier",
 )
+
+#: The account-wide ckff limit is 100 requests per minute, counted across every
+#: model. Pacing is the harness's job: the evaluation service deliberately has no
+#: request queue, because queueing would hide a 429 that is itself evidence.
+ACCOUNT_REQUESTS_PER_MINUTE: Final[int] = 100
+
+#: Headroom below the account limit. A self-inflicted 429 is indistinguishable
+#: from a genuine one in the record, so the harness stays well under.
+DEFAULT_REQUESTS_PER_MINUTE: Final[int] = 30
+
+#: Tool-calling below this token ceiling produces false negatives: reasoning
+#: models emit reasoning content before the tool call and truncate before it
+#: appears. Recorded here so no future caller rediscovers it the expensive way.
+MIN_TOOL_CALL_MAX_TOKENS: Final[int] = 256
 
 
 class ExecutionBlockedError(RuntimeError):
@@ -85,23 +118,26 @@ def assert_execution_allowed() -> None:
 # Aliases
 # ---------------------------------------------------------------------------
 
-#: Aliases observed on the CKFF gateway. **This is not the evaluation set.** It
-#: exists so that a typo in a dispatch input is caught before a run rather than
-#: after it, and it is expected to go stale as the gateway changes; an alias
-#: outside this tuple is refused unless the caller opts in explicitly.
-OBSERVED_GATEWAY_ALIASES: Final[tuple[str, ...]] = (
-    "[aws]glm-5",
-    "[aws]kimi-k2-thinking",
-    "[aws]minimax-m2.5",
-    "[ds2] deepseek-v4-pro",
-    "[grok] grok-4.5",
-    "claude-opus-4-7",
-    "gemini-3.5-flash",
-    "gpt-5.6-luna",
-    "gpt-5.6-sol",
-    "gpt-5.6-terra",
-    "qwen-3.6-max",
-)
+
+class RunKind(StrEnum):
+    """What a run is for. The two are never the same evidence.
+
+    ``CONNECTIVITY_CANARY`` is one request to one alias, asking only whether the
+    endpoint answers at all. It precedes the freeze, so it cannot require a
+    snapshot — and precisely because it cannot, its evidence is stamped as
+    non-benchmark so it can never be cited as a model result.
+
+    ``FRONTIER_BENCHMARK`` is the campaign. It refuses to exist without a frozen,
+    hashed snapshot of the evaluation service's aliases.
+    """
+
+    CONNECTIVITY_CANARY = "connectivity_canary"
+    FRONTIER_BENCHMARK = "frontier_benchmark"
+
+
+#: The single alias the connectivity canary may use. Named rather than free so a
+#: "canary" cannot quietly become a one-model benchmark of something else.
+CANARY_ALIAS: Final[str] = "gpt-5.6-luna"
 
 #: Characters an alias may contain. Deliberately an allowlist: spaces and square
 #: brackets have to be permitted because real aliases use them, so a denylist of
@@ -306,8 +342,12 @@ class SequentialRunPlan:
     prompt_id: str = DEFAULT_PROMPT_ID
     #: Free text naming who chose this set and where they wrote it down.
     selection_source: str = "unspecified"
-    #: Aliases not in :data:`OBSERVED_GATEWAY_ALIASES` that a caller opted into.
-    unconfirmed_aliases: tuple[str, ...] = ()
+    run_kind: RunKind = RunKind.FRONTIER_BENCHMARK
+    #: The frozen snapshot this benchmark evaluates. Required for a benchmark;
+    #: absent for the canary, which runs before any freeze exists.
+    snapshot: FrozenAliasSnapshot | None = None
+    #: Requests per minute this run may issue, account-wide across all models.
+    requests_per_minute: int = DEFAULT_REQUESTS_PER_MINUTE
 
     def __post_init__(self) -> None:
         if not isinstance(self.model_aliases, tuple):
@@ -332,12 +372,45 @@ class SequentialRunPlan:
                 f"requests = {self.total_request_budget}, above the hard ceiling of "
                 f"{MAX_TOTAL_REQUESTS_CEILING}"
             )
-        unknown = tuple(a for a in self.model_aliases if a not in OBSERVED_GATEWAY_ALIASES)
-        if set(unknown) - set(self.unconfirmed_aliases):
+        if not 1 <= self.requests_per_minute <= ACCOUNT_REQUESTS_PER_MINUTE:
             raise PlanError(
-                f"aliases {sorted(set(unknown) - set(self.unconfirmed_aliases))} were not "
-                "observed on the gateway. Re-check the spelling, or opt in explicitly if "
-                "the gateway has genuinely changed."
+                f"requests_per_minute must be between 1 and {ACCOUNT_REQUESTS_PER_MINUTE} "
+                f"(the account-wide ckff limit), got {self.requests_per_minute}. Exceeding "
+                "it produces self-inflicted 429s that are indistinguishable in the record "
+                "from a model genuinely failing."
+            )
+
+        if self.run_kind is RunKind.CONNECTIVITY_CANARY:
+            if self.model_aliases != (CANARY_ALIAS,):
+                raise PlanError(
+                    f"a connectivity canary runs exactly one alias, {CANARY_ALIAS!r}; got "
+                    f"{list(self.model_aliases)}. Anything wider is a benchmark and needs "
+                    "a frozen snapshot."
+                )
+            if self.snapshot is not None:
+                raise PlanError(
+                    "a connectivity canary must not carry a frozen snapshot; it runs "
+                    "before the freeze and its evidence is not benchmark evidence"
+                )
+            return
+
+        # Benchmark. The snapshot is the authority, and the plan may not differ
+        # from it in content or in order.
+        if self.snapshot is None:
+            raise PlanError(
+                "a frontier benchmark requires a frozen alias snapshot of the evaluation "
+                "service. There is no opt-out: an ad-hoc list cannot be tied to a "
+                "retrieval time, a source, or a deployment, so nothing it produces is "
+                "attributable. Freeze the list first."
+            )
+        if self.model_aliases != self.snapshot.aliases:
+            raise PlanError(
+                "the model set does not match the frozen snapshot exactly. Adding, "
+                "removing, renaming, substituting or reordering an alias after the freeze "
+                "makes this a different campaign, which needs a new snapshot rather than "
+                "a mutated one.\n"
+                f"  snapshot: {list(self.snapshot.aliases)}\n"
+                f"  plan    : {list(self.model_aliases)}"
             )
 
     @property
@@ -359,16 +432,25 @@ class SequentialRunPlan:
             ),
             "execution_blocked": EXECUTION_BLOCKED,
             "blocking_preconditions": list(BLOCKING_PRECONDITIONS),
+            "run_kind": str(self.run_kind),
+            # The canary answers "does the endpoint reply". It is not a model
+            # result and must never be quoted as one.
+            "is_benchmark_evidence": self.run_kind is RunKind.FRONTIER_BENCHMARK,
             "model_aliases": list(self.model_aliases),
             "model_slugs": {alias: alias_slug(alias) for alias in self.model_aliases},
-            "unconfirmed_aliases": list(self.unconfirmed_aliases),
+            "alias_snapshot": self.snapshot.as_document() if self.snapshot else None,
             "selection_source": self.selection_source,
             "prompt_id": self.prompt_id,
             "limits": self.limits.as_document(),
             "total_request_budget": self.total_request_budget,
+            "requests_per_minute": self.requests_per_minute,
+            "account_requests_per_minute": ACCOUNT_REQUESTS_PER_MINUTE,
+            "min_tool_call_max_tokens": MIN_TOOL_CALL_MAX_TOKENS,
             "concurrency": 1,
             "client_retry_count": 0,
+            "follow_redirects": False,
             "model_substitution_permitted": False,
+            "cross_model_fallback_permitted": False,
             "retry_owner": "temporal",
         }
 
@@ -401,25 +483,45 @@ def parse_model_selection(raw: object) -> tuple[str, ...]:
     return tuple(validate_alias(alias) for alias in parsed)
 
 
-def build_plan(
-    raw_models: object,
+def build_benchmark_plan(
+    snapshot: FrozenAliasSnapshot,
     *,
     limits: RunLimits | None = None,
     prompt_id: str = DEFAULT_PROMPT_ID,
     selection_source: str = "unspecified",
-    allow_unconfirmed_aliases: bool = False,
+    requests_per_minute: int = DEFAULT_REQUESTS_PER_MINUTE,
 ) -> SequentialRunPlan:
-    """Validate a selection into a plan, or raise :class:`PlanError`."""
-    aliases = parse_model_selection(raw_models)
-    unconfirmed = (
-        tuple(a for a in aliases if a not in OBSERVED_GATEWAY_ALIASES)
-        if allow_unconfirmed_aliases
-        else ()
-    )
+    """A benchmark plan, taking its aliases from the snapshot and nothing else.
+
+    There is deliberately no parameter for the model set. Passing one would make
+    the snapshot advisory, and the whole point of freezing is that the list is not
+    a runtime decision.
+    """
     return SequentialRunPlan(
-        model_aliases=aliases,
+        model_aliases=snapshot.aliases,
         limits=limits or RunLimits(),
         prompt_id=prompt_id,
         selection_source=selection_source,
-        unconfirmed_aliases=unconfirmed,
+        run_kind=RunKind.FRONTIER_BENCHMARK,
+        snapshot=snapshot,
+        requests_per_minute=requests_per_minute,
+    )
+
+
+def build_canary_plan(
+    *,
+    limits: RunLimits | None = None,
+    prompt_id: str = DEFAULT_PROMPT_ID,
+    selection_source: str = "connectivity canary",
+) -> SequentialRunPlan:
+    """One request to one alias, to learn only whether the endpoint answers."""
+    canary_limits = limits or RunLimits(max_requests_per_model=1)
+    return SequentialRunPlan(
+        model_aliases=(CANARY_ALIAS,),
+        limits=canary_limits,
+        prompt_id=prompt_id,
+        selection_source=selection_source,
+        run_kind=RunKind.CONNECTIVITY_CANARY,
+        snapshot=None,
+        requests_per_minute=DEFAULT_REQUESTS_PER_MINUTE,
     )

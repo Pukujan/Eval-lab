@@ -1,24 +1,30 @@
-"""Prepare — and refuse to execute — a Task 2B sequential evaluation run.
+"""Prepare — and refuse to execute — a Task 2B run.
 
-This script validates a human's model selection, constructs the HTTP client in
-the configuration Task 2B requires, asserts that configuration against the object
-actually built, and writes a run-plan artifact. It makes **no network request**:
-there is no call site for one in this file, and the client's own guard
+This script builds a run plan, constructs the HTTP client in the configuration
+Task 2B requires, asserts that configuration against the object actually built,
+and writes a plan artifact. It makes **no network request**: there is no call site
+for one in this file, and the client's own guard
 (:func:`app.models.sequential_plan.assert_execution_allowed`) would refuse anyway.
 
-Two exit behaviours matter.
+Two run kinds, deliberately not interchangeable:
+
+``--kind canary`` prepares one ``gpt-5.6-luna`` request that asks only whether the
+evaluation endpoint answers. It needs no frozen snapshot, because it happens
+before the freeze — and its artifact is stamped ``is_benchmark_evidence: false``
+so it can never be quoted as a model result.
+
+``--kind benchmark`` requires ``--snapshot``: a frozen, hashed alias list read off
+the evaluation service. There is no flag to supply models directly and none to
+accept an unlisted alias. Both existed in an earlier version and both were wrong —
+the first made the snapshot advisory, the second turned a hard stop into a
+checkbox.
 
 ``--assert-executable`` exits non-zero while Task 2B is blocked. That is the
-execution gate: it is meant to fail, loudly, until PR #1 is merged and a confirmed
-zero-hidden-proxy-retry CKFF route exists. A gate that passes before its
-preconditions are met is not a gate.
+execution gate; it is meant to fail until every precondition is actually met. A
+gate that passes before its preconditions hold is not a gate.
 
-Without a model selection the script exits non-zero as well. The Task 2B
-evaluation set is deliberately unchosen; defaulting to some list would turn an
-open research decision into a silent one.
-
-    python scripts/prepare_task_2b_run.py --models '["gpt-5.6-luna"]'
-    python scripts/prepare_task_2b_run.py --models "$MODELS" --assert-executable
+    python scripts/prepare_task_2b_run.py --kind canary
+    python scripts/prepare_task_2b_run.py --kind benchmark --snapshot verification/snapshot.json
 """
 
 from __future__ import annotations
@@ -32,6 +38,11 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
+from app.models.alias_snapshot import (  # noqa: E402
+    EVALUATION_SERVICE_URL,
+    SnapshotError,
+    load_snapshot,
+)
 from app.models.ckff_client import (  # noqa: E402
     CLIENT_RETRIES,
     ClientConfigurationError,
@@ -40,13 +51,14 @@ from app.models.ckff_client import (  # noqa: E402
 )
 from app.models.sequential_plan import (  # noqa: E402
     BLOCKING_PRECONDITIONS,
+    DEFAULT_REQUESTS_PER_MINUTE,
     EXECUTION_BLOCKED,
-    OBSERVED_GATEWAY_ALIASES,
     ExecutionBlockedError,
     PlanError,
     RunLimits,
     assert_execution_allowed,
-    build_plan,
+    build_benchmark_plan,
+    build_canary_plan,
 )
 
 DEFAULT_OUTPUT = Path("artifacts") / "task-2b-run-plan.json"
@@ -54,23 +66,25 @@ DEFAULT_OUTPUT = Path("artifacts") / "task-2b-run-plan.json"
 
 def build_argument_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
-    # No default. A default here would be a model set nobody chose.
     parser.add_argument(
-        "--models",
-        default="",
-        help='JSON array of exact gateway aliases, e.g. \'["gpt-5.6-luna", "[aws]glm-5"]\'',
+        "--kind",
+        choices=("canary", "benchmark"),
+        required=True,
+        help="canary: one gpt-5.6-luna connectivity request. benchmark: the frozen campaign.",
+    )
+    parser.add_argument(
+        "--snapshot",
+        type=Path,
+        default=None,
+        help="frozen alias snapshot of the evaluation service; required for --kind benchmark",
     )
     parser.add_argument("--prompt-id", default="task-2b-preflight-v1")
     parser.add_argument("--selection-source", default="unspecified")
-    parser.add_argument("--request-timeout-seconds", type=float, default=60.0)
+    parser.add_argument("--request-timeout-seconds", type=float, default=120.0)
     parser.add_argument("--total-wall-clock-seconds", type=float, default=900.0)
     parser.add_argument("--max-requests-per-model", type=int, default=1)
     parser.add_argument("--max-completion-tokens", type=int, default=512)
-    parser.add_argument(
-        "--allow-unconfirmed-aliases",
-        action="store_true",
-        help="accept an alias not in the observed list; use when the gateway has changed",
-    )
+    parser.add_argument("--requests-per-minute", type=int, default=DEFAULT_REQUESTS_PER_MINUTE)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument(
         "--assert-executable",
@@ -81,7 +95,7 @@ def build_argument_parser() -> argparse.ArgumentParser:
 
 
 def preflight_client_configuration(limits: RunLimits) -> dict[str, object]:
-    """Construct the real client and read its retry configuration back.
+    """Construct the real client and read its configuration back.
 
     Constructing an ``httpx.Client`` opens no connection, so this stays offline
     while still checking the object a run would actually use rather than a
@@ -104,27 +118,50 @@ def preflight_client_configuration(limits: RunLimits) -> dict[str, object]:
 def main(argv: list[str] | None = None) -> int:
     arguments = build_argument_parser().parse_args(argv)
 
+    limits = RunLimits(
+        request_timeout_seconds=arguments.request_timeout_seconds,
+        total_wall_clock_seconds=arguments.total_wall_clock_seconds,
+        max_requests_per_model=arguments.max_requests_per_model,
+        max_completion_tokens=arguments.max_completion_tokens,
+    )
+
     try:
-        limits = RunLimits(
-            request_timeout_seconds=arguments.request_timeout_seconds,
-            total_wall_clock_seconds=arguments.total_wall_clock_seconds,
-            max_requests_per_model=arguments.max_requests_per_model,
-            max_completion_tokens=arguments.max_completion_tokens,
-        )
-        plan = build_plan(
-            arguments.models,
-            limits=limits,
-            prompt_id=arguments.prompt_id,
-            selection_source=arguments.selection_source,
-            allow_unconfirmed_aliases=arguments.allow_unconfirmed_aliases,
-        )
+        if arguments.kind == "canary":
+            if arguments.snapshot is not None:
+                print(
+                    "a connectivity canary takes no snapshot: it runs before the freeze "
+                    "and its evidence is not benchmark evidence",
+                    file=sys.stderr,
+                )
+                return 2
+            plan = build_canary_plan(
+                limits=limits,
+                prompt_id=arguments.prompt_id,
+                selection_source=arguments.selection_source,
+            )
+        else:
+            if arguments.snapshot is None:
+                print(
+                    "--kind benchmark requires --snapshot: a frozen, hashed alias list "
+                    f"read from {EVALUATION_SERVICE_URL}. There is no way to pass models "
+                    "directly, because a list that cannot be tied to a retrieval time, a "
+                    "source and a deployment produces evidence nobody can attribute.",
+                    file=sys.stderr,
+                )
+                return 2
+            snapshot = load_snapshot(arguments.snapshot)
+            plan = build_benchmark_plan(
+                snapshot,
+                limits=limits,
+                prompt_id=arguments.prompt_id,
+                selection_source=arguments.selection_source,
+                requests_per_minute=arguments.requests_per_minute,
+            )
+    except SnapshotError as exc:
+        print(f"Task 2B alias snapshot refused: {exc}", file=sys.stderr)
+        return 2
     except PlanError as exc:
         print(f"Task 2B run plan refused: {exc}", file=sys.stderr)
-        print(
-            "Aliases observed on the gateway (NOT the evaluation set): "
-            f"{list(OBSERVED_GATEWAY_ALIASES)}",
-            file=sys.stderr,
-        )
         return 2
 
     try:
@@ -143,6 +180,8 @@ def main(argv: list[str] | None = None) -> int:
 
     print(json.dumps(document, indent=2, sort_keys=True))
     print(f"\nRun plan written to {output}. No gateway request was made.")
+    if arguments.kind == "canary":
+        print("This is a CONNECTIVITY CANARY. It is not benchmark evidence.")
 
     if EXECUTION_BLOCKED:
         print("\nTask 2B execution is BLOCKED. Unmet preconditions:")

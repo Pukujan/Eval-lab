@@ -26,12 +26,23 @@ import pytest
 import yaml
 
 from app.evidence.bundle import SELF_ATTESTING_KEYS
+from app.models.alias_snapshot import (
+    CANARY_INVALID_ALIAS,
+    EVALUATION_SERVICE_URL,
+    SNAPSHOT_VERSION,
+    FrozenAliasSnapshot,
+    SnapshotError,
+    alias_list_sha256,
+    load_snapshot,
+)
 from app.models.ckff_client import (
     CLIENT_RETRIES,
+    AttemptOutcome,
     CallRecord,
     CkffSequentialClient,
     ClientConfigurationError,
     ConcurrentRequestError,
+    GatewayHttpError,
     GatewayProtocolError,
     ModelRequest,
     OutputLimitExceededError,
@@ -42,20 +53,61 @@ from app.models.ckff_client import (
     _InFlightGuard,
     assert_no_client_retry,
     build_http_client,
+    classify_failure,
     sha256_text,
     verify_resolved_model,
 )
 from app.models.sequential_plan import (
-    OBSERVED_GATEWAY_ALIASES,
+    ACCOUNT_REQUESTS_PER_MINUTE,
+    CANARY_ALIAS,
+    MIN_TOOL_CALL_MAX_TOKENS,
     ExecutionBlockedError,
     PlanError,
+    RunKind,
     RunLimits,
     SequentialRunPlan,
     alias_slug,
-    build_plan,
+    build_benchmark_plan,
+    build_canary_plan,
     parse_model_selection,
     validate_alias,
 )
+
+#: Aliases used as *test inputs* only. This is not, and must not become, an
+#: authority for what Task 2B evaluates -- that comes from a frozen snapshot.
+SAMPLE_ALIASES = (
+    "[aws]glm-5",
+    "[ds2] deepseek-v4-pro",
+    "[grok] grok-4.5",
+    "claude-opus-4-7",
+    "gemini-3.5-flash",
+    "gpt-5.6-luna",
+    "qwen-3.6-max",
+)
+
+
+def make_snapshot(aliases: tuple[str, ...]) -> FrozenAliasSnapshot:
+    """An in-memory frozen snapshot, so plan tests exercise the real gate."""
+    return FrozenAliasSnapshot(
+        snapshot_version=SNAPSHOT_VERSION,
+        retrieved_at="2026-08-01T18:30:00Z",
+        source="test fixture",
+        method="constructed in-memory by the test suite",
+        evaluation_service_url=EVALUATION_SERVICE_URL,
+        evaluation_service_identifier="test-deployment-0",
+        aliases=aliases,
+        sha256=alias_list_sha256(aliases),
+    )
+
+
+def make_plan(aliases: tuple[str, ...], **kwargs: Any) -> SequentialRunPlan:
+    """A benchmark plan over ``aliases``, snapshot and all."""
+    return SequentialRunPlan(
+        model_aliases=aliases,
+        snapshot=make_snapshot(aliases),
+        **kwargs,
+    )
+
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW_PATH = REPOSITORY_ROOT / ".github" / "workflows" / "task-2b-sequential-evaluation.yml"
@@ -203,7 +255,7 @@ def test_a_substituted_model_stops_the_whole_run() -> None:
             latency_seconds=0.1,
         )
 
-    plan = SequentialRunPlan(model_aliases=TWO_ALIASES)
+    plan = make_plan(TWO_ALIASES)
     attempted: list[str] = []
 
     def call(request: ModelRequest) -> CallRecord:
@@ -328,7 +380,7 @@ def test_no_litellm_router_is_imported(path: Path) -> None:
 
 
 def test_the_plan_records_that_substitution_is_not_permitted() -> None:
-    document = SequentialRunPlan(model_aliases=("gpt-5.6-luna",)).as_document()
+    document = make_plan(("gpt-5.6-luna",)).as_document()
     assert document["model_substitution_permitted"] is False
     assert document["client_retry_count"] == 0
     assert document["retry_owner"] == "temporal"
@@ -340,7 +392,7 @@ def test_the_plan_records_that_substitution_is_not_permitted() -> None:
 
 
 def test_the_runner_visits_models_one_at_a_time_in_plan_order() -> None:
-    plan = SequentialRunPlan(model_aliases=TWO_ALIASES, limits=RunLimits(max_requests_per_model=2))
+    plan = make_plan(TWO_ALIASES, limits=RunLimits(max_requests_per_model=2))
     observed: list[tuple[str, int]] = []
     runner: SequentialRunner
 
@@ -362,7 +414,7 @@ def test_the_runner_visits_models_one_at_a_time_in_plan_order() -> None:
 
 
 def test_a_reentrant_request_is_refused() -> None:
-    plan = SequentialRunPlan(model_aliases=("gpt-5.6-luna",))
+    plan = make_plan(("gpt-5.6-luna",))
     runner: SequentialRunner
 
     def call(request: ModelRequest) -> CallRecord:
@@ -408,7 +460,7 @@ def test_the_per_model_request_budget_is_enforced_before_the_call() -> None:
 
 
 def test_the_total_request_budget_is_derived_and_capped() -> None:
-    plan = SequentialRunPlan(model_aliases=TWO_ALIASES, limits=RunLimits(max_requests_per_model=3))
+    plan = make_plan(TWO_ALIASES, limits=RunLimits(max_requests_per_model=3))
     assert plan.total_request_budget == 6
     with pytest.raises(PlanError, match="hard ceiling"):
         RunLimits(max_requests_per_model=100)
@@ -459,16 +511,82 @@ def test_an_oversized_completion_is_rejected_rather_than_truncated() -> None:
         )
 
 
-def test_a_non_200_response_is_an_error_with_no_retry() -> None:
+@pytest.mark.parametrize(
+    ("status", "expected"),
+    [
+        (429, AttemptOutcome.RATE_LIMITED),
+        (503, AttemptOutcome.SERVICE_UNAVAILABLE),
+        (500, AttemptOutcome.HTTP_ERROR),
+        (401, AttemptOutcome.HTTP_ERROR),
+    ],
+)
+def test_a_non_200_response_is_classified_and_never_retried(
+    status: int, expected: AttemptOutcome
+) -> None:
+    """A 429 or 503 is a result. ckff caps at 100 req/min account-wide, and an
+    entire flat-rate lane has been observed returning 503; retrying either until
+    it disappears would fabricate a success out of a real failure."""
     client = make_client()
-    with pytest.raises(GatewayProtocolError, match="HTTP 503"):
+    with pytest.raises(GatewayHttpError) as excinfo:
         client.interpret_response(
             ModelRequest(alias="gpt-5.6-luna"),
-            http_status=503,
+            http_status=status,
             headers={},
             body=b"{}",
             latency_seconds=0.1,
         )
+    assert excinfo.value.status_code == status
+    outcome, recorded_status = classify_failure(excinfo.value)
+    assert outcome is expected
+    assert recorded_status == status
+
+
+def test_a_rate_limited_model_is_recorded_and_the_run_continues() -> None:
+    """Recorded, not skipped, and not repeated."""
+    plan = make_plan(TWO_ALIASES)
+
+    def call(request: ModelRequest) -> CallRecord:
+        if request.alias == TWO_ALIASES[0]:
+            raise GatewayHttpError(429, "global rate limit exceeded")
+        return make_record(request.alias)
+
+    result = SequentialRunner(plan, call).run()
+    assert result.aborted_reason is None
+    failed = result.failures_by_alias[TWO_ALIASES[0]]
+    assert [attempt.outcome for attempt in failed] == [AttemptOutcome.RATE_LIMITED]
+    assert failed[0].as_document()["attempt_repeated"] is False
+    # The second model still ran: one model's failure does not truncate the run.
+    assert len(result.records_by_alias[TWO_ALIASES[1]]) == 1
+
+    documents = result.evidence_documents()
+    limited = documents[alias_slug(TWO_ALIASES[0])]
+    assert limited["failed_attempt_count"] == 1
+    assert limited["attempts_total"] == 1
+    assert limited["call_count"] == 0
+
+
+@pytest.mark.parametrize(
+    ("raised", "expected"),
+    [
+        (httpx.ReadTimeout("too slow"), AttemptOutcome.TIMEOUT),
+        (httpx.ConnectError("refused"), AttemptOutcome.TRANSPORT_ERROR),
+        (GatewayProtocolError("nonsense"), AttemptOutcome.PROTOCOL_ERROR),
+        (GatewayHttpError(503, "no channel"), AttemptOutcome.SERVICE_UNAVAILABLE),
+    ],
+)
+def test_every_failure_kind_is_recorded_rather_than_skipped(
+    raised: Exception, expected: AttemptOutcome
+) -> None:
+    plan = make_plan(("gpt-5.6-luna",))
+
+    def call(request: ModelRequest) -> CallRecord:
+        raise raised
+
+    result = SequentialRunner(plan, call).run()
+    attempts = result.failures_by_alias["gpt-5.6-luna"]
+    assert [attempt.outcome for attempt in attempts] == [expected]
+    document = result.evidence_documents()[alias_slug("gpt-5.6-luna")]
+    assert document["failed_attempts"][0]["outcome"] == str(expected)
 
 
 def test_a_response_without_content_is_an_error_not_an_empty_answer() -> None:
@@ -485,8 +603,8 @@ def test_a_response_without_content_is_an_error_not_an_empty_answer() -> None:
 
 
 def test_the_run_stops_when_the_wall_clock_is_exhausted() -> None:
-    plan = SequentialRunPlan(
-        model_aliases=TWO_ALIASES,
+    plan = make_plan(
+        TWO_ALIASES,
         limits=RunLimits(request_timeout_seconds=10.0, total_wall_clock_seconds=30.0),
     )
     ticks = iter([0.0, 0.0, 100.0, 100.0, 100.0])
@@ -500,8 +618,8 @@ def test_the_run_stops_when_the_wall_clock_is_exhausted() -> None:
 
 
 def test_a_request_that_cannot_finish_inside_the_bound_is_not_started() -> None:
-    plan = SequentialRunPlan(
-        model_aliases=("gpt-5.6-luna",),
+    plan = make_plan(
+        ("gpt-5.6-luna",),
         limits=RunLimits(request_timeout_seconds=60.0, total_wall_clock_seconds=61.0),
     )
     ticks = iter([0.0, 55.0, 55.0, 55.0])
@@ -557,7 +675,7 @@ def test_hostile_output_is_hashed_and_never_carried() -> None:
 
 
 def test_output_cannot_change_which_model_is_evaluated() -> None:
-    plan = SequentialRunPlan(model_aliases=TWO_ALIASES)
+    plan = make_plan(TWO_ALIASES)
     asked: list[str] = []
 
     def call(request: ModelRequest) -> CallRecord:
@@ -577,7 +695,7 @@ def test_no_dynamic_execution_primitive_appears_in_the_scaffold() -> None:
 
 
 def test_an_evidence_path_is_derived_from_a_hash_not_from_free_text() -> None:
-    for alias in OBSERVED_GATEWAY_ALIASES:
+    for alias in SAMPLE_ALIASES:
         slug = alias_slug(alias)
         assert re.fullmatch(r"[a-z0-9-]+", slug), slug
         assert ".." not in slug and "/" not in slug
@@ -603,7 +721,7 @@ def _all_keys(payload: object) -> set[str]:
 
 
 def test_evidence_is_written_separately_per_model() -> None:
-    plan = SequentialRunPlan(model_aliases=TWO_ALIASES)
+    plan = make_plan(TWO_ALIASES)
     result = SequentialRunner(plan, lambda request: make_record(request.alias)).run()
     documents = result.evidence_documents()
 
@@ -617,14 +735,14 @@ def test_evidence_is_written_separately_per_model() -> None:
 
 
 def test_evidence_carries_no_self_attesting_field() -> None:
-    plan = SequentialRunPlan(model_aliases=("gpt-5.6-luna",))
+    plan = make_plan(("gpt-5.6-luna",))
     result = SequentialRunner(plan, lambda request: make_record(request.alias)).run()
     for document in result.evidence_documents().values():
         assert not _all_keys(document) & SELF_ATTESTING_KEYS
 
 
 def test_evidence_carries_no_credential_and_no_base_url() -> None:
-    plan = SequentialRunPlan(model_aliases=("gpt-5.6-luna",))
+    plan = make_plan(("gpt-5.6-luna",))
     result = SequentialRunner(plan, lambda request: make_record(request.alias)).run()
     serialised = json.dumps(result.evidence_documents())
     assert STUB_CREDENTIAL not in serialised
@@ -673,10 +791,13 @@ def test_the_workflow_is_manual_dispatch_only() -> None:
     assert set(triggers) == {"workflow_dispatch"}
 
 
-def test_the_workflow_refuses_to_run_without_an_explicit_model_set() -> None:
+def test_the_workflow_offers_no_way_to_pass_a_model_list_directly() -> None:
+    """The snapshot is the only authority. A models input would make it advisory."""
     inputs = workflow_triggers(load_workflow())["workflow_dispatch"]["inputs"]
-    assert inputs["models"]["required"] is True
-    assert "default" not in inputs["models"], "a default model set is a set nobody chose"
+    assert "models" not in inputs
+    assert inputs["kind"]["required"] is True
+    assert set(inputs["kind"]["options"]) == {"canary", "benchmark"}
+    assert "snapshot_path" in inputs
 
 
 def test_the_workflow_requests_minimal_permissions() -> None:
@@ -726,12 +847,12 @@ def test_the_workflow_is_not_wired_into_any_other_workflow() -> None:
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.parametrize("alias", OBSERVED_GATEWAY_ALIASES)
-def test_observed_aliases_round_trip_unchanged(alias: str) -> None:
+@pytest.mark.parametrize("alias", SAMPLE_ALIASES)
+def test_aliases_round_trip_unchanged(alias: str) -> None:
     assert validate_alias(alias) == alias
     selection = parse_model_selection(json.dumps([alias]))
     assert selection == (alias,)
-    plan = SequentialRunPlan(model_aliases=selection)
+    plan = make_plan(selection)
     document = json.loads(json.dumps(plan.as_document()))
     assert document["model_aliases"] == [alias]
     assert document["model_slugs"][alias] == alias_slug(alias)
@@ -775,53 +896,255 @@ def test_a_malformed_alias_is_refused(alias: str) -> None:
         validate_alias(alias)
 
 
-def test_an_unobserved_alias_needs_an_explicit_opt_in() -> None:
-    with pytest.raises(PlanError, match="not observed"):
-        build_plan(json.dumps(["brand-new-model"]))
-    plan = build_plan(json.dumps(["brand-new-model"]), allow_unconfirmed_aliases=True)
-    assert plan.unconfirmed_aliases == ("brand-new-model",)
+def test_no_hardcoded_alias_list_remains_an_authority() -> None:
+    """The observed-alias constant and its opt-in flag are gone, and stay gone.
+
+    The constant went stale, described production rather than the evaluation
+    service, and read as authoritative. The flag was worse: it turned "not in the
+    frozen set" into a checkbox.
+    """
+    import app.models.sequential_plan as plan_module
+
+    assert not hasattr(plan_module, "OBSERVED_GATEWAY_ALIASES")
+    assert not hasattr(plan_module, "build_plan")
+    for path in (*SCAFFOLD_MODULES, PREPARE_SCRIPT, WORKFLOW_PATH):
+        source = path.read_text(encoding="utf-8")
+        assert "allow_unconfirmed" not in source, path.name
+        assert "allow-unconfirmed" not in source, path.name
 
 
 def test_a_plan_cannot_be_built_without_a_model_set() -> None:
     with pytest.raises(PlanError, match="deliberately unchosen"):
-        SequentialRunPlan(model_aliases=())
+        make_plan(())
 
 
 def test_a_duplicated_alias_is_refused() -> None:
     with pytest.raises(PlanError, match="duplicates"):
-        SequentialRunPlan(model_aliases=("gpt-5.6-luna", "gpt-5.6-luna"))
+        make_plan(("gpt-5.6-luna", "gpt-5.6-luna"))
 
 
 def test_free_form_prompt_text_is_refused() -> None:
     with pytest.raises(PlanError, match="catalogue"):
-        SequentialRunPlan(model_aliases=("gpt-5.6-luna",), prompt_id="whatever-i-typed")
+        make_plan(("gpt-5.6-luna",), prompt_id="whatever-i-typed")
 
 
-def test_the_preparation_script_refuses_an_empty_model_set(tmp_path: Path) -> None:
+def test_a_benchmark_without_a_snapshot_is_refused(tmp_path: Path) -> None:
     module = load_prepare_script()
-    assert module.main(["--models", "", "--output", str(tmp_path / "plan.json")]) == 2
+    assert module.main(["--kind", "benchmark", "--output", str(tmp_path / "p.json")]) == 2
 
 
-def test_the_preparation_script_writes_a_plan_and_makes_no_request(tmp_path: Path) -> None:
+def test_a_canary_may_not_carry_a_snapshot(tmp_path: Path) -> None:
+    """Canary evidence is not benchmark evidence, and must not look like it."""
+    module = load_prepare_script()
+    snapshot = write_snapshot(tmp_path, ("gpt-5.6-luna",))
+    exit_code = module.main(
+        ["--kind", "canary", "--snapshot", str(snapshot), "--output", str(tmp_path / "p.json")]
+    )
+    assert exit_code == 2
+
+
+def test_the_canary_writes_a_plan_marked_as_not_benchmark_evidence(tmp_path: Path) -> None:
     module = load_prepare_script()
     output = tmp_path / "plan.json"
-    assert module.main(["--models", '["gpt-5.6-luna"]', "--output", str(output)]) == 0
+    assert module.main(["--kind", "canary", "--output", str(output)]) == 0
     document = json.loads(output.read_text(encoding="utf-8"))
+    assert document["run_kind"] == "connectivity_canary"
+    assert document["is_benchmark_evidence"] is False
+    assert document["model_aliases"] == [CANARY_ALIAS]
+    assert document["alias_snapshot"] is None
     assert document["network_requests_made"] == 0
     assert document["execution_blocked"] is True
     assert document["client_configuration"]["client_retry_count"] == 0
     assert document["client_configuration"]["follow_redirects"] is False
 
 
+def test_a_benchmark_plan_records_the_snapshot_provenance(tmp_path: Path) -> None:
+    module = load_prepare_script()
+    aliases = ("gpt-5.6-luna", "[aws]glm-5")
+    snapshot = write_snapshot(tmp_path, aliases)
+    output = tmp_path / "plan.json"
+    assert (
+        module.main(["--kind", "benchmark", "--snapshot", str(snapshot), "--output", str(output)])
+        == 0
+    )
+    document = json.loads(output.read_text(encoding="utf-8"))
+    assert document["run_kind"] == "frontier_benchmark"
+    assert document["is_benchmark_evidence"] is True
+    assert document["model_aliases"] == list(aliases)
+    recorded = document["alias_snapshot"]
+    assert recorded["sha256"] == alias_list_sha256(aliases)
+    assert recorded["retrieved_at"] == "2026-08-01T18:30:00Z"
+    assert recorded["evaluation_service_url"] == EVALUATION_SERVICE_URL
+    assert recorded["evaluation_service_identifier"]
+    assert recorded["source"] and recorded["method"]
+
+
 def test_the_execution_gate_fails_while_task_2b_is_blocked(tmp_path: Path) -> None:
     module = load_prepare_script()
     exit_code = module.main(
-        [
-            "--models",
-            '["gpt-5.6-luna"]',
-            "--output",
-            str(tmp_path / "plan.json"),
-            "--assert-executable",
-        ]
+        ["--kind", "canary", "--output", str(tmp_path / "plan.json"), "--assert-executable"]
     )
     assert exit_code == 4
+
+
+# ---------------------------------------------------------------------------
+# The frozen alias snapshot is the only authority for what runs
+# ---------------------------------------------------------------------------
+
+
+def snapshot_payload(aliases: tuple[str, ...], **overrides: Any) -> dict[str, Any]:
+    payload: dict[str, Any] = {
+        "snapshot_version": SNAPSHOT_VERSION,
+        "retrieved_at": "2026-08-01T18:30:00Z",
+        "source": f"GET /v1/models on {EVALUATION_SERVICE_URL}",
+        "method": "restricted read with the evaluation virtual key, recorded by hand",
+        "evaluation_service_url": EVALUATION_SERVICE_URL,
+        "evaluation_service_identifier": "litellm-eval@2026-08-01T18:00:00Z",
+        "aliases": list(aliases),
+        "sha256": alias_list_sha256(aliases),
+    }
+    payload.update(overrides)
+    return payload
+
+
+def write_snapshot(directory: Path, aliases: tuple[str, ...], **overrides: Any) -> Path:
+    path = directory / "snapshot.json"
+    path.write_text(json.dumps(snapshot_payload(aliases, **overrides)), encoding="utf-8")
+    return path
+
+
+def test_a_valid_snapshot_loads_and_preserves_order_exactly(tmp_path: Path) -> None:
+    """Frozen order, not sorted order. Reordering is a different experiment."""
+    aliases = ("qwen-3.6-max", "[aws]glm-5", "gpt-5.6-luna")
+    snapshot = load_snapshot(write_snapshot(tmp_path, aliases))
+    assert snapshot.aliases == aliases
+    assert snapshot.aliases != tuple(sorted(aliases))
+    assert snapshot.sha256 == alias_list_sha256(aliases)
+
+
+def test_a_snapshot_whose_hash_does_not_match_its_list_is_refused(tmp_path: Path) -> None:
+    """An edited list is not the list that was frozen."""
+    path = write_snapshot(tmp_path, ("gpt-5.6-luna",))
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload["aliases"] = ["gpt-5.6-luna", "claude-opus-4-7"]  # hash left stale
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    with pytest.raises(SnapshotError, match="hashes to"):
+        load_snapshot(path)
+
+
+def test_a_snapshot_from_the_production_gateway_is_refused(tmp_path: Path) -> None:
+    """Production retries, pools, cools down and drops params. Not evidence-valid."""
+    path = write_snapshot(
+        tmp_path,
+        ("gpt-5.6-luna",),
+        evaluation_service_url="https://litellm-production-8656.up.railway.app",
+    )
+    with pytest.raises(SnapshotError, match="Only the evaluation service"):
+        load_snapshot(path)
+
+
+@pytest.mark.parametrize(
+    "field",
+    [
+        "retrieved_at",
+        "source",
+        "method",
+        "evaluation_service_identifier",
+        "sha256",
+        "aliases",
+    ],
+)
+def test_a_snapshot_missing_required_provenance_is_refused(tmp_path: Path, field: str) -> None:
+    path = tmp_path / "snapshot.json"
+    payload = snapshot_payload(("gpt-5.6-luna",))
+    payload.pop(field)
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    with pytest.raises(SnapshotError):
+        load_snapshot(path)
+
+
+def test_a_naive_timestamp_is_refused(tmp_path: Path) -> None:
+    path = write_snapshot(tmp_path, ("gpt-5.6-luna",), retrieved_at="2026-08-01 18:30:00")
+    with pytest.raises(SnapshotError, match="timezone"):
+        load_snapshot(path)
+
+
+def test_the_invalid_canary_alias_is_never_evaluated_as_a_model(tmp_path: Path) -> None:
+    """It routes at a nonexistent upstream so a validator can prove fast failure.
+
+    Evaluating it as a model would record a fabricated failure for a model that
+    does not exist.
+    """
+    path = write_snapshot(tmp_path, ("gpt-5.6-luna", CANARY_INVALID_ALIAS))
+    with pytest.raises(SnapshotError, match="non-model alias"):
+        load_snapshot(path)
+
+
+def test_a_missing_snapshot_file_is_refused(tmp_path: Path) -> None:
+    with pytest.raises(SnapshotError, match="freeze the evaluation service"):
+        load_snapshot(tmp_path / "absent.json")
+
+
+def test_a_benchmark_plan_may_not_differ_from_its_snapshot(tmp_path: Path) -> None:
+    """No adding, removing, renaming, substituting or reordering after the freeze."""
+    aliases = ("gpt-5.6-luna", "[aws]glm-5")
+    snapshot = load_snapshot(write_snapshot(tmp_path, aliases))
+
+    for altered in (
+        ("[aws]glm-5", "gpt-5.6-luna"),  # reordered
+        ("gpt-5.6-luna",),  # removed
+        ("gpt-5.6-luna", "[aws]glm-5", "qwen-3.6-max"),  # added
+        ("gpt-5.6-luna", "[aws]glm-4.7"),  # substituted
+    ):
+        with pytest.raises(PlanError, match="does not match the frozen snapshot"):
+            SequentialRunPlan(model_aliases=altered, snapshot=snapshot)
+
+
+def test_a_benchmark_plan_takes_its_aliases_only_from_the_snapshot(tmp_path: Path) -> None:
+    aliases = ("gpt-5.6-luna", "[ds2] deepseek-v4-pro")
+    snapshot = load_snapshot(write_snapshot(tmp_path, aliases))
+    plan = build_benchmark_plan(snapshot)
+    assert plan.model_aliases == aliases
+    assert plan.run_kind is RunKind.FRONTIER_BENCHMARK
+    document = plan.as_document()
+    assert document["is_benchmark_evidence"] is True
+    assert document["alias_snapshot"]["sha256"] == snapshot.sha256
+
+
+def test_a_benchmark_plan_without_a_snapshot_is_refused() -> None:
+    with pytest.raises(PlanError, match="requires a frozen alias snapshot"):
+        SequentialRunPlan(model_aliases=("gpt-5.6-luna",))
+
+
+def test_the_canary_is_one_named_alias_and_is_not_benchmark_evidence() -> None:
+    plan = build_canary_plan()
+    assert plan.model_aliases == (CANARY_ALIAS,)
+    assert plan.run_kind is RunKind.CONNECTIVITY_CANARY
+    document = plan.as_document()
+    assert document["is_benchmark_evidence"] is False
+    assert document["alias_snapshot"] is None
+    with pytest.raises(PlanError, match="exactly one alias"):
+        SequentialRunPlan(
+            model_aliases=("gpt-5.6-luna", "[aws]glm-5"),
+            run_kind=RunKind.CONNECTIVITY_CANARY,
+        )
+
+
+def test_pacing_stays_under_the_account_wide_limit() -> None:
+    """ckff caps at 100/min across every model; the eval service has no queue."""
+    plan = build_canary_plan()
+    assert plan.requests_per_minute <= ACCOUNT_REQUESTS_PER_MINUTE
+    with pytest.raises(PlanError, match="account-wide"):
+        SequentialRunPlan(
+            model_aliases=(CANARY_ALIAS,),
+            run_kind=RunKind.CONNECTIVITY_CANARY,
+            requests_per_minute=ACCOUNT_REQUESTS_PER_MINUTE + 1,
+        )
+
+
+def test_the_tool_call_token_floor_is_recorded() -> None:
+    """Below 256, reasoning models truncate before the tool call and look unsupported."""
+    assert MIN_TOOL_CALL_MAX_TOKENS >= 256
+    assert build_canary_plan().as_document()["min_tool_call_max_tokens"] == (
+        MIN_TOOL_CALL_MAX_TOKENS
+    )

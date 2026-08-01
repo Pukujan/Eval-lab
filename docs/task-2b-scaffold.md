@@ -8,55 +8,129 @@ harness aimed at the CKFF gateway. It is written, tested offline, and deliberate
 inert. Nothing here claims that any model is calibrated, reliable, or ready for
 anything, and nothing here has produced a measurement of any kind.
 
-## The two blocking preconditions
+## The blocking preconditions
 
-Neither is satisfied at the time of writing, and both are recorded in code as
+None is satisfied at the time of writing, and all are recorded in code as
 `app.models.sequential_plan.BLOCKING_PRECONDITIONS`:
 
-1. **PR #1 is green and merged.** This scaffold sits on top of the CKFF
-   connectivity work and must not land ahead of it.
-2. **A confirmed CKFF route with zero hidden proxy retries exists** for every
-   alias under evaluation. `docs/ckff-gateway-setup.md` records that CKFF
-   currently performs five same-model retries. That is a reasonable availability
-   posture for an ordinary application and a disqualifying one here: a latency
-   figure that silently contains a second attempt, a failure rate that has already
-   been repaired upstream, and a cost figure covering requests nobody counted are
-   all unattributable. Unattributable numbers are worse than no numbers, because
-   they look like evidence.
+1. **A current sanitized validator artifact** from the evaluation service is on
+   record, with its timestamp and the deployment identifier it describes.
+2. **The `__canary_invalid` route failed fast** in that artifact rather than
+   returning 200. A 200 means something silently fell back, and then no number
+   from the service is attributable.
+3. **All five documented hidden-retry sources are closed** on the evaluation
+   service: `litellm_settings.num_retries`, `router_settings.num_retries`,
+   multi-route pooling of an alias, cooldowns parking a failing route, and client
+   SDK defaults. The last is outside the proxy entirely and is the easiest to
+   miss — the OpenAI and Anthropic SDKs both default to `max_retries=2`.
+4. **`drop_params` is false**, so a parameter the harness believes it sent was
+   actually sent. Silent stripping produces a run that measures something other
+   than what it recorded.
+5. **A frozen ordered alias snapshot exists**, hashed, with its retrieval
+   timestamp, source, method and deployment identifier.
 
-Until both hold, the `execution-gate` job in
+Until all hold, the `execution-gate` job in
 `.github/workflows/task-2b-sequential-evaluation.yml` **fails on purpose**. A gate
 that goes green before its preconditions are met is not a gate.
 
-## The evaluation set is deliberately unchosen
+Production is not an acceptable substitute for any of this. The production gateway
+retries at two layers, pools some aliases across up to three upstream routes,
+cools failing routes down, drops parameters silently, and queues requests so a 429
+never surfaces. Every one of those turns a failure into a slow success.
 
-The gateway exposes many aliases and keeps gaining more. Aliases confirmed at the
-time of writing are recorded in `OBSERVED_GATEWAY_ALIASES`:
+## The evaluation set comes from a frozen snapshot, not from code
 
-```
-[aws]glm-5   [aws]kimi-k2-thinking   [aws]minimax-m2.5   [ds2] deepseek-v4-pro
-[grok] grok-4.5   claude-opus-4-7   gemini-3.5-flash   gpt-5.6-luna
-gpt-5.6-sol   gpt-5.6-terra   qwen-3.6-max
-```
+An earlier version of this scaffold carried eleven aliases "observed on the
+gateway", plus a flag to opt into anything outside them. **Both are gone.**
 
-**That tuple is what has been seen, not what will be run.** Which models Task 2B
-evaluates — how many, chosen how, and to answer what question — is an open
-research decision that nobody has taken. Writing a seven-model list into the code
-would freeze an unmade decision and make it look settled, so the scaffold refuses
-to run without an explicit selection: the workflow input `models` is required and
-has no default, and `SequentialRunPlan` raises when handed an empty set.
+The hardcoded list was wrong three ways: it went stale as soon as the gateway
+grew, it described *production* rather than the evaluation service, and — worst —
+it read as authoritative. The opt-in flag was worse still, because it converted
+"this alias is not in the frozen set" from a hard stop into a checkbox someone
+ticks at 2am.
 
-The observed list is used only to catch a typo before a run rather than after
-one. An alias outside it is refused unless the operator passes
-`--allow-unconfirmed-aliases`, and the plan then records which aliases were
-unconfirmed.
+What replaces them is `app/models/alias_snapshot.py`. A benchmark run requires a
+snapshot file recording:
+
+| Field | Why |
+|---|---|
+| `aliases` | the exact ordered list, byte for byte |
+| `sha256` | over the normalised list; recomputed on load and refused on mismatch |
+| `retrieved_at` | UTC, explicit timezone — a naive timestamp cannot be tied to a deployment |
+| `source` | what was read |
+| `method` | how, in enough detail to repeat |
+| `evaluation_service_url` | must be the evaluation service; a production URL is refused |
+| `evaluation_service_identifier` | which deployment served that list, so a redeploy is visible |
+| `excluded` | aliases deliberately left out, each with a stated reason |
+
+Order is preserved exactly. The list is never sorted, trimmed, case-folded or
+de-duplicated on load: each of those would silently produce a different experiment
+from the one that was frozen. After the freeze, a plan may not add, remove,
+rename, substitute or reorder an alias — a changed list is a new campaign with a
+new snapshot, not a mutation of this one.
+
+`__canary_invalid` is refused if it appears in the alias list. It routes at a
+nonexistent upstream so a validator can prove failures surface fast; evaluating it
+as a model would record a fabricated failure for a model that does not exist.
+
+## The connectivity canary is not the benchmark
+
+Two run kinds, and they produce different evidence:
+
+| | `canary` | `benchmark` |
+|---|---|---|
+| Aliases | exactly `gpt-5.6-luna` | exactly the frozen snapshot |
+| Snapshot | must be absent | required |
+| Question answered | does the endpoint reply | the campaign |
+| `is_benchmark_evidence` | `false` | `true` |
+
+The canary runs *before* the freeze, so it cannot require a snapshot — and
+precisely because it cannot, its artifact is stamped `is_benchmark_evidence:
+false`. Conflating the two is how a smoke test ends up quoted as a model result.
+
+One thing the canary cannot establish, stated plainly: **a single clean request
+looks identical on a zero-retry gateway and on a five-retry one.** It proves
+reachability, not the retry contract. Proving that needs an induced failure.
+
+## Failures are results, and are never skipped
+
+Every attempt is recorded with an outcome — `completed`, `rate_limited`,
+`service_unavailable`, `http_error`, `timeout`, `transport_error`,
+`protocol_error`, `output_limit_exceeded`, `model_mismatch`,
+`concurrency_violation` — and every one is written into that model's evidence
+beside its successes.
+
+A 429 or a 503 is a *result*. ckff caps at 100 requests per minute account-wide,
+and an entire flat-rate lane has been observed returning `503 No available
+channel`. Neither is retried until it disappears: that would fabricate a success
+out of a real failure, and `attempt_repeated: false` is recorded to say so. A
+model quietly dropped because its channel was down would leave a comparison that
+reads as complete and is not.
+
+Two outcomes stop the whole campaign instead: `model_mismatch`, because a run that
+cannot say which model answered is not evidence, and `concurrency_violation`,
+because overlapping requests make the latency figures describe contention rather
+than the models.
+
+## Pacing is the harness's job
+
+ckff enforces **100 requests per minute account-wide**, counted across every
+model, and the evaluation service deliberately has no request queue — queueing
+would hide a 429 that is itself evidence. The plan therefore carries a global
+`requests_per_minute` (default 30) and refuses anything at or above the account
+limit. A self-inflicted 429 is indistinguishable in the record from a genuine one.
+
+Related, and recorded as `MIN_TOOL_CALL_MAX_TOKENS`: **never test tool calling
+below 256 completion tokens.** Reasoning models emit reasoning content before the
+tool call, so a smaller cap truncates the response before the call appears and
+produces a false negative that looks exactly like a model lacking support.
 
 Several aliases contain spaces and square brackets. They are treated as opaque
 strings throughout: never split, never globbed, never lower-cased, never handed
-to a shell. The selection input is therefore a **JSON array and nothing else** —
+to a shell. The snapshot's alias list is therefore **JSON and nothing else** —
 `[aws]glm-5` starts with a bracket and `[ds2] deepseek-v4-pro` contains a space,
 so any delimiter-sniffing parser would have to guess, and a guess here selects a
-different model than the operator intended.
+different model than the one that was frozen.
 
 ## What is enforced, and where
 
@@ -118,14 +192,16 @@ with its own containment story.
   intended direction of error: an unexplained difference stops the run rather than
   being normalised away. If it happens, the fix is to establish what the gateway
   actually echoes and record it, not to loosen the comparison.
-- **Aborting on the first refusal loses the remaining models' data.** A run that
-  stops early raises `SequentialRunAborted` carrying the partial result rather
-  than returning a short result that reads as a whole one.
+- **A fatal outcome still ends the campaign early.** `model_mismatch` and
+  `concurrency_violation` raise `SequentialRunAborted` carrying the partial result
+  rather than returning a short result that reads as a whole one. Every other
+  failure — 429, 503, timeout, transport, protocol — is recorded and the run
+  continues, so a single bad channel no longer costs the remaining models' data.
 - **The limits are conservative bounds, not calibrated values.** The only prior
   art in this repository is `DEFAULT_TIMEOUT_SECONDS = 30.0` in
   `app/models/gateway.py` and the 120-second bound in the CKFF smoke action.
-  Defaults are one request per model, 60 s per request, 900 s per run, 512
-  completion tokens, 256 KiB per response. No evidence supports any of them as
+  Defaults are one request per model, 120 s per request, 900 s per run, 512
+  completion tokens, 256 KiB per response, 30 requests per minute globally. No evidence supports any of them as
   correct; they are chosen so that an unattended mistake stays small.
 - **`trust_env=False` will break a runner that genuinely needs a proxy.** That is
   a decision to revisit deliberately, by configuring the proxy explicitly and
@@ -169,7 +245,8 @@ not need it is a secret that can end up in a log.
 
 | Path | Role |
 |---|---|
-| `app/models/sequential_plan.py` | plan, alias validation, limits, prompt catalogue, blocked-state guard |
+| `app/models/alias_snapshot.py` | the frozen, hashed evaluation-service alias list |
+| `app/models/sequential_plan.py` | plan, run kinds, alias validation, limits, prompt catalogue, blocked-state guard |
 | `app/models/ckff_client.py` | the bounded non-retrying client and the sequential runner |
 | `scripts/prepare_task_2b_run.py` | offline preparation and the execution gate |
 | `.github/workflows/task-2b-sequential-evaluation.yml` | manual-dispatch scaffold, blocked |
@@ -177,10 +254,19 @@ not need it is a secret that can end up in a log.
 
 ## Unblocking checklist
 
-1. PR #1 green and merged.
-2. A CKFF virtual key or route with proxy-side retries set to zero, for each alias
-   in the selected set, with that configuration evidenced rather than asserted.
-3. A human decision on the evaluation set, recorded — the `selection_source`
-   input exists so the plan artifact names where that decision is written down.
-4. Only then: flip `EXECUTION_BLOCKED`, add the request-issuing steps, and expect
-   the first run to be a single alias with `max_requests_per_model = 1`.
+1. A current sanitized validator artifact from the evaluation service, with its
+   timestamp and deployment identifier, showing `__canary_invalid` failing fast
+   rather than returning 200.
+2. Evidence — not assertion — that all five hidden-retry sources are closed and
+   that `drop_params` is false.
+3. One `gpt-5.6-luna` connectivity canary, reviewed. Its artifact says
+   `is_benchmark_evidence: false`; it does not become the benchmark.
+4. The exact current alias list read off the evaluation service and frozen, with
+   every real chat alias classified as frontier, non-frontier or ambiguous, and
+   the ambiguous ones resolved with the user rather than by this scaffold.
+5. Only then: flip `EXECUTION_BLOCKED`, add the request-issuing steps, and expect
+   the first benchmark run to be `max_requests_per_model = 1`.
+
+Nothing in steps 1-4 is machine-checkable from inside this repository, which is
+why `BLOCKING_PRECONDITIONS` is prose. A flag that claimed to verify them would be
+a fake gate.

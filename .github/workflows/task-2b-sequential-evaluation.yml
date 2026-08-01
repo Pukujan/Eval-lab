@@ -33,22 +33,30 @@ name: Task 2B sequential evaluation (BLOCKED — preparation only)
 on:
   workflow_dispatch:
     inputs:
-      models:
+      kind:
         description: >-
-          JSON array of exact gateway aliases chosen by a human, e.g.
-          ["gpt-5.6-luna"] or ["[aws]glm-5", "[ds2] deepseek-v4-pro"].
-          Required, no default. Aliases are opaque strings; spaces and
-          brackets are expected and are never split or globbed.
+          canary = one gpt-5.6-luna connectivity request, not benchmark evidence.
+          benchmark = the frozen campaign, which requires a snapshot.
         required: true
+        default: canary
+        type: choice
+        options: [canary, benchmark]
+      snapshot_path:
+        description: >-
+          Path to the frozen alias snapshot of the evaluation service. Required
+          for kind=benchmark. There is deliberately no way to pass a model list
+          directly: the snapshot is the only authority for which aliases run.
+        required: false
+        default: ""
         type: string
       selection_source:
-        description: Who chose this set and where it is written down.
+        description: Who froze this set and where it is written down.
         required: true
         type: string
       request_timeout_seconds:
         description: Per-request bound, seconds (ceiling 120).
         required: false
-        default: "60"
+        default: "120"
         type: string
       total_wall_clock_seconds:
         description: Whole-run bound, seconds (ceiling 3600).
@@ -65,11 +73,14 @@ on:
         required: false
         default: "512"
         type: string
-      allow_unconfirmed_aliases:
-        description: Accept an alias not on the observed list, if the gateway changed.
+      requests_per_minute:
+        description: >-
+          Global pacing across ALL models. ckff caps at 100 requests per minute
+          account-wide and the evaluation service has no queue on purpose, so a
+          429 surfaces as evidence instead of being hidden.
         required: false
-        default: false
-        type: boolean
+        default: "30"
+        type: string
 
 permissions:
   contents: read
@@ -101,32 +112,34 @@ jobs:
 
       # Every dispatch input arrives through `env:` and is read as "$NAME".
       # Nothing is interpolated into the shell text: an alias legitimately
-      # contains spaces and brackets, so `${{ inputs.models }}` inline would
-      # be both a quoting bug and a command-injection seam.
+      # contains spaces and brackets, so inline `${{ }}` would be both a quoting
+      # bug and a command-injection seam.
       - name: Prepare the run plan
         env:
-          MODELS: ${{ inputs.models }}
+          KIND: ${{ inputs.kind }}
+          SNAPSHOT_PATH: ${{ inputs.snapshot_path }}
           SELECTION_SOURCE: ${{ inputs.selection_source }}
           REQUEST_TIMEOUT_SECONDS: ${{ inputs.request_timeout_seconds }}
           TOTAL_WALL_CLOCK_SECONDS: ${{ inputs.total_wall_clock_seconds }}
           MAX_REQUESTS_PER_MODEL: ${{ inputs.max_requests_per_model }}
           MAX_COMPLETION_TOKENS: ${{ inputs.max_completion_tokens }}
-          ALLOW_UNCONFIRMED: ${{ inputs.allow_unconfirmed_aliases }}
+          REQUESTS_PER_MINUTE: ${{ inputs.requests_per_minute }}
         run: |
           set -euo pipefail
-          extra=()
-          if [ "$ALLOW_UNCONFIRMED" = "true" ]; then
-            extra+=(--allow-unconfirmed-aliases)
+          snapshot=()
+          if [ -n "$SNAPSHOT_PATH" ]; then
+            snapshot+=(--snapshot "$SNAPSHOT_PATH")
           fi
           python scripts/prepare_task_2b_run.py \
-            --models "$MODELS" \
+            --kind "$KIND" \
             --selection-source "$SELECTION_SOURCE" \
             --request-timeout-seconds "$REQUEST_TIMEOUT_SECONDS" \
             --total-wall-clock-seconds "$TOTAL_WALL_CLOCK_SECONDS" \
             --max-requests-per-model "$MAX_REQUESTS_PER_MODEL" \
             --max-completion-tokens "$MAX_COMPLETION_TOKENS" \
+            --requests-per-minute "$REQUESTS_PER_MINUTE" \
             --output artifacts/task-2b-run-plan.json \
-            "${extra[@]}"
+            "${snapshot[@]}"
 
       - name: Upload the run plan
         if: always()
@@ -163,10 +176,18 @@ jobs:
       # being unreachable during a hurried edit.
       - name: Assert the Task 2B preconditions are met
         env:
-          MODELS: ${{ inputs.models }}
+          KIND: ${{ inputs.kind }}
+          SNAPSHOT_PATH: ${{ inputs.snapshot_path }}
+          SELECTION_SOURCE: ${{ inputs.selection_source }}
         run: |
           set -euo pipefail
+          snapshot=()
+          if [ -n "$SNAPSHOT_PATH" ]; then
+            snapshot+=(--snapshot "$SNAPSHOT_PATH")
+          fi
           python scripts/prepare_task_2b_run.py \
-            --models "$MODELS" \
+            --kind "$KIND" \
+            --selection-source "$SELECTION_SOURCE" \
             --output artifacts/task-2b-gate-plan.json \
-            --assert-executable
+            --assert-executable \
+            "${snapshot[@]}"
