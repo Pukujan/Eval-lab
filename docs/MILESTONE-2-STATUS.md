@@ -34,7 +34,7 @@ reinterpreted.
 
 | WS | Name | Branch | Owner | Current commit | Status |
 |---|---|---|---|---|---|
-| 1 | Contract and protocol | `milestone-2/ws1-contracts`, `milestone-2/ws1-adrs` | coordinator + agents | see below | planning landed |
+| 1 | Contract and protocol | `milestone-2/ws1-contracts`, `milestone-2/ws1-adrs` | coordinator + agents | `2407056`, `0df41f8` — both merged | **complete: interfaces frozen** |
 | 2 | Durable orchestration | `milestone-2/ws2-orchestration` | unassigned | — | not started |
 | 3 | Evidence intake and isolation | `milestone-2/ws3-intake` | unassigned | — | not started |
 | 4 | Public evaluator | `milestone-2/ws4-evaluator` | unassigned | — | not started |
@@ -154,7 +154,39 @@ an existing schema version to avoid creating a new one is not permitted.
 
 ## Integration status
 
-Planning artifacts committed on `milestone-2/integration`. Implementation
-workstreams have not started. Nothing merged; no live workflow dispatched;
-`agent3/task-2b-scaffold` remains blocked until its live preconditions are
-evidenced.
+Workstream 1 is complete and merged into `milestone-2/integration`: four frozen
+contract documents, seven ADRs (0014–0020), four JSON Schemas at version `1.0.0`,
+and sixteen fixtures (3 valid, 13 hostile) with a manifest naming the exact
+expected rejection reason for each hostile case. Suite green at 739 passed,
+3 skipped, with lint, format, types and security clean.
+
+Interfaces are frozen, so workstreams 2–6 may now start in parallel.
+
+Nothing merged to the default branch; no live workflow dispatched; no private
+verifier access; `agent3/task-2b-scaffold` remains blocked until its live
+preconditions are evidenced.
+
+### Known gaps recorded rather than papered over
+
+Three ADR requirements are deliberately written as requirements, not as
+descriptions of working code, because the code does not exist yet. Each maps to an
+open acceptance item:
+
+| Gap | ADR | Acceptance item |
+|---|---|---|
+| Archive extraction ceilings (size, member count, expansion ratio) | 0018 | B4 |
+| Run-scoped verifier query budget — policy, not yet enforcement | 0016 | E3 |
+| Durable approval wait — mechanism chosen, no run has exercised it | 0017 | D7 |
+
+Six properties cannot be expressed in JSON Schema at all and are owned by the
+intake and evaluator workstreams instead, listed in `contracts/README.md`: the
+manifest digest binding the document; declared digests matching real bytes;
+"nothing undeclared and no symlink" in a materialised bundle (a filesystem
+property); attempt-index ordering and retry-budget arithmetic; test-count
+reconciliation; and gate ordering plus attestation digest binding.
+
+One honest limit on the outcome schema: `rationale` and `caveats` are free prose,
+so no schema can stop someone *writing* a correctness claim. What it does
+guarantee is that no *field* can express one — the enum has four values and
+`additionalProperties: false` blocks smuggling. Prose discipline stays with
+`tests/unit/test_outcome_vocabulary.py`.
