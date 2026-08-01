@@ -1,4 +1,4 @@
-name: Diagnose Experiment 1 types
+name: Finalize Experiment 1 types
 
 on:
   pull_request:
@@ -8,7 +8,7 @@ permissions:
   contents: write
 
 jobs:
-  diagnose:
+  fix:
     if: github.head_ref == 'agent/experiment-1-public-evaluation' && github.actor != 'github-actions[bot]'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
@@ -25,100 +25,13 @@ jobs:
       - name: Install pinned project tools
         run: python -m pip install -e '.[dev]'
 
-      - name: Apply explicit narrowing and record diagnostics
+      - name: Apply final type fixes
         run: |
           python - <<'PY'
           from pathlib import Path
 
-          bundle = Path('app/intake/bundle.py')
-          text = bundle.read_text(encoding='utf-8')
-          text = text.replace('from typing import Any\n', 'from typing import Any, cast\n')
-          text = text.replace(
-              'def _materialised_files(root: Path) -> tuple[dict[str, Path], list[IntakeViolation]]:\n'
-              '    files: dict[str, Path] = {}\n',
-              'def _materialised_files(root: Path) -> tuple[dict[str, Path], list[IntakeViolation]]:\n'
-              '    root_path: Path = cast(Path, root)\n'
-              '    files: dict[str, Path] = {}\n',
-          )
-          text = text.replace('for path in root.rglob("*"):', 'for entry in root_path.rglob("*"):')
-          text = text.replace('relative = path.relative_to(root).as_posix()', 'relative = entry.relative_to(root_path).as_posix()')
-          text = text.replace('if path == root / "manifest.json":', 'if entry == root_path / "manifest.json":')
-          text = text.replace('if path.is_symlink():', 'if entry.is_symlink():')
-          text = text.replace('if path.is_dir():', 'if entry.is_dir():')
-          text = text.replace('stat = path.stat()', 'stat = entry.stat()')
-          text = text.replace('if not path.is_file():', 'if not entry.is_file():')
-          text = text.replace('files[relative] = path', 'files[relative] = entry')
-          text = text.replace(
-              '        path = artifacts.get(declaration["path"])\n'
-              '        if path is None:\n'
-              '            continue\n'
-              '        report, error = _load_json(\n'
-              '            path,\n',
-              '        artifact_path = artifacts.get(declaration["path"])\n'
-              '        if artifact_path is None:\n'
-              '            continue\n'
-              '        report_path: Path = cast(Path, artifact_path)\n'
-              '        report, error = _load_json(\n'
-              '            report_path,\n',
-          )
-          text = text.replace(
-              '    path = artifacts.get(declaration["path"])\n'
-              '    if path is None:\n'
-              '        return None, violations\n'
-              '    audit, error = _load_json(\n'
-              '        path,\n',
-              '    audit_path = artifacts.get(declaration["path"])\n'
-              '    if audit_path is None:\n'
-              '        return None, violations\n'
-              '    resolved_audit_path: Path = cast(Path, audit_path)\n'
-              '    audit, error = _load_json(\n'
-              '        resolved_audit_path,\n',
-          )
-          text = text.replace(
-              '    root = Path(bundle_root)\n',
-              '    root_path: Path = Path(bundle_root)\n',
-          )
-          text = text.replace('if root.is_symlink() or not root.is_dir():', 'if root_path.is_symlink() or not root_path.is_dir():')
-          text = text.replace('manifest_path = root / "manifest.json"', 'manifest_path = root_path / "manifest.json"')
-          text = text.replace(
-              '    document, error = _load_json(\n',
-              '    document_raw, error = _load_json(\n',
-              1,
-          )
-          text = text.replace('violations.extend(_schema_violations(document))', 'violations.extend(_schema_violations(document_raw))')
-          text = text.replace('if violations or not isinstance(document, dict):', 'if violations or not isinstance(document_raw, dict):')
-          text = text.replace(
-              '        raise IntakeRejected(tuple(violations))\n\n    digest_violation = _check_manifest_digest(document)\n',
-              '        raise IntakeRejected(tuple(violations))\n'
-              '    manifest: dict[str, Any] = cast(dict[str, Any], document_raw)\n\n'
-              '    digest_violation = _check_manifest_digest(manifest)\n',
-              1,
-          )
-          text = text.replace('_check_lineage(document)', '_check_lineage(manifest)')
-          text = text.replace('_check_artifacts(root, document)', '_check_artifacts(root_path, manifest)')
-          text = text.replace('_check_test_reports(document, artifacts)', '_check_test_reports(manifest, artifacts)')
-          text = text.replace('_check_redactions(document, artifacts)', '_check_redactions(manifest, artifacts)')
-          text = text.replace('_load_model_audit(document, artifacts)', '_load_model_audit(manifest, artifacts)')
-          text = text.replace(
-              '    return IntakeBundle(\n'
-              '        root=root.resolve(),\n'
-              '        manifest=document,\n'
-              '        artifacts=artifacts,\n'
-              '        model_audit=model_audit,\n'
-              '    )\n',
-              '    model_audit_record: dict[str, Any] = cast(dict[str, Any], model_audit)\n'
-              '    return IntakeBundle(\n'
-              '        root=root_path.resolve(),\n'
-              '        manifest=manifest,\n'
-              '        artifacts=artifacts,\n'
-              '        model_audit=model_audit_record,\n'
-              '    )\n',
-          )
-          bundle.write_text(text, encoding='utf-8')
-
           evaluator = Path('app/evaluator/experiment_one.py')
           text = evaluator.read_text(encoding='utf-8')
-          text = text.replace('from typing import Any, Literal\n', 'from typing import Any, Literal, cast\n')
           text = text.replace(
               '        detail = "; ".join(\n'
               '            f"{item.code}@{item.pointer or \'/\'}" for item in exc.violations\n'
@@ -127,46 +40,38 @@ jobs:
               '            f"{item.code}@{item.pointer or \'/\'}" for item in exc.violations\n'
               '        )[:1000]\n',
           )
-          text = text.replace('detail or "intake rejected"', 'intake_detail or "intake rejected"')
           text = text.replace(
-              '    jobspec = bundle.manifest["jobspec_reference"]\n',
-              '    jobspec_raw = bundle.manifest.get("jobspec_reference")\n'
-              '    if not isinstance(jobspec_raw, dict):\n'
-              '        raise EvaluationInfrastructureError(\n'
-              '            "intake returned no JobSpec reference object"\n'
-              '        )\n'
-              '    jobspec: dict[str, Any] = cast(dict[str, Any], jobspec_raw)\n',
-          )
-          text = text.replace('    audit = bundle.model_audit\n', '    audit: dict[str, Any] = cast(dict[str, Any], bundle.model_audit)\n')
-          text = text.replace(
-              '    detail = path_error or f"changed paths: {list(paths)}"\n',
-              '    patch_detail: str = (\n'
-              '        path_error if path_error is not None else f"changed paths: {list(paths)}"\n'
-              '    )\n',
-          )
-          text = text.replace(
+              '    if path_error is None and not permitted:\n'
               '        detail = (\n'
-              '            "changed paths outside the permit set: "\n',
+              '            f"changed paths outside the permit set: {sorted(set(paths) - PERMITTED_PATCH_PATHS)}"\n'
+              '        )\n',
+              '    if path_error is None and not permitted:\n'
               '        patch_detail = (\n'
-              '            "changed paths outside the permit set: "\n',
+              '            f"changed paths outside the permit set: {sorted(set(paths) - PERMITTED_PATCH_PATHS)}"\n'
+              '        )\n',
           )
-          text = text.replace('_gate(3, "patch_paths", permitted, detail, f"/{patch_pointer}")', '_gate(3, "patch_paths", permitted, patch_detail, f"/{patch_pointer}")')
           evaluator.write_text(text, encoding='utf-8')
+
+          schema = Path('app/intake/schema_subset.py')
+          text = schema.read_text(encoding='utf-8')
+          text = text.replace(
+              '            out.extend(min(attempts, key=len))\n',
+              '            out.extend(min(attempts, key=lambda found: len(found)))\n',
+          )
+          schema.write_text(text, encoding='utf-8')
+
+          diagnostic = Path('docs/E5-TYPE-DIAGNOSTICS.txt')
+          if diagnostic.exists():
+              diagnostic.unlink()
           PY
+          ruff format app/evaluator/experiment_one.py app/intake/schema_subset.py
+          ruff check app/evaluator/experiment_one.py app/intake/bundle.py app/intake/schema_subset.py
+          mypy app
 
-          ruff format app/intake/bundle.py app/evaluator/experiment_one.py
-          {
-            echo '## Ruff'
-            ruff check app/intake/bundle.py app/evaluator/experiment_one.py || true
-            echo
-            echo '## Mypy'
-            mypy app || true
-          } > docs/E5-TYPE-DIAGNOSTICS.txt 2>&1
-
-      - name: Commit source and diagnostics for inspection
+      - name: Commit green type fixes
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add app/intake/bundle.py app/evaluator/experiment_one.py docs/E5-TYPE-DIAGNOSTICS.txt
-          git commit -m 'diagnostics: inspect Experiment 1 type narrowing'
+          git add -A app/evaluator/experiment_one.py app/intake/schema_subset.py docs/E5-TYPE-DIAGNOSTICS.txt
+          git commit -m 'fix: complete Experiment 1 type narrowing'
           git push origin HEAD:agent/experiment-1-public-evaluation
