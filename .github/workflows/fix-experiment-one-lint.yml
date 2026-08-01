@@ -1,15 +1,15 @@
 name: Fix Experiment 1 lint
 
 on:
-  push:
-    branches:
-      - agent/experiment-1-public-evaluation
+  pull_request:
+    types: [opened, reopened, synchronize]
 
 permissions:
   contents: write
 
 jobs:
   fix:
+    if: github.head_ref == 'agent/experiment-1-public-evaluation' && github.actor != 'github-actions[bot]'
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
