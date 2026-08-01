@@ -1,0 +1,172 @@
+name: Task 2B sequential evaluation (BLOCKED — preparation only)
+
+# =====================================================================
+# BLOCKED FROM MERGE AND FROM EXECUTION.
+#
+# This workflow is a scaffold. It has never been run, and in its current
+# form it CANNOT make a model request: no step contacts the gateway, and
+# the client's own guard (app/models/sequential_plan.assert_execution_allowed)
+# refuses egress while EXECUTION_BLOCKED is true. The `execution-gate` job
+# below is expected to FAIL. That is the signal, not a defect.
+#
+# Two things must be true before this may be merged or dispatched for real:
+#
+#   1. PR #1 is green and merged.
+#   2. A confirmed CKFF route with ZERO hidden proxy retries exists for
+#      every alias under evaluation. CKFF's documented five same-model
+#      retries make latency, failure and cost figures unattributable, and
+#      unattributable numbers are worse than none.
+#
+# Deliberately manual: workflow_dispatch only. No push, pull_request, or
+# schedule trigger, so nothing merges this into an automatic run by
+# accident. It is also NOT referenced by any other workflow.
+#
+# The evaluation set is deliberately NOT chosen. `models` is required and
+# has no default; the gateway exposes many aliases and which of them Task
+# 2B evaluates is an open research decision. See docs/task-2b-scaffold.md.
+#
+# The CKFF credential is deliberately not referenced anywhere below. A
+# workflow that makes no request needs no key, and a secret pulled into an
+# environment it does not need is a secret that can end up in a log.
+# =====================================================================
+
+on:
+  workflow_dispatch:
+    inputs:
+      models:
+        description: >-
+          JSON array of exact gateway aliases chosen by a human, e.g.
+          ["gpt-5.6-luna"] or ["[aws]glm-5", "[ds2] deepseek-v4-pro"].
+          Required, no default. Aliases are opaque strings; spaces and
+          brackets are expected and are never split or globbed.
+        required: true
+        type: string
+      selection_source:
+        description: Who chose this set and where it is written down.
+        required: true
+        type: string
+      request_timeout_seconds:
+        description: Per-request bound, seconds (ceiling 120).
+        required: false
+        default: "60"
+        type: string
+      total_wall_clock_seconds:
+        description: Whole-run bound, seconds (ceiling 3600).
+        required: false
+        default: "900"
+        type: string
+      max_requests_per_model:
+        description: Requests per model (ceiling 20).
+        required: false
+        default: "1"
+        type: string
+      max_completion_tokens:
+        description: Completion-token cap per request (ceiling 4096).
+        required: false
+        default: "512"
+        type: string
+      allow_unconfirmed_aliases:
+        description: Accept an alias not on the observed list, if the gateway changed.
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+# One run at a time, and never cancelled mid-flight: a cancelled run would
+# leave evidence that is short without saying so.
+concurrency:
+  group: task-2b-sequential-evaluation
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    name: Validate the selected model set (offline, no gateway request)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install the package
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip==25.3
+          pip install -e ".[dev]"
+
+      # Every dispatch input arrives through `env:` and is read as "$NAME".
+      # Nothing is interpolated into the shell text: an alias legitimately
+      # contains spaces and brackets, so `${{ inputs.models }}` inline would
+      # be both a quoting bug and a command-injection seam.
+      - name: Prepare the run plan
+        env:
+          MODELS: ${{ inputs.models }}
+          SELECTION_SOURCE: ${{ inputs.selection_source }}
+          REQUEST_TIMEOUT_SECONDS: ${{ inputs.request_timeout_seconds }}
+          TOTAL_WALL_CLOCK_SECONDS: ${{ inputs.total_wall_clock_seconds }}
+          MAX_REQUESTS_PER_MODEL: ${{ inputs.max_requests_per_model }}
+          MAX_COMPLETION_TOKENS: ${{ inputs.max_completion_tokens }}
+          ALLOW_UNCONFIRMED: ${{ inputs.allow_unconfirmed_aliases }}
+        run: |
+          set -euo pipefail
+          extra=()
+          if [ "$ALLOW_UNCONFIRMED" = "true" ]; then
+            extra+=(--allow-unconfirmed-aliases)
+          fi
+          python scripts/prepare_task_2b_run.py \
+            --models "$MODELS" \
+            --selection-source "$SELECTION_SOURCE" \
+            --request-timeout-seconds "$REQUEST_TIMEOUT_SECONDS" \
+            --total-wall-clock-seconds "$TOTAL_WALL_CLOCK_SECONDS" \
+            --max-requests-per-model "$MAX_REQUESTS_PER_MODEL" \
+            --max-completion-tokens "$MAX_COMPLETION_TOKENS" \
+            --output artifacts/task-2b-run-plan.json \
+            "${extra[@]}"
+
+      - name: Upload the run plan
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: task-2b-run-plan
+          path: artifacts/task-2b-run-plan.json
+          if-no-files-found: error
+          retention-days: 30
+
+  execution-gate:
+    name: Execution gate (expected to FAIL while Task 2B is blocked)
+    needs: preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install the package
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip==25.3
+          pip install -e ".[dev]"
+
+      # Fails while EXECUTION_BLOCKED is true. The steps that would issue
+      # requests are deliberately absent: they are to be written only after
+      # this gate passes, and adding them earlier would put an unreachable
+      # egress path in the repository, which is the kind of thing that stops
+      # being unreachable during a hurried edit.
+      - name: Assert the Task 2B preconditions are met
+        env:
+          MODELS: ${{ inputs.models }}
+        run: |
+          set -euo pipefail
+          python scripts/prepare_task_2b_run.py \
+            --models "$MODELS" \
+            --output artifacts/task-2b-gate-plan.json \
+            --assert-executable
