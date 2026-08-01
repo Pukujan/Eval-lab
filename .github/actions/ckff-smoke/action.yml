@@ -1,0 +1,24 @@
+name: CKFF gateway smoke check
+description: Make one bounded OpenAI-compatible request without client retries.
+
+inputs:
+  base-url:
+    description: HTTPS base URL for the CKFF LiteLLM gateway, without /v1.
+    required: true
+  api-key:
+    description: Restricted LiteLLM virtual key. Never pass the master key.
+    required: true
+  model:
+    description: Exact gateway model alias allowed by the virtual key.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Make one bounded gateway request
+      shell: bash
+      env:
+        CKFF_BASE_URL: ${{ inputs.base-url }}
+        CKFF_API_KEY: ${{ inputs.api-key }}
+        CKFF_MODEL: ${{ inputs.model }}
+      run: python3 "$GITHUB_ACTION_PATH/ckff_smoke.py"
