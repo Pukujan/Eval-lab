@@ -1,4 +1,9 @@
-# Staged implementation plan
+# Historical Task 1 implementation plan — S0–S16
+
+> **Historical record only.** This plan describes the Task 1 reliability walking
+> skeleton and is not the roadmap for Task 2A, Task 2B or Milestone 2. Current
+> phase, scope and sequencing are controlled by
+> [`PROJECT-CONTRACT.md`](PROJECT-CONTRACT.md).
 
 Small, independently testable steps. Each stage lands with its own tests green
 before the next begins; nothing downstream is started on a stage that is still red.
