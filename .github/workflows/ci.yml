@@ -37,16 +37,16 @@ jobs:
           pip install -e ".[dev]"
 
       - name: Format check
-        run: ruff format --check app evals scripts tests
+        run: ruff format --check app evals scripts tests .github/actions
 
       - name: Lint
-        run: ruff check app evals scripts tests
+        run: ruff check app evals scripts tests .github/actions
 
       - name: Type check
         run: mypy app
 
       - name: Security scan (application code)
-        run: bandit -q -r app -c pyproject.toml
+        run: bandit -q -r app .github/actions -c pyproject.toml
 
       - name: Dependency audit
         run: |
@@ -135,14 +135,32 @@ jobs:
           inspect eval evals/inspect/coding_eval.py \
             --model mockllm/model --log-dir evals/logs --display plain
 
+      # promptfoo exits 100 when any assertion fails, and here that is the
+      # DESIGNED result: identity-c (mock-minimalist) proposes only two distinct
+      # mechanism classes and is supposed to fail the diversity assertion in both
+      # tasks. Suppressing the exit code (`|| true`, continue-on-error) would make
+      # the step green by making it meaningless, and weakening the assertion would
+      # destroy the comparison it exists to produce. So we capture the exit status
+      # explicitly and hand it, with the report, to a gate that accepts only the
+      # expected outcome: exactly 4 passed / 2 failed, all failures from
+      # identity-c, cross-checked against every place the report states the counts.
+      # See scripts/check_promptfoo_report.py.
       - name: Promptfoo evaluation (mock provider)
-        env:
-          PROMPTFOO_PYTHON: ${{ github.workspace }}/../../../opt/hostedtoolcache/Python/bin/python
         run: |
           mkdir -p evals/reports
+          report="$GITHUB_WORKSPACE/evals/reports/promptfoo-report.json"
+          # No pipe, so $? is promptfoo's own status; `set +e` because a non-zero
+          # exit is expected and must be inspected rather than abort the step.
           cd evals/promptfoo
+          set +e
           PROMPTFOO_PYTHON="$(which python)" promptfoo eval \
-            -c promptfooconfig.yaml --no-cache -o ../reports/promptfoo-report.json
+            -c promptfooconfig.yaml --no-cache -o "$report"
+          promptfoo_status=$?
+          set -e
+          echo "promptfoo exit status: $promptfoo_status"
+          cd "$GITHUB_WORKSPACE"
+          python scripts/check_promptfoo_report.py \
+            --report "$report" --promptfoo-exit-code "$promptfoo_status"
 
       - name: Walking-skeleton demo
         env:
