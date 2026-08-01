@@ -18,7 +18,7 @@ import sys
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 from app.intake.bundle import (
     IntakeBundle,
@@ -358,7 +358,7 @@ def evaluate_experiment_one(
             bundle_id=bundle_id,
             manifest_digest=raw_digest,
             outcome="rejected",
-            gates=[_gate(0, "intake", False, detail or "intake rejected")],
+            gates=[_gate(0, "intake", False, intake_detail or "intake rejected")],
             rationale="The submitted evidence failed deterministic intake before execution.",
             decided_at=decided,
         )
@@ -376,7 +376,10 @@ def evaluate_experiment_one(
         )
     ]
 
-    jobspec = bundle.manifest["jobspec_reference"]
+    jobspec_raw = bundle.manifest.get("jobspec_reference")
+    if not isinstance(jobspec_raw, dict):
+        raise EvaluationInfrastructureError("intake returned no JobSpec reference object")
+    jobspec: dict[str, Any] = cast(dict[str, Any], jobspec_raw)
     if jobspec["jobspec_id"] != EXPECTED_JOBSPEC_ID:
         gates.append(
             _gate(
@@ -418,7 +421,7 @@ def evaluate_experiment_one(
             decided_at=decided,
         )
 
-    audit = bundle.model_audit
+    audit: dict[str, Any] = cast(dict[str, Any], bundle.model_audit)
     model_matches = (
         audit["requested_model"] == expected_requested_model
         and audit["resolved_model"] == expected_resolved_model
@@ -458,12 +461,12 @@ def evaluate_experiment_one(
     patch_text = patch_path.read_text(encoding="utf-8", errors="strict")
     paths, path_error = _patch_paths(patch_text)
     permitted = path_error is None and set(paths).issubset(PERMITTED_PATCH_PATHS)
-    detail = path_error or f"changed paths: {list(paths)}"
+    patch_detail: str = path_error if path_error is not None else f"changed paths: {list(paths)}"
     if path_error is None and not permitted:
         detail = (
             f"changed paths outside the permit set: {sorted(set(paths) - PERMITTED_PATCH_PATHS)}"
         )
-    gates.append(_gate(3, "patch_paths", permitted, detail, f"/{patch_pointer}"))
+    gates.append(_gate(3, "patch_paths", permitted, patch_detail, f"/{patch_pointer}"))
     if not permitted:
         return _finish(
             evaluation_run_id=evaluation_run_id,

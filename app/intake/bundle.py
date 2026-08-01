@@ -6,7 +6,7 @@ import hashlib
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from app.intake.schema_subset import schema_by_title, validate
 
@@ -115,31 +115,32 @@ def _check_lineage(manifest: dict[str, Any]) -> list[IntakeViolation]:
 
 
 def _materialised_files(root: Path) -> tuple[dict[str, Path], list[IntakeViolation]]:
+    root_path: Path = cast(Path, root)
     files: dict[str, Path] = {}
     violations: list[IntakeViolation] = []
     total_bytes = 0
-    for path in root.rglob("*"):
-        relative = path.relative_to(root).as_posix()
-        if path == root / "manifest.json":
+    for entry in root_path.rglob("*"):
+        relative = entry.relative_to(root_path).as_posix()
+        if entry == root_path / "manifest.json":
             continue
-        if path.is_symlink():
+        if entry.is_symlink():
             violations.append(IntakeViolation("symlink_not_allowed", f"/{relative}"))
             continue
-        if path.is_dir():
+        if entry.is_dir():
             continue
         try:
-            stat = path.stat()
+            stat = entry.stat()
         except OSError as exc:
             violations.append(
                 IntakeViolation("artifact_stat_failed", f"/{relative}", type(exc).__name__)
             )
             continue
-        if not path.is_file():
+        if not entry.is_file():
             violations.append(IntakeViolation("non_regular_entry", f"/{relative}"))
             continue
         if stat.st_nlink != 1:
             violations.append(IntakeViolation("hard_link_not_allowed", f"/{relative}"))
-        files[relative] = path
+        files[relative] = entry
         total_bytes += stat.st_size
     if len(files) > MAX_FILES:
         violations.append(IntakeViolation("too_many_materialised_files", "", str(len(files))))
@@ -211,11 +212,12 @@ def _check_test_reports(
                 )
             )
             continue
-        path = artifacts.get(declaration["path"])
-        if path is None:
+        artifact_path = artifacts.get(declaration["path"])
+        if artifact_path is None:
             continue
+        report_path: Path = cast(Path, artifact_path)
         report, error = _load_json(
-            path,
+            report_path,
             code="test_report_invalid_json",
             pointer=f"/{declaration['path']}",
         )
@@ -281,11 +283,12 @@ def _load_model_audit(
             )
         ]
     declaration = candidates[0]
-    path = artifacts.get(declaration["path"])
-    if path is None:
+    audit_path = artifacts.get(declaration["path"])
+    if audit_path is None:
         return None, violations
+    resolved_audit_path: Path = cast(Path, audit_path)
     audit, error = _load_json(
-        path,
+        resolved_audit_path,
         code="model_audit_invalid_json",
         pointer=f"/{declaration['path']}",
     )
@@ -325,41 +328,43 @@ def _load_model_audit(
 
 def intake_submission(bundle_root: Path) -> IntakeBundle:
     """Validate all public structure and materialisation before any execution."""
-    root = Path(bundle_root)
+    root_path: Path = Path(bundle_root)
     violations: list[IntakeViolation] = []
-    if root.is_symlink() or not root.is_dir():
+    if root_path.is_symlink() or not root_path.is_dir():
         raise IntakeRejected((IntakeViolation("bundle_root_not_directory", ""),))
-    manifest_path = root / "manifest.json"
+    manifest_path = root_path / "manifest.json"
     if manifest_path.is_symlink() or not manifest_path.is_file():
         raise IntakeRejected((IntakeViolation("manifest_missing", "/manifest.json"),))
 
-    document, error = _load_json(
+    document_raw, error = _load_json(
         manifest_path,
         code="manifest_invalid_json",
         pointer="/manifest.json",
     )
     if error:
         raise IntakeRejected((error,))
-    violations.extend(_schema_violations(document))
-    if violations or not isinstance(document, dict):
+    violations.extend(_schema_violations(document_raw))
+    if violations or not isinstance(document_raw, dict):
         raise IntakeRejected(tuple(violations))
+    manifest: dict[str, Any] = cast(dict[str, Any], document_raw)
 
-    digest_violation = _check_manifest_digest(document)
+    digest_violation = _check_manifest_digest(manifest)
     if digest_violation:
         violations.append(digest_violation)
-    violations.extend(_check_lineage(document))
-    artifacts, materialisation = _check_artifacts(root, document)
+    violations.extend(_check_lineage(manifest))
+    artifacts, materialisation = _check_artifacts(root_path, manifest)
     violations.extend(materialisation)
-    violations.extend(_check_test_reports(document, artifacts))
-    violations.extend(_check_redactions(document, artifacts))
-    model_audit, audit_violations = _load_model_audit(document, artifacts)
+    violations.extend(_check_test_reports(manifest, artifacts))
+    violations.extend(_check_redactions(manifest, artifacts))
+    model_audit, audit_violations = _load_model_audit(manifest, artifacts)
     violations.extend(audit_violations)
 
     if violations or model_audit is None:
         raise IntakeRejected(tuple(violations))
+    model_audit_record: dict[str, Any] = cast(dict[str, Any], model_audit)
     return IntakeBundle(
-        root=root.resolve(),
-        manifest=document,
+        root=root_path.resolve(),
+        manifest=manifest,
         artifacts=artifacts,
-        model_audit=model_audit,
+        model_audit=model_audit_record,
     )
