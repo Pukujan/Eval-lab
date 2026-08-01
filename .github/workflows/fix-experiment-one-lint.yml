@@ -40,11 +40,41 @@ jobs:
               '    intake_submission,\n'
               ')\n',
           )
+          text = text.replace(
+              '            "Schema, manifest, artifact, lineage, report, redaction, and model-audit checks passed.",\n',
+              '            (\n'
+              '                "Schema, manifest, artifact, lineage, report, redaction, "\n'
+              '                "and model-audit checks passed."\n'
+              '            ),\n',
+          )
+          text = text.replace(
+              '                f"client_retries={audit[\'client_retry_count\']}, redirects={audit[\'redirects_followed\']}"\n',
+              '                f"client_retries={audit[\'client_retry_count\']}, "\n'
+              '                f"redirects={audit[\'redirects_followed\']}"\n',
+          )
+          text = text.replace(
+              '                    else f"Independent visible tests failed or timed out: {(visible.stdout + visible.stderr)[-500:]}"\n',
+              '                    else (\n'
+              '                        "Independent visible tests failed or timed out: "\n'
+              '                        f"{(visible.stdout + visible.stderr)[-500:]}"\n'
+              '                    )\n',
+          )
+          text = text.replace(
+              '            forced_rationale="The evaluation harness failed; this outcome says nothing about the submitted patch.",\n',
+              '            forced_rationale=(\n'
+              '                "The evaluation harness failed; this outcome says nothing "\n'
+              '                "about the submitted patch."\n'
+              '            ),\n',
+          )
           evaluator.write_text(text, encoding='utf-8')
 
           bundle = Path('app/intake/bundle.py')
           text = bundle.read_text(encoding='utf-8')
           text = text.replace('import os\n', '')
+          text = text.replace(
+              'from app.intake.schema_subset import SchemaViolation, schema_by_title, validate\n',
+              'from app.intake.schema_subset import schema_by_title, validate\n',
+          )
           bundle.write_text(text, encoding='utf-8')
           PY
           ruff format app/evaluator/experiment_one.py app/intake/bundle.py
