@@ -24,6 +24,10 @@ artifacts/
 .promptfoo/
 node_modules/
 
+# Scratch git worktrees created for isolated subagent runs. Working copies of
+# this repository, not content of it.
+.claude/worktrees/
+
 # Tooling caches
 .pytest_cache/
 .mypy_cache/
