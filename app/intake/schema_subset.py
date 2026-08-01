@@ -110,7 +110,11 @@ def _validate(
         elif len(matching) > 1:
             out.append(SchemaViolation("one_of_ambiguous", pointer))
         else:
-            out.extend(min(attempts, key=lambda found: len(found)))
+            shortest = attempts[0]
+            for found in attempts[1:]:
+                if len(found) < len(shortest):
+                    shortest = found
+            out.extend(shortest)
 
     if "type" in schema and not _type_matches(instance, schema["type"]):
         out.append(SchemaViolation("type_mismatch", pointer, schema["type"]))
