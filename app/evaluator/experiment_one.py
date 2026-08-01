@@ -352,7 +352,9 @@ def evaluate_experiment_one(
         bundle = intake_submission(bundle_root)
     except IntakeRejected as exc:
         bundle_id, raw_digest = _safe_input_identity(bundle_root)
-        detail = "; ".join(f"{item.code}@{item.pointer or '/'}" for item in exc.violations)[:1000]
+        intake_detail = "; ".join(f"{item.code}@{item.pointer or '/'}" for item in exc.violations)[
+            :1000
+        ]
         return _outcome_report(
             evaluation_run_id=evaluation_run_id,
             bundle_id=bundle_id,
@@ -463,7 +465,7 @@ def evaluate_experiment_one(
     permitted = path_error is None and set(paths).issubset(PERMITTED_PATCH_PATHS)
     patch_detail: str = path_error if path_error is not None else f"changed paths: {list(paths)}"
     if path_error is None and not permitted:
-        detail = (
+        patch_detail = (
             f"changed paths outside the permit set: {sorted(set(paths) - PERMITTED_PATCH_PATHS)}"
         )
     gates.append(_gate(3, "patch_paths", permitted, patch_detail, f"/{patch_pointer}"))

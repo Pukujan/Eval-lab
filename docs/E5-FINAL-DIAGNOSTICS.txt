@@ -1,0 +1,6 @@
+## Ruff
+All checks passed!
+
+## Mypy
+app/intake/schema_subset.py:113: error: Argument 1 to "len" has incompatible type "Iterable[SchemaViolation]"; expected "Sized"  [arg-type]
+Found 1 error in 1 file (checked 46 source files)
