@@ -31,27 +31,35 @@ jobs:
           from pathlib import Path
 
           evaluator = Path('app/evaluator/experiment_one.py')
-          text = evaluator.read_text(encoding='utf-8')
-          old = '''        detail = "; ".join(f"{item.code}@{item.pointer or '/'}" for item in exc.violations)[:1000]\n'''
-          new = '''        intake_detail = "; ".join(\n            f"{item.code}@{item.pointer or '/'}" for item in exc.violations\n        )[:1000]\n'''
-          if old not in text:
-              raise SystemExit('intake detail pattern not found')
-          text = text.replace(old, new, 1)
-
-          old = '''    if path_error is None and not permitted:\n        detail = (\n            f"changed paths outside the permit set: {sorted(set(paths) - PERMITTED_PATCH_PATHS)}"\n        )\n'''
-          new = '''    if path_error is None and not permitted:\n        patch_detail = (\n            f"changed paths outside the permit set: {sorted(set(paths) - PERMITTED_PATCH_PATHS)}"\n        )\n'''
-          if old not in text:
-              raise SystemExit('patch detail pattern not found')
-          text = text.replace(old, new, 1)
-          evaluator.write_text(text, encoding='utf-8')
+          lines = evaluator.read_text(encoding='utf-8').splitlines(keepends=True)
+          intake_fixed = False
+          patch_fixed = False
+          for index, line in enumerate(lines):
+              if 'detail = "; ".join(' in line and 'exc.violations' in line:
+                  lines[index] = line.replace('detail =', 'intake_detail =', 1)
+                  intake_fixed = True
+              if line == '        detail = (\n' and index > 0 and 'path_error is None' in lines[index - 1]:
+                  lines[index] = '        patch_detail = (\n'
+                  patch_fixed = True
+          if not intake_fixed:
+              raise SystemExit('intake detail line not found')
+          if not patch_fixed:
+              raise SystemExit('patch detail line not found')
+          evaluator.write_text(''.join(lines), encoding='utf-8')
 
           schema = Path('app/intake/schema_subset.py')
           text = schema.read_text(encoding='utf-8')
-          old = '            out.extend(min(attempts, key=len))\n'
-          new = '            out.extend(min(attempts, key=lambda found: len(found)))\n'
+          old = 'out.extend(min(attempts, key=len))'
           if old not in text:
-              raise SystemExit('schema min pattern not found')
-          schema.write_text(text.replace(old, new, 1), encoding='utf-8')
+              raise SystemExit('schema min line not found')
+          schema.write_text(
+              text.replace(
+                  old,
+                  'out.extend(min(attempts, key=lambda found: len(found)))',
+                  1,
+              ),
+              encoding='utf-8',
+          )
 
           diagnostic = Path('docs/E5-TYPE-DIAGNOSTICS.txt')
           if diagnostic.exists():
