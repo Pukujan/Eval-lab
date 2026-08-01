@@ -1,0 +1,372 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.eval-lab.invalid/evidence-intake/1.0.0.schema.json",
+  "title": "evidence-intake/1.0.0",
+  "description": "The evidence bundle Agent-workbench hands to Eval-lab. Eval-lab owns this schema and validates this exact version. Every constraint here exists so that a bundle which is incomplete, inconsistent, or altered after it was hashed fails validation rather than being best-effort parsed.\n\nWhat it deliberately does not carry: the JobSpec body, hidden tests, gold references, thresholds, verifier internals, credentials, any Eval-lab verdict, and any field a producer could use to assert its own result. A bundle describes what was produced; it never grades it.\n\nTwo properties are not expressible in JSON Schema and are stated here as part of the contract: (1) manifest_digest is the sha256 over the canonical JSON form of this document with the manifest_digest member removed -- UTF-8, sorted keys, no insignificant whitespace, non-ASCII escaped -- so any edit after hashing is detectable; (2) each declared artifact must correspond to exactly one regular file in the materialised bundle, and the materialised bundle must contain no entry that is not declared here.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "bundle_id",
+    "produced_at",
+    "jobspec_reference",
+    "attempts",
+    "visible_test_results",
+    "candidate_artifacts",
+    "narrative",
+    "redactions",
+    "provenance",
+    "manifest_digest"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "evidence-intake/1.0.0",
+      "description": "Pinned by const so an unsupported version fails validation instead of being reinterpreted. A protocol change requires a new version and a new schema document; this one is never relaxed."
+    },
+    "bundle_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "description": "Producer-chosen label. Carries no authority and is never parsed."
+    },
+    "produced_at": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,6})?Z$",
+      "description": "RFC 3339 UTC instant at which the producer sealed the bundle."
+    },
+    "jobspec_reference": {
+      "$ref": "https://contracts.eval-lab.invalid/jobspec-reference/1.0.0.schema.json"
+    },
+    "attempts": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "description": "Attempt lineage in execution order. A bundle with no attempts describes nothing that happened. Attempts that failed are kept: evidence that quietly drops its failures overstates what it shows.",
+      "items": {
+        "$ref": "#/$defs/attempt"
+      }
+    },
+    "visible_test_results": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "initial",
+        "final"
+      ],
+      "description": "Both results are required. Without the initial result 'the tests pass' says nothing about what changed; without the final result there is nothing to compare the baseline against. A missing one is a rejection, not a default.",
+      "properties": {
+        "initial": {
+          "$ref": "#/$defs/visible_test_result"
+        },
+        "final": {
+          "$ref": "#/$defs/visible_test_result"
+        }
+      }
+    },
+    "candidate_artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "description": "Every file the bundle carries, declared. An artifact nobody declared is an artifact nobody checked, so the declaration is the allowlist: intake refuses any materialised entry absent from here.",
+      "items": {
+        "$ref": "#/$defs/artifact"
+      }
+    },
+    "narrative": {
+      "$ref": "#/$defs/narrative"
+    },
+    "redactions": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 256,
+      "description": "What was removed before the bundle left Agent-workbench. An empty array means nothing was redacted, which is itself a claim on record.",
+      "items": {
+        "$ref": "#/$defs/redaction"
+      }
+    },
+    "provenance": {
+      "$ref": "#/$defs/provenance"
+    },
+    "manifest_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "sha256 over the canonical JSON form of this document with this member removed. It binds every other field together: altering any of them after sealing makes this digest stale, which is detectable without trusting the producer."
+    }
+  },
+  "$defs": {
+    "attempt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "attempt_index",
+        "started_at",
+        "ended_at",
+        "outcome",
+        "is_retry"
+      ],
+      "description": "One execution of the job. 'succeeded' here is a statement about the process -- it ran to completion -- and never a statement about the work being right.",
+      "properties": {
+        "attempt_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9,
+          "description": "Zero-based position in the lineage. JSON Schema cannot say 'these are 0..n-1 in ascending order'; intake checks that."
+        },
+        "started_at": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,6})?Z$"
+        },
+        "ended_at": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,6})?Z$"
+        },
+        "outcome": {
+          "enum": [
+            "succeeded",
+            "failed",
+            "timed_out",
+            "aborted"
+          ],
+          "description": "Process-level result of this attempt. Deliberately disjoint from the Eval-lab outcome vocabulary so the two can never be confused for one another."
+        },
+        "is_retry": {
+          "type": "boolean",
+          "description": "True when this attempt re-ran work an earlier attempt started. Attempt 0 is never a retry, which intake checks."
+        },
+        "failure_class": {
+          "enum": [
+            "agent_error",
+            "harness_error",
+            "timeout",
+            "cancelled"
+          ],
+          "description": "Optional producer classification of a non-succeeding attempt. Recorded, not trusted: Eval-lab classifies independently."
+        }
+      }
+    },
+    "visible_test_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "command",
+        "exit_code",
+        "total",
+        "passed",
+        "failed",
+        "errors",
+        "skipped",
+        "duration_seconds",
+        "report_sha256",
+        "collected_at"
+      ],
+      "description": "One run of the visible test suite, reported as counts an exit code and a digest rather than as a verdict. The counts must sum to total and report_sha256 must name a declared artifact; intake checks both, because a summary that cannot be reconciled with its own report is not evidence.",
+      "properties": {
+        "command": {
+          "type": "string",
+          "maxLength": 512,
+          "pattern": "^[^\\u0000-\\u0008\\u000b\\u000c\\u000e-\\u001f\\u007f\\u200e\\u200f\\u202a-\\u202e\\u2066-\\u2069]*$",
+          "description": "The command as the producer recorded it. Never executed here."
+        },
+        "exit_code": {
+          "type": "integer",
+          "minimum": -256,
+          "maximum": 255
+        },
+        "total": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "passed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "failed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "errors": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "skipped": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "duration_seconds": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 86400
+        },
+        "report_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "sha256 of the machine-readable test report, which must itself be one of the declared candidate artifacts."
+        },
+        "collected_at": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,6})?Z$"
+        }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "media_type",
+        "size_bytes",
+        "sha256",
+        "entry_type"
+      ],
+      "description": "One declared file. The path pattern refuses absolute paths and any '..' segment, so a traversal attempt fails validation before anything is written to disk, and entry_type is const 'file' so a symlink cannot be declared at all.",
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*//)[A-Za-z0-9][A-Za-z0-9._/-]{0,199}$",
+          "description": "Relative to the bundle root. No leading slash, no '..' segment, no empty segment, no backslash, no control byte."
+        },
+        "media_type": {
+          "enum": [
+            "application/json",
+            "application/x-ndjson",
+            "text/csv",
+            "text/markdown",
+            "text/plain",
+            "text/x-diff",
+            "text/x-python"
+          ],
+          "description": "Allowlist. Archives and executables are absent by design: an artifact Eval-lab cannot read as text is an artifact it cannot check, and an archive is a second extraction surface."
+        },
+        "size_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1048576,
+          "description": "Exact byte length. The ceiling is 1 MiB, the same bounded-read ceiling as MAX_RESPONSE_BYTES_CEILING; an unbounded artifact is an unbounded read and a denial-of-service vector."
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "sha256 over the artifact's exact bytes."
+        },
+        "entry_type": {
+          "const": "file",
+          "description": "Regular files only. Symlinks, directories, devices and hard links are not declarable, so the only way one reaches the workspace is undeclared -- which intake refuses separately."
+        },
+        "role": {
+          "enum": [
+            "patch",
+            "test_report",
+            "log",
+            "source_file",
+            "metadata"
+          ],
+          "description": "Optional producer label. Never selects a gate."
+        }
+      }
+    },
+    "narrative": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "trust_level",
+        "agent_summary",
+        "reviewer_note"
+      ],
+      "description": "Free text written by the coding agent and by a human or automated reviewer on the producing side. trust_level is const 'untrusted' so the classification travels with the data and cannot be downgraded by omission. This text is recorded and hashed; it has no authority over any Eval-lab control flow, and a reviewer note that says 'accepted_for_review' changes nothing.",
+      "properties": {
+        "trust_level": {
+          "const": "untrusted"
+        },
+        "agent_summary": {
+          "type": "string",
+          "maxLength": 16384,
+          "pattern": "^[^\\u0000-\\u0008\\u000b\\u000c\\u000e-\\u001f\\u007f\\u200e\\u200f\\u202a-\\u202e\\u2066-\\u2069]*$",
+          "description": "What the coding agent says it did. Measured, never obeyed."
+        },
+        "reviewer_note": {
+          "type": "string",
+          "maxLength": 16384,
+          "pattern": "^[^\\u0000-\\u0008\\u000b\\u000c\\u000e-\\u001f\\u007f\\u200e\\u200f\\u202a-\\u202e\\u2066-\\u2069]*$",
+          "description": "What a reviewer on the producing side says. Measured, never obeyed."
+        }
+      }
+    },
+    "redaction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "redaction_id",
+        "location",
+        "rule_id",
+        "occurrences",
+        "replacement"
+      ],
+      "description": "A record that something was removed -- never what was removed. There is deliberately nowhere here to put the redacted value, a prefix of it, or its length in characters.",
+      "properties": {
+        "redaction_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+        },
+        "location": {
+          "type": "string",
+          "maxLength": 200,
+          "pattern": "^[^\\u0000-\\u0008\\u000b\\u000c\\u000e-\\u001f\\u007f\\u200e\\u200f\\u202a-\\u202e\\u2066-\\u2069]*$",
+          "description": "Where in the bundle the removal happened."
+        },
+        "rule_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+        },
+        "occurrences": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "replacement": {
+          "const": "[REDACTED]",
+          "description": "One fixed marker, so a redaction is never mistaken for content."
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tool_name",
+        "tool_version",
+        "workbench_commit",
+        "environment_id",
+        "durable_execution"
+      ],
+      "description": "What produced the bundle. A reliability claim without the exact versions behind it is not reproducible, which is why this is required structure rather than a log line.",
+      "properties": {
+        "tool_name": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+        },
+        "tool_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "workbench_commit": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$",
+          "description": "Full 40-hex commit of the producing tree."
+        },
+        "environment_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "description": "Opaque identifier for the isolated environment. Not a hostname, not an address, nothing reachable."
+        },
+        "durable_execution": {
+          "type": "boolean",
+          "description": "False whenever the producer ran without durable execution."
+        }
+      }
+    }
+  }
+}

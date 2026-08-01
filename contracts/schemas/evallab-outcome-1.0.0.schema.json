@@ -1,0 +1,263 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.eval-lab.invalid/evallab-outcome/1.0.0.schema.json",
+  "title": "evallab-outcome/1.0.0",
+  "description": "What Eval-lab emits about one evaluation run, for humans and downstream readers. Eval-lab owns this schema.\n\nNothing in it can express a correctness or production-safety claim. The outcome enum holds exactly four values and 'approved', 'correct', 'safe' and 'production_ready' are not among them; additionalProperties is false everywhere, so they cannot be smuggled in as extra members either. The single positive outcome, accepted_for_review, means every deterministic gate passed and a human should look -- no more than that.\n\nno_merge_performed, no_deployment_performed and human_review_required are const true rather than booleans, because they are not outcomes of this run that could have gone the other way: they are properties of what Eval-lab is permitted to do at all. A report that could set them false would be describing a different system.\n\nThe verifier attestation appears only as a digest binding. Nothing of the verifier's internals, hidden tests or per-test results crosses into here.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "evaluation_run_id",
+    "bundle_id",
+    "bundle_manifest_digest",
+    "outcome",
+    "rationale",
+    "decided_at",
+    "gate_results",
+    "scorers",
+    "verifier_attestation",
+    "caveats",
+    "durable_execution",
+    "no_merge_performed",
+    "no_deployment_performed",
+    "human_review_required"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "evallab-outcome/1.0.0",
+      "description": "Pinned. An unsupported version is rejected, never reinterpreted."
+    },
+    "evaluation_run_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "bundle_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+      "description": "The bundle this decision is about, by its producer-chosen label."
+    },
+    "bundle_manifest_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "The manifest digest of the exact bundle decided on. The label above can be reused; this cannot, so it is what ties a report to one input."
+    },
+    "outcome": {
+      "enum": [
+        "accepted_for_review",
+        "rejected",
+        "abstained",
+        "infrastructure_failure"
+      ],
+      "description": "Exactly four values, and no others. accepted_for_review = every deterministic gate passed and a human should look. rejected = at least one deterministic gate failed. abstained = Eval-lab declined to judge, which is not a claim the work is wrong. infrastructure_failure = the harness failed, which says nothing about the work."
+    },
+    "rationale": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000,
+      "pattern": "^[^\\u0000-\\u0008\\u000b\\u000c\\u000e-\\u001f\\u007f\\u200e\\u200f\\u202a-\\u202e\\u2066-\\u2069]*$",
+      "description": "Why this outcome, in terms of the gates that produced it. Authored by Eval-lab, so it is not untrusted input -- but it is still constrained to printable text so a report cannot be made unreadable by what it quotes."
+    },
+    "decided_at": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,6})?Z$"
+    },
+    "gate_results": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "description": "The deterministic gates, in the order they ran. A decision citing no gate is a decision with no evidence behind it, so at least one is required.",
+      "items": {
+        "$ref": "#/$defs/gate_result"
+      }
+    },
+    "scorers": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 32,
+      "description": "Every rubric scorer that ran, with the versions and the model that actually answered. Empty is legitimate: a run rejected by a deterministic gate never reaches scoring.",
+      "items": {
+        "$ref": "#/$defs/scorer_record"
+      }
+    },
+    "verifier_attestation": {
+      "description": "A reference to the verifier's attestation, or null when no verifier was invoked. Digests and one minimal verdict only -- there is nowhere here to record a hidden test, a per-test result or a threshold, and Eval-lab must not try to infer any of them.",
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/attestation_reference"
+        }
+      ]
+    },
+    "caveats": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 64,
+      "description": "Everything that weakens this report, stated in it rather than discovered later. Non-durable execution and a mocked verifier both belong here.",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 500,
+        "pattern": "^[^\\u0000-\\u0008\\u000b\\u000c\\u000e-\\u001f\\u007f\\u200e\\u200f\\u202a-\\u202e\\u2066-\\u2069]*$"
+      }
+    },
+    "durable_execution": {
+      "type": "boolean",
+      "description": "False whenever the evaluation ran on the degraded local executor."
+    },
+    "no_merge_performed": {
+      "const": true,
+      "description": "Eval-lab never merges. Const, because there is no path where it does."
+    },
+    "no_deployment_performed": {
+      "const": true,
+      "description": "Eval-lab never deploys. Const, for the same reason."
+    },
+    "human_review_required": {
+      "const": true,
+      "description": "A human remains the only authority that can accept work. True for every outcome including accepted_for_review, which is the one most likely to be misread as an approval."
+    }
+  },
+  "$defs": {
+    "gate_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "order",
+        "gate_id",
+        "passed",
+        "detail"
+      ],
+      "description": "One deterministic gate's verdict and the artifact it read.",
+      "properties": {
+        "order": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 63,
+          "description": "Execution position. JSON Schema cannot require 0..n-1 ascending; the decision policy checks that."
+        },
+        "gate_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+        },
+        "passed": {
+          "type": "boolean"
+        },
+        "detail": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000,
+          "pattern": "^[^\\u0000-\\u0008\\u000b\\u000c\\u000e-\\u001f\\u007f\\u200e\\u200f\\u202a-\\u202e\\u2066-\\u2069]*$",
+          "description": "What the gate read, not what it concluded about the work."
+        },
+        "evidence_pointer": {
+          "type": "string",
+          "maxLength": 200,
+          "pattern": "^[^\\u0000-\\u0008\\u000b\\u000c\\u000e-\\u001f\\u007f\\u200e\\u200f\\u202a-\\u202e\\u2066-\\u2069]*$",
+          "description": "Optional JSON Pointer into the bundle the gate read."
+        }
+      }
+    },
+    "scorer_record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scorer_id",
+        "scorer_version",
+        "prompt_version",
+        "configuration_digest",
+        "requested_model",
+        "resolved_model"
+      ],
+      "description": "What scored, at which version, with which prompt and configuration, and which model actually answered. requested_model and resolved_model are both recorded because a gateway may serve an alias with something other than what the alias names, and a score attributed to the wrong model is worse than no score.",
+      "properties": {
+        "scorer_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+        },
+        "scorer_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "prompt_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "configuration_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "sha256 over the scorer's full resolved configuration, so a score cannot be reproduced against a different one by accident."
+        },
+        "requested_model": {
+          "type": "string",
+          "maxLength": 200,
+          "pattern": "^[^\\u0000-\\u0008\\u000b\\u000c\\u000e-\\u001f\\u007f\\u200e\\u200f\\u202a-\\u202e\\u2066-\\u2069]*$",
+          "description": "The alias Eval-lab asked for."
+        },
+        "resolved_model": {
+          "type": "string",
+          "maxLength": 200,
+          "pattern": "^[^\\u0000-\\u0008\\u000b\\u000c\\u000e-\\u001f\\u007f\\u200e\\u200f\\u202a-\\u202e\\u2066-\\u2069]*$",
+          "description": "What the gateway reported having served, read back from the response rather than assumed from the alias."
+        }
+      }
+    },
+    "attestation_reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "envelope_version",
+        "request_id",
+        "attestation_digest",
+        "bound_jobspec_digest",
+        "bound_manifest_digest",
+        "bound_artifact_digests",
+        "verdict"
+      ],
+      "properties": {
+        "envelope_version": {
+          "const": "verifier-envelope/1.0.0"
+        },
+        "request_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$",
+          "description": "The request this attestation answers."
+        },
+        "attestation_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "sha256 the verifier published over its own attestation record. A reference, not the record: Eval-lab stores no verifier content."
+        },
+        "bound_jobspec_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "The JobSpec digest the attestation was bound to."
+        },
+        "bound_manifest_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "The bundle manifest digest the attestation was bound to. It must equal bundle_manifest_digest above; an attestation for different bytes is a mismatch, not a pass."
+        },
+        "bound_artifact_digests": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "verdict": {
+          "enum": [
+            "satisfied",
+            "not_satisfied",
+            "indeterminate"
+          ],
+          "description": "The verifier's whole answer. 'satisfied' means the verifier's private checks were met for these exact digests -- it is not a correctness claim and does not by itself decide the outcome."
+        }
+      }
+    }
+  }
+}

