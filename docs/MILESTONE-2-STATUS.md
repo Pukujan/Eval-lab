@@ -1,12 +1,13 @@
 # Milestone 2 status — Durable Evidence Evaluation Pipeline
 
-Consolidated tracker. One document, updated as workstreams land. Frozen contracts
-live in [`END-STATE-CONTRACT.md`](END-STATE-CONTRACT.md) and
-[`MILESTONE-2-ACCEPTANCE.md`](MILESTONE-2-ACCEPTANCE.md); those are the default
-authority for implementation decisions, not this file.
+Consolidated tracker. One document, updated as workstreams land. Frozen technical
+contracts live in [`END-STATE-CONTRACT.md`](END-STATE-CONTRACT.md) and
+[`MILESTONE-2-ACCEPTANCE.md`](MILESTONE-2-ACCEPTANCE.md). Current phase, scope and
+sequencing are controlled by [`PROJECT-CONTRACT.md`](PROJECT-CONTRACT.md).
 
 **Nothing is merged to the repository default branch. No live CKFF workflow has
-been dispatched. No private verifier access has occurred.**
+been dispatched. No private verifier access has occurred. Workstreams 2–7 are
+paused pending human approval of the reduced one-model, one-fixture experiment.**
 
 ## Baseline
 
@@ -17,6 +18,22 @@ been dispatched. No private verifier access has occurred.**
 | Task 2B scaffold | `0588f48437fbe1723ed6189787dad404658de2ae` |
 | Task 2A frozen baseline | `verification/task-2a-baseline.json` (unchanged) |
 | Default branch | `claude/reliability-walking-skeleton-31b6a2` — **not** a merge target for this milestone |
+
+## Current authorization
+
+The current phase is governance reset and experiment definition. Workstream 1's
+contracts are retained as design inputs. They do not authorize broad parallel
+implementation.
+
+The only next work that may be proposed is the minimum cross-repository path for:
+
+> one live frontier coding model in Agent-workbench → one original model-authored
+> patch → one versioned evidence bundle → Eval-lab evaluation → optional minimal
+> verifier attestation → human review
+
+No implementation begins until a human approves the exact fixture, model boundary,
+evidence path, Eval-lab checks, verifier usage or omission, changed files,
+acceptance checks, non-goals and stop condition.
 
 ## Frozen protocol versions
 
@@ -35,16 +52,17 @@ reinterpreted.
 | WS | Name | Branch | Owner | Current commit | Status |
 |---|---|---|---|---|---|
 | 1 | Contract and protocol | `milestone-2/ws1-contracts`, `milestone-2/ws1-adrs` | coordinator + agents | `2407056`, `0df41f8` — both merged | **complete: interfaces frozen** |
-| 2 | Durable orchestration | `milestone-2/ws2-orchestration` | unassigned | — | not started |
-| 3 | Evidence intake and isolation | `milestone-2/ws3-intake` | unassigned | — | not started |
-| 4 | Public evaluator | `milestone-2/ws4-evaluator` | unassigned | — | not started |
-| 5 | CKFF provider | `milestone-2/ws5-ckff-provider` | unassigned | — | not started |
-| 6 | Verifier boundary | `milestone-2/ws6-verifier-boundary` | unassigned | — | not started |
-| 7 | Integration | `milestone-2/ws7-integration` | coordinator | — | not started |
+| 2 | Durable orchestration | `milestone-2/ws2-orchestration` | unassigned | — | **paused; not started** |
+| 3 | Evidence intake and isolation | `milestone-2/ws3-intake` | unassigned | — | **paused; not started** |
+| 4 | Public evaluator | `milestone-2/ws4-evaluator` | unassigned | — | **paused; not started** |
+| 5 | CKFF provider | `milestone-2/ws5-ckff-provider` | unassigned | — | **paused; not started** |
+| 6 | Verifier boundary | `milestone-2/ws6-verifier-boundary` | unassigned | — | **paused; not started** |
+| 7 | Integration | `milestone-2/ws7-integration` | coordinator | — | **paused; not started** |
 
-Workstream 1 freezes interfaces before parallel implementation begins. Workstreams
-2–6 may then proceed in parallel. Workstream 7 is the sole owner of cross-cutting
-files and is the only one that resolves conflicts.
+Workstream 1 froze interfaces. Workstreams 2–7 remain unassigned and may not start
+until the reduced experiment packet is approved under `PROJECT-CONTRACT.md`.
+The ownership map below remains the conflict-avoidance rule for any later approved
+implementation; it is not an instruction to begin that implementation.
 
 ## File ownership
 
@@ -123,14 +141,21 @@ complete here until it is demonstrated by a passing automated test.
 | F — outcome discipline | F1–F5 | 0 | 0 |
 | G — regression | G1–G4 | 4 (currently green at baseline) | 0 |
 
+The zero counts above are not implementation backlog authorization. The next
+approved experiment may satisfy only a minimal subset. Broader completion remains
+deferred until after the central experiment is reviewed.
+
 ## Contract changes
 
-None. The contract was frozen at version 1.0.0 on 2026-08-01 and has not moved.
+The frozen public protocol contract remains version `1.0.0`; no schema or protocol
+meaning changed in the governance reset.
 
-Any change requires a written ADR, impact analysis across Agent-workbench /
-Eval-lab / verifier boundary / fixtures / existing evidence, changed acceptance
-tests, protocol-version analysis, and explicit coordinator approval. Reinterpreting
-an existing schema version to avoid creating a new one is not permitted.
+`PROJECT-CONTRACT.md` adds roadmap governance: it pauses broad implementation,
+names the next central experiment and defines the phase-change process. A frozen
+protocol change still requires a written ADR, impact analysis across
+Agent-workbench / Eval-lab / verifier boundary / fixtures / existing evidence,
+changed acceptance tests, protocol-version analysis and explicit coordinator
+approval. Reinterpreting an existing schema version is not permitted.
 
 ## Unresolved security and ownership decisions
 
@@ -157,14 +182,15 @@ an existing schema version to avoid creating a new one is not permitted.
 Workstream 1 is complete and merged into `milestone-2/integration`: four frozen
 contract documents, seven ADRs (0014–0020), four JSON Schemas at version `1.0.0`,
 and sixteen fixtures (3 valid, 13 hostile) with a manifest naming the exact
-expected rejection reason for each hostile case. Suite green at 739 passed,
-3 skipped, with lint, format, types and security clean.
+expected rejection reason for each hostile case. Its recorded validation was 739
+passed, 3 skipped, with lint, format, types and security clean.
 
-Interfaces are frozen, so workstreams 2–6 may now start in parallel.
+Workstreams 2–7 are paused. Interfaces being frozen is necessary but no longer
+sufficient authorization to begin broad implementation.
 
-Nothing merged to the default branch; no live workflow dispatched; no private
-verifier access; `agent3/task-2b-scaffold` remains blocked until its live
-preconditions are evidenced.
+Nothing is merged to the default branch; no live workflow is recorded as
+dispatched; no private-verifier access is recorded; `agent3/task-2b-scaffold`
+remains blocked until its live prerequisites are evidenced.
 
 ### Known gaps recorded rather than papered over
 
@@ -178,15 +204,14 @@ open acceptance item:
 | Run-scoped verifier query budget — policy, not yet enforcement | 0016 | E3 |
 | Durable approval wait — mechanism chosen, no run has exercised it | 0017 | D7 |
 
-Six properties cannot be expressed in JSON Schema at all and are owned by the
-intake and evaluator workstreams instead, listed in `contracts/README.md`: the
-manifest digest binding the document; declared digests matching real bytes;
-"nothing undeclared and no symlink" in a materialised bundle (a filesystem
-property); attempt-index ordering and retry-budget arithmetic; test-count
+Six properties cannot be expressed in JSON Schema and remain implementation
+responsibilities rather than demonstrated features: manifest digest binding;
+declared digests matching real bytes; no undeclared member or symlink in a
+materialized bundle; attempt ordering and retry arithmetic; test-count
 reconciliation; and gate ordering plus attestation digest binding.
 
-One honest limit on the outcome schema: `rationale` and `caveats` are free prose,
-so no schema can stop someone *writing* a correctness claim. What it does
-guarantee is that no *field* can express one — the enum has four values and
-`additionalProperties: false` blocks smuggling. Prose discipline stays with
+One limit on the outcome schema remains: `rationale` and `caveats` are free prose,
+so a schema cannot stop someone writing a correctness claim. It does ensure no
+structured field can express one: the enum has four values and
+`additionalProperties: false` blocks smuggling. Prose discipline remains with
 `tests/unit/test_outcome_vocabulary.py`.
