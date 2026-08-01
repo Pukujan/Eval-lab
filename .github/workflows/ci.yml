@@ -37,16 +37,16 @@ jobs:
           pip install -e ".[dev]"
 
       - name: Format check
-        run: ruff format --check app evals scripts tests
+        run: ruff format --check app evals scripts tests .github/actions
 
       - name: Lint
-        run: ruff check app evals scripts tests
+        run: ruff check app evals scripts tests .github/actions
 
       - name: Type check
         run: mypy app
 
       - name: Security scan (application code)
-        run: bandit -q -r app -c pyproject.toml
+        run: bandit -q -r app .github/actions -c pyproject.toml
 
       - name: Dependency audit
         run: |

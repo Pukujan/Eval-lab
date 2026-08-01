@@ -57,18 +57,18 @@ test:
 	$(PYTEST) tests -q
 
 lint:
-	$(VENV)/bin/ruff check app evals scripts tests
-	$(VENV)/bin/ruff format --check app evals scripts tests
+	$(VENV)/bin/ruff check app evals scripts tests .github/actions
+	$(VENV)/bin/ruff format --check app evals scripts tests .github/actions
 
 format:
-	$(VENV)/bin/ruff format app evals scripts tests
-	$(VENV)/bin/ruff check --fix app evals scripts tests
+	$(VENV)/bin/ruff format app evals scripts tests .github/actions
+	$(VENV)/bin/ruff check --fix app evals scripts tests .github/actions
 
 typecheck:
 	$(VENV)/bin/mypy app
 
 security:
-	$(VENV)/bin/bandit -q -r app -c pyproject.toml
+	$(VENV)/bin/bandit -q -r app .github/actions -c pyproject.toml
 
 eval: eval-inspect eval-promptfoo
 
