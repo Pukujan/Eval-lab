@@ -32,33 +32,26 @@ jobs:
 
           evaluator = Path('app/evaluator/experiment_one.py')
           text = evaluator.read_text(encoding='utf-8')
-          text = text.replace(
-              '        detail = "; ".join(\n'
-              '            f"{item.code}@{item.pointer or \'/\'}" for item in exc.violations\n'
-              '        )[:1000]\n',
-              '        intake_detail = "; ".join(\n'
-              '            f"{item.code}@{item.pointer or \'/\'}" for item in exc.violations\n'
-              '        )[:1000]\n',
-          )
-          text = text.replace(
-              '    if path_error is None and not permitted:\n'
-              '        detail = (\n'
-              '            f"changed paths outside the permit set: {sorted(set(paths) - PERMITTED_PATCH_PATHS)}"\n'
-              '        )\n',
-              '    if path_error is None and not permitted:\n'
-              '        patch_detail = (\n'
-              '            f"changed paths outside the permit set: {sorted(set(paths) - PERMITTED_PATCH_PATHS)}"\n'
-              '        )\n',
-          )
+          old = '''        detail = "; ".join(f"{item.code}@{item.pointer or '/'}" for item in exc.violations)[:1000]\n'''
+          new = '''        intake_detail = "; ".join(\n            f"{item.code}@{item.pointer or '/'}" for item in exc.violations\n        )[:1000]\n'''
+          if old not in text:
+              raise SystemExit('intake detail pattern not found')
+          text = text.replace(old, new, 1)
+
+          old = '''    if path_error is None and not permitted:\n        detail = (\n            f"changed paths outside the permit set: {sorted(set(paths) - PERMITTED_PATCH_PATHS)}"\n        )\n'''
+          new = '''    if path_error is None and not permitted:\n        patch_detail = (\n            f"changed paths outside the permit set: {sorted(set(paths) - PERMITTED_PATCH_PATHS)}"\n        )\n'''
+          if old not in text:
+              raise SystemExit('patch detail pattern not found')
+          text = text.replace(old, new, 1)
           evaluator.write_text(text, encoding='utf-8')
 
           schema = Path('app/intake/schema_subset.py')
           text = schema.read_text(encoding='utf-8')
-          text = text.replace(
-              '            out.extend(min(attempts, key=len))\n',
-              '            out.extend(min(attempts, key=lambda found: len(found)))\n',
-          )
-          schema.write_text(text, encoding='utf-8')
+          old = '            out.extend(min(attempts, key=len))\n'
+          new = '            out.extend(min(attempts, key=lambda found: len(found)))\n'
+          if old not in text:
+              raise SystemExit('schema min pattern not found')
+          schema.write_text(text.replace(old, new, 1), encoding='utf-8')
 
           diagnostic = Path('docs/E5-TYPE-DIAGNOSTICS.txt')
           if diagnostic.exists():
