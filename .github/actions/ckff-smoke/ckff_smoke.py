@@ -83,6 +83,6 @@ def main() -> int:
 if __name__ == "__main__":
     try:
         raise SystemExit(main())
-    except (RuntimeError, ValueError, json.JSONDecodeError) as exc:
+    except (RuntimeError, ValueError) as exc:
         print(f"CKFF smoke check failed: {exc}", file=sys.stderr)
         raise SystemExit(1) from exc
