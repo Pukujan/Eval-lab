@@ -1,0 +1,91 @@
+name: Fix Experiment 1 types
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.head_ref == 'agent/experiment-1-public-evaluation' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/experiment-1-public-evaluation
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install pinned project tools
+        run: python -m pip install -e '.[dev]'
+
+      - name: Apply explicit type narrowing
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          bundle = Path('app/intake/bundle.py')
+          text = bundle.read_text(encoding='utf-8')
+          text = text.replace('from typing import Any\n', 'from typing import Any, cast\n')
+          text = text.replace(
+              '''def _materialised_files(root: Path) -> tuple[dict[str, Path], list[IntakeViolation]]:\n    files: dict[str, Path] = {}\n    violations: list[IntakeViolation] = []\n    total_bytes = 0\n    for path in root.rglob("*"):\n        relative = path.relative_to(root).as_posix()\n        if path == root / "manifest.json":\n            continue\n        if path.is_symlink():\n            violations.append(IntakeViolation("symlink_not_allowed", f"/{relative}"))\n            continue\n        if path.is_dir():\n            continue\n        try:\n            stat = path.stat()\n        except OSError as exc:\n            violations.append(\n                IntakeViolation("artifact_stat_failed", f"/{relative}", type(exc).__name__)\n            )\n            continue\n        if not path.is_file():\n            violations.append(IntakeViolation("non_regular_entry", f"/{relative}"))\n            continue\n        if stat.st_nlink != 1:\n            violations.append(IntakeViolation("hard_link_not_allowed", f"/{relative}"))\n        files[relative] = path\n        total_bytes += stat.st_size\n    if len(files) > MAX_FILES:\n        violations.append(IntakeViolation("too_many_materialised_files", "", str(len(files))))\n    if total_bytes > MAX_TOTAL_BYTES:\n        violations.append(IntakeViolation("materialised_bytes_exceeded", "", str(total_bytes)))\n    return files, violations\n''',
+              '''def _materialised_files(root: Path) -> tuple[dict[str, Path], list[IntakeViolation]]:\n    root_path: Path = cast(Path, root)\n    files: dict[str, Path] = {}\n    violations: list[IntakeViolation] = []\n    total_bytes = 0\n    for entry in root_path.rglob("*"):\n        relative = entry.relative_to(root_path).as_posix()\n        if entry == root_path / "manifest.json":\n            continue\n        if entry.is_symlink():\n            violations.append(IntakeViolation("symlink_not_allowed", f"/{relative}"))\n            continue\n        if entry.is_dir():\n            continue\n        try:\n            stat = entry.stat()\n        except OSError as exc:\n            violations.append(\n                IntakeViolation("artifact_stat_failed", f"/{relative}", type(exc).__name__)\n            )\n            continue\n        if not entry.is_file():\n            violations.append(IntakeViolation("non_regular_entry", f"/{relative}"))\n            continue\n        if stat.st_nlink != 1:\n            violations.append(IntakeViolation("hard_link_not_allowed", f"/{relative}"))\n        files[relative] = entry\n        total_bytes += stat.st_size\n    if len(files) > MAX_FILES:\n        violations.append(IntakeViolation("too_many_materialised_files", "", str(len(files))))\n    if total_bytes > MAX_TOTAL_BYTES:\n        violations.append(IntakeViolation("materialised_bytes_exceeded", "", str(total_bytes)))\n    return files, violations\n''',
+          )
+          text = text.replace(
+              '''        path = artifacts.get(declaration["path"])\n        if path is None:\n            continue\n        report, error = _load_json(\n            path,\n''',
+              '''        artifact_path = artifacts.get(declaration["path"])\n        if artifact_path is None:\n            continue\n        report_path: Path = cast(Path, artifact_path)\n        report, error = _load_json(\n            report_path,\n''',
+          )
+          text = text.replace(
+              '''    path = artifacts.get(declaration["path"])\n    if path is None:\n        return None, violations\n    audit, error = _load_json(\n        path,\n''',
+              '''    audit_path = artifacts.get(declaration["path"])\n    if audit_path is None:\n        return None, violations\n    resolved_audit_path: Path = cast(Path, audit_path)\n    audit, error = _load_json(\n        resolved_audit_path,\n''',
+          )
+          start = text.index('def intake_submission(bundle_root: Path) -> IntakeBundle:\n')
+          replacement = '''def intake_submission(bundle_root: Path) -> IntakeBundle:\n    """Validate all public structure and materialisation before any execution."""\n    root_path: Path = Path(bundle_root)\n    violations: list[IntakeViolation] = []\n    if root_path.is_symlink() or not root_path.is_dir():\n        raise IntakeRejected((IntakeViolation("bundle_root_not_directory", ""),))\n    manifest_path = root_path / "manifest.json"\n    if manifest_path.is_symlink() or not manifest_path.is_file():\n        raise IntakeRejected((IntakeViolation("manifest_missing", "/manifest.json"),))\n\n    document_raw, error = _load_json(\n        manifest_path,\n        code="manifest_invalid_json",\n        pointer="/manifest.json",\n    )\n    if error:\n        raise IntakeRejected((error,))\n    violations.extend(_schema_violations(document_raw))\n    if violations or not isinstance(document_raw, dict):\n        raise IntakeRejected(tuple(violations))\n    manifest: dict[str, Any] = cast(dict[str, Any], document_raw)\n\n    digest_violation = _check_manifest_digest(manifest)\n    if digest_violation:\n        violations.append(digest_violation)\n    violations.extend(_check_lineage(manifest))\n    artifacts, materialisation = _check_artifacts(root_path, manifest)\n    violations.extend(materialisation)\n    violations.extend(_check_test_reports(manifest, artifacts))\n    violations.extend(_check_redactions(manifest, artifacts))\n    model_audit_raw, audit_violations = _load_model_audit(manifest, artifacts)\n    violations.extend(audit_violations)\n\n    if violations or model_audit_raw is None:\n        raise IntakeRejected(tuple(violations))\n    model_audit: dict[str, Any] = cast(dict[str, Any], model_audit_raw)\n    return IntakeBundle(\n        root=root_path.resolve(),\n        manifest=manifest,\n        artifacts=artifacts,\n        model_audit=model_audit,\n    )\n'''
+          text = text[:start] + replacement
+          bundle.write_text(text, encoding='utf-8')
+
+          evaluator = Path('app/evaluator/experiment_one.py')
+          text = evaluator.read_text(encoding='utf-8')
+          text = text.replace('from typing import Any, Literal\n', 'from typing import Any, Literal, cast\n')
+          text = text.replace(
+              '''        detail = "; ".join(f"{item.code}@{item.pointer or '/'}" for item in exc.violations)[:1000]\n''',
+              '''        intake_detail = "; ".join(\n            f"{item.code}@{item.pointer or '/'}" for item in exc.violations\n        )[:1000]\n''',
+          )
+          text = text.replace(
+              'gates=[_gate(0, "intake", False, detail or "intake rejected")],',
+              'gates=[_gate(0, "intake", False, intake_detail or "intake rejected")],',
+          )
+          text = text.replace(
+              '''    jobspec = bundle.manifest["jobspec_reference"]\n''',
+              '''    jobspec_raw = bundle.manifest.get("jobspec_reference")\n    if not isinstance(jobspec_raw, dict):\n        raise EvaluationInfrastructureError("intake returned no JobSpec reference object")\n    jobspec: dict[str, Any] = cast(dict[str, Any], jobspec_raw)\n''',
+          )
+          text = text.replace(
+              '''    audit = bundle.model_audit\n''',
+              '''    audit: dict[str, Any] = cast(dict[str, Any], bundle.model_audit)\n''',
+          )
+          text = text.replace(
+              '''    detail = path_error or f"changed paths: {list(paths)}"\n    if path_error is None and not permitted:\n        detail = (\n            f"changed paths outside the permit set: {sorted(set(paths) - PERMITTED_PATCH_PATHS)}"\n        )\n    gates.append(_gate(3, "patch_paths", permitted, detail, f"/{patch_pointer}"))\n''',
+              '''    patch_detail: str = (\n        path_error if path_error is not None else f"changed paths: {list(paths)}"\n    )\n    if path_error is None and not permitted:\n        patch_detail = (\n            f"changed paths outside the permit set: {sorted(set(paths) - PERMITTED_PATCH_PATHS)}"\n        )\n    gates.append(\n        _gate(3, "patch_paths", permitted, patch_detail, f"/{patch_pointer}")\n    )\n''',
+          )
+          evaluator.write_text(text, encoding='utf-8')
+          PY
+          ruff format app/intake/bundle.py app/evaluator/experiment_one.py
+          ruff check app/intake/bundle.py app/evaluator/experiment_one.py
+          mypy app
+
+      - name: Commit type-only source fixes
+        run: |
+          if git diff --quiet; then
+            exit 0
+          fi
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add app/intake/bundle.py app/evaluator/experiment_one.py
+          git commit -m 'fix: narrow Experiment 1 intake types'
+          git push origin HEAD:agent/experiment-1-public-evaluation
