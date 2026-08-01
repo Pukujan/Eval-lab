@@ -27,8 +27,7 @@ class IntakeRejected(ValueError):
     def __init__(self, violations: tuple[IntakeViolation, ...]) -> None:
         self.violations = violations
         rendered = "; ".join(
-            f"{item.code}@{item.pointer or '/'}"
-            + (f" ({item.detail})" if item.detail else "")
+            f"{item.code}@{item.pointer or '/'}" + (f" ({item.detail})" if item.detail else "")
             for item in violations
         )
         super().__init__(rendered or "evidence intake rejected")
@@ -194,12 +193,13 @@ def _check_test_reports(
     manifest: dict[str, Any], artifacts: dict[str, Path]
 ) -> list[IntakeViolation]:
     violations: list[IntakeViolation] = []
-    by_digest = {
-        item["sha256"]: item for item in manifest["candidate_artifacts"]
-    }
+    by_digest = {item["sha256"]: item for item in manifest["candidate_artifacts"]}
     for phase in ("initial", "final"):
         summary = manifest["visible_test_results"][phase]
-        if summary["passed"] + summary["failed"] + summary["errors"] + summary["skipped"] != summary["total"]:
+        if (
+            summary["passed"] + summary["failed"] + summary["errors"] + summary["skipped"]
+            != summary["total"]
+        ):
             violations.append(
                 IntakeViolation("test_counts_do_not_sum", f"/visible_test_results/{phase}")
             )
@@ -224,9 +224,7 @@ def _check_test_reports(
             violations.append(error)
             continue
         if not isinstance(report, dict):
-            violations.append(
-                IntakeViolation("test_report_not_object", f"/{declaration['path']}")
-            )
+            violations.append(IntakeViolation("test_report_not_object", f"/{declaration['path']}"))
             continue
         counts = _counts_from_report(report)
         expected = (
@@ -256,9 +254,7 @@ def _check_redactions(
         count = text.count("[redacted]") + text.count("[REDACTED]")
         if count:
             observed[relative] = count
-    recorded = {
-        item["location"]: item["occurrences"] for item in manifest["redactions"]
-    }
+    recorded = {item["location"]: item["occurrences"] for item in manifest["redactions"]}
     if recorded != observed:
         violations.append(
             IntakeViolation(
@@ -281,7 +277,9 @@ def _load_model_audit(
     ]
     if len(candidates) != 1:
         return None, [
-            IntakeViolation("model_audit_count_invalid", "/candidate_artifacts", str(len(candidates)))
+            IntakeViolation(
+                "model_audit_count_invalid", "/candidate_artifacts", str(len(candidates))
+            )
         ]
     declaration = candidates[0]
     path = artifacts.get(declaration["path"])
@@ -319,7 +317,9 @@ def _load_model_audit(
         len(content_digest) == 64 and all(char in "0123456789abcdef" for char in content_digest)
     ):
         violations.append(
-            IntakeViolation("model_content_digest_invalid", f"/{declaration['path']}/content_sha256")
+            IntakeViolation(
+                "model_content_digest_invalid", f"/{declaration['path']}/content_sha256"
+            )
         )
     return audit, violations
 

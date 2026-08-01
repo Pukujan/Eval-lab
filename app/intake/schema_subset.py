@@ -77,9 +77,7 @@ def _type_matches(instance: Any, expected: str) -> bool:
     raise AssertionError(f"unsupported schema type {expected!r}")
 
 
-def _resolve(
-    ref: str, root: dict[str, Any]
-) -> tuple[dict[str, Any], dict[str, Any]]:
+def _resolve(ref: str, root: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
     if ref.startswith("#/"):
         node: Any = root
         for token in ref[2:].split("/"):
@@ -123,13 +121,9 @@ def _validate(
         if pointer.endswith(("/schema_version", "/envelope_version")):
             code = "unsupported_schema_version"
         expected = schema["const"]
-        out.append(
-            SchemaViolation(code, pointer, expected if isinstance(expected, str) else None)
-        )
+        out.append(SchemaViolation(code, pointer, expected if isinstance(expected, str) else None))
 
-    if "enum" in schema and not any(
-        _json_equal(instance, option) for option in schema["enum"]
-    ):
+    if "enum" in schema and not any(_json_equal(instance, option) for option in schema["enum"]):
         out.append(SchemaViolation("enum_not_allowed", pointer))
 
     if isinstance(instance, str):

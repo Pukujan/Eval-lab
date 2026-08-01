@@ -118,9 +118,7 @@ def _write_submission(
     initial_size, initial_digest = _write_json(
         root / "evidence/visible-tests-initial.json", initial_report
     )
-    final_size, final_digest = _write_json(
-        root / "evidence/visible-tests-final.json", final_report
-    )
+    final_size, final_digest = _write_json(root / "evidence/visible-tests-final.json", final_report)
     audit = {
         "requested_model": requested_model,
         "resolved_model": resolved_model,
@@ -134,9 +132,7 @@ def _write_submission(
         "redirects_followed": 0,
         "content_sha256": "2" * 64,
     }
-    audit_size, audit_digest = _write_json(
-        root / "evidence/model-proxy-audit.json", audit
-    )
+    audit_size, audit_digest = _write_json(root / "evidence/model-proxy-audit.json", audit)
 
     manifest: dict[str, Any] = {
         "schema_version": "evidence-intake/1.0.0",
@@ -289,9 +285,12 @@ def test_duct_tape_is_rejected_even_when_visible_tests_pass(tmp_path: Path) -> N
     assert _gate(report, "public_visible_tests")["passed"] is True
     assert _gate(report, "effect_once")["passed"] is False
     assert _gate(report, "not_symptom_suppression")["passed"] is False
-    assert "accepted_for_review" in json.loads(
-        (submission / "manifest.json").read_text(encoding="utf-8")
-    )["narrative"]["agent_summary"]
+    assert (
+        "accepted_for_review"
+        in json.loads((submission / "manifest.json").read_text(encoding="utf-8"))["narrative"][
+            "agent_summary"
+        ]
+    )
 
 
 def test_altered_patch_is_rejected_at_intake_before_workspace_creation(tmp_path: Path) -> None:
@@ -334,9 +333,7 @@ def test_unknown_jobspec_abstains_without_execution(tmp_path: Path) -> None:
 
 def test_jobspec_digest_mismatch_is_rejected(tmp_path: Path) -> None:
     patch = _patch_for(tmp_path, "src/processor.py", FIXTURE / "reference/processor.py")
-    submission = _write_submission(
-        tmp_path / "submission", patch=patch, jobspec_digest="9" * 64
-    )
+    submission = _write_submission(tmp_path / "submission", patch=patch, jobspec_digest="9" * 64)
     report = _evaluate(submission, tmp_path / "workspaces")
     assert report["outcome"] == "rejected"
     assert _gate(report, "jobspec_correspondence")["passed"] is False

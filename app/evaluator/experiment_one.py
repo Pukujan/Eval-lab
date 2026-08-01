@@ -86,8 +86,16 @@ def _run(
             shell=False,
         )
     except subprocess.TimeoutExpired as exc:
-        stdout = exc.stdout.decode("utf-8", errors="replace") if isinstance(exc.stdout, bytes) else (exc.stdout or "")
-        stderr = exc.stderr.decode("utf-8", errors="replace") if isinstance(exc.stderr, bytes) else (exc.stderr or "")
+        stdout = (
+            exc.stdout.decode("utf-8", errors="replace")
+            if isinstance(exc.stdout, bytes)
+            else (exc.stdout or "")
+        )
+        stderr = (
+            exc.stderr.decode("utf-8", errors="replace")
+            if isinstance(exc.stderr, bytes)
+            else (exc.stderr or "")
+        )
         return CommandResult(argv, None, stdout, stderr, True)
     except OSError as exc:
         raise EvaluationInfrastructureError(
@@ -186,7 +194,9 @@ def _copy_public_fixture(destination: Path) -> None:
     shutil.copytree(FIXTURE_ROOT / "tests_visible", destination / "tests_visible")
     shutil.copy2(FIXTURE_ROOT / "probe.py", destination / "probe.py")
     if any((destination / name).exists() for name in ("patches", "reference", "tests_hidden")):
-        raise EvaluationInfrastructureError("private or reference fixture material entered workspace")
+        raise EvaluationInfrastructureError(
+            "private or reference fixture material entered workspace"
+        )
 
 
 def _patch_paths(patch_text: str) -> tuple[tuple[str, ...], str | None]:
@@ -254,9 +264,7 @@ def _apply_patch(workspace: Path, patch_path: Path) -> tuple[bool, str]:
 
 def _find_patch(bundle: IntakeBundle) -> tuple[Path | None, str]:
     declarations = [
-        item
-        for item in bundle.manifest["candidate_artifacts"]
-        if item.get("role") == "patch"
+        item for item in bundle.manifest["candidate_artifacts"] if item.get("role") == "patch"
     ]
     if len(declarations) != 1:
         return None, f"expected exactly one patch artifact, found {len(declarations)}"
@@ -340,9 +348,7 @@ def evaluate_experiment_one(
         bundle = intake_submission(bundle_root)
     except IntakeRejected as exc:
         bundle_id, raw_digest = _safe_input_identity(bundle_root)
-        detail = "; ".join(
-            f"{item.code}@{item.pointer or '/'}" for item in exc.violations
-        )[:1000]
+        detail = "; ".join(f"{item.code}@{item.pointer or '/'}" for item in exc.violations)[:1000]
         return _outcome_report(
             evaluation_run_id=evaluation_run_id,
             bundle_id=bundle_id,
@@ -446,10 +452,10 @@ def evaluate_experiment_one(
     permitted = path_error is None and set(paths).issubset(PERMITTED_PATCH_PATHS)
     detail = path_error or f"changed paths: {list(paths)}"
     if path_error is None and not permitted:
-        detail = f"changed paths outside the permit set: {sorted(set(paths) - PERMITTED_PATCH_PATHS)}"
-    gates.append(
-        _gate(3, "patch_paths", permitted, detail, f"/{patch_pointer}")
-    )
+        detail = (
+            f"changed paths outside the permit set: {sorted(set(paths) - PERMITTED_PATCH_PATHS)}"
+        )
+    gates.append(_gate(3, "patch_paths", permitted, detail, f"/{patch_pointer}"))
     if not permitted:
         return _finish(
             evaluation_run_id=evaluation_run_id,
