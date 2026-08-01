@@ -106,9 +106,25 @@ For each repository that needs gateway access:
 2. Add repository variable `CKFF_BASE_URL` with the public gateway URL.
 3. Keep the model name in workflow input or a non-secret repository variable.
 
+**In this repository, `CKFF_BASE_URL` must be the evaluation service:**
+
+```text
+https://litellm-eval-production.up.railway.app
+```
+
+The connectivity workflow has no default and refuses to run if the variable is
+missing or set to anything else. That is deliberate: a fallback pointing at the
+production gateway would produce a *green* connectivity check against a service
+whose retries, pooled routes, cooldowns and parameter-dropping make its latency
+and failure numbers unattributable. The dangerous failure mode there is that it
+appears to work.
+
 This repository includes a manual workflow named **CKFF connectivity**. It makes
-one bounded request, performs no client retry, and prints only metadata and a
-hash of the returned content.
+one bounded request, performs no client retry, **follows no redirect**, and
+prints only metadata and a hash of the returned content. Refusing redirects
+matters because urllib would otherwise copy the `Authorization` header to the
+redirect target — across origins and onto plain `http` — so a redirect is a
+credential-disclosure path, not a routing detail.
 
 Other repositories can call the reusable composite action after this change is
 merged. Pin it to the exact merge commit:

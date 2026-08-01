@@ -68,7 +68,10 @@ ignore = ["S603", "S607"]
 # S101: asserts are the point of a test file.
 # S108: hard-coded /tmp paths are test *inputs* — the strings a path-confinement
 #       test feeds in to prove they are refused, not paths anything writes to.
-"tests/**" = ["S101", "S108"]
+# S105: a key-shaped literal is the test *subject* — the redirect and redaction
+#       tests must feed in something that looks exactly like a real credential
+#       to prove it never reaches a redirect target or an error message.
+"tests/**" = ["S101", "S108", "S105"]
 "fixtures/**" = ["S101"]
 "evals/**" = ["S101"]
 

@@ -24,6 +24,10 @@ artifacts/
 .promptfoo/
 node_modules/
 
+# Agent worktrees. These are live checkouts of other branches created by the
+# harness; committing them would nest working copies inside the repository.
+.claude/worktrees/
+
 # Tooling caches
 .pytest_cache/
 .mypy_cache/
