@@ -19,7 +19,7 @@ env:
 jobs:
   smoke:
     name: One bounded CKFF request
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, gravebuster, Eval-lab]
     timeout-minutes: 5
     steps:
       - name: Check out repository

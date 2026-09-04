@@ -36,7 +36,7 @@ permissions:
 jobs:
   durable-stack:
     name: Clean-runner Compose + Temporal durability proof
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, gravebuster, Eval-lab]
     timeout-minutes: 45
 
     steps:

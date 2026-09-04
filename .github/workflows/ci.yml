@@ -23,7 +23,7 @@ permissions:
 jobs:
   static:
     name: Format, lint, types, security
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, gravebuster, Eval-lab]
     steps:
       - uses: actions/checkout@v5
 
@@ -57,7 +57,7 @@ jobs:
 
   test:
     name: Unit, property and acceptance tests
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, gravebuster, Eval-lab]
     steps:
       - uses: actions/checkout@v5
 
@@ -93,7 +93,7 @@ jobs:
 
   integration:
     name: Containers, integration tests and mock evaluations
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, gravebuster, Eval-lab]
     steps:
       - uses: actions/checkout@v5
 
