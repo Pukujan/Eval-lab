@@ -90,4 +90,6 @@ TASK-0004 local implementation and validation are complete in `D:\claude\eval-la
 
 Local gate: contract `OK`; Ruff clean; `47 passed in 0.78s` using Python `3.12.10` in the dedicated `.venv`.
 
-Next atomic action: commit and push TASK-0004, open its review PR, and update the task/checkpoint log with the PR URL before merging.
+TASK-0004 is pushed in PR [#18](https://github.com/Pukujan/Eval-lab/pull/18) at commit `a428c75a1dfd23887050c8891737f041833f061a`.
+
+Next atomic action: merge PR #18 after the local merge gate, update local `main`, and only then create the TASK-0005 worktree.

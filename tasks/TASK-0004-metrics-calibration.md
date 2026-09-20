@@ -144,6 +144,14 @@ Blockers: none. The known GitHub Actions no-runner condition remains external in
 
 Next atomic action: commit the validated TASK-0004 implementation, push `task/TASK-0004-metrics-calibration`, open the review PR, and update this log with its URL before merge.
 
+### 2026-09-20 — TASK-0004 PR handoff
+
+Commit `a428c75a1dfd23887050c8891737f041833f061a` pushed to `task/TASK-0004-metrics-calibration`.
+
+Pull request: [#18](https://github.com/Pukujan/Eval-lab/pull/18).
+
+Next atomic action: merge PR #18 after the local merge gate, update local `main`, and only then create the TASK-0005 worktree.
+
 ## Handoff
 
 TASK-0005 uses these metrics and calibration artifacts on a real public dataset.
