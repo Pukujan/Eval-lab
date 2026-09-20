@@ -2,7 +2,7 @@ id: EXP-20260920-003-external-judge-bakeoff
 status: planned
 hypothesis: External/subscription judges will provide useful disagreement and failure-cluster evidence on the same frozen objective records, while provider failures remain separable from wrong labels.
 created_at: '2026-09-20T18:55:00Z'
-code_commit: 6572d68014073b538f4d4c84098d6f1188550505
+code_commit: 680e4b8a92c4627c2b50247c452136387c0adc64
 seed: 20250920
 context_limit: 4096
 dataset:
