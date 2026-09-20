@@ -137,6 +137,16 @@ Blockers: none for local acceptance. GitHub Actions may remain unavailable befor
 
 Next atomic action: commit the completed EXP-008 evidence and checkpoint, push `task/TASK-0009-small-judge-training`, open the review PR, and do not begin a dependent task before this task is accepted and merged.
 
+### 2026-09-20 — TASK-0009 review handoff
+
+TASK-0009 is pushed in PR [#24](https://github.com/Pukujan/Eval-lab/pull/24) from commit `1924c0ef8d16e23366067f547ec6001ca5339932`. Local acceptance is green: `python scripts/check_repo_contract.py` returned `Repository contract OK`, `ruff check .` returned `All checks passed!`, `PYTHONPATH=src python -m pytest -q` returned `64 passed in 4.35s`, and `git diff --check` was clean.
+
+CI diagnosis after local validation: runs `35534868582` (push) and `35534871113` (pull request) reported both 3.11 jobs as not started because an Actions budget is preventing further use; both 3.12 matrix jobs were cancelled as a consequence. No workflow step ran, so this is an external account/runner blocker rather than a repository test result.
+
+Files and decisions are recorded in the completed EXP-008 bundle and the local checkpoint. No credentials, `.env` files, model weights, or caches were committed.
+
+Next atomic action: merge PR #24, record the merge checkpoint, fast-forward the original `main` checkout, and push the checkpoint commit to `main`. Do not start a dependent task.
+
 ## Handoff
 
 Use the final ablation to define the next research task.
