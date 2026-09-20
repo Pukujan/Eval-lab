@@ -31,6 +31,12 @@ REQUIRED_FILES = [
     "tasks/TASK-0007-external-judge-teacher-bakeoff.md",
     "tasks/TASK-0008-teacher-hard-negatives.md",
     "tasks/TASK-0009-small-judge-training.md",
+    "tasks/TASK-0010-selective-escalation.md",
+    "docs/TASK-0010-METAMORPHIC-DIFFERENTIAL.md",
+    "docs/TASK-0010-OPENROUTER-JEV.md",
+    "docs/RESEARCH_ARTIFACT_STANDARD.md",
+    "benchmark/README.md",
+    "paper/README.md",
     "experiments/README.md",
 ]
 
@@ -46,6 +52,7 @@ PROGRAM_TASKS = {
     "TASK-0007-external-judge-teacher-bakeoff.md": "TASK-0006",
     "TASK-0008-teacher-hard-negatives.md": "TASK-0007",
     "TASK-0009-small-judge-training.md": "TASK-0008",
+    "TASK-0010-selective-escalation.md": "TASK-0009",
 }
 
 PROGRAM_HEADINGS = (
@@ -102,8 +109,8 @@ def check_program_checkpoint(failures: list[str]) -> None:
     if not current.is_file():
         return
     text = current.read_text(encoding="utf-8")
-    if "TASK-0002" not in text:
-        error("CURRENT checkpoint must identify TASK-0002 as the next program gate", failures)
+    if "TASK-0010" not in text:
+        error("CURRENT checkpoint must identify TASK-0010 as the active/next research gate", failures)
 
     program = ROOT / "docs" / "PROGRAM_PLAN.md"
     if program.is_file():
@@ -117,6 +124,7 @@ def check_program_checkpoint(failures: list[str]) -> None:
             "TASK-0007",
             "TASK-0008",
             "TASK-0009",
+            "TASK-0010",
         ):
             if task_id not in program_text:
                 error(f"PROGRAM_PLAN missing {task_id}", failures)
