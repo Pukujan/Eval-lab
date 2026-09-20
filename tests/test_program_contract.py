@@ -9,6 +9,7 @@ TASK_FILES = {
     "TASK-0007": "TASK-0007-external-judge-teacher-bakeoff.md",
     "TASK-0008": "TASK-0008-teacher-hard-negatives.md",
     "TASK-0009": "TASK-0009-small-judge-training.md",
+    "TASK-0010": "TASK-0010-selective-escalation.md",
 }
 
 REQUIRED_PROGRAM_HEADINGS = (
@@ -54,7 +55,7 @@ def test_current_checkpoint_points_to_task_0002() -> None:
     current = read("checkpoints/CURRENT.md")
     assert "TASK-0001" in current
     assert "complete" in current.lower()
-    assert "TASK-0002" in current
+    assert "TASK-0010" in current
     assert "Next atomic action" in current
 
 
@@ -68,6 +69,7 @@ def test_task_dependencies_are_declared() -> None:
         "TASK-0007": "TASK-0006",
         "TASK-0008": "TASK-0007",
         "TASK-0009": "TASK-0008",
+        "TASK-0010": "TASK-0009",
     }
     for task_id, dependency in expected.items():
         text = (ROOT / "tasks" / TASK_FILES[task_id]).read_text(encoding="utf-8")
@@ -78,6 +80,7 @@ def test_luna_handoff_covers_full_program() -> None:
     handoff = read("docs/LUNA_PROGRAM_HANDOFF.md")
     assert "TASK-0002" in handoff
     assert "TASK-0009" in handoff
+    assert "TASK-0010" in handoff
     assert "qwen3.8-flash" in handoff
 
 
@@ -92,3 +95,15 @@ def test_yolo_auto_task_uses_exact_provider_contract() -> None:
     assert "https://yolo-auto.com/v1" in task
     assert "qwen3.8-flash" in task
     assert "YOLO_AUTO_API_KEY" in task
+
+
+def test_task_0010_research_release_contract() -> None:
+    task = read("tasks/TASK-0010-selective-escalation.md")
+    standard = read("docs/RESEARCH_ARTIFACT_STANDARD.md")
+    differential = read("docs/TASK-0010-METAMORPHIC-DIFFERENTIAL.md")
+    assert "typesafe/jev-1.13" in task
+    assert "EvalLab-Select v0.1.0" in task
+    for term in ("RO-Crate 1.3", "PROV-O", "SHACL", "CFF 1.2.0"):
+        assert term in standard
+    assert "M-01" in differential
+    assert "D-01" in differential
