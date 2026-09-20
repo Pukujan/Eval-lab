@@ -1,6 +1,6 @@
 # TASK-0009 — Small Judge Training and Calibration Pilot
 
-- Status: queued
+- Status: in-progress
 - Owner: Luna/local agent
 - Priority: P0
 - GitHub issue: #14
@@ -84,6 +84,18 @@ Stop if training cannot fit resources, data leakage is detected, or teacher exam
 ## Checkpoint log
 
 Append evidence here.
+
+### 2026-09-20 — TASK-0009 start and scope freeze
+
+Created dedicated worktree `D:/claude/eval-lab-TASK-0009` on branch `task/TASK-0009-small-judge-training` from merged TASK-0008 main commit `bce665e8601686a860d14c4ed5671b33afa660ef`. Read `PROJECT.md`, `AGENTS.md`, `checkpoints/CURRENT.md`, this task file, and `docs/TDD.md` plus `docs/EXPERIMENT_PROTOCOL.md`.
+
+Selected student scope: a deterministic compact text classifier (`TF-IDF + logistic regression`) for a bounded single-answer correctness pilot. This is the smallest reproducible classifier that can be trained on the available 33 objective train records plus verified TASK-0008 hard negatives without downloading or committing transformer weights. Pairwise judging remains outside this pilot and is reported as not applicable.
+
+Planned files: `src/eval_lab/training.py`, `scripts/run_small_judge_training.py`, `tests/test_training.py`, `experiments/EXP-20260920-008-small-judge-training/`, this task log, and `checkpoints/CURRENT.md`. The runner will execute arms A-D, select by dev NLL/accuracy only, fit arm E calibration on the calibration split, and evaluate the frozen test split only after pre-registration.
+
+Environment observed: Windows PowerShell; Python `3.12.10`; Git `2.51.2.windows.1`; Node `v24.14.1`; OpenCode CLI `1.18.31`. No credentials are printed or stored in repository artifacts.
+
+Next atomic action: implement the serializable student, leakage-safe arm builder, metrics/prediction runner, and unit tests; then commit the EXP-008 pre-registration before running the final test split.
 
 ## Handoff
 

@@ -25,7 +25,7 @@ Continue with TASK-0008 as the next implementation gate.
 
 ## Next task
 
-TASK-0008 — Verified Teacher Hard Negatives (#13)
+TASK-0009 — Small Judge Training and Calibration Pilot (#14)
 
 ## Queued foundation
 
@@ -38,6 +38,17 @@ TASK-0008 — Verified Teacher Hard Negatives (#13)
 
 - TASK-0007 — External Judge and Teacher Bakeoff (#12)
 - TASK-0008 — Verified Teacher Hard Negatives (#13)
+- TASK-0009 — Small Judge Training and Calibration Pilot (#14)
+
+### 2026-09-20 — TASK-0009 start
+
+TASK-0008 is merged in PR #23 at `bce665e8601686a860d14c4ed5671b33afa660ef`. TASK-0009 is active in `D:/claude/eval-lab-TASK-0009` on branch `task/TASK-0009-small-judge-training`.
+
+Scope is frozen to a compact TF-IDF plus logistic-regression single-answer correctness student. The pilot will run objective-only, criterion-augmentation, verified-hard-negative, and combined training arms; select from dev metrics; fit post-hoc temperature calibration on calibration records only; and keep test/OOD labels frozen until the final run.
+
+Planned files: `src/eval_lab/training.py`, `scripts/run_small_judge_training.py`, `tests/test_training.py`, EXP-008 artifacts, the task log, and this checkpoint log.
+
+Next atomic action: implement and unit-test the training pilot, then commit the EXP-008 pre-registration before any final test evaluation.
 - TASK-0009 — Small Judge Training Pilot (#14)
 
 ## External conditions
