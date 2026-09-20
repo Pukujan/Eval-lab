@@ -420,6 +420,21 @@ TASK-0009's actual selected student is TF-IDF + logistic regression, not Qwen3-4
 
 The publication/reproducibility target is now part of task acceptance: a compact benchmark release plus arXiv-ready source and machine-readable provenance.
 
+### 2026-09-20 — local planning gate and handoff
+
+Worktree: `D:/claude/eval-lab-TASK-0010`; branch: `task/TASK-0010-selective-escalation`; starting head: `50312637a28a71e279387db6293f17b99a11ed10`. Read in order: `PROJECT.md`, `checkpoints/CURRENT.md`, this task, `docs/PDD.md`, `docs/SDD.md`, `docs/TDD.md`, `docs/TASK-0010-METAMORPHIC-DIFFERENTIAL.md`, `docs/RESEARCH_ARTIFACT_STANDARD.md`, and `docs/TASK-0010-OPENROUTER-JEV.md`; `AGENTS.md` was also read before edits.
+
+Environment and commands:
+- `git fetch --all --prune` -> completed.
+- `git switch task/TASK-0010-selective-escalation` and `git pull --ff-only` -> already on branch and up to date.
+- `D:\claude\eval-lab\.venv\Scripts\python.exe scripts/check_repo_contract.py` -> `Repository contract OK`.
+- `D:\claude\eval-lab\.venv\Scripts\ruff.exe check .` -> `All checks passed!`.
+- The shared editable environment initially pointed at `D:\claude\eval-lab-TASK-0006`, so the requested pytest command first failed to import `eval_lab.training`. This was an environment-path issue, not a repository defect. With `PYTHONPATH= D:\claude\eval-lab-TASK-0010\src`, the equivalent gate command returned `65 passed in 25.36s`.
+
+No planning-contract defect was found or changed. The branch contains only the planning/publication scaffold at this point; routing, benchmark data, final results, and provider labels are not yet present.
+
+Next atomic action: implement and offline-test the provider-independent typed-question/routing core and deterministic benchmark builder, then freeze the EXP-009 and EvalLab-Select split/fingerprint manifest before final evaluation.
+
 ## Handoff
 
 Read, in order:
