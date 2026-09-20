@@ -494,6 +494,14 @@ Commit `88ec75e184739cfc84ba9ccbacc5827a6da117a6` is pushed at the expected task
 
 Next atomic action: retry the missing Qwen and rolling provider arms against the frozen final-evaluation record order, preserving separate output files and explicit failure statuses; do not begin TASK-0002.
 
+### 2026-09-20 — Qwen contention checkpoint
+
+The required YOLO-Auto arm remains `qwen3.8-flash`; Grok 4.6 is a different provider/model and cannot replace it in the frozen protocol. A bounded full-arm attempt used `EVAL_LAB_PROVIDER_WORKERS=16`, `--provider-limit 500`, `--provider-timeout 30`, `--skip-pinned`, and `--skip-rolling`. The provider opened 16 HTTPS connections but returned no batch within approximately six minutes, so the local launcher and child process were terminated; no Qwen labels were written or fabricated. A direct ten-record probe with `EVAL_LAB_PROVIDER_WORKERS=8` and timeout `12` returned `10 provider_error` statuses. The existing pinned `typesafe/jev-1.13` output was preserved; rolling and Qwen remain separate unresolved arms.
+
+No credentials or raw provider payloads were printed or committed. Decision: wait for a stable YOLO-Auto window or reduced contention and retry Qwen against the same frozen provider record order; do not add a Grok arm or expand scope solely to work around Qwen availability.
+
+Next atomic action: retry the Qwen arm when the YOLO-Auto contention condition clears, then regenerate results and research artifacts only from the separate normalized Qwen output; keep TASK-0010 active and do not begin TASK-0002.
+
 ## Handoff
 
 Read, in order:

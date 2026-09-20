@@ -269,3 +269,9 @@ Next atomic action: commit/push the byte-stability fix and inspect the fresh CI 
 Commit `88ec75e184739cfc84ba9ccbacc5827a6da117a6` is pushed. CI runs `35542193123` (push) and `35542195848` (pull request) passed on Python 3.11 and 3.12, including installation, repository contract, Ruff, and `python -m pytest -q`. The workflow and benchmark byte-stability defects are resolved in the clean GitHub environment.
 
 Next atomic action: retry only the missing Qwen and rolling provider arms against the frozen final-evaluation order, preserving separate output files and explicit failures; retain TASK-0010 active and do not begin TASK-0002.
+
+### 2026-09-20 — Qwen contention checkpoint
+
+The required YOLO-Auto provider/model remains `qwen3.8-flash`; Grok 4.6 cannot substitute for it. A 500-record Qwen attempt with 16 workers and 30-second timeout opened 16 HTTPS connections but made no batch progress after approximately six minutes and was terminated without labels. A separate ten-record probe with 8 workers and 12-second timeout returned `10 provider_error`. The pinned Jev output was preserved; rolling and Qwen remain separate unresolved arms. No credentials or raw payloads were printed or committed.
+
+Next atomic action: retry only the Qwen arm during a stable YOLO-Auto window, then regenerate results/artifacts from its separate normalized output; keep TASK-0010 active and do not begin TASK-0002.
