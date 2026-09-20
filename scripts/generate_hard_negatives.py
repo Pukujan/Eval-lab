@@ -263,7 +263,8 @@ def _run_opencode_audit(model: str, batch: list[dict[str, Any]], *, timeout: flo
     prompt = (
         "Review this batch of objective judge cases. Do not infer or create answer keys. "
         "Return only a JSON array with one object per record containing record_id, assessment, "
-        "and concise review_notes. assessment must be one of keep_for_review, likely_error, or ambiguous.\n\n"
+        "and concise review_notes. assessment must be one of keep_for_review, likely_error, or ambiguous. "
+        "Even for one record, return a one-element JSON array.\n\n"
         + json.dumps(compact, sort_keys=True)
     )
     executable = shutil.which("opencode") or "opencode"
@@ -308,7 +309,7 @@ def _run_opencode_audit(model: str, batch: list[dict[str, Any]], *, timeout: flo
             if isinstance(part.get("text"), str):
                 text_parts.append(part["text"])
     text = "\n".join(text_parts)
-    match = re.search(r"\[.*\]", text, re.DOTALL)
+    match = re.search(r"\[.*\]", text, re.DOTALL) or re.search(r"\{.*\}", text, re.DOTALL)
     if process.returncode != 0 or not match:
         return {
             "status": "parse_error" if process.returncode == 0 else "provider_error",
@@ -317,7 +318,8 @@ def _run_opencode_audit(model: str, batch: list[dict[str, Any]], *, timeout: flo
             "items": [],
         }
     try:
-        items = json.loads(match.group(0))
+        parsed = json.loads(match.group(0))
+        items = parsed if isinstance(parsed, list) else [parsed]
     except json.JSONDecodeError:
         items = []
     expected = {item["record_id"] for item in batch}
@@ -334,11 +336,33 @@ def _run_opencode_audit(model: str, batch: list[dict[str, Any]], *, timeout: flo
     return {"status": "ok", "model": model, "reason": None, "items": valid}
 
 
-def _audit_batch(path: Path, model: str, *, timeout: float) -> dict[str, Any]:
+def _audit_batch(
+    path: Path, model: str, *, timeout: float, single_item_requests: bool = False
+) -> dict[str, Any]:
     batch = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
-    result = _run_opencode_audit(model, batch, timeout=timeout)
-    result["input_record_ids"] = [item["record_id"] for item in batch]
-    return result
+    if not single_item_requests:
+        result = _run_opencode_audit(model, batch, timeout=timeout)
+        result["input_record_ids"] = [item["record_id"] for item in batch]
+        return result
+    items: list[dict[str, Any]] = []
+    for item in batch:
+        result = _run_opencode_audit(model, [item], timeout=timeout)
+        items.extend(result.get("items", []))
+        if result.get("status") != "ok":
+            return {
+                "status": result.get("status"),
+                "model": model,
+                "reason": result.get("reason"),
+                "items": items,
+                "input_record_ids": [entry["record_id"] for entry in batch],
+            }
+    return {
+        "status": "ok",
+        "model": model,
+        "reason": None,
+        "items": items,
+        "input_record_ids": [entry["record_id"] for entry in batch],
+    }
 
 
 def _write_jsonl(path: Path, values: list[dict[str, Any]]) -> None:
@@ -435,7 +459,12 @@ def run(args: argparse.Namespace) -> Path:
         requests.append(_clean_request(request))
     audit_input = Path(args.audit_input)
     luna = _audit_batch(audit_input / "luna_audit_batch.jsonl", "opencode/gpt-5.6-luna", timeout=args.audit_timeout)
-    sol = _audit_batch(audit_input / "sol_hard_disagreement_batch.jsonl", "opencode/gpt-5.6-sol", timeout=args.audit_timeout)
+    sol = _audit_batch(
+        audit_input / "sol_hard_disagreement_batch.jsonl",
+        "opencode/gpt-5.6-sol",
+        timeout=args.audit_timeout,
+        single_item_requests=True,
+    )
     taxonomy = Counter(item["failure_mode"] for item in accepted)
     rejection_counts = Counter(item["reason"] for item in rejected)
     metadata = {
