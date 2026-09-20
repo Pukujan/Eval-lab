@@ -42,4 +42,6 @@ jobs:
         run: ruff check .
 
       - name: Unit tests
+        env:
+          PYTHONPATH: .:src
         run: pytest -q
