@@ -108,6 +108,12 @@ Blockers: the live Jev quota remains rate-limited, but all mocked provider-contr
 
 Next atomic action: commit and push TASK-0003, open its PR, and wait for acceptance/merge before starting TASK-0004.
 
+### 2026-09-20 — PR handoff
+
+Committed the implementation as `a260259` on `task/TASK-0003-jev-objective-baseline`, pushed it to origin, and opened PR #17: `https://github.com/Pukujan/Eval-lab/pull/17`.
+
+Next atomic action: merge PR #17 into `main`, update local `main`, and create the dedicated TASK-0004 worktree only after the merge.
+
 ## Handoff
 
 TASK-0004 consumes normalized predictions. TASK-0007 later revisits Jev in the external-model bakeoff.

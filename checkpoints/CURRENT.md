@@ -81,3 +81,7 @@ Next atomic action: implement the exact free Jev model contract and normalized p
 TASK-0003 final local acceptance is green: repository contract `OK`, Ruff clean, and `37 passed`. The optional live smoke reached OpenCode and was normalized as `rate_limited` with `Retry-After 24496` seconds; no label was fabricated.
 
 Next atomic action: commit and push TASK-0003, open its PR, and do not start TASK-0004 until TASK-0003 is accepted/merged.
+
+TASK-0003 is pushed in PR #17 (`https://github.com/Pukujan/Eval-lab/pull/17`) from commit `a260259`.
+
+Next atomic action: merge PR #17 into `main`, update local `main`, and create the dedicated TASK-0004 worktree only after the merge.
