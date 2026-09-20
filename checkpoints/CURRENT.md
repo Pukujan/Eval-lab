@@ -275,3 +275,9 @@ Next atomic action: retry only the missing Qwen and rolling provider arms agains
 The required YOLO-Auto provider/model remains `qwen3.8-flash`; Grok 4.6 cannot substitute for it. A 500-record Qwen attempt with 16 workers and 30-second timeout opened 16 HTTPS connections but made no batch progress after approximately six minutes and was terminated without labels. A separate ten-record probe with 8 workers and 12-second timeout returned `10 provider_error`. The pinned Jev output was preserved; rolling and Qwen remain separate unresolved arms. No credentials or raw payloads were printed or committed.
 
 Next atomic action: retry only the Qwen arm during a stable YOLO-Auto window, then regenerate results/artifacts from its separate normalized output; keep TASK-0010 active and do not begin TASK-0002.
+
+### 2026-09-20 — rolling Jev bulk checkpoint
+
+Rolling Jev was run separately with 4 workers, provider limit `500`, and 12-second timeout. Model `~typesafe/jev-latest` returned `500 ok`; pinned `typesafe/jev-1.13` remains a separate `500 ok` arm. `provider-rolling.jsonl` and `provider-pinned.jsonl` remain separate, with no pooled pinned/rolling estimate. Research artifacts were regenerated, benchmark release bytes were canonicalized to LF, and artifact validation returned checksums `ok`, RO-Crate `ok`, PROV-O parsed, SHACL conforms, CFF parsed, and paper present. Qwen remains unresolved with no final labels; the System-One smoke differential remains `1/1` comparable and agreeing.
+
+Next atomic action: commit the rolling output/results and checkpoint, then retry Qwen only after YOLO-Auto contention clears; do not substitute Grok or begin TASK-0002.

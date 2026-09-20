@@ -20,7 +20,7 @@
     "threshold_selection": 2863
   },
   "environment": {
-    "git_commit": "169a15d23a38db5c1246bde36db082e383467fe7",
+    "git_commit": "58a90ae6015b4da3ca6015298370e63e2437ae56",
     "platform": "Windows-11-10.0.26200-SP0",
     "python": "3.12.10"
   },
@@ -677,7 +677,9 @@
     },
     "openrouter_rolling": {
       "model": "~typesafe/jev-latest",
-      "status_counts": {}
+      "status_counts": {
+        "ok": 500
+      }
     },
     "yolo_qwen_flash": {
       "model": "qwen3.8-flash",

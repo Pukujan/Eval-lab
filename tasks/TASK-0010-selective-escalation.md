@@ -502,6 +502,14 @@ No credentials or raw provider payloads were printed or committed. Decision: wai
 
 Next atomic action: retry the Qwen arm when the YOLO-Auto contention condition clears, then regenerate results and research artifacts only from the separate normalized Qwen output; keep TASK-0010 active and do not begin TASK-0002.
 
+### 2026-09-20 — rolling Jev bulk checkpoint
+
+The separate rolling canary was retried with `EVAL_LAB_PROVIDER_WORKERS=4`, `--provider-limit 500`, `--provider-timeout 12`, `--skip-pinned`, and `--skip-qwen`. It returned `openrouter_rolling` model `~typesafe/jev-latest` with `500 ok`; the previously committed pinned arm remains `typesafe/jev-1.13` with `500 ok`. The normalized outputs remain in separate `provider-rolling.jsonl` and `provider-pinned.jsonl` files, and no pooled pinned/rolling estimate was created.
+
+`scripts/generate_research_artifacts.py` was run after the rolling result. Its generated benchmark metadata was normalized to canonical LF bytes and `checksums.sha256` was regenerated. `scripts/validate_research_artifacts.py --benchmark benchmark/eval-lab-select-v0.1.0` returned checksums `ok`, RO-Crate `ok`, PROV-O parsed, SHACL conforms, CFF parsed, and paper present. Current EXP-009 status remains `completed_with_provider_statuses` because Qwen has no final labels; pinned/rolling are both 500/500 and the System-One smoke differential remains separate at `1/1` comparable and agreeing.
+
+Next atomic action: commit the rolling output/results and checkpoint, then retry Qwen only after YOLO-Auto contention clears; do not substitute Grok or begin TASK-0002.
+
 ## Handoff
 
 Read, in order:
