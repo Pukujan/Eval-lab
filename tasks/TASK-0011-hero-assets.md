@@ -1,6 +1,6 @@
 # TASK-0011 — Eval Lab README Hero Assets
 
-- Status: completed on branch; PR #27 awaiting merge
+- Status: completed and merged into `main`
 - Owner: Codex/image-generation agent
 - Priority: P1
 - Branch: task/TASK-0011-hero-assets
@@ -61,7 +61,7 @@ Decision: keep this work isolated from the active TASK-0010 worktree and avoid t
 
 Unresolved questions: none.
 
-Next atomic action: merge PR #27, then fast-forward the original `main` checkout when the repository owner accepts the review.
+Next atomic action: none for TASK-0011; the assets are available on `main`.
 
 ## Handoff
 
@@ -72,4 +72,22 @@ Read, in order:
 3. this task
 4. `docs/PDD.md`
 
-The branch contains only README presentation changes, generated PNG assets, and this task checkpoint. The primary banner is `assets/eval-lab-banner.png`; the routing and calibration alternatives are in the same directory and are rendered in the README's collapsible alternatives section. Commit `304ef2a` is pushed and PR #27 is open.
+The branch contains only README presentation changes, generated PNG assets, and this task checkpoint. The primary banner is `assets/eval-lab-banner.png`; the routing and calibration alternatives are in the same directory and are rendered in the README's collapsible alternatives section. PR #27 was merged into `main` at `baf517ca76bb7b693bb5469c2b9bdd3e014cb6e9`.
+
+### 2026-09-20 — merge checkpoint
+
+Status: completed and merged into `main`.
+
+Completed work: diagnosed the GitHub CI failure as an infrastructure/account runner-budget failure before workflow steps started; confirmed local validation remained green; merged PR #27; fast-forwarded the original local `main` checkout to the GitHub merge commit.
+
+Exact files changed: `README.md`, `assets/eval-lab-banner.png`, `assets/eval-lab-banner-alt-routing.png`, `assets/eval-lab-banner-alt-calibration.png`, `tasks/TASK-0011-hero-assets.md`.
+
+Commands run: `gh pr checks 27`; `gh run view 35539444323`; `gh run view 35539446340`; `python scripts/check_repo_contract.py`; `git diff --check`; `gh pr merge 27 --merge --delete-branch=false`; `git fetch origin`; `git merge --ff-only origin/main`.
+
+Test results: `Repository contract OK`; `git diff --check` passed; CI jobs had empty step lists and failed before checkout/install/test execution because the account runner budget was unavailable.
+
+Decision: merge was appropriate because the failure was external to the change and the local contract gate passed. No source or experiment files were modified.
+
+Unresolved questions: GitHub Actions budget remains an external repository condition.
+
+Next atomic action: none for TASK-0011; continue the active TASK-0010 work in its dedicated worktree.
