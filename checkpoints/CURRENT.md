@@ -218,6 +218,20 @@ PCM inspection is pinned to `Pukujan/project-continuity-modules@3a34b4a73842c824
 
 Next atomic action: local Luna checks out TASK-0010, runs the planning merge gate, freezes the larger benchmark/split manifest and EXP-009 preregistration, then implements offline routing/metamorphic/differential tests before live final evaluation.
 
+### 2026-09-20 — TASK-0010 frozen release and local evaluation
+
+TASK-0010 is active in `D:/claude/eval-lab-TASK-0010` on `task/TASK-0010-selective-escalation`. Environment: Windows-11-10.0.26200-SP0, PowerShell, Python 3.12.10, Git 2.51.2.windows.1, Node v24.14.1. Freeze commit: `169a15d23a38db5c1246bde36db082e383467fe7`; implementation commit: `1aace02f6e5b7e9f1b0403c6ffbfe7b2ce27dbd6`.
+
+EvalLab-Select v0.1.0 is frozen at fingerprint `18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5`, ARC revision `210d026faf9955653af8916fad021475a3f00453`, canonicalization `eval-lab-select-single-v1`, with `2,863` threshold-selection records from `1,427` source families and `2,356` final-evaluation records from `1,176` disjoint source families. The primary student is the frozen TASK-0009 TF-IDF/logistic arm D, restored from committed JSON.
+
+Local evidence: repository contract `OK`; Ruff clean; full pytest `74 passed in 6.35s`; research-artifact validation reports checksums `ok`, RO-Crate `ok`, PROV-O parsed, SHACL conforms, CFF parsed, and paper present. Provider smoke command with ignored local `.env` returned `ok` for pinned `typesafe/jev-1.13`, rolling `~typesafe/jev-latest`, and YOLO-Auto `qwen3.8-flash`. Pinned bulk final subset returned `500/500 ok`; Qwen bulk did not finish and rolling is retained smoke-only. OpenCode Jev smoke was rate-limited.
+
+CI diagnosis after local validation: run `35537436072` jobs `106148870777` and `106148870984` failed before steps, with `runner_id: 0`, empty runner name, `ubuntu-latest` label, and no logs. This is an external GitHub runner/account startup condition, not a local contract/test failure.
+
+Files include the provider-independent routing core, selective benchmark/release, frozen arm-D artifact, provider adapters/runners, offline tests, EXP-009 results and smoke/differential outputs, RO-Crate 1.3/PROV-O/SHACL/DataCite artifacts, valid CFF, generated paper tables/figure, completed paper, reproducibility appendix, and limitations. `.env` is ignored; no credential values were printed or committed.
+
+Decision: keep TASK-0010 active with `completed_with_provider_statuses` because the required Qwen/rolling bulk final labels are unresolved. Next atomic action: commit and push this checkpoint, then retry only the missing provider arms or record a provider-blocked acceptance checkpoint; do not begin TASK-0002.
+
 ### 2026-09-20 — TASK-0010 planning gate
 
 TASK-0010 worktree `D:/claude/eval-lab-TASK-0010` is on `task/TASK-0010-selective-escalation` at expected head `50312637a28a71e279387db6293f17b99a11ed10`. The required contract and Ruff checks pass. The shared editable environment pointed at TASK-0006, so pytest was rerun with the current worktree source path and returned `65 passed in 25.36s`. No planning-contract defect was found.

@@ -77,6 +77,20 @@ def test_typed_spec_matches_provider_wire_contract() -> None:
     assert list(payload["questions"]["verdict"]["criteria"]) == ["pass", "fail"]
     normalized = normalize_typed_response({"label": record.gold.label}, record, provider="mock", model="mock")
     assert normalized.label == record.gold.label
+    openrouter = normalize_typed_response(
+        {"answers": {"verdict": {"choice": record.gold.label, "probabilities": {"pass": 1, "fail": 0}}}},
+        record,
+        provider="openrouter",
+        model=OPENROUTER_PINNED_MODEL,
+    )
+    assert openrouter.label == record.gold.label
+    qwen = normalize_typed_response(
+        {"choices": [{"message": {"content": '```json\n{"label": "pass"}\n```'}}]},
+        record,
+        provider="yolo-auto",
+        model="qwen3.8-flash",
+    )
+    assert qwen.label == "pass"
 
 
 def test_provider_adapters_keep_models_separate_and_fail_without_fallback(monkeypatch: pytest.MonkeyPatch) -> None:

@@ -6,3 +6,10 @@ authors:
   - name: "Pukujan"
 repository-code: "https://github.com/Pukujan/Eval-lab"
 version: "0.1.0"
+date-released: 2026-09-20
+abstract: "Objective benchmark and reproducible selective-escalation evaluation for lightweight rubric judges."
+keywords:
+  - selective prediction
+  - escalation
+  - judge evaluation
+  - reproducibility

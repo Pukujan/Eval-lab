@@ -147,12 +147,37 @@ def select_threshold(
     """Select maximum empirical local coverage at or below a target error."""
 
     target_error = _valid_confidence(target_error)
-    values = [
-        _valid_confidence((calibrated_confidences or {}).get(prediction.record_id, confidence_from_prediction(prediction)[0]))
-        for prediction in predictions
-    ]
-    candidates = sorted({0.0, 1.0, *values}, reverse=True)
-    summaries = [_accepted_stats(records, predictions, value, calibrated_confidences=calibrated_confidences) for value in candidates]
+    by_id = {record.record_id: record for record in records}
+    if set(by_id) != {prediction.record_id for prediction in predictions}:
+        raise ValueError("record and prediction IDs must match exactly")
+    points = []
+    for prediction in predictions:
+        confidence = _valid_confidence(
+            (calibrated_confidences or {}).get(prediction.record_id, confidence_from_prediction(prediction)[0])
+        )
+        points.append((confidence, prediction.label != by_id[prediction.record_id].gold.label))
+    candidates = sorted({0.0, 1.0, *(value for value, _ in points)}, reverse=True)
+    by_confidence: dict[float, list[bool]] = {}
+    for confidence, error in points:
+        by_confidence.setdefault(confidence, []).append(error)
+    error_count = 0
+    accepted_count = 0
+    summaries: list[dict[str, Any]] = []
+    for threshold in candidates:
+        for error in by_confidence.get(threshold, []):
+            accepted_count += 1
+            error_count += int(error)
+        interval = wilson_interval(error_count, accepted_count)
+        summaries.append(
+            {
+                "threshold": threshold,
+                "accepted_count": accepted_count,
+                "error_count": error_count,
+                "risk": error_count / accepted_count if accepted_count else 0.0,
+                "risk_interval_95": interval,
+                "coverage": accepted_count / len(points) if points else 0.0,
+            }
+        )
     eligible = [item for item in summaries if item["risk"] <= target_error]
     selected = max(eligible, key=lambda item: (item["accepted_count"], item["threshold"])) if eligible else summaries[0]
     return {
@@ -210,7 +235,7 @@ def evaluate_routing(
         "final_resolved_errors": final_errors,
         "final_resolved_risk": final_errors / len(resolved) if resolved else None,
         "final_resolved_risk_interval_95": wilson_interval(final_errors, len(resolved)),
-        "provider_status_counts": dict(Counter(str(row.get("escalation_status", "not_escalated")) for row in routed)),
+        "provider_status_counts": dict(Counter(str(row.get("provider_status", "not_called")) for row in routed)),
         "by_domain": domain_summary,
     }
 

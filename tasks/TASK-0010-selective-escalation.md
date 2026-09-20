@@ -435,6 +435,33 @@ No planning-contract defect was found or changed. The branch contains only the p
 
 Next atomic action: implement and offline-test the provider-independent typed-question/routing core and deterministic benchmark builder, then freeze the EXP-009 and EvalLab-Select split/fingerprint manifest before final evaluation.
 
+### 2026-09-20 — frozen release, local evaluation, and provider status
+
+Environment: Windows-11-10.0.26200-SP0; Windows PowerShell; Python 3.12.10; Git 2.51.2.windows.1; Node v24.14.1. Worktree `D:/claude/eval-lab-TASK-0010`; branch `task/TASK-0010-selective-escalation`. The frozen protocol commit is `169a15d23a38db5c1246bde36db082e383467fe7`; implementation/benchmark commit is `1aace02f6e5b7e9f1b0403c6ffbfe7b2ce27dbd6`.
+
+Frozen inputs: ARC-Challenge `allenai/ai2_arc`, revision `210d026faf9955653af8916fad021475a3f00453`; canonicalization `eval-lab-select-single-v1`; benchmark fingerprint `18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5`; threshold-selection `2,863` records/`1,427` source families; final-evaluation `2,356` records/`1,176` disjoint source families. TASK-0009 frozen student is arm D, `tfidf-logistic-v1`, restored from committed `student_D.json`; no retraining occurred. Confidence is maximum calibrated class probability with top-two margin retained as secondary; targets are `0.01`, `0.02`, `0.05`, and `0.10`; typed System-One is `eval-lab-system-one` v`0.1.0`, context limit `4096`, single labels `pass/fail`, pairwise labels `A/B/TIE`.
+
+Commands and results:
+
+- `D:\claude\eval-lab\.venv\Scripts\python.exe scripts/check_repo_contract.py` -> `Repository contract OK`.
+- `D:\claude\eval-lab\.venv\Scripts\ruff.exe check .` -> `All checks passed!`.
+- `$env:PYTHONPATH="$PWD\src"; D:\claude\eval-lab\.venv\Scripts\python.exe -m pytest -q` -> `74 passed in 6.35s`.
+- `$env:PYTHONPATH="$PWD\src"; D:\claude\eval-lab\.venv\Scripts\python.exe scripts/build_selective_benchmark.py` -> fingerprint above; `2,863` threshold and `2,356` final records.
+- `... scripts/run_selective_escalation.py --skip-providers` -> full local routing and matched-random outputs over the frozen final pool; provider arms remained explicit unresolved.
+- `... scripts/smoke_task0010_providers.py --env-file .env --limit 1` -> pinned `typesafe/jev-1.13`: `ok`; rolling `~typesafe/jev-latest`: `ok`; YOLO-Auto `qwen3.8-flash`: `ok`.
+- `... scripts/run_selective_escalation.py --env-file .env --provider-limit 500 --provider-timeout 10 --skip-rolling --skip-qwen` with `EVAL_LAB_PROVIDER_WORKERS=1` -> pinned Jev `500/500 ok`; these are the deterministic first `500` final records.
+- The equivalent Qwen bulk command with `--skip-pinned --skip-rolling` was interrupted after the provider did not complete; no fallback labels were written. Rolling remains smoke-only. OpenCode `scripts/jev_smoke.py` was attempted with the local key and returned `JevRateLimitError`.
+- `... scripts/generate_research_artifacts.py` followed by `... scripts/validate_research_artifacts.py --benchmark benchmark/eval-lab-select-v0.1.0` -> checksums `ok`, RO-Crate `ok`, PROV-O parsed, SHACL conforms, CFF parsed, paper present.
+- `gh run view 35537436072 --json ...` and `gh api .../actions/jobs/106148870777` -> CI failed in 2–3 seconds with `steps: []`, `runner_id: 0`, empty `runner_name`, and `ubuntu-latest` label. After local validation, this establishes an external GitHub runner/account startup failure rather than a repository test failure.
+
+Files changed: provider-independent escalation core under `src/eval_lab/escalation/`; selective dataset adapter; frozen TASK-0009 arm-D artifacts; benchmark builder and release files under `benchmark/eval-lab-select-v0.1.0/`; provider/smoke/final runners and research-artifact validator/generator under `scripts/`; offline routing, leakage, artifact, typed-response, model-separation, and frozen-student tests; `pyproject.toml`; `CITATION.cff`; EXP-009 README, thresholds, routing, provider outputs, smoke outputs, differential, results, and report; RO-Crate/PROV-O/SHACL/DataCite files; generated paper tables/figure, completed `paper/main.tex`, reproducibility appendix, and limitations.
+
+Decisions: exclude TASK-0009 training source families from threshold selection; keep ARC train/validation in threshold selection and ARC test in final evaluation; preserve pinned and rolling Jev as separate arms; retain provider failures as unresolved; report Wilson 95% intervals and label nominal low-error coverage underpowered when the interval upper bound misses the target; keep `.env` ignored and never print or commit credentials; use PCM only as the documented compatibility reference.
+
+Blockers: the pinned Jev arm has 500 final labels, but bulk rolling and Qwen final labels are not complete because the rolling path became intermittent and the Qwen bulk call did not finish. The one-record smoke differential is `1/1` comparable and agreeing, and is explicitly excluded from pooled estimates. EXP-009 therefore remains active with `completed_with_provider_statuses`; TASK-0002 and any new project scope remain out of scope.
+
+Next atomic action: commit the current research bundle and checkpoint, push the task branch, then retry only the missing Qwen/rolling bulk arms during a stable provider window or leave them explicitly blocked in a follow-up checkpoint; do not claim TASK-0010 fully accepted until its provider acceptance criteria are resolved.
+
 ## Handoff
 
 Read, in order:

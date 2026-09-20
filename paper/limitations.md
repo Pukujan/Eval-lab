@@ -1,0 +1,3 @@
+# Limitations and threats to validity
+
+The frozen student is a compact TF-IDF plus logistic-regression arm trained on the small TASK-0009 corpus. ARC answer-key labels measure objective choice correctness and do not establish broad human-evaluation validity. The calibrated threshold claims have Wilson uncertainty and are descriptive when the upper bound does not meet the target. Provider smoke and partial live availability can leave unresolved records; unresolved calls are not scored as local errors and never receive a local fallback. The rolling Jev alias is a separate canary and is excluded from pinned estimates.

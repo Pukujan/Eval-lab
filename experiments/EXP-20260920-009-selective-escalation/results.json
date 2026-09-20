@@ -1,0 +1,750 @@
+{
+  "benchmark_fingerprint": "18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5",
+  "calibration": {
+    "class_order": [
+      "pass",
+      "fail"
+    ],
+    "code_version": "task-0009-temperature-v1",
+    "fit_split": "calibration",
+    "input_semantics": "class probabilities; p_calibrated = softmax(log(p) / temperature)",
+    "method": "temperature",
+    "parameters": {
+      "temperature": 0.07059871330083402
+    }
+  },
+  "counts": {
+    "final_evaluation": 2356,
+    "provider_evaluation": 500,
+    "provider_selection": "deterministic prefix of frozen final-evaluation record order",
+    "threshold_selection": 2863
+  },
+  "environment": {
+    "git_commit": "169a15d23a38db5c1246bde36db082e383467fe7",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10"
+  },
+  "experiment_id": "EXP-20260920-009-selective-escalation",
+  "policies": {
+    "calibrated_local_to_jev_target_0.01": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 506,
+          "errors": 12
+        },
+        "code_output": {
+          "count": 1,
+          "errors": 0
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.21519524617996605,
+      "final_resolved_count": 507,
+      "final_resolved_errors": 12,
+      "final_resolved_risk": 0.023668639053254437,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.01359032828124242,
+        "upper": 0.04091084491047087
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 1,
+      "local_accepted_risk": 0.125,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.02241749145005667,
+        "upper": 0.4708881822128535
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 1849,
+        "ok": 507
+      },
+      "total_count": 2356,
+      "unresolved_count": 1849,
+      "unresolved_rate": 0.784804753820034
+    },
+    "calibrated_local_to_jev_target_0.02": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 506,
+          "errors": 12
+        },
+        "code_output": {
+          "count": 1,
+          "errors": 0
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.21519524617996605,
+      "final_resolved_count": 507,
+      "final_resolved_errors": 12,
+      "final_resolved_risk": 0.023668639053254437,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.01359032828124242,
+        "upper": 0.04091084491047087
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 1,
+      "local_accepted_risk": 0.125,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.02241749145005667,
+        "upper": 0.4708881822128535
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 1849,
+        "ok": 507
+      },
+      "total_count": 2356,
+      "unresolved_count": 1849,
+      "unresolved_rate": 0.784804753820034
+    },
+    "calibrated_local_to_jev_target_0.05": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 506,
+          "errors": 12
+        },
+        "code_output": {
+          "count": 1,
+          "errors": 0
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.21519524617996605,
+      "final_resolved_count": 507,
+      "final_resolved_errors": 12,
+      "final_resolved_risk": 0.023668639053254437,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.01359032828124242,
+        "upper": 0.04091084491047087
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 1,
+      "local_accepted_risk": 0.125,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.02241749145005667,
+        "upper": 0.4708881822128535
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 1849,
+        "ok": 507
+      },
+      "total_count": 2356,
+      "unresolved_count": 1849,
+      "unresolved_rate": 0.784804753820034
+    },
+    "calibrated_local_to_jev_target_0.10": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 506,
+          "errors": 12
+        },
+        "code_output": {
+          "count": 1,
+          "errors": 0
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.21519524617996605,
+      "final_resolved_count": 507,
+      "final_resolved_errors": 12,
+      "final_resolved_risk": 0.023668639053254437,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.01359032828124242,
+        "upper": 0.04091084491047087
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 1,
+      "local_accepted_risk": 0.125,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.02241749145005667,
+        "upper": 0.4708881822128535
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 1849,
+        "ok": 507
+      },
+      "total_count": 2356,
+      "unresolved_count": 1849,
+      "unresolved_rate": 0.784804753820034
+    },
+    "calibrated_local_to_qwen_flash_target_0.01": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 7,
+          "errors": 1
+        },
+        "code_output": {
+          "count": 1,
+          "errors": 0
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.003395585738539898,
+      "final_resolved_count": 8,
+      "final_resolved_errors": 1,
+      "final_resolved_risk": 0.125,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.02241749145005667,
+        "upper": 0.4708881822128535
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 1,
+      "local_accepted_risk": 0.125,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.02241749145005667,
+        "upper": 0.4708881822128535
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 2348,
+        "ok": 8
+      },
+      "total_count": 2356,
+      "unresolved_count": 2348,
+      "unresolved_rate": 0.9966044142614601
+    },
+    "calibrated_local_to_qwen_flash_target_0.02": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 7,
+          "errors": 1
+        },
+        "code_output": {
+          "count": 1,
+          "errors": 0
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.003395585738539898,
+      "final_resolved_count": 8,
+      "final_resolved_errors": 1,
+      "final_resolved_risk": 0.125,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.02241749145005667,
+        "upper": 0.4708881822128535
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 1,
+      "local_accepted_risk": 0.125,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.02241749145005667,
+        "upper": 0.4708881822128535
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 2348,
+        "ok": 8
+      },
+      "total_count": 2356,
+      "unresolved_count": 2348,
+      "unresolved_rate": 0.9966044142614601
+    },
+    "calibrated_local_to_qwen_flash_target_0.05": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 7,
+          "errors": 1
+        },
+        "code_output": {
+          "count": 1,
+          "errors": 0
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.003395585738539898,
+      "final_resolved_count": 8,
+      "final_resolved_errors": 1,
+      "final_resolved_risk": 0.125,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.02241749145005667,
+        "upper": 0.4708881822128535
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 1,
+      "local_accepted_risk": 0.125,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.02241749145005667,
+        "upper": 0.4708881822128535
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 2348,
+        "ok": 8
+      },
+      "total_count": 2356,
+      "unresolved_count": 2348,
+      "unresolved_rate": 0.9966044142614601
+    },
+    "calibrated_local_to_qwen_flash_target_0.10": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 7,
+          "errors": 1
+        },
+        "code_output": {
+          "count": 1,
+          "errors": 0
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.003395585738539898,
+      "final_resolved_count": 8,
+      "final_resolved_errors": 1,
+      "final_resolved_risk": 0.125,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.02241749145005667,
+        "upper": 0.4708881822128535
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 1,
+      "local_accepted_risk": 0.125,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.02241749145005667,
+        "upper": 0.4708881822128535
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 2348,
+        "ok": 8
+      },
+      "total_count": 2356,
+      "unresolved_count": 2348,
+      "unresolved_rate": 0.9966044142614601
+    },
+    "local_only": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 2344,
+          "errors": 1114
+        },
+        "arithmetic": {
+          "count": 3,
+          "errors": 1
+        },
+        "code_output": {
+          "count": 3,
+          "errors": 0
+        },
+        "multiple_choice": {
+          "count": 3,
+          "errors": 2
+        },
+        "structured": {
+          "count": 3,
+          "errors": 1
+        }
+      },
+      "escalation_rate": 0.0,
+      "execution_coverage": 1.0,
+      "final_resolved_count": 2356,
+      "final_resolved_errors": 1118,
+      "final_resolved_risk": 0.47453310696095075,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.45442741707922846,
+        "upper": 0.494721709209972
+      },
+      "local_accepted_count": 2356,
+      "local_accepted_errors": 1118,
+      "local_accepted_risk": 0.47453310696095075,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.45442741707922846,
+        "upper": 0.494721709209972
+      },
+      "local_coverage": 1.0,
+      "provider_status_counts": {
+        "not_called": 2356
+      },
+      "total_count": 2356,
+      "unresolved_count": 0,
+      "unresolved_rate": 0.0
+    },
+    "random_matched_to_jev_target_0.01": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 507,
+          "errors": 14
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.21519524617996605,
+      "final_resolved_count": 507,
+      "final_resolved_errors": 14,
+      "final_resolved_risk": 0.027613412228796843,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.016518718139242883,
+        "upper": 0.04581267307986822
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 3,
+      "local_accepted_risk": 0.375,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.13684428582359742,
+        "upper": 0.6942576053973727
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 1849,
+        "ok": 507
+      },
+      "total_count": 2356,
+      "unresolved_count": 1849,
+      "unresolved_rate": 0.784804753820034
+    },
+    "random_matched_to_jev_target_0.02": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 507,
+          "errors": 14
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.21519524617996605,
+      "final_resolved_count": 507,
+      "final_resolved_errors": 14,
+      "final_resolved_risk": 0.027613412228796843,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.016518718139242883,
+        "upper": 0.04581267307986822
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 3,
+      "local_accepted_risk": 0.375,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.13684428582359742,
+        "upper": 0.6942576053973727
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 1849,
+        "ok": 507
+      },
+      "total_count": 2356,
+      "unresolved_count": 1849,
+      "unresolved_rate": 0.784804753820034
+    },
+    "random_matched_to_jev_target_0.05": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 507,
+          "errors": 14
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.21519524617996605,
+      "final_resolved_count": 507,
+      "final_resolved_errors": 14,
+      "final_resolved_risk": 0.027613412228796843,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.016518718139242883,
+        "upper": 0.04581267307986822
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 3,
+      "local_accepted_risk": 0.375,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.13684428582359742,
+        "upper": 0.6942576053973727
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 1849,
+        "ok": 507
+      },
+      "total_count": 2356,
+      "unresolved_count": 1849,
+      "unresolved_rate": 0.784804753820034
+    },
+    "random_matched_to_jev_target_0.10": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 507,
+          "errors": 14
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.21519524617996605,
+      "final_resolved_count": 507,
+      "final_resolved_errors": 14,
+      "final_resolved_risk": 0.027613412228796843,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.016518718139242883,
+        "upper": 0.04581267307986822
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 3,
+      "local_accepted_risk": 0.375,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.13684428582359742,
+        "upper": 0.6942576053973727
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 1849,
+        "ok": 507
+      },
+      "total_count": 2356,
+      "unresolved_count": 1849,
+      "unresolved_rate": 0.784804753820034
+    },
+    "raw_local_to_jev_target_0.01": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 506,
+          "errors": 12
+        },
+        "code_output": {
+          "count": 1,
+          "errors": 0
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.21519524617996605,
+      "final_resolved_count": 507,
+      "final_resolved_errors": 12,
+      "final_resolved_risk": 0.023668639053254437,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.01359032828124242,
+        "upper": 0.04091084491047087
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 1,
+      "local_accepted_risk": 0.125,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.02241749145005667,
+        "upper": 0.4708881822128535
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 1849,
+        "ok": 507
+      },
+      "total_count": 2356,
+      "unresolved_count": 1849,
+      "unresolved_rate": 0.784804753820034
+    },
+    "raw_local_to_jev_target_0.02": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 506,
+          "errors": 12
+        },
+        "code_output": {
+          "count": 1,
+          "errors": 0
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.21519524617996605,
+      "final_resolved_count": 507,
+      "final_resolved_errors": 12,
+      "final_resolved_risk": 0.023668639053254437,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.01359032828124242,
+        "upper": 0.04091084491047087
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 1,
+      "local_accepted_risk": 0.125,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.02241749145005667,
+        "upper": 0.4708881822128535
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 1849,
+        "ok": 507
+      },
+      "total_count": 2356,
+      "unresolved_count": 1849,
+      "unresolved_rate": 0.784804753820034
+    },
+    "raw_local_to_jev_target_0.05": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 506,
+          "errors": 12
+        },
+        "code_output": {
+          "count": 1,
+          "errors": 0
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.21519524617996605,
+      "final_resolved_count": 507,
+      "final_resolved_errors": 12,
+      "final_resolved_risk": 0.023668639053254437,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.01359032828124242,
+        "upper": 0.04091084491047087
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 1,
+      "local_accepted_risk": 0.125,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.02241749145005667,
+        "upper": 0.4708881822128535
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 1849,
+        "ok": 507
+      },
+      "total_count": 2356,
+      "unresolved_count": 1849,
+      "unresolved_rate": 0.784804753820034
+    },
+    "raw_local_to_jev_target_0.10": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 506,
+          "errors": 12
+        },
+        "code_output": {
+          "count": 1,
+          "errors": 0
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.21519524617996605,
+      "final_resolved_count": 507,
+      "final_resolved_errors": 12,
+      "final_resolved_risk": 0.023668639053254437,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.01359032828124242,
+        "upper": 0.04091084491047087
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 1,
+      "local_accepted_risk": 0.125,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.02241749145005667,
+        "upper": 0.4708881822128535
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 1849,
+        "ok": 507
+      },
+      "total_count": 2356,
+      "unresolved_count": 1849,
+      "unresolved_rate": 0.784804753820034
+    }
+  },
+  "provider_arms": {
+    "openrouter_pinned": {
+      "model": "typesafe/jev-1.13",
+      "status_counts": {
+        "ok": 500
+      }
+    },
+    "openrouter_rolling": {
+      "model": "~typesafe/jev-latest",
+      "status_counts": {}
+    },
+    "yolo_qwen_flash": {
+      "model": "qwen3.8-flash",
+      "status_counts": {}
+    }
+  },
+  "provider_smoke": {
+    "pinned": {
+      "model": "typesafe/jev-1.13",
+      "status_counts": {
+        "ok": 1
+      }
+    },
+    "qwen": {
+      "model": "qwen3.8-flash",
+      "status_counts": {
+        "ok": 1
+      }
+    },
+    "rolling": {
+      "model": "~typesafe/jev-latest",
+      "status_counts": {
+        "ok": 1
+      }
+    }
+  },
+  "status": "completed_with_provider_statuses",
+  "student": {
+    "artifact": "experiments\\EXP-20260920-008-small-judge-training\\artifacts\\student_D.json",
+    "selected_arm": "D",
+    "student_id": "tfidf-logistic-v1"
+  },
+  "system_one_differential": {
+    "agreement_count": 1,
+    "arms": {
+      "pinned": {
+        "model": "typesafe/jev-1.13",
+        "status_counts": {
+          "ok": 1
+        }
+      },
+      "qwen": {
+        "model": "qwen3.8-flash",
+        "status_counts": {
+          "ok": 1
+        }
+      },
+      "rolling": {
+        "model": "~typesafe/jev-latest",
+        "status_counts": {
+          "ok": 1
+        }
+      }
+    },
+    "comparable_count": 1,
+    "rows": [
+      {
+        "all_agree": true,
+        "labels": {
+          "pinned": "pass",
+          "qwen": "pass",
+          "rolling": "pass"
+        },
+        "record_id": "arc-single:ACTAAP_2007_7_23:correct"
+      }
+    ],
+    "scope": "separate one-record provider smoke canary; not part of pinned/rolling pooled estimates"
+  },
+  "unresolved_policy_rule": "provider failures remain unresolved and never fall back to a local label"
+}

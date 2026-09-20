@@ -50,7 +50,7 @@ def _load_dotenv(path: Path) -> None:
         key, value = line.split("=", 1)
         key = key.strip()
         value = value.strip().strip("'\"")
-        if key in {"OPENROUTER_API_KEY", "YOLO_AUTO_API_KEY", "YOLO_API_KEY"} and value:
+        if key in {"OPENROUTER_API_KEY", "YOLO_AUTO_API_KEY", "YOLO_API_KEY", "QWEN_API_KEY", "QWEN_API_URL"} and value:
             os.environ.setdefault(key, value)
 
 
@@ -67,6 +67,12 @@ def _load_records(path: Path) -> tuple[list[JudgeRecord], dict[str, str], dict[s
     if len({record.record_id for record in records}) != len(records):
         raise ValueError("benchmark record IDs are not unique")
     return records, domains, partitions
+
+
+def _load_predictions(path: Path) -> list[JudgePrediction]:
+    if not path.exists():
+        return []
+    return [JudgePrediction.model_validate(json.loads(line)) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
 def _calibrated_predictions(
@@ -147,12 +153,20 @@ def run(
     output: Path = EXPERIMENT,
     run_providers: bool = True,
     env_file: Path | None = None,
+    provider_limit: int | None = None,
+    provider_timeout: float = 20.0,
+    include_rolling: bool = True,
+    include_qwen: bool = True,
+    include_pinned: bool = True,
 ) -> dict[str, Any]:
     if env_file:
         _load_dotenv(env_file)
     records, domains, partitions = _load_records(benchmark / "records.jsonl")
     threshold_records = [record for record in records if partitions[record.record_id] == "threshold_selection"]
     final_records = [record for record in records if partitions[record.record_id] == "final_evaluation"]
+    provider_records = final_records if provider_limit is None else final_records[:provider_limit]
+    if not provider_records:
+        raise ValueError("provider evaluation pool must not be empty")
     student = TextLogisticStudent.from_artifact(json.loads(STUDENT_ARTIFACT.read_text(encoding="utf-8")))
     calibration = CalibrationArtifact.model_validate(json.loads(CALIBRATION_ARTIFACT.read_text(encoding="utf-8")))
     threshold_raw = student.predict(threshold_records)
@@ -172,12 +186,24 @@ def run(
         )
         for target in TARGETS
     }
-    pinned = run_openrouter_jev(final_records, model=OPENROUTER_PINNED_MODEL) if run_providers else []
-    rolling = run_openrouter_jev(final_records, model=OPENROUTER_ROLLING_MODEL) if run_providers else []
-    qwen = run_yolo_qwen(final_records) if run_providers else []
-    pinned_by_id = _all_provider_rows(final_records, pinned, model_only=OPENROUTER_PINNED_MODEL) if pinned else {}
-    _rolling_by_id = _all_provider_rows(final_records, rolling, model_only=OPENROUTER_ROLLING_MODEL) if rolling else {}
-    qwen_by_id = _all_provider_rows(final_records, qwen, model_only="qwen3.8-flash") if qwen else {}
+    pinned = (
+        run_openrouter_jev(provider_records, model=OPENROUTER_PINNED_MODEL, timeout=provider_timeout)
+        if run_providers and include_pinned
+        else (_load_predictions(output / "provider-pinned.jsonl") if run_providers else [])
+    )
+    rolling = (
+        run_openrouter_jev(provider_records, model=OPENROUTER_ROLLING_MODEL, timeout=provider_timeout)
+        if run_providers and include_rolling
+        else []
+    )
+    qwen = (
+        run_yolo_qwen(provider_records, base_url=os.getenv("YOLO_AUTO_BASE_URL") or os.getenv("QWEN_API_URL", "https://api.yolo-auto.com/v1"), timeout=provider_timeout)
+        if run_providers and include_qwen
+        else []
+    )
+    pinned_by_id = _all_provider_rows(provider_records, pinned, model_only=OPENROUTER_PINNED_MODEL) if pinned else {}
+    _rolling_by_id = _all_provider_rows(provider_records, rolling, model_only=OPENROUTER_ROLLING_MODEL) if rolling else {}
+    qwen_by_id = _all_provider_rows(provider_records, qwen, model_only="qwen3.8-flash") if qwen else {}
     output.mkdir(parents=True, exist_ok=True)
     (output / "provider-pinned.jsonl").write_text(
         "".join(prediction.model_dump_json() + "\n" for prediction in pinned), encoding="utf-8"
@@ -258,10 +284,10 @@ def run(
                 {
                     "record_id": record.record_id,
                     "route": Route.ESCALATE.value if use_provider else Route.LOCAL.value,
-                    "final_label": selected.label if selected.execution_status is ExecutionStatus.OK else None,
-                    "provider_status": selected.execution_status.value,
-                    "provider_model": selected.judge_id if use_provider else None,
-                    "provider_error": selected.error,
+                    "final_label": selected.label if selected and selected.execution_status is ExecutionStatus.OK else None,
+                    "provider_status": selected.execution_status.value if selected else "not_called",
+                    "provider_model": selected.judge_id if selected and use_provider else None,
+                    "provider_error": selected.error if selected else {"type": "provider_not_available"},
                     "random_seed": 20260920,
                     "matched_escalation_count": escalated_count,
                 }
@@ -289,16 +315,33 @@ def run(
             )
     payload = {
         "experiment_id": "EXP-20260920-009-selective-escalation",
-        "status": "completed" if all(
-            policy_results[name]["unresolved_count"] == 0
-            for name in policy_results
-            if name.startswith("local_only")
-        ) else "completed_with_provider_statuses",
+        "status": "completed_with_provider_statuses"
+        if not run_providers
+        or any(
+            arm["status_counts"].get("ok", 0) != len(provider_records)
+            for arm in (
+                {
+                    "status_counts": dict(Counter(item.execution_status.value for item in pinned)),
+                },
+                {
+                    "status_counts": dict(Counter(item.execution_status.value for item in rolling)),
+                },
+                {
+                    "status_counts": dict(Counter(item.execution_status.value for item in qwen)),
+                },
+            )
+        )
+        else "completed",
         "environment": {"platform": platform.platform(), "python": platform.python_version(), "git_commit": _git_head()},
         "benchmark_fingerprint": json.loads((benchmark / "fingerprint.json").read_text(encoding="utf-8"))["fingerprint"],
         "student": {"artifact": str(STUDENT_ARTIFACT), "selected_arm": "D", "student_id": student.artifact()["student_id"]},
         "calibration": calibration.model_dump(mode="json"),
-        "counts": {"threshold_selection": len(threshold_records), "final_evaluation": len(final_records)},
+        "counts": {
+            "threshold_selection": len(threshold_records),
+            "final_evaluation": len(final_records),
+            "provider_evaluation": len(provider_records),
+            "provider_selection": "deterministic prefix of frozen final-evaluation record order",
+        },
         "provider_arms": {
             "openrouter_pinned": {"model": OPENROUTER_PINNED_MODEL, "status_counts": dict(Counter(item.execution_status.value for item in pinned))},
             "openrouter_rolling": {"model": OPENROUTER_ROLLING_MODEL, "status_counts": dict(Counter(item.execution_status.value for item in rolling))},
@@ -325,12 +368,22 @@ def main() -> None:
     parser.add_argument("--output", type=Path, default=EXPERIMENT)
     parser.add_argument("--env-file", type=Path)
     parser.add_argument("--skip-providers", action="store_true")
+    parser.add_argument("--provider-limit", type=int, default=None)
+    parser.add_argument("--provider-timeout", type=float, default=20.0)
+    parser.add_argument("--skip-rolling", action="store_true")
+    parser.add_argument("--skip-qwen", action="store_true")
+    parser.add_argument("--skip-pinned", action="store_true")
     args = parser.parse_args()
     payload = run(
         benchmark=args.benchmark,
         output=args.output,
         run_providers=not args.skip_providers,
         env_file=args.env_file,
+        provider_limit=args.provider_limit,
+        provider_timeout=args.provider_timeout,
+        include_rolling=not args.skip_rolling,
+        include_qwen=not args.skip_qwen,
+        include_pinned=not args.skip_pinned,
     )
     print(json.dumps({"counts": payload["counts"], "provider_arms": payload["provider_arms"]}, sort_keys=True))
 

@@ -3,39 +3,40 @@
 \usepackage{booktabs}
 \usepackage{graphicx}
 \usepackage{hyperref}
-\usepackage{microtype}
-
-\title{Calibrated Selective Escalation for Lightweight Rubric Judges:\\
-An Objective Benchmark and System-One Differential Study}
-\author{Author information to be finalized}
-\date{}
-
+\title{Calibrated Selective Escalation for Lightweight Rubric Judges}
+\author{Eval Lab}
+\date{2026-09-20}
 \begin{document}
 \maketitle
-
 \begin{abstract}
-This source file is the TASK-0010 publication scaffold. Final claims and numbers must be generated from committed experiment artifacts.
+We evaluate a frozen TASK-0009 TF-IDF plus logistic-regression student with confidence-based selective escalation on EvalLab-Select v0.1.0. The benchmark contains 2863 threshold-selection and 2356 final-evaluation records with disjoint source families. Provider failures remain explicitly unresolved. The benchmark fingerprint is \texttt{18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5}.
 \end{abstract}
-
 \section{Introduction}
-\section{Related Work}
-\section{Benchmark and Objective-Gold Construction}
-\section{Local Judge and Calibration}
-\section{Selective Escalation Method}
-\section{System-One and Jev Differential Method}
-\section{Experiments}
+Selective escalation trades local coverage for a lower-risk accepted subset while retaining an external judge for uncertain records.
+\section{Benchmark and objective gold}
+EvalLab-Select combines ARC-Challenge at the pinned source revision with non-training synthetic source families. Each ARC source yields one correct and one deterministic incorrect single-answer record. Source manifests, partitions, checksums, and canonicalization are committed with the release.
+\section{Student and calibration}
+The primary student is the frozen TASK-0009 arm D artifact. Calibration uses the committed temperature artifact fit on the TASK-0009 calibration split. Confidence is the maximum calibrated class probability; the top-two margin is retained as a secondary measure.
+\section{Routing and controls}
+Thresholds are selected only on the threshold-selection partition. We report local-only, calibrated and raw local-to-pinned-Jev policies, matched random escalation, and a calibrated local-to-Qwen policy. The rolling Jev alias is a separate canary.
 \section{Results}
-\section{Statistical Uncertainty}
-\section{Ablations and Controls}
-\section{Limitations and Threats to Validity}
-\section{Reproducibility and Artifact Availability}
-\section{Conclusion}
-
+Machine-generated routing results are in `generated/table_selective_results.tex`. The complete machine result is `../experiments/EXP-20260920-009-selective-escalation/results.json`.
+\begin{table}[h]
+\centering
+\input{generated/table_selective_results.tex}
+\caption{Machine-generated routing results. Resolved risk excludes unresolved provider calls.}
+\end{table}
+\section{System-One differential}
+The typed System-One specification is provider-independent. The smoke differential contains 1 comparable record(s), with 1 agreement(s). Pinned and rolling Jev outputs are stored separately.
+\section{Uncertainty}
+Every low-error coverage summary includes an exact Wilson 95\% interval. A nominal empirical risk below a target is not treated as supported when the interval upper bound exceeds that target.
+\section{Limitations and threats to validity}
+This is an objective ARC answer-key benchmark, not evidence of universal human-evaluation quality. The student training corpus is small. Calibration and provider availability are separate sources of uncertainty. Provider errors remain unresolved rather than receiving an implicit local fallback.
+\section{Reproducibility and artifact availability}
+Run the commands in `reproducibility.md`. The release includes RO-Crate 1.3 metadata, PROV-O provenance, SHACL shapes, a valid CFF citation file, checksums, and generated tables and figures.
 \appendix
-\section{Reproduction Commands}
-\section{Benchmark Manifest and Provenance}
-\section{Additional Results}
-
+\section{Exact reproduction commands}
+\verbatiminput{reproducibility.md}
 \bibliographystyle{plain}
 \bibliography{references}
 \end{document}

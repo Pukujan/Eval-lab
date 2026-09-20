@@ -1,0 +1,23 @@
+{
+  "@context": "https://schema.datacite.org/meta/kernel-4.6/metadata.xsd",
+  "creators": [
+    {
+      "name": "Pukujan"
+    }
+  ],
+  "identifier": {
+    "identifier": "18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5",
+    "identifierType": "SHA256"
+  },
+  "publicationYear": 2026,
+  "publisher": "Eval Lab",
+  "titles": [
+    {
+      "title": "EvalLab-Select"
+    }
+  ],
+  "types": {
+    "resourceTypeGeneral": "Dataset"
+  },
+  "version": "0.1.0"
+}
