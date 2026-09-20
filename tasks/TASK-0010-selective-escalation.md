@@ -470,6 +470,14 @@ Fix: add the minimal `scripts/__init__.py` package marker. Local rerun returned 
 
 Next atomic action: commit and push the CI import fix, then inspect the new CI run. Keep TASK-0010 active until the provider acceptance blocker and the resulting CI run are resolved.
 
+### 2026-09-20 — CI test invocation defect diagnosed
+
+The package marker alone did not fix clean GitHub collection: duplicate CI runs `35541679787` and `35541681635` checked out commit `f65512b36132cb9a94c5fd5d420e486350410473`, completed install/contract/lint, and then `pytest -q` reported `ModuleNotFoundError: No module named 'scripts'` on both Python 3.11 and 3.12. The workflow was using the standalone pytest entry point, which did not put the checkout root on `sys.path` in that runner environment.
+
+Fix: change `.github/workflows/ci.yml` to invoke `python -m pytest -q`. Local validation from `D:/claude/eval-lab-TASK-0010` using the shared Python 3.12.10 environment returned repository contract `OK`, Ruff clean, `74 passed in 31.38s`, and clean `git diff --check`. The current head before this fix is `f65512b`; no experiment files or provider results changed.
+
+Next atomic action: commit/push the workflow invocation fix and inspect the fresh CI matrix; keep TASK-0010 active until CI and the unresolved Qwen/rolling provider acceptance criteria are addressed.
+
 ## Handoff
 
 Read, in order:

@@ -251,3 +251,9 @@ After commit `fb804569e841459671961f6cac9f8779219f3203` was pushed, CI runs `355
 Fix: add the minimal `scripts/__init__.py` package marker. Local rerun returned contract `OK`, Ruff clean, `74 passed in 30.51s`, and clean `git diff --check`. No project scope or experiment semantics changed.
 
 Next atomic action: commit and push the CI import fix, then inspect the new CI run. Keep TASK-0010 active until the provider acceptance blocker and the resulting CI run are resolved.
+
+### 2026-09-20 — CI test invocation defect diagnosed
+
+Duplicate CI runs `35541679787` and `35541681635` checked out `f65512b36132cb9a94c5fd5d420e486350410473`, completed installation, repository contract, and Ruff, then both Python 3.11 and 3.12 test jobs failed during collection because standalone `pytest -q` could not import `scripts`. Change `.github/workflows/ci.yml` to `python -m pytest -q`, preserving the repository test contract. Local validation: repository contract `OK`, Ruff clean, `74 passed in 31.38s`, and clean diff check.
+
+Next atomic action: commit/push the workflow fix and inspect the fresh CI matrix; retain the provider bulk blocker and do not begin TASK-0002.
