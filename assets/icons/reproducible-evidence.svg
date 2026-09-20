@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Reproducible evidence</title>
+  <desc id="desc">Layered records with a traceable link.</desc>
+  <circle cx="32" cy="32" r="29" fill="#0b1734" stroke="#50d6ff" stroke-width="2"/>
+  <rect x="18" y="18" width="24" height="28" rx="3" fill="none" stroke="#dce9ff" stroke-width="2.5"/>
+  <path d="M24 24h12M24 30h12M24 36h7" stroke="#8d7cff" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M25 49h18a3 3 0 0 0 3-3V25" fill="none" stroke="#f7b955" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="m39 40 3 3 6-7" fill="none" stroke="#67e8a5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
