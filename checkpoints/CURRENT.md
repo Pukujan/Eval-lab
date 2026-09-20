@@ -311,3 +311,9 @@ Next atomic action: retry Qwen only after YOLO-Auto recovers, or obtain explicit
 The provider-blocked handoff is pushed at `afb74595e26084abc1975e2bd3c51553dbd1c8ba`. CI run `35543406626` passed Python 3.11 and 3.12 with install, repository contract, Ruff, and unit tests. The worktree is clean.
 
 Next atomic action: wait for YOLO-Auto availability or obtain explicit provider-blocked acceptance; do not substitute a model or begin TASK-0002.
+
+### 2026-09-20 — EXP-20260920-010 plan frozen before execution
+
+User authorized a separate follow-up bakeoff while TASK-0010 remains explicitly provider-blocked. The durable plan is `experiments/EXP-20260920-010-multi-subscription-bakeoff/PLAN.md` with machine-readable `experiment.yaml`. It freezes the existing EvalLab-Select fingerprint, the deterministic 500-record final-evaluation prefix, the arm-D student, the typed System-One specification, and separate Grok 4.6, Luna, and Sol OpenCode subscription arms. YOLO Qwen and local Qwen 1.7B/4B are deferred and will not be silently substituted.
+
+No new provider evaluation has started. Next atomic action: commit this plan, then implement and offline-test the subscription bakeoff runner/validator before any new provider call.

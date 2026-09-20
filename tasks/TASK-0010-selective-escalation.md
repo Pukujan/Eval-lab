@@ -345,6 +345,7 @@ Jev-Ultrafast browser action routing is out of scope for TASK-0010 implementatio
 - `benchmark/eval-lab-select-v0.1.0/`
 - `CITATION.cff`
 - `experiments/EXP-20260920-009-selective-escalation/`
+- `experiments/EXP-20260920-010-multi-subscription-bakeoff/`
 - `.github/workflows/ci.yml`
 - `.gitattributes` for byte-stable benchmark-release line endings
 - `scripts/check_repo_contract.py`
@@ -545,6 +546,12 @@ Next atomic action: when YOLO-Auto recovers, rerun the one-record smoke, then th
 The provider-blocked handoff is pushed at `afb74595e26084abc1975e2bd3c51553dbd1c8ba`. CI run `35543406626` passed both Python 3.11 and 3.12, including install, repository contract, Ruff, and unit tests. The worktree is clean.
 
 Next atomic action: wait for YOLO-Auto availability or obtain explicit provider-blocked acceptance; do not substitute a model or begin TASK-0002.
+
+### 2026-09-20 — EXP-20260920-010 plan frozen before execution
+
+The provider-blocked TASK-0010 handoff authorizes a separate append-only multi-subscription bakeoff. Durable plan: `experiments/EXP-20260920-010-multi-subscription-bakeoff/PLAN.md`; machine-readable manifest: `experiments/EXP-20260920-010-multi-subscription-bakeoff/experiment.yaml`. The plan freezes EvalLab-Select v0.1.0 fingerprint `18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5`, the deterministic first 500 final-evaluation records, frozen TASK-0009 arm D, typed System-One v0.1.0, and independent OpenCode arms `opencode/grok-4.6`, `opencode/gpt-5.6-luna`, and `opencode/gpt-5.6-sol`. YOLO Qwen and local Qwen 1.7B/4B are explicitly deferred, not substituted.
+
+Status: plan-only; no new provider call or evaluation label has been produced. Exact planned commands, output files, missingness rules, uncertainty reporting, and acceptance boundary are recorded in the plan. Next atomic action: commit the plan, then implement and offline-test the runner/validator before provider execution.
 
 ## Handoff
 
