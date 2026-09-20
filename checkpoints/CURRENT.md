@@ -25,7 +25,7 @@ Continue with TASK-0002 as the next implementation gate.
 
 ## Next task
 
-TASK-0003 — Jev Free Baseline (#7)
+TASK-0004 — Metrics, Calibration, and Selective Risk (#8)
 
 ## Queued foundation
 
@@ -48,7 +48,7 @@ GitHub Actions runner scheduling remains infrastructure-only until runners are a
 
 ## Next atomic action
 
-TASK-0003 is active in dedicated worktree `D:\claude\eval-lab-TASK-0003` on branch `task/TASK-0003-jev-objective-baseline`, starting from accepted `main` merge commit `1498581774ad5c7c4291f4e1dc68e58547d4126f`.
+TASK-0004 is active in dedicated worktree `D:\claude\eval-lab-TASK-0004` on branch `task/TASK-0004-metrics-calibration`, starting from accepted `main` merge commit `a5cfc7982b5babd8dac73ba775276d95db0fd9e8`.
 
 ### 2026-09-20 — PR #15 contract validation
 
@@ -84,4 +84,10 @@ Next atomic action: commit and push TASK-0003, open its PR, and do not start TAS
 
 TASK-0003 is pushed in PR #17 (`https://github.com/Pukujan/Eval-lab/pull/17`) from commit `a260259`.
 
-Next atomic action: merge PR #17 into `main`, update local `main`, and create the dedicated TASK-0004 worktree only after the merge.
+PR #17 merged TASK-0003 into `main` at `a5cfc7982b5babd8dac73ba775276d95db0fd9e8`. TASK-0004 is active in `D:\claude\eval-lab-TASK-0004` on `task/TASK-0004-metrics-calibration`.
+
+TASK-0004 local implementation and validation are complete in `D:\claude\eval-lab-TASK-0004` on `task/TASK-0004-metrics-calibration`.
+
+Local gate: contract `OK`; Ruff clean; `47 passed in 0.78s` using Python `3.12.10` in the dedicated `.venv`.
+
+Next atomic action: commit and push TASK-0004, open its review PR, and update the task/checkpoint log with the PR URL before merging.
