@@ -25,7 +25,7 @@ Continue with TASK-0002 as the next implementation gate.
 
 ## Next task
 
-TASK-0004 — Metrics, Calibration, and Selective Risk (#8)
+TASK-0005 — ARC-Challenge Public Benchmark Adapter (#9)
 
 ## Queued foundation
 
@@ -48,7 +48,7 @@ GitHub Actions runner scheduling remains infrastructure-only until runners are a
 
 ## Next atomic action
 
-TASK-0004 is active in dedicated worktree `D:\claude\eval-lab-TASK-0004` on branch `task/TASK-0004-metrics-calibration`, starting from accepted `main` merge commit `a5cfc7982b5babd8dac73ba775276d95db0fd9e8`.
+TASK-0005 is active in dedicated worktree `D:\claude\eval-lab-TASK-0005` on branch `task/TASK-0005-public-benchmark`, starting from accepted `main` merge commit `ec083499e8ce77c8cf2cf0614b05265ead24dd93`.
 
 ### 2026-09-20 — PR #15 contract validation
 
@@ -92,4 +92,10 @@ Local gate: contract `OK`; Ruff clean; `47 passed in 0.78s` using Python `3.12.1
 
 TASK-0004 is pushed in PR [#18](https://github.com/Pukujan/Eval-lab/pull/18) at commit `a428c75a1dfd23887050c8891737f041833f061a`.
 
-Next atomic action: merge PR #18 after the local merge gate, update local `main`, and only then create the TASK-0005 worktree.
+PR #18 merged TASK-0004 into `main` at `ec083499e8ce77c8cf2cf0614b05265ead24dd93`. TASK-0005 is active in `D:\claude\eval-lab-TASK-0005` on `task/TASK-0005-public-benchmark`.
+
+TASK-0005 local implementation and validation are complete. Live source revision `210d026faf9955653af8916fad021475a3f00453` and slice fingerprint `b7a84b15c5ca352f2689f546721d8038ce9b31ecff711be606016a6996e05521` are recorded.
+
+Local gate: contract `OK`; Ruff clean; `52 passed in 0.77s` using Python `3.12.10`.
+
+Next atomic action: commit and push TASK-0005, open its review PR, and update the task/checkpoint log with the PR URL before merging.
