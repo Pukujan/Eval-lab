@@ -1,0 +1,114 @@
+# TASK-0014 — Adopt the reusable content-generation system
+
+<!-- eval-lab:task {"id":"TASK-0014","status":"awaiting_review","goal":"Dogfood the versioned content-generation-modules helper in Eval Lab and produce reviewable README, visual, and responsive HTML artifacts without changing research behavior.","branch":"task/TASK-0014-content-system-adoption","allowed_files":[".gitignore","AGENTS.md","checkpoints/CURRENT.md","tasks/TASK-0014-content-system-adoption.md",".content-system/**","docs/content-system-preview.md","docs/content-system-preview.html"],"helper_repository":"https://github.com/Pukujan/content-generation-modules","helper_version":"0.1.1","helper_commit":"3e89100fed61da19bd3d3f17ad336f189b576c38","next_action":"Open the preview PR and ask the user to review the rendered artifacts before any promotion into README.md."} -->
+
+- Status: awaiting user review
+- Owner: Codex current implementation session
+- Branch: `task/TASK-0014-content-system-adoption`
+- Helper: `Pukujan/content-generation-modules@v0.1.1` (`3e89100fed61da19bd3d3f17ad336f189b576c38`)
+- Scope: project adapter plus reviewable content/visual/HTML preview only
+
+## Goal
+
+Use the reusable content-generation contract in Eval Lab so a fresh agent can produce human-oriented documentation and visuals from repository evidence without relying on prior conversation history.
+
+## Allowed files
+
+- `AGENTS.md`;
+- `checkpoints/CURRENT.md`;
+- `tasks/TASK-0014-content-system-adoption.md`;
+- `.content-system/**`;
+- `docs/content-system-preview.md`;
+- `docs/content-system-preview.html`.
+
+Do not change research code, experiment artifacts, existing README copy, existing image files, CI, or runtime behavior in this preview task.
+
+## Acceptance criteria
+
+- [x] adapter pins the helper repository, version, and commit;
+- [x] project brief identifies audience, problem, solution, mechanism, evidence, and boundaries;
+- [x] brand language defines human-facing tone, preferred terms, and anti-patterns;
+- [x] visual style defines the accepted hero pattern and responsive supporting roles;
+- [x] asset manifest records existing image/icon roles and review decisions;
+- [x] review rubric separates deterministic checks, model-assisted advice, and human acceptance;
+- [x] rendered Markdown preview tells the story and displays the existing assets;
+- [x] responsive HTML preview works at wide, tablet, and mobile widths;
+- [x] repository contract, adapter validation, local tests, and preview render checks pass;
+- [x] no target changes are merged without explicit user review.
+
+## Review evidence to record
+
+- helper commit and tag;
+- target branch and PR URL;
+- validator/test commands and results;
+- HTML screenshot/PDF paths or URLs;
+- human review decisions and required revisions;
+- one exact next action for the next Luna/Codex session.
+
+## Checkpoint log
+
+### 2026-09-20 — Codex activation
+
+Completed:
+
+- created the dedicated Eval Lab preview branch from merged `main` at `345e731`;
+- selected `content-generation-modules` version `0.1.0` as the pinned helper;
+- limited this task to a non-destructive adapter and review previews.
+
+Evidence:
+
+- helper tag resolves to commit `78393825635850442822dd00e0e84aff665814a4`;
+- working tree started clean on `task/TASK-0014-content-system-adoption`.
+
+Decisions:
+
+- keep existing README and assets unchanged until the user reviews the generated preview;
+- store project-specific facts in `.content-system/`, not in the generic helper repository;
+- use existing accepted Eval Lab images as the first visual regression set.
+
+Blocked/uncertain:
+
+- none.
+
+Next:
+
+- add and validate the project adapter and rendered previews.
+
+### 2026-09-20 — Codex preview completion
+
+Completed:
+
+- added the pinned `.content-system/` adapter;
+- added a story-first Markdown preview and responsive HTML preview using the existing accepted asset set;
+- added a local ignore rule for generated review output;
+- rendered desktop, tablet, and mobile screenshots plus a four-page A4 PDF review packet.
+
+Evidence:
+
+- helper validator: `python scripts/validate_content_system.py --root .` -> `VALID: content-generation-modules contract`;
+- target adapter validator: helper validator with `--adapter D:\\claude\\eval-lab-TASK-0014\\.content-system --project-root D:\\claude\\eval-lab-TASK-0014` -> `VALID: content-generation-modules contract and target adapter`;
+- repository contract: `python scripts/check_repo_contract.py` -> `Repository contract OK`;
+- Ruff: `ruff check .` -> `All checks passed!`;
+- tests: `PYTHONPATH=.;src python -m pytest -q` -> `64 passed`;
+- render check: no horizontal overflow at 1440px, 900px, or 390px; all four preview images loaded at each viewport;
+- PDF: `review-output/content-system-preview.pdf` -> 4 A4 pages; rendered page images inspected with no clipped content.
+
+Decisions:
+
+- keep the existing README unchanged until user review;
+- use one hero plus supporting wide, square, and portrait assets rather than alternate hero banners;
+- make PDF pages intentionally section-based so the packet can be reviewed without a browser;
+- keep generated review output local and ignored while source previews remain in Git.
+
+Blocked/uncertain:
+
+- whether the user wants the preview story promoted into the canonical README after inspection;
+- additional target repositories for cross-repository dogfooding have not yet been supplied.
+
+Next:
+
+- commit and push this preview branch, open a PR, attach the helper/continuity references, and wait for user review before changing README.md.
+
+## Handoff
+
+Fresh session: read `PROJECT.md`, `checkpoints/CURRENT.md`, this task, and the relevant content-system adapter files. Validate the adapter from the pinned helper commit before editing the preview or requesting review. Do not change research code or merge this preview without user approval.

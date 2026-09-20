@@ -1,5 +1,9 @@
 # Current Repository Checkpoint
 
+## Active content-system preview
+
+TASK-0014 is awaiting user review on `task/TASK-0014-content-system-adoption`. It pins `Pukujan/content-generation-modules@v0.1.1` at commit `3e89100fed61da19bd3d3f17ad336f189b576c38`. The preview-only adapter and rendered artifacts are complete; the next atomic action is to open the PR and wait for review before changing the canonical README.
+
 ## Program state
 
 TASK-0001 local bootstrap is complete.

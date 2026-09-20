@@ -1,0 +1,12 @@
+{
+  "schema_version": "content-generation.review-rubric.v1",
+  "dimensions": [
+    {"id": "human_comprehension", "question": "Can a first-time reader explain Eval Lab after twenty seconds?", "weight": 2},
+    {"id": "specificity", "question": "Does the preview describe a concrete evaluation problem and mechanism?", "weight": 2},
+    {"id": "claim_safety", "question": "Can each current claim be traced to project evidence?", "weight": 3},
+    {"id": "skimmability", "question": "Can a reader skim headings, emphasis, and first sentences?", "weight": 1},
+    {"id": "visual_clarity", "question": "Do the assets show the human/AI relationship without noise or obstruction?", "weight": 2},
+    {"id": "responsive_fit", "question": "Does the HTML remain understandable on mobile, tablet, and desktop?", "weight": 1}
+  ],
+  "decision_rule": "Accept the pilot only when claim_safety passes and no weighted dimension is below 3/5; model scores advise, human review decides."
+}

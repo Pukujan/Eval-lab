@@ -1,0 +1,46 @@
+{
+  "schema_version": "content-generation.project-brief.v1",
+  "project": "Eval Lab",
+  "audience": [
+    "researchers comparing AI judge systems",
+    "engineers deciding when a lightweight judge is safe to use",
+    "agents that need auditable evaluation decisions"
+  ],
+  "problem": "AI output is easy to produce, but deciding whether a plausible answer is good enough is expensive, opaque, and easy to get wrong.",
+  "solution": "Eval Lab compares lightweight judges against objective evidence, measures calibration and consistency, and routes uncertain cases to a stronger judge or a person.",
+  "mechanism": [
+    "preserve source and split provenance in canonical records",
+    "give each judge the same task and rubric",
+    "normalize predictions and execution failures",
+    "measure accuracy, confidence, consistency, cost, and selective risk",
+    "keep an experiment and evidence trail"
+  ],
+  "evidence": [
+    {"claim": "The repository defines objective-first gold provenance and split discipline.", "source": "PROJECT.md; docs/PDD.md; docs/SDD.md", "status": "shipped"},
+    {"claim": "The repository contains deterministic tests and experiment artifacts.", "source": "tests/; experiments/", "status": "shipped"},
+    {"claim": "The current local test suite passes.", "source": "TASK-0013 checkpoint and CI run 35542482242", "status": "shipped"},
+    {"claim": "Selective routing can improve operational reliability.", "source": "docs/PDD.md; docs/SDD.md; selective escalation artifacts", "status": "experimentally_supported"}
+  ],
+  "boundaries": [
+    "A judge model is not automatically ground truth.",
+    "Model confidence is useful only when checked against held-out outcomes.",
+    "Provider failures are execution states, not silently converted predictions.",
+    "The lab does not replace expert human review in ambiguous domains.",
+    "Subjective creative-writing quality is outside the v0 research scope."
+  ],
+  "terminology": {
+    "preferred": {
+      "LLM-as-a-judge": "AI judge",
+      "gold label": "evidence-backed label",
+      "selective escalation": "send uncertain cases onward",
+      "calibration": "whether confidence matches outcomes"
+    },
+    "avoid": [
+      "revolutionary",
+      "seamless",
+      "guaranteed",
+      "human-level",
+      "solves AI evaluation"
+    ]
+  }
+}
