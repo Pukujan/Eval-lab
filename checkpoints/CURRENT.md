@@ -25,7 +25,7 @@ Continue with TASK-0002 as the next implementation gate.
 
 ## Next task
 
-TASK-0002 — Canonical Schema and Objective Fixtures (#6)
+TASK-0003 — Jev Free Baseline (#7)
 
 ## Queued foundation
 
@@ -48,7 +48,7 @@ GitHub Actions runner scheduling remains infrastructure-only until runners are a
 
 ## Next atomic action
 
-TASK-0002 is active in dedicated worktree `D:\claude\eval-lab-TASK-0002` on branch `task/TASK-0002-canonical-schema-fixtures`, rebased onto accepted `main` merge commit `de294e10eb10e926c8ed18e7ffeba893ff7c1cf5`.
+TASK-0003 is active in dedicated worktree `D:\claude\eval-lab-TASK-0003` on branch `task/TASK-0003-jev-objective-baseline`, starting from accepted `main` merge commit `1498581774ad5c7c4291f4e1dc68e58547d4126f`.
 
 ### 2026-09-20 — PR #15 contract validation
 
@@ -74,4 +74,14 @@ TASK-0002 final local acceptance is green: repository contract `OK`, Ruff clean,
 
 TASK-0002 is pushed in PR #16 (`https://github.com/Pukujan/Eval-lab/pull/16`) from commit `bae7955`.
 
-Next atomic action: merge PR #16 into `main`, update local `main`, and create the dedicated TASK-0003 worktree only after the merge.
+PR #16 merged TASK-0002 into `main` at `1498581774ad5c7c4291f4e1dc68e58547d4126f`. TASK-0003 is active in `D:\claude\eval-lab-TASK-0003` on `task/TASK-0003-jev-objective-baseline`.
+
+Next atomic action: implement the exact free Jev model contract and normalized provider-status handling.
+
+TASK-0003 final local acceptance is green: repository contract `OK`, Ruff clean, and `37 passed`. The optional live smoke reached OpenCode and was normalized as `rate_limited` with `Retry-After 24496` seconds; no label was fabricated.
+
+Next atomic action: commit and push TASK-0003, open its PR, and do not start TASK-0004 until TASK-0003 is accepted/merged.
+
+TASK-0003 is pushed in PR #17 (`https://github.com/Pukujan/Eval-lab/pull/17`) from commit `a260259`.
+
+Next atomic action: merge PR #17 into `main`, update local `main`, and create the dedicated TASK-0004 worktree only after the merge.
