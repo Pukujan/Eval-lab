@@ -1,0 +1,117 @@
+schema_version: 1
+purpose: >-
+  Machine-readable record for the README visual family. This preserves intent,
+  role, dimensions, references, and review decisions without claiming pixel-
+  identical regeneration from a nondeterministic image model.
+project: Eval Lab
+reference_style: assets/eval-lab-banner.png
+generation_tool: built-in image_gen
+reproducibility: >-
+  Reproduce the visual intent and acceptance decision with the documented
+  reference, prompt recipe, dimensions, palette, constraints, and review notes.
+  Pixel identity is not guaranteed without a pinned model snapshot and seed.
+
+style_tokens:
+  deep_navy: "#0B1734"
+  cobalt: "#1C4EA3"
+  soft_cyan: "#50D6FF"
+  violet: "#8D7CFF"
+  amber: "#F7B955"
+  coral: "#FF8F8F"
+  mint: "#67E8A5"
+  pale_text: "#DCE9FF"
+
+assets:
+  - path: assets/eval-lab-banner.png
+    role: primary_readme_hero
+    orientation: landscape
+    dimensions: "1672x941"
+    text_policy: minimal_text_allowed
+    on_image_text:
+      - "Eval Lab"
+      - "Build AI judges you can trust"
+      - "Powered by Jev"
+    reference: none
+    prompt_recipe: hero-v1
+    review: approved
+    notes: >-
+      Keep this as the only hero. Preserve visible human and robot subjects,
+      restrained dashboard detail, readable title, and negative space.
+
+  - path: assets/eval-lab-problem.png
+    role: problem_story_illustration
+    orientation: landscape
+    dimensions: "1672x941"
+    text_policy: no_readable_text
+    on_image_text: []
+    reference: assets/eval-lab-banner.png
+    prompt_recipe: body-problem-v1
+    review: approved
+    notes: >-
+      Show the human-scale tension: many plausible outputs, mixed confidence,
+      and a researcher trying to distinguish signal from noise.
+
+  - path: assets/eval-lab-system-square.png
+    role: system_explainer
+    orientation: square
+    dimensions: "1254x1254"
+    text_policy: no_readable_text
+    on_image_text: []
+    reference: assets/eval-lab-banner.png
+    prompt_recipe: body-system-square-v2
+    review: approved_after_revision
+    rejected_variant_reason: >-
+      The first square concept used too many cards, competing colors, and a
+      radial dashboard that covered the human/AI relationship.
+    notes: >-
+      Keep one calm translucent panel, no more than three large symbols, and
+      subject/background separation. Designed for tablet and mobile placement.
+
+  - path: assets/eval-lab-evidence-portrait.png
+    role: evidence_and_calibration_illustration
+    orientation: portrait
+    dimensions: "1024x1536"
+    text_policy: no_readable_text
+    on_image_text: []
+    reference: assets/eval-lab-banner.png
+    prompt_recipe: body-evidence-portrait-v1
+    review: approved
+    notes: >-
+      Use for calibration and evidence sections where a narrow, tall visual is
+      easier to understand than another horizontal banner.
+
+  - path: assets/icons/objective-truth.svg
+    role: concept_icon
+    orientation: square
+    dimensions: "64x64 viewBox"
+    text_policy: no_text
+    reference: assets/eval-lab-banner.png
+    prompt_recipe: code_native_svg_tokens
+    review: approved
+
+  - path: assets/icons/calibrated-confidence.svg
+    role: concept_icon
+    orientation: square
+    dimensions: "64x64 viewBox"
+    text_policy: no_text
+    reference: assets/eval-lab-banner.png
+    prompt_recipe: code_native_svg_tokens
+    review: approved
+
+  - path: assets/icons/selective-routing.svg
+    role: concept_icon
+    orientation: square
+    dimensions: "64x64 viewBox"
+    text_policy: no_text
+    reference: assets/eval-lab-banner.png
+    prompt_recipe: code_native_svg_tokens
+    review: approved
+
+  - path: assets/icons/reproducible-evidence.svg
+    role: concept_icon
+    orientation: square
+    dimensions: "64x64 viewBox"
+    text_policy: no_text
+    reference: assets/eval-lab-banner.png
+    prompt_recipe: code_native_svg_tokens
+    review: approved
