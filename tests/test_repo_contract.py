@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from scripts.check_repo_contract import ROOT, main
 
 
