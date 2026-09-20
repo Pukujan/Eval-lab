@@ -528,6 +528,18 @@ Decision: TASK-0010 remains active with `completed_with_provider_statuses`. Do n
 
 Next atomic action: retry the YOLO-Auto Qwen arm only when contention changes, or record a formal provider-blocked acceptance decision with the current evidence; do not begin TASK-0002.
 
+### 2026-09-20 — formal provider-blocked handoff
+
+Status: `blocked` on the external YOLO-Auto Qwen arm; TASK-0010 is not claimed complete. The required local `.venv\\Scripts\\...` gate commands were attempted and the dedicated worktree has no `.venv`. Equivalent shared-environment commands from `D:/claude/eval-lab/.venv` with `PYTHONPATH=D:/claude/eval-lab-TASK-0010/src` returned repository contract `OK`, Ruff clean, `74 passed in 3.89s`, and clean diff check. The configured Qwen URL is `https://yolo-auto.com/v1`.
+
+Provider evidence: pinned `typesafe/jev-1.13` is `500 ok`; rolling `~typesafe/jev-latest` is a separate `500 ok`; Qwen `qwen3.8-flash` has no final labels. A 500-record Qwen attempt with 16 workers/30-second timeout stalled with 16 open HTTPS connections for approximately six minutes and was terminated without labels. Ten-record and three-record probes returned `provider_error`; the latest one-record probe with one worker and 20-second timeout returned `transport_error`. No fallback labels, credentials, or raw provider payloads were written or committed.
+
+Frozen release evidence remains: EvalLab-Select v0.1.0 fingerprint `18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5`; `2,863` threshold-selection records; `2,356` final-evaluation records; separate pinned/rolling outputs; System-One smoke differential `1/1` comparable and agreeing; research-artifact validation checksums `ok`, RO-Crate `ok`, PROV-O parsed, SHACL conforms, CFF parsed, paper present. CI run `35543153294` passed Python 3.11 and 3.12.
+
+Decision: preserve TASK-0010’s frozen provider/model protocol and mark the missing Qwen final arm as externally blocked. Grok/Luna/local Qwen 1.7B/4B are not substitutes and are deferred to a new experiment ID after this block is resolved or separately accepted. Do not begin TASK-0002 or add a new provider arm in this branch.
+
+Next atomic action: when YOLO-Auto recovers, rerun the one-record smoke, then the deterministic 500-record Qwen prefix with separate output and artifact regeneration; otherwise obtain an explicit decision to accept the provider-blocked release.
+
 ## Handoff
 
 Read, in order:

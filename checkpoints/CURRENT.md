@@ -295,3 +295,13 @@ Current head `cea7558568bafad4791353f53f7b8ad5286feacd` is pushed on the TASK-00
 Decision: keep TASK-0010 active with explicit provider statuses. Grok/Luna/local Qwen cannot replace the missing frozen Qwen arm; any such comparison requires a new experiment ID and provider manifest after acceptance or formal blocking.
 
 Next atomic action: retry Qwen only after YOLO-Auto contention changes, or make the provider-blocked acceptance decision with the evidence already checkpointed; do not begin TASK-0002.
+
+### 2026-09-20 — formal provider-blocked handoff
+
+TASK-0010 is explicitly provider-blocked, not complete. The dedicated worktree lacks `.venv`; equivalent shared-environment validation passed repository contract, Ruff, `74 passed in 3.89s`, and diff check. Pinned Jev `typesafe/jev-1.13` is `500 ok`; rolling `~typesafe/jev-latest` is a separate `500 ok`; YOLO-Auto `qwen3.8-flash` at `https://yolo-auto.com/v1` has no final labels after a stalled 500-record attempt and repeated `provider_error`/latest `transport_error` probes. No fallback labels, credentials, or raw payloads were written.
+
+Frozen benchmark remains fingerprint `18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5`, with `2,863` threshold and `2,356` final records. System-One smoke differential is `1/1` comparable and agreeing; artifact validation is green; CI run `35543153294` is green on Python 3.11/3.12.
+
+Decision: preserve the frozen protocol. Grok/Luna/local Qwen 1.7B/4B cannot replace the missing Qwen arm and are deferred to a new experiment. Do not begin TASK-0002 or expand this branch.
+
+Next atomic action: retry Qwen only after YOLO-Auto recovers, or obtain explicit acceptance of the provider-blocked release.
