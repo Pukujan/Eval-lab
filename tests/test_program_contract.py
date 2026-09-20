@@ -51,7 +51,7 @@ def test_program_docs_cover_entire_sequence() -> None:
     assert "Sol" in access
 
 
-def test_current_checkpoint_points_to_task_0002() -> None:
+def test_current_checkpoint_points_to_task_0010() -> None:
     current = read("checkpoints/CURRENT.md")
     assert "TASK-0001" in current
     assert "complete" in current.lower()
@@ -107,3 +107,6 @@ def test_task_0010_research_release_contract() -> None:
         assert term in standard
     assert "M-01" in differential
     assert "D-01" in differential
+    assert (ROOT / "paper" / "main.tex").is_file()
+    assert (ROOT / "benchmark" / "eval-lab-select-v0.1.0" / "benchmark.yaml").is_file()
+    assert (ROOT / "CITATION.cff").is_file()
