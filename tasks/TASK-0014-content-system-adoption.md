@@ -109,6 +109,35 @@ Next:
 
 - commit and push this preview branch, open a PR, attach the helper/continuity references, and wait for user review before changing README.md.
 
+### 2026-09-20 — Codex CI correction
+
+Completed:
+
+- diagnosed and corrected the first preview-branch CI failure;
+- merged current Eval Lab `main` into the preview branch so it contains the accepted `PYTHONPATH=.:src` workflow fix from TASK-0013;
+- reran the GitHub Actions matrix successfully.
+
+Evidence:
+
+- initial push run `35545998206` failed during collection with `ModuleNotFoundError: No module named 'scripts'` because the branch was created from stale local `origin/main` at `345e731`;
+- current `main` is `82047d9` and contains the workflow environment fix;
+- corrected push run `35546113184` passed `contract-and-tests (3.11)` and `contract-and-tests (3.12)`;
+- PR #30 is open and clean with all required checks passing.
+
+Decisions:
+
+- treat the initial failure as a branch-base synchronization defect, not a content-system or research-test defect;
+- keep historical failed runs visible for audit rather than deleting them;
+- require future worktrees to verify their base ref against current `main` before pushing.
+
+Blocked/uncertain:
+
+- none; PR #30 remains intentionally unmerged pending user review.
+
+Next:
+
+- review the rendered Markdown/HTML/PDF artifacts and decide whether to promote the content system into the canonical README.
+
 ## Handoff
 
 Fresh session: read `PROJECT.md`, `checkpoints/CURRENT.md`, this task, and the relevant content-system adapter files. Validate the adapter from the pinned helper commit before editing the preview or requesting review. Do not change research code or merge this preview without user approval.
