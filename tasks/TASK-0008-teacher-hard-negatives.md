@@ -113,3 +113,10 @@ Next atomic action: run the full repository contract, Ruff, and pytest gates, co
 The EXP-006 attempt still received an empty or incomplete Sol object under the first structured prompt. A direct single-record probe succeeded when the expected JSON object was included verbatim with the case context. EXP-20260920-007 freezes that exact prompt shape and one-record request policy before the final run; no EXP-006 outputs are retained.
 
 Next atomic action: commit the EXP-007 pre-registration and run the final append-only teacher/audit experiment.
+
+
+### 2026-09-20 — TASK-0008 review handoff
+
+TASK-0008 is locally complete. Final experiment EXP-20260920-007 records 5 verified hard negatives, 10 Luna audits, 10 Sol audits, explicit rejected generation reasons, and SuperGrok unavailable status. Local gate: contract OK, Ruff clean, 60 passed in 1.60s.
+
+Next atomic action: push the task branch, open the review PR, and update this log with its URL before merge.
