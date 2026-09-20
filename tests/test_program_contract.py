@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from scripts.check_repo_contract import ROOT
 
 TASK_FILES = {
@@ -75,4 +73,4 @@ def test_luna_handoff_exists_and_is_bounded() -> None:
     handoff = read("docs/LUNA_PROGRAM_HANDOFF.md")
     assert "TASK-0002" in handoff
     assert "TASK-0006" in handoff
-    assert "Do not automatically start fine-tuning" in handoff or "fine-tuning" in handoff
+    assert "fine-tuning" in handoff
