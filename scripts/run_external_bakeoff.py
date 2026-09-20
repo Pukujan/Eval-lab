@@ -240,7 +240,8 @@ def _yolo_one(
                 "model": YOLO_MODEL,
                 "messages": [{"role": "user", "content": _prompt(record)}],
                 "temperature": 0,
-                "max_tokens": 64,
+                "max_tokens": 128,
+                "chat_template_kwargs": {"enable_thinking": False},
             },
             timeout=timeout,
         )
