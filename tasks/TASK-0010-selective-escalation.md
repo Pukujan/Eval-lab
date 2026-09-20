@@ -518,6 +518,16 @@ Decision: keep TASK-0010’s frozen provider set unchanged. Grok/Luna and local 
 
 Next atomic action: leave the Qwen arm explicitly unresolved and retry only after provider contention changes; do not open a new arm or begin TASK-0002 from this checkpoint.
 
+### 2026-09-20 — current handoff checkpoint
+
+Current head is `cea7558568bafad4791353f53f7b8ad5286feacd` on `task/TASK-0010-selective-escalation`; PR #26 remains open and draft. CI run `35543153294` passed both Python 3.11 and 3.12, including install, repository contract, Ruff, and unit tests. Local validation remains contract `OK`, Ruff clean, `74 passed`, and research-artifact validation successful.
+
+Frozen benchmark: EvalLab-Select v0.1.0 fingerprint `18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5`, with `2,863` threshold-selection and `2,356` final-evaluation records. Provider counts: pinned `typesafe/jev-1.13` `500 ok`; rolling `~typesafe/jev-latest` `500 ok`; YOLO-Auto `qwen3.8-flash` no final labels after the 500-record stall and 10-record/3-record probes (`provider_error`). System-One smoke differential is separate at `1/1` comparable and agreeing. No local 1.7B/4B model weights are present in the standard Hugging Face cache.
+
+Decision: TASK-0010 remains active with `completed_with_provider_statuses`. Do not relabel Grok/Luna or local Qwen results as the missing YOLO-Auto arm. Any such model is a follow-up experiment with a new arm/spec/provider manifest and experiment ID after TASK-0010 is accepted or explicitly provider-blocked.
+
+Next atomic action: retry the YOLO-Auto Qwen arm only when contention changes, or record a formal provider-blocked acceptance decision with the current evidence; do not begin TASK-0002.
+
 ## Handoff
 
 Read, in order:

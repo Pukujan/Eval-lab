@@ -287,3 +287,11 @@ Next atomic action: commit the rolling output/results and checkpoint, then retry
 A fresh three-record YOLO-Auto probe for `qwen3.8-flash` with 2 workers and 20-second timeout returned `3 provider_error`; no labels or raw payloads were written. This remains an external provider availability condition. The frozen TASK-0010 arm set is unchanged. Grok/Luna and local Qwen 1.7B/4B remain candidates for a separately preregistered follow-up after TASK-0010 acceptance or explicit provider-blocking; TASK-0006’s local Qwen3-0.6B remains the existing broader-program baseline.
 
 Next atomic action: retry Qwen only after provider contention changes; retain TASK-0010 active and do not expand the current experiment or begin TASK-0002.
+
+### 2026-09-20 — current handoff checkpoint
+
+Current head `cea7558568bafad4791353f53f7b8ad5286feacd` is pushed on the TASK-0010 branch. CI run `35543153294` passed Python 3.11 and 3.12 with install, contract, Ruff, and tests. EvalLab-Select v0.1.0 remains frozen at fingerprint `18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5`; counts are `2,863` threshold-selection and `2,356` final-evaluation. Pinned Jev is `500 ok`, rolling Jev is a separate `500 ok`, and YOLO-Auto Qwen has no final labels after repeated provider-error/stall evidence. No local 1.7B/4B weights were found in the standard Hugging Face cache.
+
+Decision: keep TASK-0010 active with explicit provider statuses. Grok/Luna/local Qwen cannot replace the missing frozen Qwen arm; any such comparison requires a new experiment ID and provider manifest after acceptance or formal blocking.
+
+Next atomic action: retry Qwen only after YOLO-Auto contention changes, or make the provider-blocked acceptance decision with the evidence already checkpointed; do not begin TASK-0002.
