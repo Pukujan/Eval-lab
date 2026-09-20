@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Objective evidence</title>
+  <desc id="desc">A verified document with a check mark.</desc>
+  <circle cx="32" cy="32" r="29" fill="#0b1734" stroke="#50d6ff" stroke-width="2"/>
+  <path d="M23 15h13l8 8v26H23a4 4 0 0 1-4-4V19a4 4 0 0 1 4-4Z" fill="none" stroke="#dce9ff" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M36 15v9h8M24 31h14M24 37h10" fill="none" stroke="#8d7cff" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="m25 44 4 4 10-11" fill="none" stroke="#67e8a5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
