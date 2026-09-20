@@ -73,7 +73,8 @@ def _write_jsonl(path: Path, values: list[Any]) -> None:
 
 def run(args: argparse.Namespace) -> Path:
     output_dir = Path(args.output_dir)
-    if output_dir.exists() and any(output_dir.iterdir()):
+    existing = {path.name for path in output_dir.iterdir()} if output_dir.exists() else set()
+    if existing - {"README.md", "experiment.yaml"}:
         raise FileExistsError(f"refusing to overwrite existing experiment: {output_dir}")
     output_dir.mkdir(parents=True, exist_ok=True)
     started = time.perf_counter()
