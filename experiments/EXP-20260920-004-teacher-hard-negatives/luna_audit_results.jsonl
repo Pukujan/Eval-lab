@@ -1,0 +1,10 @@
+{"assessment": "keep_for_review", "record_id": "single-synthetic-arithmetic-02-subtle", "review_notes": "Complete single-answer case with a clear prompt and candidate."}
+{"assessment": "keep_for_review", "record_id": "single-synthetic-arithmetic-02-correct", "review_notes": "Complete single-answer case with a clear prompt and candidate."}
+{"assessment": "likely_error", "record_id": "single-synthetic-multiple-choice-03-obvious", "review_notes": "Prompt omits the answer choices, so the candidate cannot be objectively evaluated."}
+{"assessment": "keep_for_review", "record_id": "single-synthetic-arithmetic-02-obvious", "review_notes": "Complete single-answer case with a clear prompt and candidate."}
+{"assessment": "likely_error", "record_id": "single-synthetic-structured-06-subtle", "review_notes": "Prompt does not specify the requested version object or required fields."}
+{"assessment": "likely_error", "record_id": "single-synthetic-multiple-choice-03-correct", "review_notes": "Prompt omits the answer choices, so the candidate cannot be objectively evaluated."}
+{"assessment": "likely_error", "record_id": "single-synthetic-structured-06-correct", "review_notes": "Prompt does not specify the requested version object or required fields."}
+{"assessment": "likely_error", "record_id": "single-synthetic-multiple-choice-03-subtle", "review_notes": "Prompt omits the answer choices, so the candidate cannot be objectively evaluated."}
+{"assessment": "likely_error", "record_id": "single-synthetic-structured-06-obvious", "review_notes": "Prompt does not specify the requested version object or required fields."}
+{"assessment": "likely_error", "record_id": "pair-synthetic-multiple-choice-03-correct-first", "review_notes": "Pairwise prompt omits the answer choices and provides only opaque candidate labels."}

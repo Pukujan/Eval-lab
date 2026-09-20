@@ -1,0 +1,72 @@
+{
+  "accepted_count": 18,
+  "experiment_id": "EXP-20260920-004-teacher-hard-negatives",
+  "failure_mode_counts": {
+    "arithmetic_near_miss": 5,
+    "code_output_mutation": 3,
+    "multiple_choice_distractor": 5,
+    "structured_field_mutation": 5
+  },
+  "rejected_count": 2,
+  "rejection_reason_counts": {
+    "structured_payload_not_found": 1,
+    "teacher_candidate_verified_correct": 1
+  },
+  "source_domain_coverage": {
+    "arithmetic": 5,
+    "code_output": 3,
+    "multiple_choice": 5,
+    "structured": 5
+  },
+  "source_split_coverage": {
+    "calibration": 2,
+    "dev": 7,
+    "train": 9
+  },
+  "teacher_paths": {
+    "luna": {
+      "input_record_ids": [
+        "single-synthetic-arithmetic-02-subtle",
+        "single-synthetic-arithmetic-02-correct",
+        "single-synthetic-multiple-choice-03-obvious",
+        "single-synthetic-arithmetic-02-obvious",
+        "single-synthetic-structured-06-subtle",
+        "single-synthetic-multiple-choice-03-correct",
+        "single-synthetic-structured-06-correct",
+        "single-synthetic-multiple-choice-03-subtle",
+        "single-synthetic-structured-06-obvious",
+        "pair-synthetic-multiple-choice-03-correct-first"
+      ],
+      "model": "opencode/gpt-5.6-luna",
+      "reason": null,
+      "status": "ok"
+    },
+    "sol": {
+      "input_record_ids": [
+        "arc-pair:MCAS_2009_5_6516",
+        "arc-pair:Mercury_SC_407695",
+        "arc-pair:Mercury_SC_415702",
+        "pair-synthetic-arithmetic-02-incorrect-first",
+        "pair-synthetic-multiple-choice-03-correct-first",
+        "pair-synthetic-multiple-choice-03-incorrect-first",
+        "pair-synthetic-structured-06-correct-first",
+        "single-synthetic-arithmetic-02-obvious",
+        "single-synthetic-multiple-choice-03-correct",
+        "single-synthetic-multiple-choice-03-obvious"
+      ],
+      "model": "opencode/gpt-5.6-sol",
+      "reason": "incomplete_audit_batch",
+      "status": "parse_error"
+    },
+    "supergrok": {
+      "model": "opencode/grok-4.6",
+      "reason": "TASK-0007 integration timed out",
+      "status": "unavailable_provider_blocked"
+    },
+    "yolo_auto": {
+      "accepted": 18,
+      "status": "completed"
+    }
+  },
+  "verification_rate": 0.9
+}

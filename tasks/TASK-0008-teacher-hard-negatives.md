@@ -74,6 +74,14 @@ Pre-registration: experiments/EXP-20260920-004-teacher-hard-negatives/README.md 
 
 Next atomic action: implement the bounded structured-teacher runner, verifier routing, rejection taxonomy, and audit metadata without admitting model output as objective gold.
 
+### 2026-09-20 — EXP-004 bounded generation checkpoint
+
+The first preregistered run generated 20 non-test source families with YOLO-Auto qwen3.8-flash. It produced 18 candidates independently rejected by deterministic verifiers and 2 rejected generations (one structured parse failure and one verifier-correct proposal). Luna completed its 10-record audit batch. Sol returned an incomplete batch, so its result is preserved as parse_error in EXP-20260920-004 and is not treated as completed audit evidence.
+
+Decision: create the append-only follow-up EXP-20260920-005 with the same source/prompt contract and one-record Sol audit requests. No EXP-004 result is overwritten.
+
+Next atomic action: commit EXP-004 evidence and EXP-005 pre-registration, then rerun the bounded generation with complete Luna/Sol audit coverage.
+
 ## Handoff
 
 TASK-0009 trains controlled student ablations on the verified corpus.
