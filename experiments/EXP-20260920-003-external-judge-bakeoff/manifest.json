@@ -1,0 +1,53 @@
+{
+  "code_commit": "2456f656a69b1c192cf31e7ff99837ace3bc5a26",
+  "context_limit": 4096,
+  "created_at_utc": "2026-09-20T19:16:28.767114+00:00",
+  "dataset": {
+    "arc_fingerprint": "b7a84b15c5ca352f2689f546721d8038ce9b31ecff711be606016a6996e05521",
+    "record_ids": [
+      "single-synthetic-arithmetic-02-correct",
+      "single-synthetic-arithmetic-02-subtle",
+      "single-synthetic-arithmetic-02-obvious",
+      "pair-synthetic-arithmetic-02-correct-first",
+      "pair-synthetic-arithmetic-02-incorrect-first",
+      "single-synthetic-multiple-choice-03-correct",
+      "single-synthetic-multiple-choice-03-subtle",
+      "single-synthetic-multiple-choice-03-obvious",
+      "pair-synthetic-multiple-choice-03-correct-first",
+      "pair-synthetic-multiple-choice-03-incorrect-first",
+      "single-synthetic-structured-06-correct",
+      "single-synthetic-structured-06-subtle",
+      "single-synthetic-structured-06-obvious",
+      "pair-synthetic-structured-06-correct-first",
+      "arc-pair:Mercury_SC_415702",
+      "arc-pair:MCAS_2009_5_6516",
+      "arc-pair:Mercury_SC_407695",
+      "arc-pair:Mercury_7103565",
+      "arc-pair:Mercury_7175875",
+      "arc-pair:Mercury_SC_409171"
+    ],
+    "task6_manifest": "experiments\\EXP-20260920-002-qwen-0-6b-calibrated\\manifest.json"
+  },
+  "id": "EXP-20260920-003-external-judge-bakeoff",
+  "latency": {
+    "count": 80,
+    "max_ms": 10756.540800008224,
+    "mean_ms": 627.3907337508717,
+    "median_ms": 0.0007999915396794677,
+    "min_ms": 0.000300002284348011,
+    "p95_ms": 1344.9265050192475
+  },
+  "providers": [
+    "yolo-auto/qwen3.8-flash",
+    "opencode/nemotron-3.5-lightning-free",
+    "opencode/mimo-v2.5-free",
+    "opencode/grok-4.6"
+  ],
+  "record_count": 20,
+  "runtime": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10"
+  },
+  "seed": 20250920,
+  "status": "completed"
+}

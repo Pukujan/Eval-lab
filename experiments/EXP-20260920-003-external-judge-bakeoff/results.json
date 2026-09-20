@@ -1,0 +1,570 @@
+{
+  "audit_batches": {
+    "luna_count": 10,
+    "sol_count": 10
+  },
+  "experiment_id": "EXP-20260920-003-external-judge-bakeoff",
+  "identical_record_ids": true,
+  "provider_failure_summary": {
+    "opencode/grok-4.6": {
+      "provider_error": 1,
+      "skipped": 19
+    },
+    "opencode/mimo-v2.5-free": {
+      "provider_error": 1,
+      "skipped": 19
+    },
+    "opencode/nemotron-3.5-lightning-free": {
+      "provider_error": 1,
+      "skipped": 19
+    },
+    "yolo-auto/qwen3.8-flash": {
+      "ok": 20
+    }
+  },
+  "provider_reports": {
+    "opencode/grok-4.6": {
+      "agreement_with_task6_local_ok": 0,
+      "coverage": {
+        "counts": {
+          "provider_error": 1,
+          "skipped": 19
+        },
+        "record_ids": {
+          "provider_error": [
+            "single-synthetic-arithmetic-02-correct"
+          ],
+          "skipped": [
+            "single-synthetic-arithmetic-02-subtle",
+            "single-synthetic-arithmetic-02-obvious",
+            "pair-synthetic-arithmetic-02-correct-first",
+            "pair-synthetic-arithmetic-02-incorrect-first",
+            "single-synthetic-multiple-choice-03-correct",
+            "single-synthetic-multiple-choice-03-subtle",
+            "single-synthetic-multiple-choice-03-obvious",
+            "pair-synthetic-multiple-choice-03-correct-first",
+            "pair-synthetic-multiple-choice-03-incorrect-first",
+            "single-synthetic-structured-06-correct",
+            "single-synthetic-structured-06-subtle",
+            "single-synthetic-structured-06-obvious",
+            "pair-synthetic-structured-06-correct-first",
+            "arc-pair:Mercury_SC_415702",
+            "arc-pair:MCAS_2009_5_6516",
+            "arc-pair:Mercury_SC_407695",
+            "arc-pair:Mercury_7103565",
+            "arc-pair:Mercury_7175875",
+            "arc-pair:Mercury_SC_409171"
+          ]
+        }
+      },
+      "model": "opencode/grok-4.6",
+      "provider": "opencode",
+      "report": {
+        "aggregate": {
+          "count": 0,
+          "metrics": null,
+          "probability_metrics_available": false
+        },
+        "by_domain": {},
+        "failure_count": 20,
+        "latency": {
+          "count": 20,
+          "max_ms": 10756.540800008224,
+          "mean_ms": 537.8276700008428,
+          "median_ms": 0.000600004568696022,
+          "min_ms": 0.000300002284348011,
+          "p95_ms": 537.8288449865144
+        },
+        "probability_metrics": {
+          "available": false,
+          "unavailable_reason": "one or more successful predictions did not provide probabilities"
+        },
+        "risk_coverage": {
+          "coverage_at_target_error": {},
+          "curve": []
+        },
+        "status_counts": {
+          "provider_error": 1,
+          "skipped": 19
+        },
+        "successful_count": 0,
+        "total_count": 20
+      }
+    },
+    "opencode/mimo-v2.5-free": {
+      "agreement_with_task6_local_ok": 0,
+      "coverage": {
+        "counts": {
+          "provider_error": 1,
+          "skipped": 19
+        },
+        "record_ids": {
+          "provider_error": [
+            "single-synthetic-arithmetic-02-correct"
+          ],
+          "skipped": [
+            "single-synthetic-arithmetic-02-subtle",
+            "single-synthetic-arithmetic-02-obvious",
+            "pair-synthetic-arithmetic-02-correct-first",
+            "pair-synthetic-arithmetic-02-incorrect-first",
+            "single-synthetic-multiple-choice-03-correct",
+            "single-synthetic-multiple-choice-03-subtle",
+            "single-synthetic-multiple-choice-03-obvious",
+            "pair-synthetic-multiple-choice-03-correct-first",
+            "pair-synthetic-multiple-choice-03-incorrect-first",
+            "single-synthetic-structured-06-correct",
+            "single-synthetic-structured-06-subtle",
+            "single-synthetic-structured-06-obvious",
+            "pair-synthetic-structured-06-correct-first",
+            "arc-pair:Mercury_SC_415702",
+            "arc-pair:MCAS_2009_5_6516",
+            "arc-pair:Mercury_SC_407695",
+            "arc-pair:Mercury_7103565",
+            "arc-pair:Mercury_7175875",
+            "arc-pair:Mercury_SC_409171"
+          ]
+        }
+      },
+      "model": "opencode/mimo-v2.5-free",
+      "provider": "opencode",
+      "report": {
+        "aggregate": {
+          "count": 0,
+          "metrics": null,
+          "probability_metrics_available": false
+        },
+        "by_domain": {},
+        "failure_count": 20,
+        "latency": {
+          "count": 20,
+          "max_ms": 10741.906300012488,
+          "mean_ms": 537.0962050030357,
+          "median_ms": 0.0007999915396794677,
+          "min_ms": 0.000600004568696022,
+          "p95_ms": 537.0975949903444
+        },
+        "probability_metrics": {
+          "available": false,
+          "unavailable_reason": "one or more successful predictions did not provide probabilities"
+        },
+        "risk_coverage": {
+          "coverage_at_target_error": {},
+          "curve": []
+        },
+        "status_counts": {
+          "provider_error": 1,
+          "skipped": 19
+        },
+        "successful_count": 0,
+        "total_count": 20
+      }
+    },
+    "opencode/nemotron-3.5-lightning-free": {
+      "agreement_with_task6_local_ok": 0,
+      "coverage": {
+        "counts": {
+          "provider_error": 1,
+          "skipped": 19
+        },
+        "record_ids": {
+          "provider_error": [
+            "single-synthetic-arithmetic-02-correct"
+          ],
+          "skipped": [
+            "single-synthetic-arithmetic-02-subtle",
+            "single-synthetic-arithmetic-02-obvious",
+            "pair-synthetic-arithmetic-02-correct-first",
+            "pair-synthetic-arithmetic-02-incorrect-first",
+            "single-synthetic-multiple-choice-03-correct",
+            "single-synthetic-multiple-choice-03-subtle",
+            "single-synthetic-multiple-choice-03-obvious",
+            "pair-synthetic-multiple-choice-03-correct-first",
+            "pair-synthetic-multiple-choice-03-incorrect-first",
+            "single-synthetic-structured-06-correct",
+            "single-synthetic-structured-06-subtle",
+            "single-synthetic-structured-06-obvious",
+            "pair-synthetic-structured-06-correct-first",
+            "arc-pair:Mercury_SC_415702",
+            "arc-pair:MCAS_2009_5_6516",
+            "arc-pair:Mercury_SC_407695",
+            "arc-pair:Mercury_7103565",
+            "arc-pair:Mercury_7175875",
+            "arc-pair:Mercury_SC_409171"
+          ]
+        }
+      },
+      "model": "opencode/nemotron-3.5-lightning-free",
+      "provider": "opencode",
+      "report": {
+        "aggregate": {
+          "count": 0,
+          "metrics": null,
+          "probability_metrics_available": false
+        },
+        "by_domain": {},
+        "failure_count": 20,
+        "latency": {
+          "count": 20,
+          "max_ms": 10645.376600004965,
+          "mean_ms": 532.2693999958574,
+          "median_ms": 0.000500003807246685,
+          "min_ms": 0.000400003045797348,
+          "p95_ms": 532.2700649820111
+        },
+        "probability_metrics": {
+          "available": false,
+          "unavailable_reason": "one or more successful predictions did not provide probabilities"
+        },
+        "risk_coverage": {
+          "coverage_at_target_error": {},
+          "curve": []
+        },
+        "status_counts": {
+          "provider_error": 1,
+          "skipped": 19
+        },
+        "successful_count": 0,
+        "total_count": 20
+      }
+    },
+    "yolo-auto/qwen3.8-flash": {
+      "agreement_with_task6_local_ok": 8,
+      "coverage": {
+        "counts": {
+          "ok": 20
+        },
+        "record_ids": {
+          "ok": [
+            "single-synthetic-arithmetic-02-correct",
+            "single-synthetic-arithmetic-02-subtle",
+            "single-synthetic-arithmetic-02-obvious",
+            "pair-synthetic-arithmetic-02-correct-first",
+            "pair-synthetic-arithmetic-02-incorrect-first",
+            "single-synthetic-multiple-choice-03-correct",
+            "single-synthetic-multiple-choice-03-subtle",
+            "single-synthetic-multiple-choice-03-obvious",
+            "pair-synthetic-multiple-choice-03-correct-first",
+            "pair-synthetic-multiple-choice-03-incorrect-first",
+            "single-synthetic-structured-06-correct",
+            "single-synthetic-structured-06-subtle",
+            "single-synthetic-structured-06-obvious",
+            "pair-synthetic-structured-06-correct-first",
+            "arc-pair:Mercury_SC_415702",
+            "arc-pair:MCAS_2009_5_6516",
+            "arc-pair:Mercury_SC_407695",
+            "arc-pair:Mercury_7103565",
+            "arc-pair:Mercury_7175875",
+            "arc-pair:Mercury_SC_409171"
+          ]
+        }
+      },
+      "model": "qwen3.8-flash",
+      "provider": "yolo-auto",
+      "report": {
+        "aggregate": {
+          "count": 20,
+          "metrics": {
+            "accuracy": 0.6,
+            "balanced_accuracy": 0.5666666666666667,
+            "brier": null,
+            "ece": null,
+            "macro_f1": 0.498051948051948,
+            "nll": null
+          },
+          "probability_metrics_available": false
+        },
+        "by_domain": {
+          "arc_challenge": {
+            "count": 6,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "arithmetic": {
+            "count": 5,
+            "metrics": {
+              "accuracy": 0.8,
+              "balanced_accuracy": 0.875,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.8333333333333333,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "multiple_choice": {
+            "count": 5,
+            "metrics": {
+              "accuracy": 0.2,
+              "balanced_accuracy": 0.125,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.1,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "structured": {
+            "count": 4,
+            "metrics": {
+              "accuracy": 0.25,
+              "balanced_accuracy": 0.16666666666666666,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.125,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          }
+        },
+        "failure_count": 0,
+        "latency": {
+          "count": 20,
+          "max_ms": 1494.1013000207022,
+          "mean_ms": 902.369660003751,
+          "median_ms": 838.3347500057425,
+          "min_ms": 733.2067000097595,
+          "p95_ms": 1344.926505019248
+        },
+        "probability_metrics": {
+          "available": false,
+          "unavailable_reason": "one or more successful predictions did not provide probabilities"
+        },
+        "risk_coverage": {
+          "coverage_at_target_error": {},
+          "curve": []
+        },
+        "status_counts": {
+          "ok": 20
+        },
+        "successful_count": 20,
+        "total_count": 20
+      }
+    }
+  },
+  "record_count": 20,
+  "record_ids": [
+    "single-synthetic-arithmetic-02-correct",
+    "single-synthetic-arithmetic-02-subtle",
+    "single-synthetic-arithmetic-02-obvious",
+    "pair-synthetic-arithmetic-02-correct-first",
+    "pair-synthetic-arithmetic-02-incorrect-first",
+    "single-synthetic-multiple-choice-03-correct",
+    "single-synthetic-multiple-choice-03-subtle",
+    "single-synthetic-multiple-choice-03-obvious",
+    "pair-synthetic-multiple-choice-03-correct-first",
+    "pair-synthetic-multiple-choice-03-incorrect-first",
+    "single-synthetic-structured-06-correct",
+    "single-synthetic-structured-06-subtle",
+    "single-synthetic-structured-06-obvious",
+    "pair-synthetic-structured-06-correct-first",
+    "arc-pair:Mercury_SC_415702",
+    "arc-pair:MCAS_2009_5_6516",
+    "arc-pair:Mercury_SC_407695",
+    "arc-pair:Mercury_7103565",
+    "arc-pair:Mercury_7175875",
+    "arc-pair:Mercury_SC_409171"
+  ],
+  "task6_local_report": {
+    "aggregate": {
+      "count": 20,
+      "metrics": {
+        "accuracy": 0.45,
+        "balanced_accuracy": 0.525,
+        "brier": 0.6511962870335906,
+        "ece": 0.30624280719365726,
+        "macro_f1": 0.3181818181818182,
+        "nll": 1.0395508592819165
+      },
+      "probability_metrics_available": true
+    },
+    "by_domain": {
+      "arc_challenge": {
+        "count": 6,
+        "metrics": {
+          "accuracy": 0.5,
+          "balanced_accuracy": 0.375,
+          "brier": 0.8001376354435085,
+          "ece": 0.4208550779486808,
+          "macro_f1": 0.2222222222222222,
+          "nll": 1.225357751596379
+        },
+        "probability_metrics_available": true
+      },
+      "arithmetic": {
+        "count": 5,
+        "metrics": {
+          "accuracy": 0.4,
+          "balanced_accuracy": 0.5,
+          "brier": 0.6988149865706602,
+          "ece": 0.3026834807465728,
+          "macro_f1": 0.2333333333333333,
+          "nll": 1.3558715391514053
+        },
+        "probability_metrics_available": true
+      },
+      "multiple_choice": {
+        "count": 5,
+        "metrics": {
+          "accuracy": 0.4,
+          "balanced_accuracy": 0.5,
+          "brier": 0.6289579798195413,
+          "ece": 0.328353915055809,
+          "macro_f1": 0.2333333333333333,
+          "nll": 0.8792252144850943
+        },
+        "probability_metrics_available": true
+      },
+      "structured": {
+        "count": 4,
+        "metrics": {
+          "accuracy": 0.5,
+          "balanced_accuracy": 0.6666666666666666,
+          "brier": 0.3960587740149382,
+          "ece": 0.17159458216005996,
+          "macro_f1": 0.3,
+          "nll": 0.5658467269693896
+        },
+        "probability_metrics_available": true
+      }
+    },
+    "failure_count": 0,
+    "latency": {
+      "count": 20,
+      "max_ms": 2296.068600000581,
+      "mean_ms": 241.99669499794254,
+      "median_ms": 140.09709999663755,
+      "min_ms": 85.88530000997707,
+      "p95_ms": 288.306395002293
+    },
+    "probability_metrics": {
+      "available": true,
+      "unavailable_reason": null
+    },
+    "risk_coverage": {
+      "coverage_at_target_error": {
+        "0.01": 0.05,
+        "0.02": 0.05,
+        "0.05": 0.05
+      },
+      "curve": [
+        {
+          "coverage": 0.0,
+          "risk": 0.0,
+          "threshold": 1.0
+        },
+        {
+          "coverage": 0.05,
+          "risk": 0.0,
+          "threshold": 0.9993648628187043
+        },
+        {
+          "coverage": 0.1,
+          "risk": 0.5,
+          "threshold": 0.9904387695990283
+        },
+        {
+          "coverage": 0.15,
+          "risk": 0.33333333333333337,
+          "threshold": 0.9819766258384183
+        },
+        {
+          "coverage": 0.2,
+          "risk": 0.25,
+          "threshold": 0.9724408198168417
+        },
+        {
+          "coverage": 0.25,
+          "risk": 0.4,
+          "threshold": 0.9623545454841531
+        },
+        {
+          "coverage": 0.3,
+          "risk": 0.5,
+          "threshold": 0.8940511421211307
+        },
+        {
+          "coverage": 0.35,
+          "risk": 0.4285714285714286,
+          "threshold": 0.8840517949883178
+        },
+        {
+          "coverage": 0.4,
+          "risk": 0.375,
+          "threshold": 0.8790801842644562
+        },
+        {
+          "coverage": 0.45,
+          "risk": 0.4444444444444444,
+          "threshold": 0.8687710539632845
+        },
+        {
+          "coverage": 0.5,
+          "risk": 0.5,
+          "threshold": 0.8128673024629368
+        },
+        {
+          "coverage": 0.55,
+          "risk": 0.4545454545454546,
+          "threshold": 0.7826624695228956
+        },
+        {
+          "coverage": 0.6,
+          "risk": 0.5,
+          "threshold": 0.5278642925455261
+        },
+        {
+          "coverage": 0.65,
+          "risk": 0.5384615384615384,
+          "threshold": 0.5229204869810407
+        },
+        {
+          "coverage": 0.7,
+          "risk": 0.5,
+          "threshold": 0.5197190980320519
+        },
+        {
+          "coverage": 0.75,
+          "risk": 0.4666666666666667,
+          "threshold": 0.5181663100477177
+        },
+        {
+          "coverage": 0.8,
+          "risk": 0.5,
+          "threshold": 0.517875122327118
+        },
+        {
+          "coverage": 0.85,
+          "risk": 0.5294117647058824,
+          "threshold": 0.5175839224654011
+        },
+        {
+          "coverage": 0.9,
+          "risk": 0.5555555555555556,
+          "threshold": 0.5145741938098977
+        },
+        {
+          "coverage": 0.95,
+          "risk": 0.5263157894736843,
+          "threshold": 0.5129232345729466
+        },
+        {
+          "coverage": 1.0,
+          "risk": 0.55,
+          "threshold": 0.5104948512570697
+        }
+      ]
+    },
+    "status_counts": {
+      "ok": 20
+    },
+    "successful_count": 20,
+    "total_count": 20
+  }
+}
