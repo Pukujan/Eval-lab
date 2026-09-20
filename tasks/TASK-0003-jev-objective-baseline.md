@@ -1,4 +1,4 @@
-# TASK-0003 — Jev Objective Baseline Runner
+# TASK-0003 — Jev Free Objective Baseline Runner
 
 - Status: queued
 - Owner: Luna/local agent
@@ -9,90 +9,57 @@
 
 ## Goal
 
-Evaluate Jev as a structured classification judge using the canonical fixture records and normalize all provider outcomes into JudgePrediction.
+Evaluate OpenCode Jev Free as a structured classification judge using canonical fixture records.
 
-## Why
+## Model contract
 
-Jev is specifically optimized for typed classification/decision tasks and may be a strong cheap judge baseline. The claim must be tested against objective labels.
+Required model id: `jev-1.13-free`.
+
+Never automatically fall back to `jev-1.13` or another paid route.
+
+If free Jev is quota-limited, emit `rate_limited` and checkpoint it.
 
 ## Inputs
 
 - TASK-0002 schemas/fixtures
-- existing OpenCode/Jev client
-- `docs/SDD.md` section 7
-- `docs/TDD.md` section 6
+- existing Jev client
+- relevant SDD/TDD sections
+- `docs/ACCESS_MODEL_MATRIX.md`
 
 ## Outputs
 
-- provider adapter under `src/eval_lab/judges/`
-- protocol definitions for `jev-direct-v1` and `jev-atomic-v1`
-- deterministic runner/CLI
-- mocked provider tests
-- normalized prediction JSONL capability
-- optional live smoke/fixture run if quota permits
-- checkpointed provider state
-
-## Required implementation
-
-Direct protocol:
-- PASS/FAIL for single candidate
-- A/B/TIE for pairwise
-
-Atomic protocol:
-- typed criterion-level questions
-- deterministic repository-side aggregation
-- retain criterion probabilities/results
-
-Execution handling:
-- 200 -> ok
-- 429 -> rate_limited + Retry-After metadata
-- 5xx/network -> provider_error
-- malformed -> parse_error
-
-Never serialize API keys.
-
-No automatic waiting beyond a short retry explicitly bounded in code/config.
-
-## Allowed files
-
-- `src/eval_lab/judges/`
-- existing `src/eval_lab/jev.py` as needed
-- runner scripts/modules
-- `tests/`
-- experiment stub/output metadata if a live run succeeds or is provider-blocked
-- this task file
-- `checkpoints/CURRENT.md`
+- normalized Jev adapter
+- `jev-direct-v1`
+- `jev-atomic-v1`
+- deterministic runner
+- mocked response tests
+- normalized prediction JSONL
+- optional live run
 
 ## Acceptance criteria
 
-- [ ] direct single classification normalized
-- [ ] direct pairwise classification normalized
-- [ ] atomic criterion classification normalized
-- [ ] returned probabilities retained
-- [ ] 429 handled as rate_limited, not wrong answer
-- [ ] provider errors do not fabricate labels
-- [ ] secret leakage tests pass
-- [ ] fixture runner can resume/re-run deterministically
-- [ ] all mocked tests and full local merge gate pass
-- [ ] live result recorded if provider available, otherwise provider-block explicitly checkpointed
+- [ ] outgoing default model asserted as `jev-1.13-free`
+- [ ] test proves no paid fallback
+- [ ] direct single/pairwise normalized
+- [ ] atomic normalized
+- [ ] probabilities retained
+- [ ] 429 -> rate_limited
+- [ ] no fabricated labels on provider errors
+- [ ] no secret leakage
+- [ ] full local merge gate passes
 
 ## Validation
 
-See `docs/TDD.md` section 6.
-
-Do not require a successful live provider call to validate local provider-contract logic when external quota is unavailable.
+Intercept the outgoing request in tests and assert `model == "jev-1.13-free"`.
 
 ## Stop conditions
 
-Stop and checkpoint if:
-- provider API semantics contradict the normalized schema;
-- provider response lacks enough information to map typed decisions reliably;
-- implementation would need storing secrets/raw sensitive headers.
+Stop if provider semantics cannot be mapped reliably or secret persistence would be required.
 
 ## Checkpoint log
 
-Append execution evidence here.
+Append evidence here.
 
 ## Handoff
 
-TASK-0004 consumes canonical predictions. If live Jev remains quota-blocked, provide mocked/synthetic prediction fixtures so metrics/calibration work can continue.
+TASK-0004 consumes normalized predictions. TASK-0007 later revisits Jev in the external-model bakeoff.
