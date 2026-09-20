@@ -1,0 +1,2 @@
+# Benchmark checksums cover exact bytes; keep release files stable across OSes.
+benchmark/eval-lab-select-v0.1.0/* text eol=lf

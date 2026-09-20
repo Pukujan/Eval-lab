@@ -345,6 +345,8 @@ Jev-Ultrafast browser action routing is out of scope for TASK-0010 implementatio
 - `benchmark/eval-lab-select-v0.1.0/`
 - `CITATION.cff`
 - `experiments/EXP-20260920-009-selective-escalation/`
+- `.github/workflows/ci.yml`
+- `.gitattributes` for byte-stable benchmark-release line endings
 - `scripts/check_repo_contract.py`
 - `tests/test_program_contract.py`
 - this task file
