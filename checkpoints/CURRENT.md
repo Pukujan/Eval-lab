@@ -1,5 +1,9 @@
 # Current Repository Checkpoint
 
+<!-- continuity:current {"active_task":null,"active_task_file":null,"protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
+
+> Continuity v1 compatibility: this human checkpoint remains authoritative for Eval-lab program/task state. Existing `tasks/TASK-*.md` histories predate v1 and are intentionally preserved untouched; the v1 machine task namespace is `.continuity/tasks`, so `active_task` is null until a future explicit legacy-task migration/adapter is authorized.
+
 ## Program state
 
 TASK-0001 local bootstrap is complete.
