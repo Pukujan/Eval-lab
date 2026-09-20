@@ -129,3 +129,10 @@ Next atomic action: run the full repository contract, Ruff, and pytest gates, co
 ## Handoff
 
 TASK-0008 uses the strongest/diverse successful resources revealed by this bakeoff.
+
+
+### 2026-09-20 — TASK-0007 review handoff
+
+TASK-0007 is pushed in PR #22 at commit f1f4c1cfa3c866d6e04f271d4c3339ad5dbb7b35; the implementation and experiment commits are included in the branch.
+
+Next atomic action: merge PR #22 after the local merge gate, update local main, and only then create the TASK-0008 worktree.
