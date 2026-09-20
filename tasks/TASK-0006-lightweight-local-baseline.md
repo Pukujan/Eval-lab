@@ -1,6 +1,6 @@
 # TASK-0006 — Lightweight Local Judge Baseline
 
-- Status: ready-for-review
+- Status: completed — local acceptance criteria met; PR #21 merged
 - Owner: Codex/local agent
 - Priority: P0
 - GitHub issue: #10
@@ -189,7 +189,9 @@ Final commands and results:
 
 TASK-0006 is pushed in PR [#21](https://github.com/Pukujan/Eval-lab/pull/21) at commits `6452bc8` and `b0202e2`.
 
-Next atomic action: merge PR #21 after the local merge gate, update local `main`, and only then create the TASK-0007 worktree.
+PR #21 merged into `main` at `6cde993b91a7daca1b51bd8615d38538e80c9f71`. The PR jobs were blocked before workflow steps by the GitHub Actions budget; local contract, Ruff, and pytest validation is authoritative for this task.
+
+Next atomic action: update local `main` to the merge commit, then create the dedicated TASK-0007 worktree.
 
 ## Handoff
 
