@@ -26,7 +26,6 @@ from eval_lab.verifiers.code_output import verify_code_output
 from eval_lab.verifiers.multiple_choice import verify_multiple_choice
 from eval_lab.verifiers.structured import verify_structured_output
 
-EXPERIMENT_ID = "EXP-20260920-004-teacher-hard-negatives"
 MODEL_ID = "qwen3.8-flash"
 CONTEXT_LIMIT = 4096
 VERIFIERS: dict[str, Callable[[str, Any], Any]] = {
@@ -260,13 +259,20 @@ def _run_opencode_audit(model: str, batch: list[dict[str, Any]], *, timeout: flo
         }
         for item in batch
     ]
-    prompt = (
-        "Review this batch of objective judge cases. Do not infer or create answer keys. "
-        "Return only a JSON array with one object per record containing record_id, assessment, "
-        "and concise review_notes. assessment must be one of keep_for_review, likely_error, or ambiguous. "
-        "Even for one record, return a one-element JSON array.\n\n"
-        + json.dumps(compact, sort_keys=True)
-    )
+    if len(compact) == 1:
+        prompt = (
+            "You are auditing one objective judge case. Do not create an answer key. "
+            "Return exactly one JSON object that copies the record_id and contains assessment "
+            "(keep_for_review, likely_error, or ambiguous) and concise review_notes.\n\n"
+            + json.dumps(compact[0], sort_keys=True)
+        )
+    else:
+        prompt = (
+            "Review this batch of objective judge cases. Do not infer or create answer keys. "
+            "Return only a JSON array with one object per record containing record_id, assessment, "
+            "and concise review_notes. assessment must be one of keep_for_review, likely_error, or ambiguous.\n\n"
+            + json.dumps(compact, sort_keys=True)
+        )
     executable = shutil.which("opencode") or "opencode"
     process = subprocess.Popen(
         [
@@ -374,6 +380,7 @@ def _write_jsonl(path: Path, values: list[dict[str, Any]]) -> None:
 
 def run(args: argparse.Namespace) -> Path:
     output_dir = Path(args.output_dir)
+    experiment_id = output_dir.name
     existing = {path.name for path in output_dir.iterdir()} if output_dir.exists() else set()
     if existing - {"README.md", "experiment.yaml"}:
         raise FileExistsError(f"refusing to overwrite existing experiment: {output_dir}")
@@ -484,7 +491,7 @@ def run(args: argparse.Namespace) -> Path:
         "runtime": {"platform": platform.platform(), "python": platform.python_version()},
     }
     summary = {
-        "experiment_id": EXPERIMENT_ID,
+        "experiment_id": experiment_id,
         "accepted_count": len(accepted),
         "rejected_count": len(rejected),
         "verification_rate": len(accepted) / len(requests) if requests else 0.0,
@@ -565,7 +572,7 @@ def run(args: argparse.Namespace) -> Path:
     ]
     (output_dir / "report.md").write_text("\n".join(report) + "\n", encoding="utf-8")
     manifest = {
-        "id": EXPERIMENT_ID,
+        "id": experiment_id,
         "status": "completed",
         "created_at_utc": datetime.now(UTC).isoformat(),
         "code_commit": subprocess.run(
