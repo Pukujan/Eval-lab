@@ -47,3 +47,22 @@ Known jobs were dispatched without an assigned runner or steps. Continue to use 
 ## Next atomic action
 
 Accept/merge the program plan, then Luna creates a dedicated TASK-0002 worktree/branch from the accepted head and follows `docs/LUNA_PROGRAM_HANDOFF.md`.
+
+## Program-plan validation checkpoint
+
+### 2026-09-20 — Codex/local agent
+
+Validated the expected program branch head `0865d2914da6658f321160dc06525a6c12417fd4` on local Windows Python 3.12.10.
+
+Exact commands and results:
+
+- `git fetch --all --prune` -> completed; the single-branch clone required an explicit fetch of `program/TASK-0002-0006-plan`.
+- `git switch program/TASK-0002-0006-plan` -> local branch created from the verified remote head after the explicit fetch.
+- `git pull --ff-only` -> `Already up to date.`
+- `.venv\Scripts\python.exe scripts/check_repo_contract.py` -> `Repository contract OK`.
+- `.venv\Scripts\ruff.exe check .` -> `All checks passed!`.
+- `.venv\Scripts\python.exe -m pytest -q` -> `10 passed in 0.74s`.
+
+Decision: the program planning contract is locally accepted for merge. The known GitHub Actions no-runner condition remains infrastructure-only and does not weaken the local merge gate.
+
+Next atomic action: merge PR #11 into `main`, update local `main`, then create the dedicated TASK-0002 branch/worktree and begin only the scope in `tasks/TASK-0002-canonical-schema-fixtures.md`.
