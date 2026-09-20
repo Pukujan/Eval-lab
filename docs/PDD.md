@@ -20,7 +20,7 @@ The lab must support:
 - deriving objective gold labels from answer keys or deterministic verifiers
 - constructing single-answer and pairwise judge tasks
 - running multiple judges over identical records
-- storing raw probabilities when available
+- storing raw scores/probabilities when available
 - fitting calibration without test leakage
 - evaluating bias/consistency under controlled perturbations
 - comparing latency, cost, and selective risk
@@ -55,22 +55,22 @@ Task and experiment state must live in the repository rather than only in chats.
 ## 5. v0 scope
 
 Domains:
-
-- multiple-choice knowledge/reasoning
-- arithmetic and short-form math
+- arithmetic / short math
+- multiple-choice knowledge and reasoning
 - machine-checkable instruction following
-- structured output validation
-- small executable code/output tasks when sandboxing is available
+- structured-output validation
+- simple code/output verification
 
 Judges:
+- Jev direct and atomic protocols
+- Qwen3-0.6B required local feasibility baseline
+- Qwen3-1.7B preferred stronger local baseline
+- Qwen3-4B optional stretch baseline
 
-- Jev
-- Qwen3-1.7B
-- Qwen3-4B
-- compact encoder classifier
+Public benchmark:
+- ARC-Challenge as the first external objective benchmark
 
 Optional analysis-only teachers:
-
 - Luna
 - Sol
 - Grok
@@ -81,39 +81,66 @@ FR-1: canonical examples preserve source IDs and split provenance.
 
 FR-2: variants derived from one source problem cannot cross train/dev/calibration/test boundaries.
 
-FR-3: every gold label records a provenance type.
+FR-3: every gold label records a provenance type and evidence.
 
-FR-4: judge adapters expose normalized predictions and, when available, class probabilities.
+FR-4: judge adapters expose normalized predictions and, when available, class probabilities/raw scores.
 
-FR-5: calibration fits only on the calibration split.
+FR-5: provider errors expose an execution status distinct from prediction labels.
 
-FR-6: final test evaluation never tunes prompts, thresholds, or rubrics.
+FR-6: calibration fits only on the calibration split.
 
-FR-7: perturbation tests include A/B swap and rubric paraphrase where meaningful.
+FR-7: final test evaluation never tunes prompts, thresholds, rubrics, or calibration parameters.
 
-FR-8: reports contain aggregate and per-domain results.
+FR-8: perturbation tests include A/B swap and rubric paraphrase where meaningful.
 
-FR-9: experiments are immutable after completion.
+FR-9: reports contain aggregate and per-domain results.
 
-FR-10: every active task has a checkpoint.
+FR-10: experiments are immutable after completion.
 
-## 7. Quality requirements
+FR-11: every active task has a checkpoint.
 
-- deterministic runs when the provider/model supports it
+FR-12: every public dataset run records source revision, license, and fingerprint.
+
+FR-13: every local-model run records hardware-relevant runtime metadata and context cap.
+
+## 7. Required v0 deliverables
+
+D-1: canonical Pydantic data schema.
+
+D-2: deterministic synthetic fixture suite with at least four domains.
+
+D-3: Jev runner supporting direct and criterion-decomposed classification.
+
+D-4: metrics/calibration library and report generator.
+
+D-5: ARC-Challenge adapter with pinned/fingerprinted source metadata.
+
+D-6: at least one locally runnable Qwen baseline on the same canonical records.
+
+D-7: first comparison report with uncertainty/coverage metrics where probabilities exist.
+
+## 8. Quality requirements
+
+- deterministic local tests
 - no hidden dependency on old branches or chat history
 - no secrets in Git
-- local unit tests run without paid API access
-- paid/free provider tests are explicitly marked integration tests
-- failures preserve raw request/response metadata where policy permits
+- unit tests run without paid API access
+- provider tests are explicit integration tests
+- quota/rate-limit errors are preserved as execution state
+- failures preserve enough metadata for audit without leaking secrets
+- no reported test metric may be computed from examples used to fit calibration
 
-## 8. Acceptance criteria for v0
+## 9. Acceptance criteria for v0
 
 A fresh clone can:
 
 1. install dependencies;
-2. run unit tests;
-3. validate repository contract;
-4. execute a local synthetic/objective evaluation;
-5. optionally call Jev when a key is present;
-6. generate metrics and a calibration report;
-7. resume work from `checkpoints/CURRENT.md` and a task file.
+2. validate repository and program contracts;
+3. reproduce synthetic canonical records;
+4. run unit tests without credentials;
+5. run Jev when quota/credentials allow;
+6. reproduce calibration from a separate calibration split;
+7. load and fingerprint ARC-Challenge;
+8. run at least Qwen3-0.6B locally or document a concrete runtime incompatibility and use an approved lighter fallback;
+9. regenerate the v0 comparison report;
+10. resume from `checkpoints/CURRENT.md` and one task file.

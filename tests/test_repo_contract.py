@@ -6,9 +6,9 @@ def test_contract_validator_passes() -> None:
 
 
 def test_project_contract_points_to_current_checkpoint() -> None:
-    project = (ROOT / "PROJECT.md").read_text(encoding="utf-8")
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
     checkpoint = ROOT / "checkpoints" / "CURRENT.md"
-    assert "Git is project memory" in project
+    assert "Git is project memory" in readme
     assert checkpoint.is_file()
 
 
