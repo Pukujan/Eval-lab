@@ -1,0 +1,2381 @@
+{
+  "arms": {
+    "A": {
+      "augmentation_counts": {
+        "canonical": 33
+      },
+      "metrics": {
+        "calibration": {
+          "aggregate": {
+            "count": 6,
+            "metrics": {
+              "accuracy": 0.8333333333333334,
+              "balanced_accuracy": 0.75,
+              "brier": 0.44783062308647487,
+              "ece": 0.30349413014545856,
+              "macro_f1": 0.7777777777777777,
+              "nll": 0.6407417559378398
+            },
+            "probability_metrics_available": true
+          },
+          "by_domain": {
+            "code_output": {
+              "count": 3,
+              "metrics": {
+                "accuracy": 1.0,
+                "balanced_accuracy": 1.0,
+                "brier": 0.4335977275817666,
+                "ece": 0.46454684195956164,
+                "macro_f1": 1.0,
+                "nll": 0.626334070605935
+              },
+              "probability_metrics_available": true
+            },
+            "multiple_choice": {
+              "count": 3,
+              "metrics": {
+                "accuracy": 0.6666666666666666,
+                "balanced_accuracy": 0.5,
+                "brier": 0.46206351859118316,
+                "ece": 0.14244141833135537,
+                "macro_f1": 0.4,
+                "nll": 0.6551494412697444
+              },
+              "probability_metrics_available": true
+            }
+          },
+          "failure_count": 0,
+          "latency": {
+            "count": 6,
+            "max_ms": 0.11428333527874202,
+            "mean_ms": 0.11428333527874202,
+            "median_ms": 0.11428333527874202,
+            "min_ms": 0.11428333527874202,
+            "p95_ms": 0.11428333527874202
+          },
+          "risk_coverage": {
+            "coverage_at_target_error": {
+              "0.01": 0.8333333333333334,
+              "0.02": 0.8333333333333334,
+              "0.05": 0.8333333333333334
+            },
+            "curve": [
+              {
+                "coverage": 0.0,
+                "risk": 0.0,
+                "threshold": 1.0
+              },
+              {
+                "coverage": 0.16666666666666666,
+                "risk": 0.0,
+                "threshold": 0.5799882258166824
+              },
+              {
+                "coverage": 0.3333333333333333,
+                "risk": 0.0,
+                "threshold": 0.5353415592495221
+              },
+              {
+                "coverage": 0.5,
+                "risk": 0.0,
+                "threshold": 0.5305631640817546
+              },
+              {
+                "coverage": 0.6666666666666666,
+                "risk": 0.0,
+                "threshold": 0.5154470237291225
+              },
+              {
+                "coverage": 0.8333333333333334,
+                "risk": 0.0,
+                "threshold": 0.51092422457551
+              },
+              {
+                "coverage": 1.0,
+                "risk": 0.16666666666666663,
+                "threshold": 0.506771021674657
+              }
+            ]
+          },
+          "status_counts": {
+            "ok": 6
+          },
+          "successful_count": 6,
+          "swap_consistency": {
+            "reason": "TASK-0009 student scope is single-answer correctness; pairwise records are excluded",
+            "status": "not_applicable"
+          },
+          "total_count": 6
+        },
+        "dev": {
+          "aggregate": {
+            "count": 21,
+            "metrics": {
+              "accuracy": 0.6666666666666666,
+              "balanced_accuracy": 0.6071428571428571,
+              "brier": 0.47361963660479034,
+              "ece": 0.14244738128332413,
+              "macro_f1": 0.6100795755968169,
+              "nll": 0.6667027001572313
+            },
+            "probability_metrics_available": true
+          },
+          "by_domain": {
+            "arithmetic": {
+              "count": 6,
+              "metrics": {
+                "accuracy": 0.6666666666666666,
+                "balanced_accuracy": 0.75,
+                "brier": 0.4785328666140128,
+                "ece": 0.15310930451834948,
+                "macro_f1": 0.6666666666666666,
+                "nll": 0.6716476800123924
+              },
+              "probability_metrics_available": true
+            },
+            "multiple_choice": {
+              "count": 6,
+              "metrics": {
+                "accuracy": 0.6666666666666666,
+                "balanced_accuracy": 0.625,
+                "brier": 0.481366749498161,
+                "ece": 0.13347744104266712,
+                "macro_f1": 0.625,
+                "nll": 0.6744896298518571
+              },
+              "probability_metrics_available": true
+            },
+            "structured": {
+              "count": 9,
+              "metrics": {
+                "accuracy": 0.6666666666666666,
+                "balanced_accuracy": 0.5,
+                "brier": 0.46517940800306157,
+                "ece": 0.14131939262041204,
+                "macro_f1": 0.4,
+                "nll": 0.6582147604573733
+              },
+              "probability_metrics_available": true
+            }
+          },
+          "failure_count": 0,
+          "latency": {
+            "count": 21,
+            "max_ms": 0.061614285056878416,
+            "mean_ms": 0.061614285056878416,
+            "median_ms": 0.061614285056878416,
+            "min_ms": 0.061614285056878416,
+            "p95_ms": 0.061614285056878416
+          },
+          "risk_coverage": {
+            "coverage_at_target_error": {
+              "0.01": 0.23809523809523808,
+              "0.02": 0.23809523809523808,
+              "0.05": 0.23809523809523808
+            },
+            "curve": [
+              {
+                "coverage": 0.0,
+                "risk": 0.0,
+                "threshold": 1.0
+              },
+              {
+                "coverage": 0.047619047619047616,
+                "risk": 0.0,
+                "threshold": 0.5507926492641634
+              },
+              {
+                "coverage": 0.09523809523809523,
+                "risk": 0.0,
+                "threshold": 0.5507926492641634
+              },
+              {
+                "coverage": 0.14285714285714285,
+                "risk": 0.0,
+                "threshold": 0.5507926492641634
+              },
+              {
+                "coverage": 0.19047619047619047,
+                "risk": 0.0,
+                "threshold": 0.5385592640025016
+              },
+              {
+                "coverage": 0.23809523809523808,
+                "risk": 0.0,
+                "threshold": 0.536717812774564
+              },
+              {
+                "coverage": 0.2857142857142857,
+                "risk": 0.16666666666666663,
+                "threshold": 0.5347044116327503
+              },
+              {
+                "coverage": 0.3333333333333333,
+                "risk": 0.2857142857142857,
+                "threshold": 0.5335787395129044
+              },
+              {
+                "coverage": 0.38095238095238093,
+                "risk": 0.25,
+                "threshold": 0.5327471384108287
+              },
+              {
+                "coverage": 0.42857142857142855,
+                "risk": 0.2222222222222222,
+                "threshold": 0.5314052203384629
+              },
+              {
+                "coverage": 0.47619047619047616,
+                "risk": 0.19999999999999996,
+                "threshold": 0.5300252870068844
+              },
+              {
+                "coverage": 0.5238095238095238,
+                "risk": 0.18181818181818177,
+                "threshold": 0.5281405798465493
+              },
+              {
+                "coverage": 0.5714285714285714,
+                "risk": 0.16666666666666663,
+                "threshold": 0.5214276853803586
+              },
+              {
+                "coverage": 0.6190476190476191,
+                "risk": 0.15384615384615385,
+                "threshold": 0.5188110952971908
+              },
+              {
+                "coverage": 0.6666666666666666,
+                "risk": 0.2142857142857143,
+                "threshold": 0.513663172807008
+              },
+              {
+                "coverage": 0.7142857142857143,
+                "risk": 0.2666666666666667,
+                "threshold": 0.5100932836798489
+              },
+              {
+                "coverage": 0.7619047619047619,
+                "risk": 0.3125,
+                "threshold": 0.507502152119536
+              },
+              {
+                "coverage": 0.8095238095238095,
+                "risk": 0.2941176470588235,
+                "threshold": 0.5067601780311682
+              },
+              {
+                "coverage": 0.8571428571428571,
+                "risk": 0.33333333333333337,
+                "threshold": 0.5067601780311682
+              },
+              {
+                "coverage": 0.9047619047619048,
+                "risk": 0.3157894736842105,
+                "threshold": 0.5042501293398591
+              },
+              {
+                "coverage": 0.9523809523809523,
+                "risk": 0.30000000000000004,
+                "threshold": 0.5005403585230591
+              },
+              {
+                "coverage": 1.0,
+                "risk": 0.33333333333333337,
+                "threshold": 0.5005403585230591
+              }
+            ]
+          },
+          "status_counts": {
+            "ok": 21
+          },
+          "successful_count": 21,
+          "swap_consistency": {
+            "reason": "TASK-0009 student scope is single-answer correctness; pairwise records are excluded",
+            "status": "not_applicable"
+          },
+          "total_count": 21
+        },
+        "test": {
+          "aggregate": {
+            "count": 12,
+            "metrics": {
+              "accuracy": 0.5833333333333334,
+              "balanced_accuracy": 0.5,
+              "brier": 0.4727903923372945,
+              "ece": 0.05673188742516755,
+              "macro_f1": 0.4957983193277311,
+              "nll": 0.6657645862780127
+            },
+            "probability_metrics_available": true
+          },
+          "by_domain": {
+            "arithmetic": {
+              "count": 3,
+              "metrics": {
+                "accuracy": 0.6666666666666666,
+                "balanced_accuracy": 0.5,
+                "brier": 0.4687651848223134,
+                "ece": 0.14364292092207376,
+                "macro_f1": 0.4,
+                "nll": 0.6618120368797061
+              },
+              "probability_metrics_available": true
+            },
+            "code_output": {
+              "count": 3,
+              "metrics": {
+                "accuracy": 1.0,
+                "balanced_accuracy": 1.0,
+                "brier": 0.4403571952828432,
+                "ece": 0.4677998946347811,
+                "macro_f1": 1.0,
+                "nll": 0.6330374703948874
+              },
+              "probability_metrics_available": true
+            },
+            "multiple_choice": {
+              "count": 3,
+              "metrics": {
+                "accuracy": 0.3333333333333333,
+                "balanced_accuracy": 0.25,
+                "brier": 0.5119541729895677,
+                "ece": 0.19980633175928025,
+                "macro_f1": 0.25,
+                "nll": 0.7050849004532623
+              },
+              "probability_metrics_available": true
+            },
+            "structured": {
+              "count": 3,
+              "metrics": {
+                "accuracy": 0.3333333333333333,
+                "balanced_accuracy": 0.25,
+                "brier": 0.4700850162544536,
+                "ece": 0.18470893409690464,
+                "macro_f1": 0.25,
+                "nll": 0.6631239373841953
+              },
+              "probability_metrics_available": true
+            }
+          },
+          "failure_count": 0,
+          "latency": {
+            "count": 12,
+            "max_ms": 0.06730833410983905,
+            "mean_ms": 0.06730833410983905,
+            "median_ms": 0.06730833410983905,
+            "min_ms": 0.06730833410983905,
+            "p95_ms": 0.06730833410983905
+          },
+          "risk_coverage": {
+            "coverage_at_target_error": {
+              "0.01": 0.3333333333333333,
+              "0.02": 0.3333333333333333,
+              "0.05": 0.3333333333333333
+            },
+            "curve": [
+              {
+                "coverage": 0.0,
+                "risk": 0.0,
+                "threshold": 1.0
+              },
+              {
+                "coverage": 0.08333333333333333,
+                "risk": 0.0,
+                "threshold": 0.5838625027293514
+              },
+              {
+                "coverage": 0.16666666666666666,
+                "risk": 0.0,
+                "threshold": 0.5507926492641634
+              },
+              {
+                "coverage": 0.25,
+                "risk": 0.0,
+                "threshold": 0.5494934708951869
+              },
+              {
+                "coverage": 0.3333333333333333,
+                "risk": 0.0,
+                "threshold": 0.5424856661772204
+              },
+              {
+                "coverage": 0.4166666666666667,
+                "risk": 0.19999999999999996,
+                "threshold": 0.5338454538745607
+              },
+              {
+                "coverage": 0.5,
+                "risk": 0.33333333333333337,
+                "threshold": 0.5230878752260597
+              },
+              {
+                "coverage": 0.5833333333333334,
+                "risk": 0.4285714285714286,
+                "threshold": 0.5097888831692958
+              },
+              {
+                "coverage": 0.6666666666666666,
+                "risk": 0.375,
+                "threshold": 0.5097888831692958
+              },
+              {
+                "coverage": 0.75,
+                "risk": 0.33333333333333337,
+                "threshold": 0.5096903304150616
+              },
+              {
+                "coverage": 0.8333333333333334,
+                "risk": 0.30000000000000004,
+                "threshold": 0.5030474829512439
+              },
+              {
+                "coverage": 0.9166666666666666,
+                "risk": 0.36363636363636365,
+                "threshold": 0.5022005143346611
+              },
+              {
+                "coverage": 1.0,
+                "risk": 0.41666666666666663,
+                "threshold": 0.5011336386918896
+              }
+            ]
+          },
+          "status_counts": {
+            "ok": 12
+          },
+          "successful_count": 12,
+          "swap_consistency": {
+            "reason": "TASK-0009 student scope is single-answer correctness; pairwise records are excluded",
+            "status": "not_applicable"
+          },
+          "total_count": 12
+        }
+      },
+      "source_kind_counts": {
+        "objective": 33
+      },
+      "training_row_count": 33,
+      "training_row_fingerprint": "401bf13f77357894bcfa3ebd273cf91d8042e1c34da4e53d3612d47743fb1c35"
+    },
+    "B": {
+      "augmentation_counts": {
+        "canonical": 33,
+        "criterion-paraphrase:arithmetic": 9,
+        "criterion-paraphrase:code_output": 12,
+        "criterion-paraphrase:multiple_choice": 6,
+        "criterion-paraphrase:structured": 6
+      },
+      "metrics": {
+        "calibration": {
+          "aggregate": {
+            "count": 6,
+            "metrics": {
+              "accuracy": 0.8333333333333334,
+              "balanced_accuracy": 0.75,
+              "brier": 0.41543542589823684,
+              "ece": 0.28323527776511825,
+              "macro_f1": 0.7777777777777777,
+              "nll": 0.6075934820409691
+            },
+            "probability_metrics_available": true
+          },
+          "by_domain": {
+            "code_output": {
+              "count": 3,
+              "metrics": {
+                "accuracy": 1.0,
+                "balanced_accuracy": 1.0,
+                "brier": 0.39400361455743843,
+                "ece": 0.4409434712497152,
+                "macro_f1": 1.0,
+                "nll": 0.5854665201852504
+              },
+              "probability_metrics_available": true
+            },
+            "multiple_choice": {
+              "count": 3,
+              "metrics": {
+                "accuracy": 0.6666666666666666,
+                "balanced_accuracy": 0.5,
+                "brier": 0.43686723723903526,
+                "ece": 0.12552708428052117,
+                "macro_f1": 0.4,
+                "nll": 0.6297204438966878
+              },
+              "probability_metrics_available": true
+            }
+          },
+          "failure_count": 0,
+          "latency": {
+            "count": 6,
+            "max_ms": 0.1355499989585951,
+            "mean_ms": 0.1355499989585951,
+            "median_ms": 0.1355499989585951,
+            "min_ms": 0.1355499989585951,
+            "p95_ms": 0.1355499989585951
+          },
+          "risk_coverage": {
+            "coverage_at_target_error": {
+              "0.01": 0.8333333333333334,
+              "0.02": 0.8333333333333334,
+              "0.05": 0.8333333333333334
+            },
+            "curve": [
+              {
+                "coverage": 0.0,
+                "risk": 0.0,
+                "threshold": 1.0
+              },
+              {
+                "coverage": 0.16666666666666666,
+                "risk": 0.0,
+                "threshold": 0.6306813739152153
+              },
+              {
+                "coverage": 0.3333333333333333,
+                "risk": 0.0,
+                "threshold": 0.5605177290083809
+              },
+              {
+                "coverage": 0.5,
+                "risk": 0.0,
+                "threshold": 0.5517746183423138
+              },
+              {
+                "coverage": 0.6666666666666666,
+                "risk": 0.0,
+                "threshold": 0.526143214268766
+              },
+              {
+                "coverage": 0.8333333333333334,
+                "risk": 0.0,
+                "threshold": 0.5203449980668731
+              },
+              {
+                "coverage": 1.0,
+                "risk": 0.16666666666666663,
+                "threshold": 0.5111263998077418
+              }
+            ]
+          },
+          "status_counts": {
+            "ok": 6
+          },
+          "successful_count": 6,
+          "swap_consistency": {
+            "reason": "TASK-0009 student scope is single-answer correctness; pairwise records are excluded",
+            "status": "not_applicable"
+          },
+          "total_count": 6
+        },
+        "dev": {
+          "aggregate": {
+            "count": 21,
+            "metrics": {
+              "accuracy": 0.6666666666666666,
+              "balanced_accuracy": 0.6071428571428571,
+              "brier": 0.45786176654575317,
+              "ece": 0.1263316841391704,
+              "macro_f1": 0.6100795755968169,
+              "nll": 0.6507315651758048
+            },
+            "probability_metrics_available": true
+          },
+          "by_domain": {
+            "arithmetic": {
+              "count": 6,
+              "metrics": {
+                "accuracy": 0.6666666666666666,
+                "balanced_accuracy": 0.75,
+                "brier": 0.4650499044786793,
+                "ece": 0.14457069436569292,
+                "macro_f1": 0.6666666666666666,
+                "nll": 0.6580523263372459
+              },
+              "probability_metrics_available": true
+            },
+            "multiple_choice": {
+              "count": 6,
+              "metrics": {
+                "accuracy": 0.6666666666666666,
+                "balanced_accuracy": 0.625,
+                "brier": 0.4704177443993938,
+                "ece": 0.10924059706295086,
+                "macro_f1": 0.625,
+                "nll": 0.6634586058071131
+              },
+              "probability_metrics_available": true
+            },
+            "structured": {
+              "count": 9,
+              "metrics": {
+                "accuracy": 0.6666666666666666,
+                "balanced_accuracy": 0.5,
+                "brier": 0.4446990226880419,
+                "ece": 0.12556640203896852,
+                "macro_f1": 0.4,
+                "nll": 0.6373663639806383
+              },
+              "probability_metrics_available": true
+            }
+          },
+          "failure_count": 0,
+          "latency": {
+            "count": 21,
+            "max_ms": 0.05109047578159897,
+            "mean_ms": 0.05109047578159897,
+            "median_ms": 0.05109047578159897,
+            "min_ms": 0.05109047578159897,
+            "p95_ms": 0.05109047578159897
+          },
+          "risk_coverage": {
+            "coverage_at_target_error": {
+              "0.01": 0.19047619047619047,
+              "0.02": 0.19047619047619047,
+              "0.05": 0.19047619047619047
+            },
+            "curve": [
+              {
+                "coverage": 0.0,
+                "risk": 0.0,
+                "threshold": 1.0
+              },
+              {
+                "coverage": 0.047619047619047616,
+                "risk": 0.0,
+                "threshold": 0.5837551399203575
+              },
+              {
+                "coverage": 0.09523809523809523,
+                "risk": 0.0,
+                "threshold": 0.5837551399203575
+              },
+              {
+                "coverage": 0.14285714285714285,
+                "risk": 0.0,
+                "threshold": 0.5837551399203575
+              },
+              {
+                "coverage": 0.19047619047619047,
+                "risk": 0.0,
+                "threshold": 0.5654203710452206
+              },
+              {
+                "coverage": 0.23809523809523808,
+                "risk": 0.19999999999999996,
+                "threshold": 0.5616007518056918
+              },
+              {
+                "coverage": 0.2857142857142857,
+                "risk": 0.16666666666666663,
+                "threshold": 0.5607652546549653
+              },
+              {
+                "coverage": 0.3333333333333333,
+                "risk": 0.1428571428571429,
+                "threshold": 0.5566902018217819
+              },
+              {
+                "coverage": 0.38095238095238093,
+                "risk": 0.25,
+                "threshold": 0.5563264084270179
+              },
+              {
+                "coverage": 0.42857142857142855,
+                "risk": 0.2222222222222222,
+                "threshold": 0.5562800267980956
+              },
+              {
+                "coverage": 0.47619047619047616,
+                "risk": 0.19999999999999996,
+                "threshold": 0.5505364826987147
+              },
+              {
+                "coverage": 0.5238095238095238,
+                "risk": 0.18181818181818177,
+                "threshold": 0.5482386577244869
+              },
+              {
+                "coverage": 0.5714285714285714,
+                "risk": 0.16666666666666663,
+                "threshold": 0.5354293251652257
+              },
+              {
+                "coverage": 0.6190476190476191,
+                "risk": 0.15384615384615385,
+                "threshold": 0.5304136599557319
+              },
+              {
+                "coverage": 0.6666666666666666,
+                "risk": 0.2142857142857143,
+                "threshold": 0.5222911703715722
+              },
+              {
+                "coverage": 0.7142857142857143,
+                "risk": 0.2666666666666667,
+                "threshold": 0.516495095123946
+              },
+              {
+                "coverage": 0.7619047619047619,
+                "risk": 0.25,
+                "threshold": 0.5101130975537532
+              },
+              {
+                "coverage": 0.8095238095238095,
+                "risk": 0.2941176470588235,
+                "threshold": 0.5101130975537532
+              },
+              {
+                "coverage": 0.8571428571428571,
+                "risk": 0.33333333333333337,
+                "threshold": 0.5096844952435016
+              },
+              {
+                "coverage": 0.9047619047619048,
+                "risk": 0.3157894736842105,
+                "threshold": 0.5043232160282338
+              },
+              {
+                "coverage": 0.9523809523809523,
+                "risk": 0.30000000000000004,
+                "threshold": 0.500523950672328
+              },
+              {
+                "coverage": 1.0,
+                "risk": 0.33333333333333337,
+                "threshold": 0.500523950672328
+              }
+            ]
+          },
+          "status_counts": {
+            "ok": 21
+          },
+          "successful_count": 21,
+          "swap_consistency": {
+            "reason": "TASK-0009 student scope is single-answer correctness; pairwise records are excluded",
+            "status": "not_applicable"
+          },
+          "total_count": 21
+        },
+        "test": {
+          "aggregate": {
+            "count": 12,
+            "metrics": {
+              "accuracy": 0.5833333333333334,
+              "balanced_accuracy": 0.5,
+              "brier": 0.4592803970095572,
+              "ece": 0.03911915228733233,
+              "macro_f1": 0.4957983193277311,
+              "nll": 0.6517308124293717
+            },
+            "probability_metrics_available": true
+          },
+          "by_domain": {
+            "arithmetic": {
+              "count": 3,
+              "metrics": {
+                "accuracy": 0.6666666666666666,
+                "balanced_accuracy": 0.5,
+                "brier": 0.4510860213077504,
+                "ece": 0.12951065775422643,
+                "macro_f1": 0.4,
+                "nll": 0.6438221801819023
+              },
+              "probability_metrics_available": true
+            },
+            "code_output": {
+              "count": 3,
+              "metrics": {
+                "accuracy": 1.0,
+                "balanced_accuracy": 1.0,
+                "brier": 0.4079167088422719,
+                "ece": 0.4476983800097412,
+                "macro_f1": 1.0,
+                "nll": 0.5991960843629377
+              },
+              "probability_metrics_available": true
+            },
+            "multiple_choice": {
+              "count": 3,
+              "metrics": {
+                "accuracy": 0.3333333333333333,
+                "balanced_accuracy": 0.25,
+                "brier": 0.525609323099376,
+                "ece": 0.22431867895889906,
+                "macro_f1": 0.25,
+                "nll": 0.718712569053721
+              },
+              "probability_metrics_available": true
+            },
+            "structured": {
+              "count": 3,
+              "metrics": {
+                "accuracy": 0.3333333333333333,
+                "balanced_accuracy": 0.25,
+                "brier": 0.45250953478883066,
+                "ece": 0.19641374965573904,
+                "macro_f1": 0.25,
+                "nll": 0.6451924161189257
+              },
+              "probability_metrics_available": true
+            }
+          },
+          "failure_count": 0,
+          "latency": {
+            "count": 12,
+            "max_ms": 0.06584166597652559,
+            "mean_ms": 0.06584166597652559,
+            "median_ms": 0.06584166597652559,
+            "min_ms": 0.06584166597652559,
+            "p95_ms": 0.06584166597652559
+          },
+          "risk_coverage": {
+            "coverage_at_target_error": {
+              "0.01": 0.3333333333333333,
+              "0.02": 0.3333333333333333,
+              "0.05": 0.3333333333333333
+            },
+            "curve": [
+              {
+                "coverage": 0.0,
+                "risk": 0.0,
+                "threshold": 1.0
+              },
+              {
+                "coverage": 0.08333333333333333,
+                "risk": 0.0,
+                "threshold": 0.6361015774908285
+              },
+              {
+                "coverage": 0.16666666666666666,
+                "risk": 0.0,
+                "threshold": 0.5837551399203575
+              },
+              {
+                "coverage": 0.25,
+                "risk": 0.0,
+                "threshold": 0.5803054918499386
+              },
+              {
+                "coverage": 0.3333333333333333,
+                "risk": 0.0,
+                "threshold": 0.5724774027470091
+              },
+              {
+                "coverage": 0.4166666666666667,
+                "risk": 0.19999999999999996,
+                "threshold": 0.557715994105787
+              },
+              {
+                "coverage": 0.5,
+                "risk": 0.33333333333333337,
+                "threshold": 0.5427626400239011
+              },
+              {
+                "coverage": 0.5833333333333334,
+                "risk": 0.4285714285714286,
+                "threshold": 0.515581267443691
+              },
+              {
+                "coverage": 0.6666666666666666,
+                "risk": 0.375,
+                "threshold": 0.515581267443691
+              },
+              {
+                "coverage": 0.75,
+                "risk": 0.33333333333333337,
+                "threshold": 0.51486793487799
+              },
+              {
+                "coverage": 0.8333333333333334,
+                "risk": 0.30000000000000004,
+                "threshold": 0.5059353476019579
+              },
+              {
+                "coverage": 0.9166666666666666,
+                "risk": 0.36363636363636365,
+                "threshold": 0.5040393757467774
+              },
+              {
+                "coverage": 1.0,
+                "risk": 0.41666666666666663,
+                "threshold": 0.5014467333000823
+              }
+            ]
+          },
+          "status_counts": {
+            "ok": 12
+          },
+          "successful_count": 12,
+          "swap_consistency": {
+            "reason": "TASK-0009 student scope is single-answer correctness; pairwise records are excluded",
+            "status": "not_applicable"
+          },
+          "total_count": 12
+        }
+      },
+      "source_kind_counts": {
+        "objective": 66
+      },
+      "training_row_count": 66,
+      "training_row_fingerprint": "c68af6e03523ee764c92c95d2d97b3d85731618913f59cc9e6b1bc586dfd5a0b"
+    },
+    "C": {
+      "augmentation_counts": {
+        "canonical": 33,
+        "verified-hard-negative": 3
+      },
+      "metrics": {
+        "calibration": {
+          "aggregate": {
+            "count": 6,
+            "metrics": {
+              "accuracy": 0.8333333333333334,
+              "balanced_accuracy": 0.75,
+              "brier": 0.44773965846383385,
+              "ece": 0.3018714298884986,
+              "macro_f1": 0.7777777777777777,
+              "nll": 0.6406543991007485
+            },
+            "probability_metrics_available": true
+          },
+          "by_domain": {
+            "code_output": {
+              "count": 3,
+              "metrics": {
+                "accuracy": 1.0,
+                "balanced_accuracy": 1.0,
+                "brier": 0.43385527446688493,
+                "ece": 0.4647510429503384,
+                "macro_f1": 1.0,
+                "nll": 0.626615016353416
+              },
+              "probability_metrics_available": true
+            },
+            "multiple_choice": {
+              "count": 3,
+              "metrics": {
+                "accuracy": 0.6666666666666666,
+                "balanced_accuracy": 0.5,
+                "brier": 0.4616240424607829,
+                "ece": 0.13899181682665862,
+                "macro_f1": 0.4,
+                "nll": 0.6546937818480809
+              },
+              "probability_metrics_available": true
+            }
+          },
+          "failure_count": 0,
+          "latency": {
+            "count": 6,
+            "max_ms": 0.12558333401102573,
+            "mean_ms": 0.12558333401102573,
+            "median_ms": 0.12558333401102573,
+            "min_ms": 0.12558333401102573,
+            "p95_ms": 0.12558333401102573
+          },
+          "risk_coverage": {
+            "coverage_at_target_error": {
+              "0.01": 0.6666666666666666,
+              "0.02": 0.6666666666666666,
+              "0.05": 0.6666666666666666
+            },
+            "curve": [
+              {
+                "coverage": 0.0,
+                "risk": 0.0,
+                "threshold": 1.0
+              },
+              {
+                "coverage": 0.16666666666666666,
+                "risk": 0.0,
+                "threshold": 0.5783007360856177
+              },
+              {
+                "coverage": 0.3333333333333333,
+                "risk": 0.0,
+                "threshold": 0.5384517992821848
+              },
+              {
+                "coverage": 0.5,
+                "risk": 0.0,
+                "threshold": 0.5331974480957047
+              },
+              {
+                "coverage": 0.6666666666666666,
+                "risk": 0.0,
+                "threshold": 0.5170496583394159
+              },
+              {
+                "coverage": 0.8333333333333334,
+                "risk": 0.19999999999999996,
+                "threshold": 0.5113753021421346
+              },
+              {
+                "coverage": 1.0,
+                "risk": 0.16666666666666663,
+                "threshold": 0.510396476723951
+              }
+            ]
+          },
+          "status_counts": {
+            "ok": 6
+          },
+          "successful_count": 6,
+          "swap_consistency": {
+            "reason": "TASK-0009 student scope is single-answer correctness; pairwise records are excluded",
+            "status": "not_applicable"
+          },
+          "total_count": 6
+        },
+        "dev": {
+          "aggregate": {
+            "count": 21,
+            "metrics": {
+              "accuracy": 0.7142857142857143,
+              "balanced_accuracy": 0.6785714285714286,
+              "brier": 0.47355777536210086,
+              "ece": 0.19149187236510035,
+              "macro_f1": 0.6785714285714286,
+              "nll": 0.6666520309610886
+            },
+            "probability_metrics_available": true
+          },
+          "by_domain": {
+            "arithmetic": {
+              "count": 6,
+              "metrics": {
+                "accuracy": 0.6666666666666666,
+                "balanced_accuracy": 0.625,
+                "brier": 0.47501333929125433,
+                "ece": 0.15039713319738834,
+                "macro_f1": 0.625,
+                "nll": 0.6681080426138561
+              },
+              "probability_metrics_available": true
+            },
+            "multiple_choice": {
+              "count": 6,
+              "metrics": {
+                "accuracy": 0.6666666666666666,
+                "balanced_accuracy": 0.625,
+                "brier": 0.4787368728633981,
+                "ece": 0.13072660348679888,
+                "macro_f1": 0.625,
+                "nll": 0.671844894545416
+              },
+              "probability_metrics_available": true
+            },
+            "structured": {
+              "count": 9,
+              "metrics": {
+                "accuracy": 0.7777777777777778,
+                "balanced_accuracy": 0.75,
+                "brier": 0.4691346677418004,
+                "ece": 0.2593985443957758,
+                "macro_f1": 0.75,
+                "nll": 0.662219447469692
+              },
+              "probability_metrics_available": true
+            }
+          },
+          "failure_count": 0,
+          "latency": {
+            "count": 21,
+            "max_ms": 0.07857619008670251,
+            "mean_ms": 0.07857619008670251,
+            "median_ms": 0.07857619008670251,
+            "min_ms": 0.07857619008670251,
+            "p95_ms": 0.07857619008670251
+          },
+          "risk_coverage": {
+            "coverage_at_target_error": {
+              "0.01": 0.09523809523809523,
+              "0.02": 0.09523809523809523,
+              "0.05": 0.09523809523809523
+            },
+            "curve": [
+              {
+                "coverage": 0.0,
+                "risk": 0.0,
+                "threshold": 1.0
+              },
+              {
+                "coverage": 0.047619047619047616,
+                "risk": 0.0,
+                "threshold": 0.5477493103467515
+              },
+              {
+                "coverage": 0.09523809523809523,
+                "risk": 0.0,
+                "threshold": 0.5439732370219281
+              },
+              {
+                "coverage": 0.14285714285714285,
+                "risk": 0.33333333333333337,
+                "threshold": 0.5424374487787291
+              },
+              {
+                "coverage": 0.19047619047619047,
+                "risk": 0.25,
+                "threshold": 0.5419149703367276
+              },
+              {
+                "coverage": 0.23809523809523808,
+                "risk": 0.19999999999999996,
+                "threshold": 0.5419149703367276
+              },
+              {
+                "coverage": 0.2857142857142857,
+                "risk": 0.16666666666666663,
+                "threshold": 0.5419149703367276
+              },
+              {
+                "coverage": 0.3333333333333333,
+                "risk": 0.1428571428571429,
+                "threshold": 0.5343254149516476
+              },
+              {
+                "coverage": 0.38095238095238093,
+                "risk": 0.125,
+                "threshold": 0.534277451469001
+              },
+              {
+                "coverage": 0.42857142857142855,
+                "risk": 0.11111111111111116,
+                "threshold": 0.5324276761297608
+              },
+              {
+                "coverage": 0.47619047619047616,
+                "risk": 0.19999999999999996,
+                "threshold": 0.5294712364051731
+              },
+              {
+                "coverage": 0.5238095238095238,
+                "risk": 0.18181818181818177,
+                "threshold": 0.5292292924671445
+              },
+              {
+                "coverage": 0.5714285714285714,
+                "risk": 0.16666666666666663,
+                "threshold": 0.5127751791159796
+              },
+              {
+                "coverage": 0.6190476190476191,
+                "risk": 0.15384615384615385,
+                "threshold": 0.5101380436388929
+              },
+              {
+                "coverage": 0.6666666666666666,
+                "risk": 0.2142857142857143,
+                "threshold": 0.5095414063043987
+              },
+              {
+                "coverage": 0.7142857142857143,
+                "risk": 0.19999999999999996,
+                "threshold": 0.5095414063043987
+              },
+              {
+                "coverage": 0.7619047619047619,
+                "risk": 0.25,
+                "threshold": 0.5074470176494308
+              },
+              {
+                "coverage": 0.8095238095238095,
+                "risk": 0.23529411764705888,
+                "threshold": 0.5040481910236134
+              },
+              {
+                "coverage": 0.8571428571428571,
+                "risk": 0.2777777777777778,
+                "threshold": 0.5030012681613201
+              },
+              {
+                "coverage": 0.9047619047619048,
+                "risk": 0.26315789473684215,
+                "threshold": 0.5022584898385978
+              },
+              {
+                "coverage": 0.9523809523809523,
+                "risk": 0.25,
+                "threshold": 0.5001418498579714
+              },
+              {
+                "coverage": 1.0,
+                "risk": 0.2857142857142857,
+                "threshold": 0.5001418498579714
+              }
+            ]
+          },
+          "status_counts": {
+            "ok": 21
+          },
+          "successful_count": 21,
+          "swap_consistency": {
+            "reason": "TASK-0009 student scope is single-answer correctness; pairwise records are excluded",
+            "status": "not_applicable"
+          },
+          "total_count": 21
+        },
+        "test": {
+          "aggregate": {
+            "count": 12,
+            "metrics": {
+              "accuracy": 0.6666666666666666,
+              "balanced_accuracy": 0.625,
+              "brier": 0.47210417197211835,
+              "ece": 0.1348696309707902,
+              "macro_f1": 0.625,
+              "nll": 0.6650634944799115
+            },
+            "probability_metrics_available": true
+          },
+          "by_domain": {
+            "arithmetic": {
+              "count": 3,
+              "metrics": {
+                "accuracy": 0.6666666666666666,
+                "balanced_accuracy": 0.5,
+                "brier": 0.4620480121102364,
+                "ece": 0.12814344236344455,
+                "macro_f1": 0.4,
+                "nll": 0.6550005910949473
+              },
+              "probability_metrics_available": true
+            },
+            "code_output": {
+              "count": 3,
+              "metrics": {
+                "accuracy": 1.0,
+                "balanced_accuracy": 1.0,
+                "brier": 0.438450412783312,
+                "ece": 0.46679764292314296,
+                "macro_f1": 1.0,
+                "nll": 0.6311211005356759
+              },
+              "probability_metrics_available": true
+            },
+            "multiple_choice": {
+              "count": 3,
+              "metrics": {
+                "accuracy": 0.3333333333333333,
+                "balanced_accuracy": 0.25,
+                "brier": 0.5122169978674621,
+                "ece": 0.20119884154692042,
+                "macro_f1": 0.25,
+                "nll": 0.7053443802964222
+              },
+              "probability_metrics_available": true
+            },
+            "structured": {
+              "count": 3,
+              "metrics": {
+                "accuracy": 0.6666666666666666,
+                "balanced_accuracy": 0.75,
+                "brier": 0.47570126512746275,
+                "ece": 0.1457362801434936,
+                "macro_f1": 0.6666666666666666,
+                "nll": 0.6687879059926005
+              },
+              "probability_metrics_available": true
+            }
+          },
+          "failure_count": 0,
+          "latency": {
+            "count": 12,
+            "max_ms": 0.07140833137479301,
+            "mean_ms": 0.07140833137479301,
+            "median_ms": 0.07140833137479301,
+            "min_ms": 0.07140833137479301,
+            "p95_ms": 0.07140833137479301
+          },
+          "risk_coverage": {
+            "coverage_at_target_error": {
+              "0.01": 0.3333333333333333,
+              "0.02": 0.3333333333333333,
+              "0.05": 0.3333333333333333
+            },
+            "curve": [
+              {
+                "coverage": 0.0,
+                "risk": 0.0,
+                "threshold": 1.0
+              },
+              {
+                "coverage": 0.08333333333333333,
+                "risk": 0.0,
+                "threshold": 0.5844067525784105
+              },
+              {
+                "coverage": 0.16666666666666666,
+                "risk": 0.0,
+                "threshold": 0.5622225880282514
+              },
+              {
+                "coverage": 0.25,
+                "risk": 0.0,
+                "threshold": 0.5445333686373046
+              },
+              {
+                "coverage": 0.3333333333333333,
+                "risk": 0.0,
+                "threshold": 0.5419149703367276
+              },
+              {
+                "coverage": 0.4166666666666667,
+                "risk": 0.19999999999999996,
+                "threshold": 0.5353736801195743
+              },
+              {
+                "coverage": 0.5,
+                "risk": 0.33333333333333337,
+                "threshold": 0.5266735424407074
+              },
+              {
+                "coverage": 0.5833333333333334,
+                "risk": 0.2857142857142857,
+                "threshold": 0.5266735424407074
+              },
+              {
+                "coverage": 0.6666666666666666,
+                "risk": 0.375,
+                "threshold": 0.5236894758838824
+              },
+              {
+                "coverage": 0.75,
+                "risk": 0.33333333333333337,
+                "threshold": 0.5122189081362271
+              },
+              {
+                "coverage": 0.8333333333333334,
+                "risk": 0.4,
+                "threshold": 0.5121811043590085
+              },
+              {
+                "coverage": 0.9166666666666666,
+                "risk": 0.36363636363636365,
+                "threshold": 0.5086950848737829
+              },
+              {
+                "coverage": 1.0,
+                "risk": 0.33333333333333337,
+                "threshold": 0.5029814105159336
+              }
+            ]
+          },
+          "status_counts": {
+            "ok": 12
+          },
+          "successful_count": 12,
+          "swap_consistency": {
+            "reason": "TASK-0009 student scope is single-answer correctness; pairwise records are excluded",
+            "status": "not_applicable"
+          },
+          "total_count": 12
+        }
+      },
+      "source_kind_counts": {
+        "objective": 33,
+        "verified_hard_negative": 3
+      },
+      "training_row_count": 36,
+      "training_row_fingerprint": "87d78515aa43d186e84c51f8458c4c5d7519f00b06742361494ca07cfe231209"
+    },
+    "D": {
+      "augmentation_counts": {
+        "canonical": 33,
+        "criterion-paraphrase:arithmetic": 11,
+        "criterion-paraphrase:code_output": 13,
+        "criterion-paraphrase:multiple_choice": 6,
+        "criterion-paraphrase:structured": 6,
+        "verified-hard-negative": 3
+      },
+      "metrics": {
+        "calibration": {
+          "aggregate": {
+            "count": 6,
+            "metrics": {
+              "accuracy": 0.8333333333333334,
+              "balanced_accuracy": 0.75,
+              "brier": 0.4144591405204429,
+              "ece": 0.2801845488570625,
+              "macro_f1": 0.7777777777777777,
+              "nll": 0.6065938206197017
+            },
+            "probability_metrics_available": true
+          },
+          "by_domain": {
+            "code_output": {
+              "count": 3,
+              "metrics": {
+                "accuracy": 1.0,
+                "balanced_accuracy": 1.0,
+                "brier": 0.39349964544364213,
+                "ece": 0.4407629826177852,
+                "macro_f1": 1.0,
+                "nll": 0.5850011744207051
+              },
+              "probability_metrics_available": true
+            },
+            "multiple_choice": {
+              "count": 3,
+              "metrics": {
+                "accuracy": 0.6666666666666666,
+                "balanced_accuracy": 0.5,
+                "brier": 0.4354186355972436,
+                "ece": 0.11960611509633978,
+                "macro_f1": 0.4,
+                "nll": 0.6281864668186983
+              },
+              "probability_metrics_available": true
+            }
+          },
+          "failure_count": 0,
+          "latency": {
+            "count": 6,
+            "max_ms": 0.11285000073257834,
+            "mean_ms": 0.11285000073257834,
+            "median_ms": 0.11285000073257834,
+            "min_ms": 0.11285000073257834,
+            "p95_ms": 0.11285000073257834
+          },
+          "risk_coverage": {
+            "coverage_at_target_error": {
+              "0.01": 0.8333333333333334,
+              "0.02": 0.8333333333333334,
+              "0.05": 0.8333333333333334
+            },
+            "curve": [
+              {
+                "coverage": 0.0,
+                "risk": 0.0,
+                "threshold": 1.0
+              },
+              {
+                "coverage": 0.16666666666666666,
+                "risk": 0.0,
+                "threshold": 0.6295240419086992
+              },
+              {
+                "coverage": 0.3333333333333333,
+                "risk": 0.0,
+                "threshold": 0.5661970129614097
+              },
+              {
+                "coverage": 0.5,
+                "risk": 0.0,
+                "threshold": 0.5567992932661534
+              },
+              {
+                "coverage": 0.6666666666666666,
+                "risk": 0.0,
+                "threshold": 0.5274882732925904
+              },
+              {
+                "coverage": 0.8333333333333334,
+                "risk": 0.0,
+                "threshold": 0.5206987369453548
+              },
+              {
+                "coverage": 1.0,
+                "risk": 0.16666666666666663,
+                "threshold": 0.5181853484834176
+              }
+            ]
+          },
+          "status_counts": {
+            "ok": 6
+          },
+          "successful_count": 6,
+          "swap_consistency": {
+            "reason": "TASK-0009 student scope is single-answer correctness; pairwise records are excluded",
+            "status": "not_applicable"
+          },
+          "total_count": 6
+        },
+        "dev": {
+          "aggregate": {
+            "count": 21,
+            "metrics": {
+              "accuracy": 0.6666666666666666,
+              "balanced_accuracy": 0.6071428571428571,
+              "brier": 0.4571312323535358,
+              "ece": 0.12767096126183597,
+              "macro_f1": 0.6100795755968169,
+              "nll": 0.6500280510100558
+            },
+            "probability_metrics_available": true
+          },
+          "by_domain": {
+            "arithmetic": {
+              "count": 6,
+              "metrics": {
+                "accuracy": 0.6666666666666666,
+                "balanced_accuracy": 0.625,
+                "brier": 0.4615004655284572,
+                "ece": 0.1412511588043488,
+                "macro_f1": 0.625,
+                "nll": 0.6544485822484565
+              },
+              "probability_metrics_available": true
+            },
+            "multiple_choice": {
+              "count": 6,
+              "metrics": {
+                "accuracy": 0.6666666666666666,
+                "balanced_accuracy": 0.625,
+                "brier": 0.4666991622201327,
+                "ece": 0.10482280134203692,
+                "macro_f1": 0.625,
+                "nll": 0.6596749368181084
+              },
+              "probability_metrics_available": true
+            },
+            "structured": {
+              "count": 9,
+              "metrics": {
+                "accuracy": 0.6666666666666666,
+                "balanced_accuracy": 0.5833333333333334,
+                "brier": 0.4478397903258569,
+                "ece": 0.13384960284669345,
+                "macro_f1": 0.5846153846153846,
+                "nll": 0.6406497729790869
+              },
+              "probability_metrics_available": true
+            }
+          },
+          "failure_count": 0,
+          "latency": {
+            "count": 21,
+            "max_ms": 0.05345238051155493,
+            "mean_ms": 0.05345238051155493,
+            "median_ms": 0.05345238051155493,
+            "min_ms": 0.05345238051155493,
+            "p95_ms": 0.05345238051155493
+          },
+          "risk_coverage": {
+            "coverage_at_target_error": {
+              "0.01": 0.19047619047619047,
+              "0.02": 0.19047619047619047,
+              "0.05": 0.19047619047619047
+            },
+            "curve": [
+              {
+                "coverage": 0.0,
+                "risk": 0.0,
+                "threshold": 1.0
+              },
+              {
+                "coverage": 0.047619047619047616,
+                "risk": 0.0,
+                "threshold": 0.5787491290708886
+              },
+              {
+                "coverage": 0.09523809523809523,
+                "risk": 0.0,
+                "threshold": 0.5744498996887525
+              },
+              {
+                "coverage": 0.14285714285714285,
+                "risk": 0.0,
+                "threshold": 0.5744498996887525
+              },
+              {
+                "coverage": 0.19047619047619047,
+                "risk": 0.0,
+                "threshold": 0.5744498996887525
+              },
+              {
+                "coverage": 0.23809523809523808,
+                "risk": 0.19999999999999996,
+                "threshold": 0.5691902451718629
+              },
+              {
+                "coverage": 0.2857142857142857,
+                "risk": 0.16666666666666663,
+                "threshold": 0.5690173578736584
+              },
+              {
+                "coverage": 0.3333333333333333,
+                "risk": 0.1428571428571429,
+                "threshold": 0.5602694554603198
+              },
+              {
+                "coverage": 0.38095238095238093,
+                "risk": 0.125,
+                "threshold": 0.5570671091982545
+              },
+              {
+                "coverage": 0.42857142857142855,
+                "risk": 0.2222222222222222,
+                "threshold": 0.5546503834255854
+              },
+              {
+                "coverage": 0.47619047619047616,
+                "risk": 0.19999999999999996,
+                "threshold": 0.5545199637517578
+              },
+              {
+                "coverage": 0.5238095238095238,
+                "risk": 0.18181818181818177,
+                "threshold": 0.5511368696208672
+              },
+              {
+                "coverage": 0.5714285714285714,
+                "risk": 0.16666666666666663,
+                "threshold": 0.5256743907282286
+              },
+              {
+                "coverage": 0.6190476190476191,
+                "risk": 0.15384615384615385,
+                "threshold": 0.5211818192442847
+              },
+              {
+                "coverage": 0.6666666666666666,
+                "risk": 0.2142857142857143,
+                "threshold": 0.5120682057871857
+              },
+              {
+                "coverage": 0.7142857142857143,
+                "risk": 0.19999999999999996,
+                "threshold": 0.5120682057871857
+              },
+              {
+                "coverage": 0.7619047619047619,
+                "risk": 0.25,
+                "threshold": 0.5101113793953913
+              },
+              {
+                "coverage": 0.8095238095238095,
+                "risk": 0.2941176470588235,
+                "threshold": 0.5094279844916758
+              },
+              {
+                "coverage": 0.8571428571428571,
+                "risk": 0.2777777777777778,
+                "threshold": 0.5038038793273101
+              },
+              {
+                "coverage": 0.9047619047619048,
+                "risk": 0.26315789473684215,
+                "threshold": 0.5024096569870596
+              },
+              {
+                "coverage": 0.9523809523809523,
+                "risk": 0.30000000000000004,
+                "threshold": 0.5024096569870596
+              },
+              {
+                "coverage": 1.0,
+                "risk": 0.33333333333333337,
+                "threshold": 0.5018044221266103
+              }
+            ]
+          },
+          "status_counts": {
+            "ok": 21
+          },
+          "successful_count": 21,
+          "swap_consistency": {
+            "reason": "TASK-0009 student scope is single-answer correctness; pairwise records are excluded",
+            "status": "not_applicable"
+          },
+          "total_count": 21
+        },
+        "test": {
+          "aggregate": {
+            "count": 12,
+            "metrics": {
+              "accuracy": 0.6666666666666666,
+              "balanced_accuracy": 0.625,
+              "brier": 0.45817564012877243,
+              "ece": 0.1154179697107965,
+              "macro_f1": 0.625,
+              "nll": 0.6505715649552706
+            },
+            "probability_metrics_available": true
+          },
+          "by_domain": {
+            "arithmetic": {
+              "count": 3,
+              "metrics": {
+                "accuracy": 0.6666666666666666,
+                "balanced_accuracy": 0.5,
+                "brier": 0.4442419803442119,
+                "ece": 0.11042984448175575,
+                "macro_f1": 0.4,
+                "nll": 0.6367175078157388
+              },
+              "probability_metrics_available": true
+            },
+            "code_output": {
+              "count": 3,
+              "metrics": {
+                "accuracy": 1.0,
+                "balanced_accuracy": 1.0,
+                "brier": 0.4044518537428324,
+                "ece": 0.4457558185127494,
+                "macro_f1": 1.0,
+                "nll": 0.5956545010784199
+              },
+              "probability_metrics_available": true
+            },
+            "multiple_choice": {
+              "count": 3,
+              "metrics": {
+                "accuracy": 0.3333333333333333,
+                "balanced_accuracy": 0.25,
+                "brier": 0.5258367443846362,
+                "ece": 0.22701659460312956,
+                "macro_f1": 0.25,
+                "nll": 0.7189220849198614
+              },
+              "probability_metrics_available": true
+            },
+            "structured": {
+              "count": 3,
+              "metrics": {
+                "accuracy": 0.6666666666666666,
+                "balanced_accuracy": 0.75,
+                "brier": 0.4581719820434092,
+                "ece": 0.13250281045181023,
+                "macro_f1": 0.6666666666666666,
+                "nll": 0.6509921660070623
+              },
+              "probability_metrics_available": true
+            }
+          },
+          "failure_count": 0,
+          "latency": {
+            "count": 12,
+            "max_ms": 0.07460833391329895,
+            "mean_ms": 0.07460833391329895,
+            "median_ms": 0.07460833391329895,
+            "min_ms": 0.07460833391329895,
+            "p95_ms": 0.07460833391329895
+          },
+          "risk_coverage": {
+            "coverage_at_target_error": {
+              "0.01": 0.3333333333333333,
+              "0.02": 0.3333333333333333,
+              "0.05": 0.3333333333333333
+            },
+            "curve": [
+              {
+                "coverage": 0.0,
+                "risk": 0.0,
+                "threshold": 1.0
+              },
+              {
+                "coverage": 0.08333333333333333,
+                "risk": 0.0,
+                "threshold": 0.6379973520574711
+              },
+              {
+                "coverage": 0.16666666666666666,
+                "risk": 0.0,
+                "threshold": 0.5954287849048111
+              },
+              {
+                "coverage": 0.25,
+                "risk": 0.0,
+                "threshold": 0.576902644679868
+              },
+              {
+                "coverage": 0.3333333333333333,
+                "risk": 0.0,
+                "threshold": 0.5744498996887525
+              },
+              {
+                "coverage": 0.4166666666666667,
+                "risk": 0.19999999999999996,
+                "threshold": 0.5613819548734876
+              },
+              {
+                "coverage": 0.5,
+                "risk": 0.33333333333333337,
+                "threshold": 0.5427651842560333
+              },
+              {
+                "coverage": 0.5833333333333334,
+                "risk": 0.4285714285714286,
+                "threshold": 0.5366408408249608
+              },
+              {
+                "coverage": 0.6666666666666666,
+                "risk": 0.375,
+                "threshold": 0.5366408408249608
+              },
+              {
+                "coverage": 0.75,
+                "risk": 0.33333333333333337,
+                "threshold": 0.5178966571300089
+              },
+              {
+                "coverage": 0.8333333333333334,
+                "risk": 0.4,
+                "threshold": 0.5168985122442251
+              },
+              {
+                "coverage": 0.9166666666666666,
+                "risk": 0.36363636363636365,
+                "threshold": 0.5111431567115915
+              },
+              {
+                "coverage": 1.0,
+                "risk": 0.33333333333333337,
+                "threshold": 0.5068385352742716
+              }
+            ]
+          },
+          "status_counts": {
+            "ok": 12
+          },
+          "successful_count": 12,
+          "swap_consistency": {
+            "reason": "TASK-0009 student scope is single-answer correctness; pairwise records are excluded",
+            "status": "not_applicable"
+          },
+          "total_count": 12
+        }
+      },
+      "source_kind_counts": {
+        "objective": 66,
+        "verified_hard_negative": 6
+      },
+      "training_row_count": 72,
+      "training_row_fingerprint": "0fda2300e9561d9f068465e252c1aa859f950d002d93a5bb1abca2b428551fc3"
+    },
+    "E": {
+      "base_arm": "D",
+      "metrics": {
+        "calibration": {
+          "aggregate": {
+            "count": 6,
+            "metrics": {
+              "accuracy": 0.8333333333333334,
+              "balanced_accuracy": 0.75,
+              "brier": 0.2104108760822563,
+              "ece": 0.12260319864906459,
+              "macro_f1": 0.7777777777777777,
+              "nll": 0.30971131077726816
+            },
+            "probability_metrics_available": true
+          },
+          "by_domain": {
+            "code_output": {
+              "count": 3,
+              "metrics": {
+                "accuracy": 1.0,
+                "balanced_accuracy": 1.0,
+                "brier": 0.05734034523282494,
+                "ece": 0.13685757318377073,
+                "macro_f1": 1.0,
+                "nll": 0.1536498338762889
+              },
+              "probability_metrics_available": true
+            },
+            "multiple_choice": {
+              "count": 3,
+              "metrics": {
+                "accuracy": 0.6666666666666666,
+                "balanced_accuracy": 0.5,
+                "brier": 0.3634814069316877,
+                "ece": 0.265839799255934,
+                "macro_f1": 0.4,
+                "nll": 0.46577278767824737
+              },
+              "probability_metrics_available": true
+            }
+          },
+          "failure_count": 0,
+          "latency": {
+            "count": 6,
+            "max_ms": 0.11285000073257834,
+            "mean_ms": 0.11285000073257834,
+            "median_ms": 0.11285000073257834,
+            "min_ms": 0.11285000073257834,
+            "p95_ms": 0.11285000073257834
+          },
+          "risk_coverage": {
+            "coverage_at_target_error": {
+              "0.01": 0.8333333333333334,
+              "0.02": 0.8333333333333334,
+              "0.05": 0.8333333333333334
+            },
+            "curve": [
+              {
+                "coverage": 0.0,
+                "risk": 0.0,
+                "threshold": 1.0
+              },
+              {
+                "coverage": 0.16666666666666666,
+                "risk": 0.0,
+                "threshold": 0.999452557072155
+              },
+              {
+                "coverage": 0.3333333333333333,
+                "risk": 0.0,
+                "threshold": 0.9775279483547747
+              },
+              {
+                "coverage": 0.5,
+                "risk": 0.0,
+                "threshold": 0.9620245517422154
+              },
+              {
+                "coverage": 0.6666666666666666,
+                "risk": 0.0,
+                "threshold": 0.8262111860888962
+              },
+              {
+                "coverage": 0.8333333333333334,
+                "risk": 0.0,
+                "threshold": 0.7637635372876366
+              },
+              {
+                "coverage": 1.0,
+                "risk": 0.16666666666666663,
+                "threshold": 0.737071897864792
+              }
+            ]
+          },
+          "status_counts": {
+            "ok": 6
+          },
+          "successful_count": 6,
+          "swap_consistency": {
+            "reason": "TASK-0009 student scope is single-answer correctness; pairwise records are excluded",
+            "status": "not_applicable"
+          },
+          "total_count": 6
+        },
+        "dev": {
+          "aggregate": {
+            "count": 21,
+            "metrics": {
+              "accuracy": 0.6666666666666666,
+              "balanced_accuracy": 0.6071428571428571,
+              "brier": 0.4108866687389932,
+              "ece": 0.18425047960737906,
+              "macro_f1": 0.6100795755968169,
+              "nll": 0.6702028149801903
+            },
+            "probability_metrics_available": true
+          },
+          "by_domain": {
+            "arithmetic": {
+              "count": 6,
+              "metrics": {
+                "accuracy": 0.6666666666666666,
+                "balanced_accuracy": 0.625,
+                "brier": 0.35291161108880903,
+                "ece": 0.07659782234467394,
+                "macro_f1": 0.625,
+                "nll": 0.49255282706134934
+              },
+              "probability_metrics_available": true
+            },
+            "multiple_choice": {
+              "count": 6,
+              "metrics": {
+                "accuracy": 0.6666666666666666,
+                "balanced_accuracy": 0.625,
+                "brier": 0.6279774511454295,
+                "ece": 0.3011260221107527,
+                "macro_f1": 0.625,
+                "nll": 1.2085606368597013
+              },
+              "probability_metrics_available": true
+            },
+            "structured": {
+              "count": 9,
+              "metrics": {
+                "accuracy": 0.6666666666666666,
+                "balanced_accuracy": 0.5833333333333334,
+                "brier": 0.30480951890149194,
+                "ece": 0.2013046820351082,
+                "macro_f1": 0.5846153846153846,
+                "nll": 0.4297309256730768
+              },
+              "probability_metrics_available": true
+            }
+          },
+          "failure_count": 0,
+          "latency": {
+            "count": 21,
+            "max_ms": 0.05345238051155493,
+            "mean_ms": 0.05345238051155493,
+            "median_ms": 0.05345238051155493,
+            "min_ms": 0.05345238051155493,
+            "p95_ms": 0.05345238051155493
+          },
+          "risk_coverage": {
+            "coverage_at_target_error": {
+              "0.01": 0.19047619047619047,
+              "0.02": 0.19047619047619047,
+              "0.05": 0.19047619047619047
+            },
+            "curve": [
+              {
+                "coverage": 0.0,
+                "risk": 0.0,
+                "threshold": 1.0
+              },
+              {
+                "coverage": 0.047619047619047616,
+                "risk": 0.0,
+                "threshold": 0.9890047954366369
+              },
+              {
+                "coverage": 0.09523809523809523,
+                "risk": 0.0,
+                "threshold": 0.9859335581183255
+              },
+              {
+                "coverage": 0.14285714285714285,
+                "risk": 0.0,
+                "threshold": 0.9859335581183255
+              },
+              {
+                "coverage": 0.19047619047619047,
+                "risk": 0.0,
+                "threshold": 0.9859335581183255
+              },
+              {
+                "coverage": 0.23809523809523808,
+                "risk": 0.19999999999999996,
+                "threshold": 0.9810256954488827
+              },
+              {
+                "coverage": 0.2857142857142857,
+                "risk": 0.16666666666666663,
+                "threshold": 0.980838913027432
+              },
+              {
+                "coverage": 0.3333333333333333,
+                "risk": 0.1428571428571429,
+                "threshold": 0.9686729882847075
+              },
+              {
+                "coverage": 0.38095238095238093,
+                "risk": 0.125,
+                "threshold": 0.9625822176135223
+              },
+              {
+                "coverage": 0.42857142857142855,
+                "risk": 0.2222222222222222,
+                "threshold": 0.9572548987027641
+              },
+              {
+                "coverage": 0.47619047619047616,
+                "risk": 0.19999999999999996,
+                "threshold": 0.9569478459708057
+              },
+              {
+                "coverage": 0.5238095238095238,
+                "risk": 0.18181818181818177,
+                "threshold": 0.9482155371780022
+              },
+              {
+                "coverage": 0.5714285714285714,
+                "risk": 0.16666666666666663,
+                "threshold": 0.8109119569343926
+              },
+              {
+                "coverage": 0.6190476190476191,
+                "risk": 0.15384615384615385,
+                "threshold": 0.7686748329566601
+              },
+              {
+                "coverage": 0.6666666666666666,
+                "risk": 0.2142857142857143,
+                "threshold": 0.6646077608879303
+              },
+              {
+                "coverage": 0.7142857142857143,
+                "risk": 0.19999999999999996,
+                "threshold": 0.6646077608879303
+              },
+              {
+                "coverage": 0.7619047619047619,
+                "risk": 0.25,
+                "threshold": 0.639448490752951
+              },
+              {
+                "coverage": 0.8095238095238095,
+                "risk": 0.2941176470588235,
+                "threshold": 0.6304706614473852
+              },
+              {
+                "coverage": 0.8571428571428571,
+                "risk": 0.2777777777777778,
+                "threshold": 0.5536737255012528
+              },
+              {
+                "coverage": 0.9047619047619048,
+                "risk": 0.26315789473684215,
+                "threshold": 0.5340790856452103
+              },
+              {
+                "coverage": 0.9523809523809523,
+                "risk": 0.30000000000000004,
+                "threshold": 0.5340790856452103
+              },
+              {
+                "coverage": 1.0,
+                "risk": 0.33333333333333337,
+                "threshold": 0.5255367248604143
+              }
+            ]
+          },
+          "status_counts": {
+            "ok": 21
+          },
+          "successful_count": 21,
+          "swap_consistency": {
+            "reason": "TASK-0009 student scope is single-answer correctness; pairwise records are excluded",
+            "status": "not_applicable"
+          },
+          "total_count": 21
+        },
+        "test": {
+          "aggregate": {
+            "count": 12,
+            "metrics": {
+              "accuracy": 0.6666666666666666,
+              "balanced_accuracy": 0.625,
+              "brier": 0.5777554606751903,
+              "ece": 0.32038976262582664,
+              "macro_f1": 0.625,
+              "nll": 0.9101187530282049
+            },
+            "probability_metrics_available": true
+          },
+          "by_domain": {
+            "arithmetic": {
+              "count": 3,
+              "metrics": {
+                "accuracy": 0.6666666666666666,
+                "balanced_accuracy": 0.5,
+                "brier": 0.5350210458618009,
+                "ece": 0.26067090378906993,
+                "macro_f1": 0.4,
+                "nll": 0.7731404070735941
+              },
+              "probability_metrics_available": true
+            },
+            "code_output": {
+              "count": 3,
+              "metrics": {
+                "accuracy": 1.0,
+                "balanced_accuracy": 1.0,
+                "brier": 0.1561961659101,
+                "ece": 0.22358803713973627,
+                "macro_f1": 1.0,
+                "nll": 0.27592857997536435
+              },
+              "probability_metrics_available": true
+            },
+            "multiple_choice": {
+              "count": 3,
+              "metrics": {
+                "accuracy": 0.3333333333333333,
+                "balanced_accuracy": 0.25,
+                "brier": 1.1911369453399427,
+                "ece": 0.6257800911878915,
+                "macro_f1": 0.25,
+                "nll": 2.0170021637008166
+              },
+              "probability_metrics_available": true
+            },
+            "structured": {
+              "count": 3,
+              "metrics": {
+                "accuracy": 0.6666666666666666,
+                "balanced_accuracy": 0.75,
+                "brier": 0.42866768558891777,
+                "ece": 0.3613096474143213,
+                "macro_f1": 0.6666666666666666,
+                "nll": 0.5744038613630442
+              },
+              "probability_metrics_available": true
+            }
+          },
+          "failure_count": 0,
+          "latency": {
+            "count": 12,
+            "max_ms": 0.07460833391329895,
+            "mean_ms": 0.07460833391329895,
+            "median_ms": 0.07460833391329895,
+            "min_ms": 0.07460833391329895,
+            "p95_ms": 0.07460833391329895
+          },
+          "risk_coverage": {
+            "coverage_at_target_error": {
+              "0.01": 0.3333333333333333,
+              "0.02": 0.3333333333333333,
+              "0.05": 0.3333333333333333
+            },
+            "curve": [
+              {
+                "coverage": 0.0,
+                "risk": 0.0,
+                "threshold": 1.0
+              },
+              {
+                "coverage": 0.08333333333333333,
+                "risk": 0.0,
+                "threshold": 0.9996735189457184
+              },
+              {
+                "coverage": 0.16666666666666666,
+                "risk": 0.0,
+                "threshold": 0.9958229019140045
+              },
+              {
+                "coverage": 0.25,
+                "risk": 0.0,
+                "threshold": 0.9877756248642217
+              },
+              {
+                "coverage": 0.3333333333333333,
+                "risk": 0.0,
+                "threshold": 0.9859335581183255
+              },
+              {
+                "coverage": 0.4166666666666667,
+                "risk": 0.19999999999999996,
+                "threshold": 0.9705573302188957
+              },
+              {
+                "coverage": 0.5,
+                "risk": 0.33333333333333337,
+                "threshold": 0.9190073184805566
+              },
+              {
+                "coverage": 0.5833333333333334,
+                "risk": 0.4285714285714286,
+                "threshold": 0.8889178066406072
+              },
+              {
+                "coverage": 0.6666666666666666,
+                "risk": 0.375,
+                "threshold": 0.8889178066406072
+              },
+              {
+                "coverage": 0.75,
+                "risk": 0.33333333333333337,
+                "threshold": 0.7338855774803832
+              },
+              {
+                "coverage": 0.8333333333333334,
+                "risk": 0.4,
+                "threshold": 0.7226821206932884
+              },
+              {
+                "coverage": 0.9166666666666666,
+                "risk": 0.36363636363636365,
+                "threshold": 0.6528196203319989
+              },
+              {
+                "coverage": 1.0,
+                "risk": 0.33333333333333337,
+                "threshold": 0.5956767921546896
+              }
+            ]
+          },
+          "status_counts": {
+            "ok": 12
+          },
+          "successful_count": 12,
+          "swap_consistency": {
+            "reason": "TASK-0009 student scope is single-answer correctness; pairwise records are excluded",
+            "status": "not_applicable"
+          },
+          "total_count": 12
+        }
+      },
+      "training_row_count": 72
+    }
+  },
+  "artifacts": [
+    "README.md",
+    "artifacts\\calibration.json",
+    "artifacts\\source_manifest.json",
+    "artifacts\\student_A.json",
+    "artifacts\\student_B.json",
+    "artifacts\\student_C.json",
+    "artifacts\\student_D.json",
+    "artifacts\\training_records_A.jsonl",
+    "artifacts\\training_records_B.jsonl",
+    "artifacts\\training_records_C.jsonl",
+    "artifacts\\training_records_D.jsonl",
+    "experiment.yaml",
+    "manifest.json",
+    "predictions.jsonl",
+    "report.md",
+    "results.json"
+  ],
+  "calibration": {
+    "artifact": {
+      "class_order": [
+        "pass",
+        "fail"
+      ],
+      "code_version": "task-0009-temperature-v1",
+      "fit_split": "calibration",
+      "input_semantics": "class probabilities; p_calibrated = softmax(log(p) / temperature)",
+      "method": "temperature",
+      "parameters": {
+        "temperature": 0.07059871330083402
+      }
+    },
+    "method": "temperature",
+    "selected_arm": "D",
+    "split": "calibration"
+  },
+  "code_commit": "1254558a3f7e3c9f752d9a68875785102ed9e719",
+  "context_limit": 4096,
+  "created_at": "2026-09-20T20:11:10.009602+00:00",
+  "dataset": {
+    "fingerprint": "1145a1c07f233a311148ff6b54f098a6f1d529ed0f49cbe343b3c017cc467a72",
+    "hard_negative_fingerprint": "7a19f05c9068a62cef6eb79ae97b8b7b780dc2275edc326e4461e41abb9e6a51",
+    "name": "eval-lab-synthetic-objective-v1-plus-exp007-verified-hard-negatives",
+    "rubric_paraphrase_fingerprint": "f9b3ec67d20dcede02929c45941e2d932d8b76dfbe4654fafc7f56ee2a79fdb8",
+    "split_policy": "synthetic source-family split; only train rows fit arms; calibration split fits E; test labels are evaluation-only",
+    "synthetic_fixture_fingerprint": "03cd497da246c641f84a89fd74380e1f340c327eab7850e0476b8379a7a1052c",
+    "version": "task-0009-v1"
+  },
+  "gold": {
+    "provenance_policy": "objective deterministic verifier only; teacher text remains augmentation metadata"
+  },
+  "hypothesis": "Verified hard negatives and concise rubric criteria improve a compact student judge without test leakage; temperature scaling reduces held-out calibration NLL.",
+  "id": "EXP-20260920-008-small-judge-training",
+  "judge": {
+    "adapter_version": "task-0009-single-correctness-v1",
+    "model": "tfidf-logistic-v1",
+    "prompt_version": "task-0009-text-render-v1",
+    "provider": "local",
+    "scope": "single-answer correctness; pairwise is not applicable"
+  },
+  "metrics": [
+    "accuracy",
+    "balanced_accuracy",
+    "macro_f1",
+    "brier",
+    "nll",
+    "ece",
+    "risk_coverage",
+    "latency"
+  ],
+  "notes": "No test source was used in fitting, arm selection, or calibration. Test metrics are reported after the preregistered protocol was frozen.",
+  "rubric": {
+    "version": "objective-correctness-v1"
+  },
+  "seed": 20260920,
+  "status": "completed"
+}

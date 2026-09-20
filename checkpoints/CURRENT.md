@@ -25,7 +25,7 @@ Continue with TASK-0009 as the next implementation gate.
 
 ## Next task
 
-TASK-0008 — Verified Teacher Hard Negatives (#13)
+TASK-0009 — Small Judge Training and Calibration Pilot (#14)
 
 ## Queued foundation
 
@@ -38,6 +38,39 @@ TASK-0008 — Verified Teacher Hard Negatives (#13)
 
 - TASK-0007 — External Judge and Teacher Bakeoff (#12)
 - TASK-0008 — Verified Teacher Hard Negatives (#13)
+- TASK-0009 — Small Judge Training and Calibration Pilot (#14)
+
+### 2026-09-20 — TASK-0009 start
+
+TASK-0008 is merged in PR #23 at `bce665e8601686a860d14c4ed5671b33afa660ef`. TASK-0009 is active in `D:/claude/eval-lab-TASK-0009` on branch `task/TASK-0009-small-judge-training`.
+
+Scope is frozen to a compact TF-IDF plus logistic-regression single-answer correctness student. The pilot will run objective-only, criterion-augmentation, verified-hard-negative, and combined training arms; select from dev metrics; fit post-hoc temperature calibration on calibration records only; and keep test/OOD labels frozen until the final run.
+
+Planned files: `src/eval_lab/training.py`, `scripts/run_small_judge_training.py`, `tests/test_training.py`, EXP-008 artifacts, the task log, and this checkpoint log.
+
+Next atomic action: commit the completed EXP-008 evidence and checkpoint, push TASK-0009, and open its review PR. Do not begin a dependent task before TASK-0009 is accepted and merged.
+
+### 2026-09-20 — TASK-0009 local completion
+
+EXP-008 completed after its pre-registration freeze. The compact TF-IDF plus logistic-regression student ran arms A-D; arm D was selected on dev NLL/accuracy only, and arm E was calibrated on six calibration records only. The frozen test slice contains 12 records across 4 source families; arm D reached `0.6667` accuracy and `0.6250` balanced accuracy. Calibration and its small-sample regression are retained in the report.
+
+Local gate: `python scripts/check_repo_contract.py` -> `Repository contract OK`; `ruff check .` -> `All checks passed!`; `PYTHONPATH=src python -m pytest -q` -> `64 passed in 5.43s`. No credentials, `.env` files, model weights, or caches were committed.
+
+Files changed: `src/eval_lab/training.py`, `scripts/run_small_judge_training.py`, `tests/test_training.py`, EXP-008 artifacts, TASK-0009 log, and this checkpoint log. No source-family leakage was detected; test labels were not used in fitting, selection, or calibration.
+
+Next atomic action: commit the final TASK-0009 checkpoint, push the branch, open its review PR, and wait for acceptance/merge before any dependent task.
+
+### 2026-09-20 — TASK-0009 review handoff
+
+TASK-0009 is pushed in PR [#24](https://github.com/Pukujan/Eval-lab/pull/24) at commit `1924c0ef8d16e23366067f547ec6001ca5339932`. Local validation is green: contract `OK`, Ruff clean, `64 passed in 4.35s`, and `git diff --check` clean. CI runs `35534868582` and `35534871113` failed before workflow steps because the account Actions budget prevented use; 3.12 matrix jobs were cancelled. No repository CI result was produced.
+
+Next atomic action: merge PR #24, record its merge checkpoint, fast-forward the original `main` checkout, and push that checkpoint. Do not begin a dependent task.
+
+### 2026-09-20 — TASK-0009 implementation and EXP-008 pre-registration
+
+The compact TF-IDF plus logistic-regression student, leakage-safe arm builder, JSON artifacts, metrics runner, and unit tests are implemented. EXP-008 pre-registration is frozen at `experiments/EXP-20260920-008-small-judge-training/` with code commit `2e3e244eeb856f7cfce2d4047f8357f0b19d1c91`; no final test evaluation occurred before the freeze. Targeted tests pass: `4 passed in 4.84s`.
+
+Next atomic action: execute EXP-008 after the pre-registration commit, then run the full local merge gate and record results before review.
 - TASK-0009 — Small Judge Training Pilot (#14)
 
 ## External conditions
@@ -48,7 +81,7 @@ GitHub Actions runner scheduling remains infrastructure-only until runners are a
 
 ## Next atomic action
 
-TASK-0008 is ready for review in dedicated worktree D:/claude/eval-lab-TASK-0008 on branch task/TASK-0008-teacher-hard-negatives, starting from accepted main 00baf7c.
+TASK-0009 is ready for review in dedicated worktree D:/claude/eval-lab-TASK-0009 on branch task/TASK-0009-small-judge-training, starting from merged TASK-0008 main bce665e8.
 
 ### 2026-09-20 — PR #15 contract validation
 
