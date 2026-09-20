@@ -1,24 +1,32 @@
 id: EXP-20260920-009-selective-escalation
-status: planned
+status: frozen
 hypothesis: >
   Calibrated confidence from the frozen TASK-0009 student identifies a lower-risk
   subset that can be handled locally, reducing external-model usage under selective
   escalation relative to strong-judge-only operation.
 created_at: 2026-09-20
-code_commit: null
+code_commit: 1aace02f6e5b7e9f1b0403c6ffbfe7b2ce27dbd6
 seed: 20260920
 context_limit: 4096
 benchmark:
   name: EvalLab-Select
   version: 0.1.0
-  fingerprint: null
+  fingerprint: 18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5
 dataset:
   sources:
     - synthetic-objective
     - allenai/ai2_arc:ARC-Challenge
   split_policy: >
-    Threshold selection uses only non-final records. Final evaluation labels remain
-    frozen until thresholds, provider arms, and typed specification are frozen.
+    Threshold selection uses only the 2,863 threshold-selection records from 1,427
+    source families. Final evaluation uses 2,356 records from 1,176 disjoint source
+    families. TASK-0009 training source families are excluded from threshold selection.
+  source_revisions:
+    allenai/ai2_arc: 210d026faf9955653af8916fad021475a3f00453
+  source_problem_ids: benchmark/eval-lab-select-v0.1.0/source-manifest.json
+  partitions: benchmark/eval-lab-select-v0.1.0/splits.json
+  benchmark_checksums: benchmark/eval-lab-select-v0.1.0/checksums.sha256
+  canonicalization_version: eval-lab-select-single-v1
+  fingerprint_method: SHA-256 of canonical records, source manifest, split manifest, and canonicalization version
 student:
   source_task: TASK-0009
   model_family: tfidf-logistic-regression
@@ -41,6 +49,17 @@ policies:
   - calibrated_local_to_qwen_flash
   - system_one_differential
 target_error_rates: [0.01, 0.02, 0.05, 0.10]
+confidence:
+  primary: maximum calibrated class probability
+  secondary: top-two probability margin
+  calibration_artifact: experiments/EXP-20260920-008-small-judge-training/artifacts/calibration.json
+  selection_labels: threshold_selection only
+typed_system_one:
+  spec_id: eval-lab-system-one
+  spec_version: 0.1.0
+  legal_single_labels: [pass, fail]
+  legal_pairwise_labels: [A, B, TIE]
+  context_limit: 4096
 statistical_reporting:
   confidence_level: 0.95
   low_error_claim_rule: upper-bound-must-meet-target
@@ -57,5 +76,9 @@ artifacts:
   report: report.md
   provenance: provenance.ttl
   crate: ro-crate-metadata.json
+  provider_pinned: provider-pinned.jsonl
+  provider_rolling: provider-rolling.jsonl
+  provider_qwen: provider-qwen.jsonl
+  differential: differential.json
 notes:
   - Final thresholds and fingerprints must be committed before final evaluation.

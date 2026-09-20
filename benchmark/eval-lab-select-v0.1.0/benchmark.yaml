@@ -18,7 +18,7 @@ split_manifest: splits.json
 source_revisions:
   arc: 210d026faf9955653af8916fad021475a3f00453
 seed: 20260920
-build_code_commit: 5ece1ee860fe1aa3f50e6bff5595fadb476a39cf
+build_code_commit: 1aace02f6e5b7e9f1b0403c6ffbfe7b2ce27dbd6
 research_metadata:
   ro_crate: '1.3'
   provenance: PROV-O
