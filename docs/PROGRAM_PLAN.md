@@ -1,128 +1,122 @@
-# V0 Program Plan — TASK-0002 through TASK-0006
+# Eval Lab Program Plan — TASK-0002 through TASK-0009
 
 ## Purpose
 
-This document is the execution map for the next five tasks. Each task has its own authoritative task file. This file defines ordering, gates, and what may proceed when external services are unavailable.
+Build the measurement foundation first, then fully utilize the user's existing model subscriptions/resources for a controlled external-model bakeoff, verified teacher augmentation, and a small-judge training pilot.
 
-## Dependency graph
+## Sequence
 
-~~~
-TASK-0001 complete
-      |
-      v
-TASK-0002 canonical schema + fixtures
-      |
-      +-------------------+
-      |                   |
-      v                   v
-TASK-0003 Jev         TASK-0004 metrics/calibration
-      |                   |
-      +---------+---------+
-                |
-                v
-TASK-0005 ARC-Challenge adapter
-                |
-                v
-TASK-0006 lightweight local judge
-~~~
+1. TASK-0002 — canonical schema + deterministic fixtures.
+2. TASK-0003 — Jev Free objective baseline.
+3. TASK-0004 — metrics, calibration, and selective-risk analysis.
+4. TASK-0005 — ARC-Challenge public benchmark adapter.
+5. TASK-0006 — lightweight local judge baseline.
+6. TASK-0007 — external judge and teacher bakeoff.
+7. TASK-0008 — verified teacher-assisted hard negatives.
+8. TASK-0009 — small-judge training and calibration pilot.
 
-Operationally Luna should execute 0002 -> 0003 -> 0004 -> 0005 -> 0006.
+If Jev remains rate-limited, TASK-0003 may close implementation-complete/provider-blocked after local/mock contract tests pass. Later tasks continue.
 
-If Jev is still rate-limited, TASK-0003 may close as implementation-complete/provider-blocked after all mocked and local contract tests pass. TASK-0004 continues using deterministic fixture predictions.
+## Program invariants
 
-## Program-level invariants
-
-- Objective gold is never derived solely from an LLM judgment.
-- Variants sharing a source_problem_id never cross split boundaries.
+- Objective gold never comes solely from an LLM judgment.
+- Variants sharing one source_problem_id never cross split boundaries.
 - Calibration fit never consumes test labels.
-- A/B order perturbation must invert A/B gold and preserve TIE.
-- Provider failure is not scored as a wrong answer.
-- Every prediction identifies model/provider/prompt version and execution status.
-- Every public dataset run records source revision, license, and fingerprint.
-- Every local-model run records exact model revision when available, runtime, device, dtype/quantization, and context cap.
-- Completed experiment directories are immutable.
+- Provider failure is distinct from a wrong answer.
+- Every prediction records provider, model, protocol/access path, and execution status.
+- Subscription-covered resources should be used when relevant and technically available.
+- A subscription/free failure must not silently fall back to a separately metered endpoint.
+- Teacher identity remains separate from gold provenance.
+- Teacher-generated objective examples require independent re-verification.
+- Completed experiments are immutable.
 
 ## TASK-0002 — Canonical schema and deterministic fixtures
 
-Outcome: the lab has a stable internal language for source problems, rubrics, candidates, gold labels, predictions, and split provenance.
+Implement the stable SourceRecord/JudgeRecord/GoldLabel/JudgePrediction contracts, deterministic split policy, provenance rules, and four synthetic objective domains.
 
-Required artifacts:
-- `src/eval_lab/schema.py`
-- `src/eval_lab/datasets/synthetic.py`
-- `src/eval_lab/verifiers/`
-- deterministic fixture export command
-- tests for schema and scientific invariants
+## TASK-0003 — Jev Free objective baseline
 
-No network/provider calls.
+Required model id: `jev-1.13-free`.
 
-## TASK-0003 — Jev objective baseline runner
+Required protocols:
+- `jev-direct-v1`
+- `jev-atomic-v1`
 
-Outcome: Jev can consume canonical judge records and return normalized single/pairwise predictions with probabilities and execution status.
-
-Required protocol versions:
-- `jev-direct-v1`: direct single or pairwise classification
-- `jev-atomic-v1`: criterion-level typed questions with deterministic aggregation
-
-A 429/Retry-After response is recorded as rate_limited and does not become a prediction.
+Do not automatically fall back to `jev-1.13`.
 
 ## TASK-0004 — Metrics and calibration
 
-Outcome: frozen predictions can be evaluated and calibrated using separate calibration/test splits.
+Implement accuracy, balanced accuracy, macro F1, Brier, NLL, ECE, A/B swap consistency, risk/coverage, target-error coverage, latency summaries, and post-hoc calibration. Fit calibration only on the calibration split.
 
-Required metrics:
-- accuracy
-- balanced accuracy
-- macro F1
-- Brier
-- NLL
-- ECE
-- A/B swap consistency
-- risk/coverage
-- coverage at target error rates
-- latency summary
+## TASK-0005 — ARC-Challenge
 
-Required calibration:
-- scalar temperature scaling for multiclass score/probability vectors
-- binary Platt/logistic scaling where applicable
-- isotonic regression as optional non-parametric method when sample size is sufficient
-
-## TASK-0005 — First public benchmark
-
-Selected v0 benchmark: `allenai/ai2_arc`, config `ARC-Challenge`.
-
-Reason:
-- objective answer keys
-- short contexts
-- multiple-choice format maps cleanly to judge records
-- manageable local size
-- published dataset license is CC BY-SA 4.0
-
-The adapter must record the exact resolved source revision and a deterministic fingerprint. Do not silently rely on whatever "latest" happens to be in a future run.
+Use `allenai/ai2_arc`, config `ARC-Challenge`. Record exact source revision, license, canonicalization version, split policy, and fingerprint.
 
 ## TASK-0006 — Lightweight local judge
 
-Required baseline ladder:
+Run the smallest viable local baseline first:
+1. Qwen3-0.6B
+2. Qwen3-1.7B if feasible
+3. Qwen3-4B optional
 
-1. Qwen/Qwen3-0.6B — required first feasibility target.
-2. Qwen/Qwen3-1.7B — preferred additional baseline if the machine is comfortable.
-3. Qwen/Qwen3-4B — optional stretch only.
+Prefer forced-choice scoring with normalized probabilities when available.
 
-Do not fail TASK-0006 merely because 4B is too large.
+## TASK-0007 — External judge and teacher bakeoff
 
-The judge should use forced-choice scoring where practical:
-- PASS vs FAIL for binary tasks
-- A vs B vs TIE for pairwise tasks
+Fully exercise the user's existing model access on the same frozen objective records.
 
-Normalize exact-label continuation log-likelihoods with softmax to obtain probabilities. If a runtime cannot expose scores, record probability support as unavailable rather than inventing confidence.
+Required/expected arms when available:
+- Jev Free: `jev-1.13-free`
+- YOLO-Auto Qwen3.8 Flash:
+  - base URL `https://yolo-auto.com/v1`
+  - model `qwen3.8-flash`
+  - local key via `YOLO_AUTO_API_KEY`
+- SuperGrok through supported subscription OAuth/OpenCode integration, exact surfaced model recorded
+- OpenCode free general models, preferably `nemotron-3.5-lightning-free` and `mimo-v2.5-free`
+- local Qwen from TASK-0006
+- ChatGPT Luna and Sol as reproducible audit/teacher batch arms
 
-## End-of-program output
+TASK-0007 produces a model/access census, prediction coverage table, provider-failure summary, and comparison report.
 
-The first v0 comparison report should contain at minimum:
+## TASK-0008 — Verified teacher-assisted hard negatives
 
-| system | dataset | accuracy | Brier | ECE | swap consistency | coverage @ <=2% error | latency |
-| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Jev direct | synthetic/ARC | ... | ... | ... | ... | ... | ... |
-| Jev atomic | synthetic/ARC | ... | ... | ... | ... | ... | ... |
-| local Qwen | synthetic/ARC | ... | ... | ... | ... | ... | ... |
+Use:
+- YOLO-Auto Qwen3.8 Flash for bulk structured generation/critique
+- SuperGrok for adversarial cases and failure analysis
+- Luna for larger audit/triage batches
+- Sol for the hardest disagreements and research audit
+- selected OpenCode free models for diversity where useful
 
-Unavailable values must be marked unavailable, not filled with guessed numbers.
+Generate subtle wrong answers, reasoning traps, requirement omissions, formatting failures, verbosity traps, rubric paraphrases, and A/B adversaries.
+
+Every accepted objective example must be independently re-verified by deterministic verifier, answer key, structured constraint, or executable test.
+
+## TASK-0009 — Small-judge training and calibration pilot
+
+Student selection is evidence-gated from prior tasks:
+- Qwen3-0.6B
+- Qwen3-1.7B
+- compact encoder classifier such as ModernBERT
+
+Required ablations:
+A. objective labels only
+B. objective labels + teacher criterion critiques
+C. objective labels + verified hard negatives
+D. objective labels + critiques + verified hard negatives
+E. best arm + post-hoc calibration
+
+Use source-family-separated train/dev/calibration/test sets and untouched OOD/meta-evaluation.
+
+## Final program output
+
+Report every successfully exercised system on frozen objective records, including:
+- access path
+- execution coverage/failure rate
+- accuracy
+- Brier/NLL/ECE when probabilities exist
+- swap consistency
+- selective-risk coverage
+- latency
+- resource/cost metadata where available
+
+Unavailable/blocked values are marked explicitly, never guessed.
