@@ -1,111 +1,102 @@
-# Luna Local Program Handoff — TASK-0002 through TASK-0006
+# Luna Local Program Handoff — TASK-0002 through TASK-0009
 
 ## Mission
 
-Complete the authorized v0 program from TASK-0002 through TASK-0006 while using Git as the shared memory between agents.
+Complete the Eval Lab program while fully utilizing the user's existing subscription/free model access where each task calls for it. Git is authoritative state.
 
-Do not use old repository history as context. Do not redesign the research question unless a separate design-change task is created.
-
-## Read order at the start of each task
+## Read order
 
 1. `PROJECT.md`
 2. `AGENTS.md`
 3. `checkpoints/CURRENT.md`
-4. active `tasks/TASK-XXXX-*.md`
-5. only the linked design docs required by that task
+4. active task file
+5. `docs/ACCESS_MODEL_MATRIX.md`
+6. only the design sections linked by the active task
 
 ## Sequence
 
-Execute:
+Execute and merge sequentially:
+
 - TASK-0002
 - TASK-0003
 - TASK-0004
 - TASK-0005
 - TASK-0006
+- TASK-0007
+- TASK-0008
+- TASK-0009
 
-Each task gets a new branch/worktree from the latest accepted main. Do not pile all implementation into one worktree.
+TASK-0004 may proceed after TASK-0003 is implementation-complete even if live Jev is externally rate-limited.
 
-## Windows worktree pattern
+## Existing resource assumptions
 
-From the main checkout:
+### YOLO-Auto
 
-~~~powershell
-git fetch --all --prune
-git switch main
-git pull --ff-only
-git worktree add ..\eval-lab-TASK-0002 -b task/TASK-0002-canonical-schema-fixtures origin/main
-~~~
+The user states the API credential is already configured locally.
 
-For later tasks, substitute the correct task branch after the preceding task is merged.
+Authoritative Qwen3.8 Flash route:
+- base URL `https://yolo-auto.com/v1`
+- model `qwen3.8-flash`
+- environment variable `YOLO_AUTO_API_KEY`
 
-If the planning PR is not yet merged, do not start implementation from stale main. Use the accepted planning commit/branch only when explicitly instructed by the repository checkpoint.
+Do not redirect this work to Alibaba or OpenCode Zen by default.
+
+### SuperGrok
+
+Actively use the user's SuperGrok subscription through supported OAuth/OpenCode integration in TASK-0007 and TASK-0008. Discover and record the exact surfaced model id rather than assuming a version.
+
+### ChatGPT
+
+Use Luna and Sol actively in TASK-0007/TASK-0008 through reproducible audit-batch handoffs.
+
+Do not model ChatGPT subscription access as an OpenAI API.
+
+### Jev
+
+TASK-0003 uses exactly `jev-1.13-free`.
+
+No silent fallback to `jev-1.13`.
+
+### OpenCode free models
+
+Enumerate live free-model availability in TASK-0007 and run a bounded representative subset.
 
 ## Per-task loop
 
-1. Read task.
-2. Record starting commit/worktree in its checkpoint.
-3. Implement only allowed scope.
-4. Run the task-specific tests.
-5. Run the full local merge gate:
-   - repository contract
-   - Ruff
-   - pytest
-6. Update task checkpoint with exact results.
-7. Update `checkpoints/CURRENT.md`.
-8. Commit with `TASK-XXXX: <checkpoint>`.
-9. Push branch.
-10. Open/update PR.
-11. Do not start the dependent task until the previous task is accepted/merged, except TASK-0004 may continue after TASK-0003 is implementation-complete but provider-blocked.
+1. Update accepted main.
+2. Create one task branch/worktree.
+3. Record starting SHA/worktree.
+4. Implement only task scope.
+5. Run task-specific tests.
+6. Run full local merge gate.
+7. Update active task checkpoint and CURRENT.
+8. Commit/push/open PR.
+9. Merge before dependent work.
+
+## Subscription utilization rule
+
+Subscription-covered resources named by the active task should be exercised rather than left idle.
+
+Never:
+- expose credentials;
+- send private/unapproved data to free-trial endpoints;
+- silently replace a subscription/free route with a separately metered API route;
+- hide provider failures.
 
 ## CI condition
 
-GitHub-hosted CI is currently known to dispatch jobs without assigning a runner. Local validated evidence is authoritative until that account/runner issue is fixed.
+Until GitHub runners are restored, exact local validation remains authoritative merge evidence.
 
-Do not weaken tests to turn a red no-runner CI badge green.
+## End state
 
-## Jev condition
-
-The last live Jev attempt reached OpenCode but returned 429 FreeUsageLimitError.
-
-TASK-0003 must implement and test correct 429 handling.
-
-Do not wait for hours inside a task. If quota remains unavailable:
-- mock-test the full provider contract;
-- record rate_limited;
-- close TASK-0003 as implementation-complete/provider-blocked;
-- proceed to TASK-0004.
-
-## Public benchmark condition
-
-TASK-0005 uses ARC-Challenge first. Record the exact upstream revision and dataset fingerprint used locally.
-
-Do not commit large caches or downloaded model files.
-
-## Local model condition
-
-TASK-0006 starts with Qwen3-0.6B.
-
-Run a 20-record feasibility probe before the full evaluation slice.
-
-Only attempt Qwen3-1.7B after 0.6B works and resources are acceptable. Qwen3-4B is optional.
-
-If 0.6B cannot run, checkpoint the concrete failure before selecting any fallback.
-
-## No silent scope expansion
-
-The following require a new task, not opportunistic implementation:
-- model fine-tuning
-- teacher-data generation using Luna/Sol/Grok
-- new subjective benchmark domains
-- long-context evaluation
-- distributed/remote training
-- production deployment
-
-## End state after TASK-0006
-
-The repository should have enough evidence to decide the next research branch:
-- train a lightweight judge;
-- improve rubric decomposition;
-- add harder objective benchmarks;
-- test selective escalation;
-- compare Jev vs local judge at matched confidence/coverage.
+After TASK-0009 the repo should contain:
+- objective benchmark substrate
+- Jev Free baseline
+- local lightweight baseline
+- YOLO-Auto Qwen3.8 Flash results
+- OpenCode free-model results
+- SuperGrok subscription results where accessible
+- Luna/Sol audit artifacts
+- verified teacher-generated hard negatives
+- small-judge training ablations
+- calibrated held-out comparison report
