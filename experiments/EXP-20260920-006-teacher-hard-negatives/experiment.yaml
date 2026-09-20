@@ -1,8 +1,8 @@
-id: EXP-20260920-005-teacher-hard-negatives
+id: EXP-20260920-006-teacher-hard-negatives
 status: planned
 hypothesis: Structured teacher proposals can add difficult incorrect candidates while deterministic verification preserves objective truth and source-family split discipline.
 created_at: '2026-09-20T19:30:00Z'
-code_commit: 8e2f1d7c3f96bb4a12ecc5575bb11261acb94ae0
+code_commit: 824fdd3f7dd2add50db293cb14736425f5cc5eb1
 seed: 20260920
 context_limit: 4096
 dataset:
@@ -38,4 +38,4 @@ artifacts:
   - teacher_disagreement_summary.json
   - results.json
   - report.md
-notes: Final generation uses one-record Sol audit requests and is bounded to 20 non-test synthetic sources. Each source receives one structured YOLO request and is independently verified before acceptance.
+notes: Final generation uses explicit object-shaped single-record Sol audit requests and is bounded to 20 non-test synthetic sources. Each source receives one structured YOLO request and is independently verified before acceptance.

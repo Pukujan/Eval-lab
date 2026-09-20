@@ -85,3 +85,10 @@ Next atomic action: commit EXP-004 evidence and EXP-005 pre-registration, then r
 ## Handoff
 
 TASK-0009 trains controlled student ablations on the verified corpus.
+
+
+### 2026-09-20 — EXP-006 audit protocol follow-up
+
+The first EXP-004 run was preserved with 18 verified hard negatives and a completed Luna audit. A follow-up attempt using one-record Sol requests still returned an incomplete batch, so those uncommitted outputs were discarded rather than presented as complete. EXP-20260920-006 now freezes an explicit object-shaped single-record Sol request contract before the next run.
+
+Next atomic action: commit the EXP-006 pre-registration and run the final append-only teacher/audit experiment.
