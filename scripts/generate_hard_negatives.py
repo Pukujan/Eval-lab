@@ -260,11 +260,17 @@ def _run_opencode_audit(model: str, batch: list[dict[str, Any]], *, timeout: flo
         for item in batch
     ]
     if len(compact) == 1:
+        case = compact[0]
         prompt = (
             "You are auditing one objective judge case. Do not create an answer key. "
-            "Return exactly one JSON object that copies the record_id and contains assessment "
-            "(keep_for_review, likely_error, or ambiguous) and concise review_notes.\n\n"
-            + json.dumps(compact[0], sort_keys=True)
+            "Return exactly one JSON object and no explanation. The record_id value must be copied exactly. "
+            "assessment must be keep_for_review, likely_error, or ambiguous.\n"
+            f"record_id: {case['record_id']}\n"
+            f"question: {case['prompt']}\n"
+            f"candidate_a: {case['candidate_a']}\n"
+            f"candidate_b: {case['candidate_b']}\n"
+            f"local_label: {case['local_label']}\n"
+            'Output shape: {"record_id":"THE_ID","assessment":"ambiguous","review_notes":"brief note"}'
         )
     else:
         prompt = (
