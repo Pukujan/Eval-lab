@@ -40,3 +40,18 @@ Stop and checkpoint before proceeding if:
 - public dataset revision cannot be identified;
 - different systems are being compared on different record IDs without an explicitly named missingness analysis;
 - secrets appear in logs/artifacts.
+
+## TASK-0010 research-release gate
+
+| Gate | Required evidence | Blocks completion? |
+| --- | --- | --- |
+| Routing core | unit + leakage + deterministic routing tests | yes |
+| Metamorphic/differential | all offline M/D invariants green | yes |
+| Jev pinned arm | pinned model identity + normalized live/mock evidence | yes unless provider externally unavailable and explicitly scoped |
+| Statistical adequacy | counts + uncertainty for low-error claims | yes for confidence-supported claims |
+| Benchmark | deterministic rebuild + source manifest + SHA-256 | yes |
+| Provenance | RO-Crate + PROV graph + SHACL validation | yes |
+| Paper | generated result tables + reproducibility/limitations sections | yes |
+| Citation metadata | valid CFF; DataCite-compatible metadata captured | yes |
+
+TASK-0010 cannot complete with a paper whose headline numbers are not traceable to committed result artifacts.
