@@ -103,7 +103,9 @@ class SourceRecord(CanonicalModel):
     @model_validator(mode="before")
     @classmethod
     def accept_stable_id_aliases(cls, data: Any) -> Any:
-        return _copy_alias(data, "source_id", "id", "stable_id")
+        data = _copy_alias(data, "source_id", "id", "stable_id")
+        data = _copy_alias(data, "reference_answer", "reference", "answer_key", "reference_data")
+        return _copy_alias(data, "source_metadata", "metadata")
 
     @property
     def stable_id(self) -> str:
@@ -202,9 +204,12 @@ class JudgePrediction(CanonicalModel):
     @classmethod
     def accept_prediction_aliases(cls, data: Any) -> Any:
         data = _copy_alias(data, "record_id", "id", "stable_id")
+        data = _copy_alias(data, "judge_id", "model_id", "model")
         data = _copy_alias(data, "protocol_version", "prompt_version")
         data = _copy_alias(data, "probabilities", "probability_map")
-        return data
+        data = _copy_alias(data, "execution_status", "status")
+        data = _copy_alias(data, "latency_ms", "latency")
+        return _copy_alias(data, "provider_metadata", "runtime_metadata")
 
     @field_validator("probabilities", mode="before")
     @classmethod

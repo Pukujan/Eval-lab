@@ -1,6 +1,6 @@
 # TASK-0002 — Canonical Schema and Objective Fixtures
 
-- Status: active
+- Status: ready for review
 - Owner: Codex/local agent
 - Priority: P0
 - GitHub issue: #6
@@ -81,15 +81,15 @@ No network access.
 
 ## Acceptance criteria
 
-- [ ] all schema concepts implemented
-- [ ] fixed-seed generation deterministic
-- [ ] four required domains represented
-- [ ] >=24 sources, >=72 single records, >=48 pairwise records
-- [ ] no source_problem_id crosses splits
-- [ ] gold provenance round-trips through JSON
-- [ ] A/B swap transformation correct
-- [ ] invalid probability vectors rejected
-- [ ] full local merge gate passes
+- [x] all schema concepts implemented
+- [x] fixed-seed generation deterministic
+- [x] four required domains represented
+- [x] >=24 sources, >=72 single records, >=48 pairwise records
+- [x] no source_problem_id crosses splits
+- [x] gold provenance round-trips through JSON
+- [x] A/B swap transformation correct
+- [x] invalid probability vectors rejected
+- [x] full local merge gate passes
 
 ## Validation
 
@@ -166,6 +166,41 @@ Commands and results from this pre-PR15 checkpoint:
 Decision: preserve this coherent implementation checkpoint, then rebase it onto the newly accepted PR #15 `main` before final TASK-0002 validation. No provider calls or later-task functionality were added.
 
 Next atomic action: fast-forward local `main` to PR #15 merge commit `de294e10eb10e926c8ed18e7ffeba893ff7c1cf5`, rebase this task branch, and rerun the full local merge gate.
+
+### 2026-09-20 — final TASK-0002 acceptance checkpoint
+
+Completed:
+- rebased the implementation onto PR #15's accepted `main` merge commit `de294e10eb10e926c8ed18e7ffeba893ff7c1cf5`;
+- added semantic aliases at the schema boundary without changing canonical field serialization;
+- verified mapping and sequence forms of the deterministic split policy;
+- confirmed generated fixture output is not committed and no network/provider calls are used.
+
+Files changed for TASK-0002:
+- `src/eval_lab/schema.py`
+- `src/eval_lab/datasets/__init__.py`
+- `src/eval_lab/datasets/synthetic.py`
+- `src/eval_lab/verifiers/__init__.py`
+- `src/eval_lab/verifiers/arithmetic.py`
+- `src/eval_lab/verifiers/multiple_choice.py`
+- `src/eval_lab/verifiers/structured.py`
+- `src/eval_lab/verifiers/code_output.py`
+- `scripts/generate_fixtures.py`
+- `tests/test_schema.py`
+- `tests/test_synthetic.py`
+- `tests/test_verifiers.py`
+- this task file and `checkpoints/CURRENT.md`
+
+Exact final commands and results on the rebased branch:
+- `.venv\Scripts\python.exe scripts/check_repo_contract.py` -> `Repository contract OK`.
+- `.venv\Scripts\ruff.exe check .` -> `All checks passed!`.
+- `.venv\Scripts\python.exe -m pytest -q` -> `29 passed in 1.99s`.
+- `.venv\Scripts\python.exe scripts/generate_fixtures.py --seed 20260920 --split-seed 20260920 --output data/synthetic-fixtures.json` -> 24 sources, 120 records, 72 single, 48 pairwise; fingerprint `03cd497da246c641f84a89fd74380e1f340c327eab7850e0476b8379a7a1052c`; generated file removed after verification.
+
+Decisions: objective gold is produced only by deterministic verifier modules; source variants inherit one hash-based split; pairwise swaps invert A/B while preserving TIE; provider-specific fields remain outside the canonical gold record.
+
+Blockers: no TASK-0002 implementation blocker remains. GitHub Actions may still fail before runner assignment, so local evidence remains authoritative under the program contract.
+
+Next atomic action: commit and push this checkpoint, open the TASK-0002 PR, and wait for its acceptance/merge before starting TASK-0003.
 
 ## Handoff
 

@@ -70,4 +70,6 @@ Decision: PR #15 is accepted and merged at `de294e10eb10e926c8ed18e7ffeba893ff7c
 
 TASK-0002 implementation was checkpointed in commit `7f89439` before PR #15 was merged, then rebased onto the accepted main. Its pre-rebase local gate recorded `Repository contract OK`, `All checks passed!`, and `27 passed in 1.25s`; the deterministic export produced 24 sources and 120 records (72 single, 48 pairwise) with fingerprint `03cd497da246c641f84a89fd74380e1f340c327eab7850e0476b8379a7a1052c`.
 
-Next atomic action: rerun the full TASK-0002 gate on the rebased branch, then complete acceptance evidence and open the TASK-0002 PR.
+TASK-0002 final local acceptance is green: repository contract `OK`, Ruff clean, and `29 passed`. The deterministic export reproduced 24 sources and 120 records (72 single, 48 pairwise) with fingerprint `03cd497da246c641f84a89fd74380e1f340c327eab7850e0476b8379a7a1052c`.
+
+Next atomic action: commit and push TASK-0002, open its PR, and do not start TASK-0003 until TASK-0002 is accepted/merged.

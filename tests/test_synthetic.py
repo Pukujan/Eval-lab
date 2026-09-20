@@ -5,7 +5,7 @@ from eval_lab.datasets.synthetic import (
     generate_synthetic_fixtures,
     serialize_fixture,
 )
-from eval_lab.schema import JudgmentMode, PairwiseLabel, swap_pairwise_record
+from eval_lab.schema import JudgmentMode, PairwiseLabel, Split, swap_pairwise_record
 
 
 def test_fixture_counts_domains_and_split_inheritance() -> None:
@@ -35,6 +35,7 @@ def test_split_assignment_is_fixed_by_source_id_and_seed() -> None:
     changed_seed = [assign_split(f"source-{i}", seed=7) for i in range(20)]
     assert first == second
     assert first != changed_seed
+    assert assign_split("source-mapped", policy={"train": 1.0}) is Split.TRAIN
 
 
 def test_fixture_serialization_is_byte_stable_for_fixed_seed() -> None:

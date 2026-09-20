@@ -112,3 +112,27 @@ def test_gold_provenance_serialization_round_trip() -> None:
 
     gold = _gold(PairwiseLabel.TIE.value)
     assert GoldLabel.model_validate_json(gold.model_dump_json()) == gold
+
+
+def test_schema_accepts_semantic_aliases_for_provider_metadata() -> None:
+    source = SourceRecord(
+        id="source-2",
+        domain="structured",
+        source_dataset="test",
+        source_problem_id="problem-2",
+        split="test",
+        prompt="Return JSON.",
+        reference={"ok": True},
+        metadata={"verifier": "structured-output-v1"},
+    )
+    prediction = JudgePrediction(
+        id="record-2",
+        model_id="judge-2",
+        prompt_version="test-v1",
+        label="pass",
+        status="rate_limited",
+        runtime_metadata={"provider": "test"},
+    )
+    assert source.reference_answer == {"ok": True}
+    assert prediction.judge_id == "judge-2"
+    assert prediction.execution_status is ExecutionStatus.RATE_LIMITED

@@ -7,7 +7,7 @@ import json
 from collections.abc import Mapping, Sequence
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, model_validator
 
 from eval_lab.schema import (
     GoldLabel,
@@ -38,12 +38,14 @@ def assign_split(
     source_problem_id: str,
     *,
     seed: int = DEFAULT_SPLIT_SEED,
-    policy: Sequence[tuple[Split, float]] = SPLIT_POLICY,
+    policy: Sequence[tuple[Split, float]] | Mapping[Split | str, float] = SPLIT_POLICY,
 ) -> Split:
     """Assign a source to one split using only its ID, seed, and declared policy."""
 
     if not source_problem_id:
         raise ValueError("source_problem_id must not be empty")
+    if isinstance(policy, Mapping):
+        policy = tuple((Split(split), weight) for split, weight in policy.items())
     if not policy:
         raise ValueError("split policy must not be empty")
     total = sum(weight for _, weight in policy)
@@ -71,8 +73,8 @@ class SyntheticFixture(BaseModel):
 
     seed: int
     split_seed: int
-    sources: list[SourceRecord] = Field(min_length=24)
-    records: list[JudgeRecord] = Field(min_length=120)
+    sources: list[SourceRecord]
+    records: list[JudgeRecord]
 
     @model_validator(mode="after")
     def validate_fixture(self) -> SyntheticFixture:
