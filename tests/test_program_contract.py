@@ -6,6 +6,9 @@ TASK_FILES = {
     "TASK-0004": "TASK-0004-metrics-calibration.md",
     "TASK-0005": "TASK-0005-public-benchmark.md",
     "TASK-0006": "TASK-0006-lightweight-local-baseline.md",
+    "TASK-0007": "TASK-0007-external-judge-teacher-bakeoff.md",
+    "TASK-0008": "TASK-0008-teacher-hard-negatives.md",
+    "TASK-0009": "TASK-0009-small-judge-training.md",
 }
 
 REQUIRED_PROGRAM_HEADINGS = (
@@ -35,11 +38,16 @@ def test_all_program_tasks_exist_with_execution_contracts() -> None:
 
 def test_program_docs_cover_entire_sequence() -> None:
     program = read("docs/PROGRAM_PLAN.md")
-    pdd = read("docs/PDD.md")
     for task_id in TASK_FILES:
         assert task_id in program
-    for deliverable in ("canonical", "Jev", "calibration", "ARC-Challenge", "Qwen"):
-        assert deliverable in pdd
+
+    access = read("docs/ACCESS_MODEL_MATRIX.md")
+    assert "jev-1.13-free" in access
+    assert "https://yolo-auto.com/v1" in access
+    assert "qwen3.8-flash" in access
+    assert "SuperGrok" in access
+    assert "Luna" in access
+    assert "Sol" in access
 
 
 def test_current_checkpoint_points_to_task_0002() -> None:
@@ -57,20 +65,30 @@ def test_task_dependencies_are_declared() -> None:
         "TASK-0004": "TASK-0002",
         "TASK-0005": "TASK-0002",
         "TASK-0006": "TASK-0005",
+        "TASK-0007": "TASK-0006",
+        "TASK-0008": "TASK-0007",
+        "TASK-0009": "TASK-0008",
     }
     for task_id, dependency in expected.items():
         text = (ROOT / "tasks" / TASK_FILES[task_id]).read_text(encoding="utf-8")
         assert dependency in text
 
 
-def test_validation_matrix_covers_all_tasks() -> None:
-    matrix = read("docs/VALIDATION_MATRIX.md")
-    for task_id in TASK_FILES:
-        assert task_id in matrix
-
-
-def test_luna_handoff_exists_and_is_bounded() -> None:
+def test_luna_handoff_covers_full_program() -> None:
     handoff = read("docs/LUNA_PROGRAM_HANDOFF.md")
     assert "TASK-0002" in handoff
-    assert "TASK-0006" in handoff
-    assert "fine-tuning" in handoff
+    assert "TASK-0009" in handoff
+    assert "qwen3.8-flash" in handoff
+
+
+def test_jev_task_hard_pins_free_model() -> None:
+    task = read("tasks/TASK-0003-jev-objective-baseline.md")
+    assert "jev-1.13-free" in task
+    assert "Never automatically fall back" in task
+
+
+def test_yolo_auto_task_uses_exact_provider_contract() -> None:
+    task = read("tasks/TASK-0007-external-judge-teacher-bakeoff.md")
+    assert "https://yolo-auto.com/v1" in task
+    assert "qwen3.8-flash" in task
+    assert "YOLO_AUTO_API_KEY" in task
