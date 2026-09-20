@@ -72,4 +72,6 @@ TASK-0002 implementation was checkpointed in commit `7f89439` before PR #15 was 
 
 TASK-0002 final local acceptance is green: repository contract `OK`, Ruff clean, and `29 passed`. The deterministic export reproduced 24 sources and 120 records (72 single, 48 pairwise) with fingerprint `03cd497da246c641f84a89fd74380e1f340c327eab7850e0476b8379a7a1052c`.
 
-Next atomic action: commit and push TASK-0002, open its PR, and do not start TASK-0003 until TASK-0002 is accepted/merged.
+TASK-0002 is pushed in PR #16 (`https://github.com/Pukujan/Eval-lab/pull/16`) from commit `bae7955`.
+
+Next atomic action: merge PR #16 into `main`, update local `main`, and create the dedicated TASK-0003 worktree only after the merge.

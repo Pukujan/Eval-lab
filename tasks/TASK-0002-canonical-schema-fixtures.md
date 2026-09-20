@@ -202,6 +202,12 @@ Blockers: no TASK-0002 implementation blocker remains. GitHub Actions may still 
 
 Next atomic action: commit and push this checkpoint, open the TASK-0002 PR, and wait for its acceptance/merge before starting TASK-0003.
 
+### 2026-09-20 — PR handoff
+
+Committed final implementation as `bae7955` on `task/TASK-0002-canonical-schema-fixtures`, pushed to origin, and opened PR #16: `https://github.com/Pukujan/Eval-lab/pull/16`.
+
+Next atomic action: merge PR #16 into `main`, update local `main`, and create the dedicated TASK-0003 worktree only after the merge.
+
 ## Handoff
 
 On completion, TASK-0003 receives the canonical JudgeRecord/JudgePrediction contract. Do not begin provider-specific schema redesign in TASK-0003.
