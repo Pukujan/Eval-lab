@@ -1,5 +1,23 @@
 # Eval Lab
 
+<p align="center">
+  <img src="assets/eval-lab-banner.png" alt="Eval Lab — Build AI judges you can trust" width="100%">
+</p>
+
+> AI outputs are easy to create; reliable judgments take measurement. Eval Lab explores smaller, calibrated judges and selective escalation for uncertain cases.
+
+<details>
+<summary>Alternative hero banners</summary>
+
+<p align="center">
+  <img src="assets/eval-lab-banner-alt-routing.png" alt="Eval Lab — Route the easy. Escalate the uncertain." width="100%">
+</p>
+
+<p align="center">
+  <img src="assets/eval-lab-banner-alt-calibration.png" alt="Eval Lab — Reliable evaluation starts with calibrated confidence" width="100%">
+</p>
+</details>
+
 Eval Lab is a clean, reproducible research lab for testing whether lightweight AI judges can make accurate and calibrated rubric decisions across objectively labeled domains.
 
 ## Main research goal
