@@ -4,86 +4,180 @@
 
 Tests protect scientific validity as well as code correctness.
 
-The highest-risk failures are:
-
-- train/calibration/test leakage
+Highest-risk failures:
+- split leakage
 - mislabeled gold provenance
-- probability normalization errors
-- silently dropped provider failures
+- invalid probability normalization
+- provider failures counted as wrong labels
 - A/B order bugs
-- mutated completed experiment artifacts
-- reports generated from different inputs than claimed
+- calibration fit on test labels
+- dataset drift without fingerprint change
+- local judge comparisons using different examples/context caps
+- completed experiment mutation
 
-## 2. Test layers
+## 2. Required local merge gate
+
+Every task must run:
+
+~~~powershell
+.venv\Scripts\python.exe scripts/check_repo_contract.py
+.venv\Scripts\ruff.exe check .
+.venv\Scripts\python.exe -m pytest -q
+~~~
+
+If the environment uses a different shell, equivalent commands are acceptable.
+
+GitHub Actions is desirable but is not the source of truth while the repository/account has no assigned runner. Record local evidence in the task checkpoint.
+
+## 3. Test layers
 
 ### Unit tests
 
-No network access.
-
-Cover:
-
-- schema validation
-- split grouping by source problem
-- verifier behavior
-- probability normalization
-- calibration fitting and serialization
-- metric calculations
-- perturbation transforms
-- experiment manifest validation
+No network:
+- schemas
+- split logic
+- verifiers
+- probability validation
+- provider-response parsing via mocks
+- metrics
+- calibration
+- perturbations
+- dataset canonicalization from small local fixtures
 
 ### Contract tests
 
-Validate repository and experiment layout.
-
-Examples:
-
-- required design docs exist
-- active task/checkpoint files are parseable
-- experiment IDs follow naming convention
-- completed experiments contain required provenance fields
+- required project/program docs exist
+- task 0002-0006 files exist
+- required task headings exist
+- dependency order is declared
+- completed experiments contain required artifacts
 
 ### Integration tests
 
-May require provider credentials and must be skipped cleanly without them.
+May use external services/data:
+- Jev live smoke
+- ARC source retrieval
+- local model download/inference
 
-Initial integration target: Jev smoke test.
+They must fail or skip with an explicit external status, never masquerade as unit-test failure.
 
 ### Reproducibility tests
 
-Given fixed synthetic data and seed, produce byte-stable or numerically stable metrics within declared tolerance.
-
-## 3. Required tests before merge
-
-Every PR must pass:
-
-```bash
-python scripts/check_repo_contract.py
-ruff check .
-pytest -q
-```
-
-Provider integration tests are not mandatory for ordinary PRs unless the PR changes that provider adapter.
+Fixed source IDs + seed must reproduce:
+- split assignments
+- candidate order
+- fixture IDs
+- dataset fingerprint
+- metrics within numeric tolerance
 
 ## 4. Scientific invariants
 
-INV-1: no `source_problem_id` appears in multiple splits.
+INV-1: one source_problem_id belongs to exactly one split.
 
-INV-2: calibration code cannot consume test labels during fitting.
+INV-2: calibration fitting rejects any test-split labels.
 
-INV-3: objective gold provenance is never `model` unless explicitly marked weak supervision.
+INV-3: weak_model_supervision cannot be reported as deterministic/objective provenance.
 
-INV-4: A/B swap perturbation also swaps the expected pairwise label.
+INV-4: pairwise A/B swap maps A->B, B->A, TIE->TIE.
 
-INV-5: probability vectors sum to one within tolerance.
+INV-5: probability vectors contain finite values in [0,1] and sum to 1 within tolerance.
 
-INV-6: experiment manifests capture code commit, model ID, prompt/rubric version, and dataset fingerprint.
+INV-6: prediction status != ok implies no scored classification label unless explicitly documented.
 
-INV-7: completed experiment results are append-only.
+INV-7: experiment manifests capture code commit, model ID, prompt/protocol version, dataset fingerprint, context cap, and seed.
 
-## 5. Acceptance testing for TASK-0001
+INV-8: completed experiment results are append-only.
 
-- clean install on Python 3.11+
-- repo contract validator succeeds
-- unit tests succeed without credentials
-- Jev smoke test is runnable when `OPENCODE_API_KEY` is set
-- first synthetic dataset can be scored locally
+INV-9: public dataset source revision/fingerprint changes require a new experiment identity.
+
+INV-10: systems in one comparison use the same canonical record IDs.
+
+## 5. TASK-0002 validation
+
+Required tests:
+- schema accepts valid single record
+- schema accepts valid pairwise record
+- pairwise record rejects missing candidate B
+- probabilities reject negative, >1, NaN, or non-normalized vectors
+- gold provenance serialization round-trip
+- source variants inherit one split
+- deliberate cross-split source collision is rejected
+- swap transform reverses A/B gold and candidates
+- TIE remains TIE under swap
+- deterministic fixture generation is byte/content stable for fixed seed
+- at least four fixture domains exist
+
+## 6. TASK-0003 validation
+
+Mock tests:
+- Jev direct 200 response normalizes label/probabilities
+- Jev atomic response normalizes criterion results
+- 429 maps to rate_limited and preserves Retry-After
+- 5xx maps to provider_error
+- malformed provider payload maps to parse_error
+- API key never appears in serialized error metadata
+- pairwise class order is stable
+
+Live test:
+- optional when quota available
+- successful live prediction records provider/model/protocol metadata
+- live 429 is an external blocked condition, not task failure after mock coverage passes
+
+## 7. TASK-0004 validation
+
+Known-value tests:
+- accuracy/balanced accuracy/macro F1 on hand-computed arrays
+- multiclass Brier on hand-computed probabilities
+- NLL on known probabilities
+- ECE on a small known-bin example
+- risk/coverage monotonic coverage ordering
+- A/B swap consistency from paired record IDs
+
+Calibration tests:
+- fit rejects test split
+- temperature T remains positive
+- serialization round-trip preserves fitted outputs
+- calibration improves or leaves unchanged NLL on a controlled synthetic calibration example
+- isotonic/Platt output remains bounded
+
+## 8. TASK-0005 validation
+
+- adapter loads ARC-Challenge source metadata
+- license metadata is recorded
+- resolved source revision is recorded
+- canonicalization from a small mocked ARC row matches schema
+- upstream answerKey becomes answer_key provenance
+- deterministic wrong candidate is not equal to correct key
+- upstream source ID remains source_problem_id
+- validation->dev/calibration mapping is deterministic
+- source_problem_id never crosses mapped splits
+- fingerprint is stable for the same resolved source/revision
+- a changed revision/canonicalization version changes fingerprint
+
+## 9. TASK-0006 validation
+
+Feasibility:
+- model/runtime loads without exhausting machine resources
+- 20-record smoke run finishes and records latency
+- context cap is enforced
+
+Scoring:
+- forced-choice class set is exactly legal labels
+- returned probabilities normalize
+- raw score ordering corresponds to probability ordering
+- no sampled explanation is required for verdict
+
+Comparison:
+- local and reference systems evaluate identical record IDs
+- aggregate and per-domain metrics render
+- unavailable probability metrics are marked unavailable rather than imputed
+
+## 10. Program acceptance test
+
+After TASK-0006, one command or documented command sequence must reproduce:
+- canonical fixture set
+- one public ARC evaluation slice
+- one local model prediction file
+- metrics
+- calibration artifact where supported
+- final comparison report

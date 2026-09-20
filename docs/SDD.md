@@ -2,178 +2,307 @@
 
 ## 1. Architecture
 
-```
-public benchmark
+~~~
+public/synthetic source
       |
       v
-benchmark adapter
+dataset adapter
       |
       v
-canonical source record
+SourceRecord
       |
-      +--> deterministic verifier / answer key --> objective gold
+      +--> verifier / answer key --> GoldLabel
       |
-      +--> candidate generator / corruption logic
+      +--> candidate construction
       |
       v
-judge record
+JudgeRecord
       |
       +--> Jev adapter
-      +--> local generative adapter
-      +--> encoder classifier adapter
-      +--> optional external teacher adapter
+      +--> local Qwen adapter
       |
       v
-normalized predictions
+JudgePrediction
       |
       +--> metrics
       +--> calibration
       +--> perturbation analysis
       |
       v
-experiment artifact + report
-```
+experiment artifacts + report
+~~~
 
-## 2. Core modules
+## 2. Planned package layout
 
-Planned package layout:
-
-```
+~~~
 src/eval_lab/
   schema.py
   datasets/
+    synthetic.py
+    arc.py
   verifiers/
+    arithmetic.py
+    multiple_choice.py
+    structured.py
+    code_output.py
   judges/
+    base.py
+    jev.py
+    qwen.py
   calibration/
+    temperature.py
+    binary.py
+    isotonic.py
   metrics/
+    classification.py
+    calibration.py
+    consistency.py
+    risk.py
   experiments/
+    runner.py
+    manifests.py
   reporting/
-```
+    report.py
+~~~
 
-### schema
+Existing modules may be moved only when the active task allows it.
 
-Owns Pydantic/dataclass representations for source records, judge records, predictions, gold provenance, and experiment metadata.
+## 3. Canonical schema contract
 
-### datasets
+TASK-0002 implements these concepts. Exact Pydantic field names may vary only if tests and docs are updated consistently.
 
-Adapters from external benchmark schemas into canonical records. No evaluation logic belongs here.
+### Split
 
-### verifiers
+Allowed values:
+- train
+- dev
+- calibration
+- test
 
-Deterministic or executable truth functions. Each verifier returns a verdict plus structured evidence.
+### GoldProvenance
 
-### judges
+Allowed values:
+- deterministic_verifier
+- answer_key
+- executable_test
+- human_adjudication
+- weak_model_supervision
 
-Provider/model adapters. Each adapter maps canonical judge input to a normalized prediction.
+The first four may be treated as objective/trusted according to experiment policy. weak_model_supervision is never silently reported as objective gold.
 
-Normalized prediction should include:
+### JudgmentMode
 
+- single
+- pairwise
+
+### PairwiseLabel
+
+- A
+- B
+- TIE
+
+### ExecutionStatus
+
+- ok
+- rate_limited
+- provider_error
+- parse_error
+- skipped
+
+### SourceRecord
+
+Required semantics:
+- stable id
+- domain
+- source_dataset
+- source_problem_id
+- split
+- prompt
+- reference/answer-key data
+- source metadata
+
+### RubricCriterion
+
+Required semantics:
+- stable criterion id
+- human-readable description
+- optional weight
+- optional deterministic aggregation rule metadata
+
+### GoldLabel
+
+Required semantics:
 - label
-- probability distribution if available
-- raw score/logit metadata if available
-- model identifier
-- prompt/rubric version
+- provenance
+- evidence
+- verifier/version identifier when applicable
+
+### JudgeRecord
+
+Required semantics:
+- stable record id
+- source_problem_id
+- mode
+- prompt
+- rubric
+- candidate_a
+- optional candidate_b
+- gold
+- split
+- perturbation metadata
+
+### JudgePrediction
+
+Required semantics:
+- record id
+- judge id/model
+- protocol/prompt version
+- label when status is ok
+- probability map when supported
+- raw class scores when supported
+- execution status
 - latency
-- token accounting if exposed
-- provider error metadata
-
-### calibration
-
-Pure post-processing over frozen predictions. Initial methods:
-
-- temperature scaling where logits exist
-- Platt/logistic scaling for scalar margins
-- isotonic regression when sample size supports it
-
-### metrics
-
-Accuracy, balanced accuracy, macro F1, Brier, NLL, ECE, consistency, latency/cost, and risk/coverage.
-
-### experiments
-
-Loads experiment configuration, resolves dataset splits and judge adapters, runs evaluation, and writes immutable artifacts.
-
-### reporting
-
-Produces machine-readable JSON plus concise Markdown summaries.
-
-## 3. Canonical record
-
-Minimum fields:
-
-```yaml
-id:
-domain:
-source_dataset:
-source_problem_id:
-split:
-prompt:
-reference:
-rubric:
-candidate_a:
-candidate_b:
-gold:
-  label:
-  provenance:
-  evidence:
-metadata:
-```
-
-Single-candidate tasks may omit `candidate_b`.
+- token usage when exposed
+- provider/runtime metadata
+- error metadata without secrets
 
 ## 4. Split discipline
 
-Split by `source_problem_id`, not by generated variant.
+Split assignment is a pure deterministic function of source_problem_id plus declared seed/policy.
 
-A source problem and all of its perturbations/candidates belong to exactly one split.
+Every variant derived from a source problem inherits the same split.
 
-Recommended initial proportions:
+No code path may randomly split JudgeRecord variants independently.
 
-- dev: 15%
-- calibration: 20%
-- test: 30%
-- training/reserve: 35%
+## 5. Dataset fingerprint contract
 
-Exact ratios can differ by benchmark but must be declared before test evaluation.
+A dataset artifact fingerprint includes, at minimum:
+- adapter name/version
+- source dataset identifier
+- resolved upstream revision when external
+- source split selection
+- canonicalization version
+- deterministic split policy + seed
+- hash of canonical record IDs/content metadata sufficient to detect drift
 
-## 5. Experiment identity
+## 6. Judge interface
 
-Experiment IDs use:
+Conceptual interface:
 
-```
-EXP-YYYYMMDD-NNN-short-name
-```
+~~~python
+class Judge:
+    def predict(self, records: list[JudgeRecord]) -> list[JudgePrediction]:
+        ...
+~~~
 
-A completed experiment is immutable. Any change to model, prompt, rubric, dataset fingerprint, split mapping, code commit, calibration method, or seed requires a new experiment ID.
+Adapters may be synchronous or asynchronous internally but must emit the same normalized prediction schema.
 
-## 6. Task/worktree architecture
+## 7. Jev protocols
 
-Every task gets:
+### jev-direct-v1
 
-- GitHub issue or task file
-- branch `task/TASK-XXXX-short-name`
-- optional worktree with the same task ID
-- checkpoint updates in the task file
-- PR back to `main`
+Single:
+- typed PASS/FAIL decision
 
-Two agents should not share one worktree.
+Pairwise:
+- typed A/B/TIE decision
 
-Cross-task dependencies are recorded in task metadata rather than inferred from chats.
+### jev-atomic-v1
 
-## 7. Provider boundary
+Ask typed criterion-level questions. Aggregate criterion outcomes in deterministic repository code. The provider must not secretly determine an undocumented overall rule.
 
-Provider credentials are environment variables. Provider-specific response bodies must be normalized before downstream evaluation.
+Returned provider probabilities are retained.
 
-The codebase must remain runnable without Luna/Sol/Grok access.
+Rate limiting:
+- parse Retry-After when present
+- return ExecutionStatus.rate_limited
+- never fabricate a label
+- no automatic multi-hour waiting
 
-## 8. Local hardware strategy
+## 8. Calibration boundary
 
-Local judge adapters must support configurable context caps. v0 default: 4,096 tokens.
+Calibration takes frozen predictions plus calibration labels and produces a CalibrationArtifact.
 
-The framework should allow quantized local models but must record quantization format and runtime in experiment metadata.
+CalibrationArtifact records:
+- method
+- fitted parameters
+- fit split
+- class order
+- input score/probability semantics
+- code version
 
-## 9. Failure handling
+The API must reject fitting when any input record is split=test.
 
-Provider failures are not silently converted to wrong labels. They are recorded as execution failures and reported separately.
+## 9. ARC-Challenge adapter
 
-Verifier uncertainty or ambiguity must be represented explicitly rather than forced into a binary gold label.
+TASK-0005 source:
+- Hugging Face dataset id: allenai/ai2_arc
+- config: ARC-Challenge
+- license metadata expected: CC BY-SA 4.0
+
+The adapter must resolve and record the upstream revision used.
+
+Initial canonical conversion:
+- prompt = question + labeled answer choices
+- answer key = objective gold
+- construct deterministic correct and incorrect candidate answers from existing choices
+- pairwise A/B order randomized deterministically by source ID/seed
+- no LLM-generated candidates required for the first benchmark
+
+Recommended split mapping:
+- upstream train -> train/reserve
+- upstream validation -> deterministic dev/calibration partition by source ID
+- upstream test -> test
+
+Any alternative mapping must be preregistered and tested.
+
+## 10. Local Qwen scoring
+
+TASK-0006 baseline order:
+1. Qwen3-0.6B
+2. Qwen3-1.7B if feasible
+3. Qwen3-4B optional
+
+Default runtime may use Transformers/PyTorch on Windows.
+
+For calibrated classification, prefer forced-choice sequence scoring:
+- construct the judge prompt ending at the verdict boundary
+- compute conditional log-likelihood of each legal label continuation
+- normalize scores with softmax
+- emit probabilities and raw log-scores
+
+Do not rely on free-form sampled explanations to derive confidence.
+
+Context cap defaults to 4,096 tokens; a lower cap is permitted if declared before comparison.
+
+## 11. Artifact layout
+
+~~~
+outputs/
+  runs/<run-id>/
+    manifest.json
+    predictions.jsonl
+    metrics.json
+    calibration.json
+    report.md
+~~~
+
+outputs is gitignored unless a task explicitly promotes a small stable artifact into an experiment directory.
+
+## 12. Failure handling
+
+Provider/runtime failures are counted in reliability summaries but are not silently scored as wrong classifications.
+
+Malformed prediction outputs are parse_error.
+
+Verifier uncertainty is represented explicitly; ambiguous examples should be excluded or adjudicated according to preregistered rules rather than forced into objective gold.
+
+## 13. Task/worktree architecture
+
+Each task:
+- starts from the latest accepted main
+- gets branch `task/TASK-XXXX-short-name`
+- gets one local worktree
+- updates only declared files unless task scope is checkpointed first
+- records local validation before handoff
+- merges before the dependent task starts

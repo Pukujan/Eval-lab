@@ -9,9 +9,10 @@ The project is not primarily about making a small model imitate a frontier model
 ## Initial systems under test
 
 - Jev 1.13 Free / Jev 1.13 as a structured classification judge
-- Qwen3-4B as a local generative judge when hardware permits
-- Qwen3-1.7B as a lighter local generative baseline
-- a compact encoder classifier such as ModernBERT-base for pure classification
+- Qwen3-0.6B as the minimum-footprint local generative judge baseline
+- Qwen3-1.7B as the preferred stronger local baseline when feasible
+- Qwen3-4B as an optional stretch baseline when hardware permits
+- a compact encoder classifier as a later alternative if decoder models are not competitive
 - stronger chat models such as Luna, Sol, or Grok only as optional critics, rubric designers, adversaries, and disagreement analysts
 
 ## Initial research question
@@ -36,22 +37,56 @@ Can a lightweight judge achieve useful multi-domain accuracy and calibrated conf
 - long-context judging beyond the local hardware budget
 - replacing expert human review in ambiguous domains
 - treating any teacher model as infallible ground truth
-- training large local models before baselines are measured
+- training or fine-tuning a local judge before baseline measurement is trustworthy
 
 ## Context contract for v0
 
-All judge inputs should fit a common short-context envelope, initially 4,096 tokens or less. This is a deliberate experimental constraint, not a claim about model capability.
+All judge inputs should fit a common short-context envelope, initially 4,096 tokens or less. Experiments may use a lower cap when local hardware requires it, but every comparison must record the cap and compare systems on the same slice.
 
-## Project phases
+## Program plan
 
-1. Lab bootstrap and reproducibility.
-2. Objective benchmark adapters and canonical record schema.
-3. Jev baseline and calibration.
-4. Lightweight local baselines.
-5. Bias and perturbation tests.
-6. Selective escalation experiments.
-7. Optional judge-specific fine-tuning only after baseline evidence warrants it.
+TASK-0001 established local reproducibility.
+
+The authorized v0 implementation sequence is:
+
+1. TASK-0002 — canonical schema + deterministic objective fixtures.
+2. TASK-0003 — Jev objective baseline runner.
+3. TASK-0004 — metrics + statistical calibration + selective-risk analysis.
+4. TASK-0005 — first public objective benchmark adapter using ARC-Challenge.
+5. TASK-0006 — lightweight local judge baseline on the same canonical records.
+
+A provider outage or Jev quota limit may block a live TASK-0003 run, but must not block TASK-0004 through TASK-0006. Provider failures are execution states, not incorrect predictions.
+
+## Phase gates
+
+### Gate A — measurement substrate
+
+TASK-0002 is complete only when schemas, deterministic fixtures, split discipline, provenance, serialization, and perturbation invariants are enforced by tests.
+
+### Gate B — provider judge
+
+TASK-0003 is complete when the Jev runner is reproducible and mock/contract tested. A live successful call is recorded when provider quota permits; a provider 429 does not invalidate the implementation.
+
+### Gate C — measurement validity
+
+TASK-0004 is complete only when calibration cannot fit on test labels, known-value metric tests pass, and risk/coverage output is reproducible.
+
+### Gate D — real public data
+
+TASK-0005 is complete only when the source revision/license/fingerprint and deterministic split mapping are recorded and the adapter produces canonical records reproducibly.
+
+### Gate E — local baseline
+
+TASK-0006 is complete when at least one local model that fits the machine produces normalized predictions on the same evaluation slice and a comparison report is generated.
 
 ## Definition of success for v0
 
-v0 is successful when another agent can clone the repo, reproduce at least one objective benchmark run, evaluate Jev and one local baseline on the same held-out data, fit calibration on a separate split, and regenerate the report from committed configuration plus documented external credentials.
+v0 is successful when another agent can clone the repo and:
+
+1. reproduce the synthetic objective fixture suite;
+2. run the Jev adapter when quota is available or reproduce its mocked provider contract otherwise;
+3. compute raw and calibrated metrics without test leakage;
+4. reproduce the ARC-Challenge canonical evaluation slice;
+5. run at least one local Qwen baseline on the same slice;
+6. regenerate a comparison report from committed configuration and documented external credentials;
+7. resume work from `checkpoints/CURRENT.md` and the active task file without relying on chat history.

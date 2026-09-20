@@ -2,44 +2,48 @@
 
 ## Program state
 
-Phase: 1 — lab bootstrap and reproducibility.
+TASK-0001 local bootstrap is complete.
 
-Current P0 task: `TASK-0001-bootstrap-lab` / GitHub issue #5.
+Planning for TASK-0002 through TASK-0006 is defined on the program planning branch.
 
 ## Main objective
 
-Establish a clean, reproducible local environment before creating benchmark adapters or running research experiments.
+Begin TASK-0002 only after the program plan is accepted/merged into the branch Luna will use.
 
 ## Completed
 
-- repository reset to clean project
-- initial Jev adapter and smoke script
-- project/product/system/test contracts
-- Git-native multi-agent handoff protocol
-- CI contract and experiment protocol
-- repository contract validator and unit-test skeleton
-- task/experiment GitHub issue templates
-- TASK-0001 local bootstrap completed on Windows with editable install, contract check, Ruff, and pytest passing
-- CI pre-step failure classified as account/runner infrastructure from live job metadata
+- clean repository bootstrap
+- Windows Python 3.12 local validation
+- repository contract, Ruff, and pytest pass
+- Jev endpoint connectivity established; live inference currently rate-limited by OpenCode free quota
+- GitHub Actions no-runner failure classified as account/runner infrastructure
+- v0 task sequence and validation gates defined for TASK-0002 through TASK-0006
 
-## Active
+## Next task
 
-- TASK-0001 is complete for local acceptance; Jev provider retry remains an external follow-up
-- no TASK-0002 work has started
+TASK-0002 — Canonical Schema and Objective Fixtures (#6)
 
-## Queued after TASK-0001
+Its output is the stable data contract used by every later judge, metric, calibration method, and public benchmark adapter.
 
-1. TASK-0002: canonical schema + synthetic fixture dataset
-2. TASK-0003: Jev objective baseline runner
-3. TASK-0004: calibration/metrics implementation
-4. TASK-0005: first public benchmark adapter
-5. TASK-0006: lightweight local baseline
+## Queued
 
-## Blockers
+- TASK-0003 — Jev Objective Baseline (#7)
+- TASK-0004 — Metrics and Calibration (#8)
+- TASK-0005 — ARC-Challenge Adapter (#9)
+- TASK-0006 — Lightweight Local Judge (#10)
 
-- OpenCode Zen Jev free usage returned HTTP 429 `FreeUsageLimitError` with `Retry-After: 28021` seconds during the smoke test.
-- GitHub Actions run `35521127126` created matrix jobs but ended before any workflow step was reported; both jobs had no assigned runner (`runner_id: 0`) and no steps. Treat this as account/runner infrastructure.
+## External conditions
+
+### Jev
+
+Last TASK-0001 live request reached OpenCode and returned HTTP 429 FreeUsageLimitError.
+
+This does not block TASK-0002. TASK-0003 must model the condition as rate_limited. If quota remains unavailable, mocked provider validation is sufficient to continue to TASK-0004.
+
+### GitHub Actions
+
+Known jobs were dispatched without an assigned runner or steps. Continue to use exact local validation evidence until runner scheduling is restored.
 
 ## Next atomic action
 
-Keep TASK-0001 closed with its exact local evidence. Retry the Jev smoke only after the provider rate-limit window if needed; do not start TASK-0002 in this checkpoint.
+Accept/merge the program plan, then Luna creates a dedicated TASK-0002 worktree/branch from the accepted head and follows `docs/LUNA_PROGRAM_HANDOFF.md`.
