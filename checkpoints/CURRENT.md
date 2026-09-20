@@ -19,11 +19,13 @@ Establish a clean, reproducible local environment before creating benchmark adap
 - CI contract and experiment protocol
 - repository contract validator and unit-test skeleton
 - task/experiment GitHub issue templates
+- TASK-0001 local bootstrap completed on Windows with editable install, contract check, Ruff, and pytest passing
+- CI pre-step failure classified as account/runner infrastructure from live job metadata
 
 ## Active
 
-- local bootstrap via TASK-0001
-- classify GitHub Actions pre-step runner failure after local validation
+- TASK-0001 is complete for local acceptance; Jev provider retry remains an external follow-up
+- no TASK-0002 work has started
 
 ## Queued after TASK-0001
 
@@ -35,10 +37,9 @@ Establish a clean, reproducible local environment before creating benchmark adap
 
 ## Blockers
 
-This chat cannot execute commands on the user's local machine.
-
-GitHub Actions currently creates jobs but terminates them before any workflow step is reported. Treat this as an infrastructure/account/runner question until local bootstrap proves otherwise.
+- OpenCode Zen Jev free usage returned HTTP 429 `FreeUsageLimitError` with `Retry-After: 28021` seconds during the smoke test.
+- GitHub Actions run `35521127126` created matrix jobs but ended before any workflow step was reported; both jobs had no assigned runner (`runner_id: 0`) and no steps. Treat this as account/runner infrastructure.
 
 ## Next atomic action
 
-Local Luna/agent executes TASK-0001 from `docs/LOCAL_BOOTSTRAP_LUNA.md`, records exact results, and commits the checkpoint.
+Keep TASK-0001 closed with its exact local evidence. Retry the Jev smoke only after the provider rate-limit window if needed; do not start TASK-0002 in this checkpoint.
