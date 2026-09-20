@@ -144,6 +144,14 @@ Blockers: none. The known GitHub Actions no-runner condition remains external in
 
 Next atomic action: commit the validated TASK-0005 implementation, push `task/TASK-0005-public-benchmark`, open the review PR, and update this log with its URL before merge.
 
+### 2026-09-20 — TASK-0005 PR handoff
+
+Commit `d8f038d1725ffcc1121bc0381ae6cabad2e4136b` pushed to `task/TASK-0005-public-benchmark`.
+
+Pull request: [#19](https://github.com/Pukujan/Eval-lab/pull/19).
+
+Next atomic action: merge PR #19 after the local merge gate, update local `main`, and only then create the TASK-0006 worktree.
+
 ## Handoff
 
 TASK-0006 must evaluate the exact canonical record IDs emitted by this adapter; it must not rebuild a different comparison dataset.

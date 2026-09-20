@@ -99,3 +99,6 @@ TASK-0005 local implementation and validation are complete. Live source revision
 Local gate: contract `OK`; Ruff clean; `52 passed in 0.77s` using Python `3.12.10`.
 
 Next atomic action: commit and push TASK-0005, open its review PR, and update the task/checkpoint log with the PR URL before merging.
+TASK-0005 is pushed in PR [#19](https://github.com/Pukujan/Eval-lab/pull/19) at commit `d8f038d1725ffcc1121bc0381ae6cabad2e4136b`.
+
+Next atomic action: merge PR #19 after the local merge gate, update local `main`, and only then create the TASK-0006 worktree.
