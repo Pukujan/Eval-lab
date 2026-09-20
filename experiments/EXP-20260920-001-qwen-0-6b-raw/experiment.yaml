@@ -2,7 +2,7 @@ id: EXP-20260920-001-qwen-0-6b-raw
 status: completed
 hypothesis: Qwen3-0.6B can produce reproducible forced-choice probabilities on a bounded mixed synthetic and ARC slice within local hardware limits.
 created_at: 2026-09-20T18:29:50.970369+00:00
-code_commit: TASK-0006-local-feasibility-checkpoint
+code_commit: 13ffb83f2618baf41f2d15ebabd8824b864d6c14
 seed: 20260920
 context_limit: 4096
 dataset:

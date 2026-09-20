@@ -2,7 +2,7 @@ id: EXP-20260920-002-qwen-0-6b-calibrated
 status: planned
 hypothesis: Fitting one scalar temperature on separate synthetic calibration records will improve or preserve held-out single-label NLL without changing record selection or using test labels.
 created_at: 2026-09-20
-code_commit: pending-pre-registered-TASK-0006-checkpoint
+code_commit: 13ffb83f2618baf41f2d15ebabd8824b864d6c14
 seed: 20260920
 context_limit: 4096
 dataset:
