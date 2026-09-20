@@ -1,6 +1,6 @@
 # TASK-0007 — External Judge and Teacher Bakeoff
 
-- Status: ready-for-review
+- Status: completed — local acceptance criteria met; PR #22 merged
 - Owner: Luna/local agent
 - Priority: P0
 - GitHub issue: #12
@@ -136,3 +136,10 @@ TASK-0008 uses the strongest/diverse successful resources revealed by this bakeo
 TASK-0007 is pushed in PR #22 at commit f1f4c1cfa3c866d6e04f271d4c3339ad5dbb7b35; the implementation and experiment commits are included in the branch.
 
 Next atomic action: merge PR #22 after the local merge gate, update local main, and only then create the TASK-0008 worktree.
+
+
+### 2026-09-20 — TASK-0007 merge checkpoint
+
+PR #22 merged TASK-0007 into main at 1ecd5be35c2315ec927b35301c10aa48b8669371. The Actions budget prevented the 3.11 job from starting; the 3.12 job was cancelled before any workflow step. Local validation is authoritative and green.
+
+Next atomic action: update local main to the merge commit, then create the dedicated TASK-0008 worktree.

@@ -3,13 +3,13 @@
 ## Program state
 
 TASK-0001 local bootstrap is complete.
-TASK-0002 through TASK-0006 implementation is merged; TASK-0006 merged in PR #21.
+TASK-0002 through TASK-0007 implementation is merged; TASK-0007 merged in PR #22.
 
 The program is extended with TASK-0007 through TASK-0009 to fully use the user's existing model subscriptions/resources after the measurement foundation is complete.
 
 ## Main objective
 
-Continue with TASK-0007 as the next implementation gate.
+Continue with TASK-0008 as the next implementation gate.
 
 ## Model-access decisions
 
@@ -25,7 +25,7 @@ Continue with TASK-0007 as the next implementation gate.
 
 ## Next task
 
-TASK-0007 — External Judge and Teacher Bakeoff (#12)
+TASK-0008 — Verified Teacher Hard Negatives (#13)
 
 ## Queued foundation
 
@@ -48,7 +48,7 @@ GitHub Actions runner scheduling remains infrastructure-only until runners are a
 
 ## Next atomic action
 
-TASK-0007 is ready for review in dedicated worktree D:/claude/eval-lab-TASK-0007 on branch task/TASK-0007-external-bakeoff, starting from accepted main checkpoint 9aabaa1af64d9956db0d9b07650dd98e6ed70ebc.
+TASK-0008 is next; TASK-0007 merged in PR #22.
 
 ### 2026-09-20 — PR #15 contract validation
 
@@ -133,3 +133,9 @@ Next atomic action: commit the checkpoint, push TASK-0007, open its review PR, a
 TASK-0007 is pushed in PR #22 at commit f1f4c1cfa3c866d6e04f271d4c3339ad5dbb7b35. Local acceptance is green: contract OK, Ruff clean, 57 passed in 0.99s.
 
 Next atomic action: merge PR #22 after the local merge gate, update local main, and only then create the TASK-0008 worktree. Do not start TASK-0008 until TASK-0007 is accepted and merged.
+
+### 2026-09-20 — TASK-0007 merge checkpoint
+
+PR #22 merged TASK-0007 into main at 1ecd5be35c2315ec927b35301c10aa48b8669371. Local acceptance is green: contract OK, Ruff clean, 57 passed in 0.99s. GitHub Actions again reported the external account budget condition before workflow steps.
+
+Next atomic action: fast-forward the local main checkout to 1ecd5be35c2315ec927b35301c10aa48b8669371, then create the dedicated TASK-0008 worktree. Do not start TASK-0008 before this main checkout update is complete.
