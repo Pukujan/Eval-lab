@@ -48,7 +48,7 @@ GitHub Actions runner scheduling remains infrastructure-only until runners are a
 
 ## Next atomic action
 
-TASK-0008 is next; TASK-0007 merged in PR #22.
+TASK-0008 is ready for review in dedicated worktree D:/claude/eval-lab-TASK-0008 on branch task/TASK-0008-teacher-hard-negatives, starting from accepted main 00baf7c.
 
 ### 2026-09-20 — PR #15 contract validation
 
@@ -139,3 +139,11 @@ Next atomic action: merge PR #22 after the local merge gate, update local main, 
 PR #22 merged TASK-0007 into main at 1ecd5be35c2315ec927b35301c10aa48b8669371. Local acceptance is green: contract OK, Ruff clean, 57 passed in 0.99s. GitHub Actions again reported the external account budget condition before workflow steps.
 
 Next atomic action: fast-forward the local main checkout to 1ecd5be35c2315ec927b35301c10aa48b8669371, then create the dedicated TASK-0008 worktree. Do not start TASK-0008 before this main checkout update is complete.
+
+### 2026-09-20 — TASK-0008 local completion
+
+TASK-0008 produced EXP-20260920-007 with 5 independently verified YOLO-Auto hard negatives from 20 non-test source families, preserving train/dev/calibration splits and excluding test sources. Luna completed 10 audit records and Sol completed 10 hardest-case records through one-record OpenCode requests. The earlier EXP-004 run with 18 verified candidates is retained as an append-only initial run.
+
+Local gate: repository contract OK; Ruff clean; 60 passed in 1.60s. Provider timeouts are recorded separately from verifier outcomes. No credentials, .env files, or private data were committed.
+
+Next atomic action: commit the review checkpoint, push TASK-0008, open its review PR, and do not start TASK-0009 until TASK-0008 is accepted and merged.
