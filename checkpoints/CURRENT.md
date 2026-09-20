@@ -9,7 +9,7 @@ The program is extended with TASK-0007 through TASK-0009 to fully use the user's
 
 ## Main objective
 
-TASK-0009 is complete; no dependent task is queued.
+TASK-0009 is complete; TASK-0010 selective escalation/research release is active.
 
 ## Model-access decisions
 
@@ -25,7 +25,7 @@ TASK-0009 is complete; no dependent task is queued.
 
 ## Next task
 
-No next task is queued after TASK-0009.
+TASK-0010 — Selective Escalation and System-One Differential Bench (#25).
 
 ## Queued foundation
 
@@ -200,3 +200,20 @@ Environment: Windows PowerShell; Python 3.12.10; Git 2.51.2.windows.1; Node v24.
 Files changed: `scripts/generate_hard_negatives.py`, `tests/test_hard_negatives.py`, EXP-004 and EXP-007 experiment artifacts, the TASK-0008 log, and this checkpoint log. Decisions and blockers are recorded in the task log. The final corpus contains 5 independently verified hard negatives, 10 Luna audits, 10 Sol audits, and explicit rejected/timeout/provider-blocked states.
 
 Next atomic action: fast-forward `D:/claude/eval-lab` to `bce665e8601686a860d14c4ed5671b33afa660ef`, cherry-pick the post-merge checkpoint commit, push `main`, then create the TASK-0009 worktree. Do not start TASK-0009 before that update is complete.
+
+### 2026-09-20 — TASK-0010 activation
+
+TASK-0010 issue #25 is active on branch `task/TASK-0010-selective-escalation`, starting from main `6ae355f470d905f8fd8c85363a353674818b19f9`.
+
+Primary student is the frozen TASK-0009 TF-IDF + logistic-regression arm D. The task adds selective escalation, pinned OpenRouter Jev, YOLO-Auto Qwen3.8 Flash differential evaluation, explicit metamorphic/differential tests, and a publication-quality research release.
+
+Publication target:
+- benchmark: EvalLab-Select v0.1.0
+- paper: arXiv-ready LaTeX source
+- provenance: RO-Crate 1.3 + PROV-O
+- validation: stable SHACL Recommendation
+- citation/deposit readiness: CFF 1.2.0 + DataCite 4.6-compatible metadata
+
+PCM inspection is pinned to `Pukujan/project-continuity-modules@3a34b4a73842c824de5359f06e04568e8ce4aaa4`. PCM is a continuity compatibility reference; its research profile is not yet implemented in the inspected templates, so TASK-0010 does not depend on it.
+
+Next atomic action: local Luna checks out TASK-0010, runs the planning merge gate, freezes the larger benchmark/split manifest and EXP-009 preregistration, then implements offline routing/metamorphic/differential tests before live final evaluation.
