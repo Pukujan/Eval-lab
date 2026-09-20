@@ -3,13 +3,13 @@
 ## Program state
 
 TASK-0001 local bootstrap is complete.
-TASK-0002 through TASK-0007 implementation is merged; TASK-0007 merged in PR #22.
+TASK-0002 through TASK-0008 implementation is merged; TASK-0008 merged in PR #23.
 
 The program is extended with TASK-0007 through TASK-0009 to fully use the user's existing model subscriptions/resources after the measurement foundation is complete.
 
 ## Main objective
 
-Continue with TASK-0008 as the next implementation gate.
+Continue with TASK-0009 as the next implementation gate.
 
 ## Model-access decisions
 
@@ -48,7 +48,17 @@ Scope is frozen to a compact TF-IDF plus logistic-regression single-answer corre
 
 Planned files: `src/eval_lab/training.py`, `scripts/run_small_judge_training.py`, `tests/test_training.py`, EXP-008 artifacts, the task log, and this checkpoint log.
 
-Next atomic action: run the preregistered EXP-008 final experiment, including frozen test evaluation, then run the full repository contract, Ruff, and pytest gates.
+Next atomic action: commit the completed EXP-008 evidence and checkpoint, push TASK-0009, and open its review PR. Do not begin a dependent task before TASK-0009 is accepted and merged.
+
+### 2026-09-20 — TASK-0009 local completion
+
+EXP-008 completed after its pre-registration freeze. The compact TF-IDF plus logistic-regression student ran arms A-D; arm D was selected on dev NLL/accuracy only, and arm E was calibrated on six calibration records only. The frozen test slice contains 12 records across 4 source families; arm D reached `0.6667` accuracy and `0.6250` balanced accuracy. Calibration and its small-sample regression are retained in the report.
+
+Local gate: `python scripts/check_repo_contract.py` -> `Repository contract OK`; `ruff check .` -> `All checks passed!`; `PYTHONPATH=src python -m pytest -q` -> `64 passed in 5.43s`. No credentials, `.env` files, model weights, or caches were committed.
+
+Files changed: `src/eval_lab/training.py`, `scripts/run_small_judge_training.py`, `tests/test_training.py`, EXP-008 artifacts, TASK-0009 log, and this checkpoint log. No source-family leakage was detected; test labels were not used in fitting, selection, or calibration.
+
+Next atomic action: commit the final TASK-0009 checkpoint, push the branch, open its review PR, and wait for acceptance/merge before any dependent task.
 
 ### 2026-09-20 — TASK-0009 implementation and EXP-008 pre-registration
 
@@ -65,7 +75,7 @@ GitHub Actions runner scheduling remains infrastructure-only until runners are a
 
 ## Next atomic action
 
-TASK-0008 is ready for review in dedicated worktree D:/claude/eval-lab-TASK-0008 on branch task/TASK-0008-teacher-hard-negatives, starting from accepted main 00baf7c.
+TASK-0009 is ready for review in dedicated worktree D:/claude/eval-lab-TASK-0009 on branch task/TASK-0009-small-judge-training, starting from merged TASK-0008 main bce665e8.
 
 ### 2026-09-20 — PR #15 contract validation
 
