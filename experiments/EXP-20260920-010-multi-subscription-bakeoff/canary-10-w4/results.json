@@ -1,0 +1,235 @@
+{
+  "arms": {
+    "grok": {
+      "model": "opencode/grok-4.6",
+      "report": {
+        "aggregate": {
+          "count": 10,
+          "metrics": {
+            "accuracy": 0.5,
+            "balanced_accuracy": 0.5,
+            "brier": null,
+            "ece": null,
+            "macro_f1": 0.3333333333333333,
+            "nll": null
+          },
+          "probability_metrics_available": false
+        },
+        "by_domain": {
+          "arc_challenge": {
+            "count": 10,
+            "metrics": {
+              "accuracy": 0.5,
+              "balanced_accuracy": 0.5,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.3333333333333333,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          }
+        },
+        "failure_count": 0,
+        "latency": {
+          "count": 10,
+          "max_ms": 84468.28879998066,
+          "mean_ms": 58221.48908999516,
+          "median_ms": 53440.54954999592,
+          "min_ms": 45664.40179999336,
+          "p95_ms": 78638.97435498946
+        },
+        "probability_metrics": {
+          "available": false,
+          "unavailable_reason": "one or more successful predictions did not provide probabilities"
+        },
+        "risk_coverage": {
+          "coverage_at_target_error": {},
+          "curve": []
+        },
+        "status_counts": {
+          "ok": 10
+        },
+        "successful_count": 10,
+        "total_count": 10
+      },
+      "status_counts": {
+        "ok": 10
+      }
+    },
+    "luna": {
+      "model": "opencode/gpt-5.6-luna",
+      "report": {
+        "aggregate": {
+          "count": 10,
+          "metrics": {
+            "accuracy": 0.5,
+            "balanced_accuracy": 0.5,
+            "brier": null,
+            "ece": null,
+            "macro_f1": 0.45054945054945056,
+            "nll": null
+          },
+          "probability_metrics_available": false
+        },
+        "by_domain": {
+          "arc_challenge": {
+            "count": 10,
+            "metrics": {
+              "accuracy": 0.5,
+              "balanced_accuracy": 0.5,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.45054945054945056,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          }
+        },
+        "failure_count": 0,
+        "latency": {
+          "count": 10,
+          "max_ms": 15306.993300007889,
+          "mean_ms": 14303.75332000258,
+          "median_ms": 14921.244049997767,
+          "min_ms": 11684.366900008172,
+          "p95_ms": 15288.834855015739
+        },
+        "probability_metrics": {
+          "available": false,
+          "unavailable_reason": "one or more successful predictions did not provide probabilities"
+        },
+        "risk_coverage": {
+          "coverage_at_target_error": {},
+          "curve": []
+        },
+        "status_counts": {
+          "ok": 10
+        },
+        "successful_count": 10,
+        "total_count": 10
+      },
+      "status_counts": {
+        "ok": 10
+      }
+    },
+    "sol": {
+      "model": "opencode/gpt-5.6-sol",
+      "report": {
+        "aggregate": {
+          "count": 10,
+          "metrics": {
+            "accuracy": 0.3,
+            "balanced_accuracy": 0.30000000000000004,
+            "brier": null,
+            "ece": null,
+            "macro_f1": 0.29292929292929293,
+            "nll": null
+          },
+          "probability_metrics_available": false
+        },
+        "by_domain": {
+          "arc_challenge": {
+            "count": 10,
+            "metrics": {
+              "accuracy": 0.3,
+              "balanced_accuracy": 0.30000000000000004,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.29292929292929293,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          }
+        },
+        "failure_count": 0,
+        "latency": {
+          "count": 10,
+          "max_ms": 15286.713399982546,
+          "mean_ms": 13839.448679998168,
+          "median_ms": 14076.49355000467,
+          "min_ms": 11884.653199987952,
+          "p95_ms": 15100.786134983355
+        },
+        "probability_metrics": {
+          "available": false,
+          "unavailable_reason": "one or more successful predictions did not provide probabilities"
+        },
+        "risk_coverage": {
+          "coverage_at_target_error": {},
+          "curve": []
+        },
+        "status_counts": {
+          "ok": 10
+        },
+        "successful_count": 10,
+        "total_count": 10
+      },
+      "status_counts": {
+        "ok": 10
+      }
+    }
+  },
+  "benchmark_fingerprint": "18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5",
+  "counts": {
+    "arms_attempted": 3,
+    "provider_evaluation": 10,
+    "record_ids_unique": true
+  },
+  "deferred_arms": {
+    "qwen_flash": {
+      "model": "qwen3.8-flash",
+      "provider": "yolo-auto",
+      "reason": "TASK-0010 YOLO-Auto provider block",
+      "status": "deferred_provider_blocked"
+    },
+    "qwen_local_1_7b": {
+      "model": "Qwen3-1.7B",
+      "provider": "local",
+      "reason": "no local weights in the standard Hugging Face cache",
+      "status": "deferred_weights_unavailable"
+    },
+    "qwen_local_4b": {
+      "model": "Qwen3-4B",
+      "provider": "local",
+      "reason": "no local weights in the standard Hugging Face cache",
+      "status": "deferred_weights_unavailable"
+    }
+  },
+  "differential": {
+    "arms": [
+      "grok",
+      "luna",
+      "sol"
+    ],
+    "pairs": {
+      "grok__vs__luna": {
+        "agreement_count": 2,
+        "comparable_count": 10
+      },
+      "grok__vs__sol": {
+        "agreement_count": 4,
+        "comparable_count": 10
+      },
+      "luna__vs__sol": {
+        "agreement_count": 4,
+        "comparable_count": 10
+      }
+    }
+  },
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10"
+  },
+  "experiment_id": "EXP-20260920-010-multi-subscription-bakeoff",
+  "pool_rule": "deterministic first 500 final-evaluation records",
+  "status": "completed",
+  "student": {
+    "retrained": false,
+    "selected_arm": "D",
+    "source_task": "TASK-0009"
+  },
+  "typed_system_one": {
+    "spec_id": "eval-lab-system-one",
+    "spec_version": "0.1.0"
+  }
+}
