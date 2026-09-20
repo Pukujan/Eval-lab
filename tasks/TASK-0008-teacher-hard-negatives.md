@@ -92,3 +92,10 @@ TASK-0009 trains controlled student ablations on the verified corpus.
 The first EXP-004 run was preserved with 18 verified hard negatives and a completed Luna audit. A follow-up attempt using one-record Sol requests still returned an incomplete batch, so those uncommitted outputs were discarded rather than presented as complete. EXP-20260920-006 now freezes an explicit object-shaped single-record Sol request contract before the next run.
 
 Next atomic action: commit the EXP-006 pre-registration and run the final append-only teacher/audit experiment.
+
+
+### 2026-09-20 — EXP-007 final audit protocol
+
+The EXP-006 attempt still received an empty or incomplete Sol object under the first structured prompt. A direct single-record probe succeeded when the expected JSON object was included verbatim with the case context. EXP-20260920-007 freezes that exact prompt shape and one-record request policy before the final run; no EXP-006 outputs are retained.
+
+Next atomic action: commit the EXP-007 pre-registration and run the final append-only teacher/audit experiment.

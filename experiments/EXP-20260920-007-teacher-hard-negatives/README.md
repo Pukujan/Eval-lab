@@ -1,4 +1,4 @@
-# EXP-20260920-006 — Verified Teacher-Assisted Hard Negatives
+# EXP-20260920-007 — Verified Teacher-Assisted Hard Negatives
 
 Status: planned. This experiment asks the exact YOLO-Auto Qwen3.8 Flash model for plausible incorrect candidates and keeps only proposals independently rejected by the deterministic repository verifiers.
 
