@@ -1,6 +1,6 @@
 # TASK-0011 — Eval Lab README Hero Assets
 
-- Status: active
+- Status: completed on branch; PR #27 awaiting merge
 - Owner: Codex/image-generation agent
 - Priority: P1
 - Branch: task/TASK-0011-hero-assets
@@ -31,12 +31,12 @@ Eval Lab evaluates lightweight AI judges against objective labels and trusted an
 
 ## Acceptance criteria
 
-- [ ] Each image is a readable, wide PNG suitable for GitHub README rendering.
-- [ ] Artwork depicts an adult anime-style researcher with a small robot assistant in a tasteful research-lab setting.
-- [ ] On-image copy is minimal, human-readable, and includes a restrained Jev mention.
-- [ ] No explicit sexualization, underage appearance, fake benchmark claims, or dense technical jargon.
-- [ ] README embeds the primary banner using a repository-relative path and preserves existing research content.
-- [ ] Image files are inspected after generation and the working tree passes `git diff --check`.
+- [x] Each image is a readable, wide PNG suitable for GitHub README rendering.
+- [x] Artwork depicts an adult anime-style researcher with a small robot assistant in a tasteful research-lab setting.
+- [x] On-image copy is minimal, human-readable, and includes a restrained Jev mention.
+- [x] No explicit sexualization, underage appearance, fake benchmark claims, or dense technical jargon.
+- [x] README embeds the primary banner using a repository-relative path and preserves existing research content.
+- [x] Image files are inspected after generation and the working tree passes `git diff --check`.
 
 ## Commands
 
@@ -47,7 +47,7 @@ Eval Lab evaluates lightweight AI judges against objective labels and trusted an
 
 ### 2026-09-20 — implementation checkpoint
 
-Status: implementation complete; awaiting push and review. Created the isolated branch and worktree from `origin/main`. Read the project contract, current checkpoint, TASK-0010 context, product design brief, and image-generation instructions.
+Status: completed on branch; PR #27 is open for review. Created the isolated branch and worktree from `origin/main`. Read the project contract, current checkpoint, TASK-0010 context, product design brief, and image-generation instructions.
 
 Completed: defined three README-ready image outputs, generated and visually inspected three wide PNG variants, copied them into `assets/`, and added a primary hero plus collapsible alternatives to `README.md`.
 
@@ -61,7 +61,7 @@ Decision: keep this work isolated from the active TASK-0010 worktree and avoid t
 
 Unresolved questions: none.
 
-Next atomic action: commit the asset checkpoint, push the branch, and open a review PR.
+Next atomic action: merge PR #27, then fast-forward the original `main` checkout when the repository owner accepts the review.
 
 ## Handoff
 
@@ -72,4 +72,4 @@ Read, in order:
 3. this task
 4. `docs/PDD.md`
 
-The branch contains only README presentation changes, generated PNG assets, and this task checkpoint. The primary banner is `assets/eval-lab-banner.png`; the routing and calibration alternatives are in the same directory and are rendered in the README's collapsible alternatives section.
+The branch contains only README presentation changes, generated PNG assets, and this task checkpoint. The primary banner is `assets/eval-lab-banner.png`; the routing and calibration alternatives are in the same directory and are rendered in the README's collapsible alternatives section. Commit `304ef2a` is pushed and PR #27 is open.
