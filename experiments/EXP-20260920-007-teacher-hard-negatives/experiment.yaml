@@ -1,0 +1,41 @@
+id: EXP-20260920-007-teacher-hard-negatives
+status: completed
+hypothesis: Structured teacher proposals can add difficult incorrect candidates while deterministic verification preserves objective truth and source-family split discipline.
+created_at: '2026-09-20T19:30:00Z'
+code_commit: d8de8905f8eda8cadd8883d6f331f092952ba20e
+seed: 20260920
+context_limit: 4096
+dataset:
+  name: eval-lab-synthetic-objective-v1
+  version: synthetic-fixture-v1
+  fingerprint: 03cd497da246c641f84a89fd74380e1f340c327eab7850e0476b8379a7a1052c
+  split_policy: preserve source split; exclude test sources from generation and accepted corpus
+judge:
+  provider: multi-teacher
+  model: yolo-auto/qwen3.8-flash; opencode/grok-4.6 if available; Luna/Sol audit paths if available
+  adapter_version: teacher-hard-negative-v1
+  prompt_version: teacher-hard-negative-json-v1
+rubric:
+  version: canonical-rubric-v1
+gold:
+  provenance_policy: deterministic verifier or answer key; teacher output is weak supervision metadata only
+calibration:
+  method: none
+  split: none
+metrics:
+  - accepted_count
+  - rejection_count
+  - verification_rate
+  - source_split_coverage
+  - source_domain_coverage
+artifacts:
+  - teacher_request_manifest.jsonl
+  - teacher_metadata.json
+  - verified_hard_negatives.jsonl
+  - rejected_generations.jsonl
+  - failure_mode_taxonomy.json
+  - rubric_paraphrases.jsonl
+  - teacher_disagreement_summary.json
+  - results.json
+  - report.md
+notes: Final generation uses exact JSON object Sol prompts with one-record requests and is bounded to 20 non-test synthetic sources. Each source receives one structured YOLO request and is independently verified before acceptance.

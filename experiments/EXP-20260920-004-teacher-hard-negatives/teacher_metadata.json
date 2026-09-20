@@ -1,0 +1,60 @@
+{
+  "accepted_count": 18,
+  "base_url": "https://yolo-auto.com/v1",
+  "context_limit": 4096,
+  "created_at_utc": "2026-09-20T19:30:11.854618+00:00",
+  "luna_audit": {
+    "input_record_ids": [
+      "single-synthetic-arithmetic-02-subtle",
+      "single-synthetic-arithmetic-02-correct",
+      "single-synthetic-multiple-choice-03-obvious",
+      "single-synthetic-arithmetic-02-obvious",
+      "single-synthetic-structured-06-subtle",
+      "single-synthetic-multiple-choice-03-correct",
+      "single-synthetic-structured-06-correct",
+      "single-synthetic-multiple-choice-03-subtle",
+      "single-synthetic-structured-06-obvious",
+      "pair-synthetic-multiple-choice-03-correct-first"
+    ],
+    "model": "opencode/gpt-5.6-luna",
+    "reason": null,
+    "status": "ok"
+  },
+  "model_id": "qwen3.8-flash",
+  "provider": "yolo-auto",
+  "rejected_count": 2,
+  "request_count": 20,
+  "runtime": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10"
+  },
+  "sol_audit": {
+    "input_record_ids": [
+      "arc-pair:MCAS_2009_5_6516",
+      "arc-pair:Mercury_SC_407695",
+      "arc-pair:Mercury_SC_415702",
+      "pair-synthetic-arithmetic-02-incorrect-first",
+      "pair-synthetic-multiple-choice-03-correct-first",
+      "pair-synthetic-multiple-choice-03-incorrect-first",
+      "pair-synthetic-structured-06-correct-first",
+      "single-synthetic-arithmetic-02-obvious",
+      "single-synthetic-multiple-choice-03-correct",
+      "single-synthetic-multiple-choice-03-obvious"
+    ],
+    "model": "opencode/gpt-5.6-sol",
+    "reason": "incomplete_audit_batch",
+    "status": "parse_error"
+  },
+  "source_count": 20,
+  "source_domains": {
+    "arithmetic": 5,
+    "code_output": 5,
+    "multiple_choice": 5,
+    "structured": 5
+  },
+  "source_splits": {
+    "calibration": 2,
+    "dev": 7,
+    "train": 11
+  }
+}

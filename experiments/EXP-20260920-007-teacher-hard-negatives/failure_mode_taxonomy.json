@@ -1,0 +1,20 @@
+{
+  "accepted_counts": {
+    "arithmetic_near_miss": 3,
+    "code_output_mutation": 2
+  },
+  "modes": [
+    "arithmetic_near_miss",
+    "code_output_mutation",
+    "format_confusion",
+    "multiple_choice_distractor",
+    "other",
+    "structured_field_mutation",
+    "unsupported_claim"
+  ],
+  "rejected_counts": {
+    "structured_payload_not_found": 2,
+    "teacher_candidate_verified_correct": 2,
+    "timeout": 11
+  }
+}

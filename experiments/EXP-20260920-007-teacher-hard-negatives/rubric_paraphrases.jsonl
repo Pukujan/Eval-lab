@@ -1,0 +1,4 @@
+{"criterion_id": "objective-correctness", "domain": "arithmetic", "objective_gold_unchanged": true, "paraphrase": "The response must equal the numeric answer key.", "source": "deterministic-template"}
+{"criterion_id": "objective-correctness", "domain": "multiple_choice", "objective_gold_unchanged": true, "paraphrase": "The response must select the answer-key option.", "source": "deterministic-template"}
+{"criterion_id": "objective-correctness", "domain": "structured", "objective_gold_unchanged": true, "paraphrase": "The response must match the required JSON object exactly.", "source": "deterministic-template"}
+{"criterion_id": "objective-correctness", "domain": "code_output", "objective_gold_unchanged": true, "paraphrase": "The response must match the expected normalized output.", "source": "deterministic-template"}
