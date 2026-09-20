@@ -325,28 +325,36 @@ def _opencode_one(
 ) -> JudgePrediction:
     started = time.perf_counter()
     executable = env.get("OPENCODE_EXE") or shutil.which("opencode") or "opencode"
+    command = [
+        executable,
+        "run",
+        "--model",
+        spec.model,
+        "--format",
+        "json",
+        "--log-level",
+        "ERROR",
+        "--dir",
+        str(Path.cwd()),
+        _prompt(record),
+    ]
+    process = subprocess.Popen(
+        command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        env={**os.environ, **env},
+        creationflags=getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0),
+    )
     try:
-        result = subprocess.run(
-            [
-                executable,
-                "run",
-                "--model",
-                spec.model,
-                "--format",
-                "json",
-                "--log-level",
-                "ERROR",
-                "--dir",
-                str(Path.cwd()),
-                _prompt(record),
-            ],
+        stdout, stderr = process.communicate(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        subprocess.run(
+            ["taskkill", "/F", "/T", "/PID", str(process.pid)],
             capture_output=True,
             text=True,
-            timeout=timeout,
-            env={**os.environ, **env},
             check=False,
         )
-    except subprocess.TimeoutExpired:
         return _prediction(
             record,
             spec=spec,
@@ -362,14 +370,14 @@ def _opencode_one(
             started=started,
             error={"kind": "process_error", "type": type(exc).__name__},
         )
-    output = (result.stdout or "") + "\n" + (result.stderr or "")
-    if result.returncode != 0:
+    output = (stdout or "") + "\n" + (stderr or "")
+    if process.returncode != 0:
         return _prediction(
             record,
             spec=spec,
             status=ExecutionStatus.PROVIDER_ERROR,
             started=started,
-            error={"kind": "process_exit", "returncode": result.returncode},
+            error={"kind": "process_exit", "returncode": process.returncode},
         )
     label = _parse_label(output, record)
     if label is None:
