@@ -235,3 +235,12 @@ Mapping:
 | experiment/benchmark/paper provenance | RO-Crate + PROV-O, not PCM |
 
 If PCM research profile becomes available, adopt it in a separate non-destructive task and preserve Eval Lab semantics.
+
+## Normative references
+
+- RO-Crate 1.3: https://www.researchobject.org/ro-crate/1.3/
+- PROV-O: https://www.w3.org/TR/prov-o/
+- SHACL Recommendation: https://www.w3.org/TR/shacl/
+- OWL 2 overview: https://www.w3.org/TR/owl-overview/
+- Citation File Format 1.2.0: https://citation-file-format.github.io/
+- DataCite Metadata Schema 4.6: https://schema.datacite.org/meta/kernel-4.6/
