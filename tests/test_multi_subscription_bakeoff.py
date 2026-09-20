@@ -21,6 +21,11 @@ def test_parse_label_reads_nested_typed_json() -> None:
     assert parse_label('{"event":{"answer":{"label":"pass"}}}', _record()) == "pass"
 
 
+def test_parse_label_reads_json_encoded_in_opencode_text_event() -> None:
+    payload = '{"type":"text","part":{"text":"{\\"label\\":\\"pass\\"}"}}'
+    assert parse_label(payload, _record()) == "pass"
+
+
 def test_parse_label_uses_last_legal_token_for_cli_text() -> None:
     assert parse_label("OpenCode metadata\n{\"label\": \"fail\"}", _record()) == "fail"
 

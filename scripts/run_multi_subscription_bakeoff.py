@@ -97,6 +97,15 @@ def _nested_mappings(value: Any) -> Iterable[Mapping[str, Any]]:
     elif isinstance(value, list):
         for child in value:
             yield from _nested_mappings(child)
+    elif isinstance(value, str):
+        candidate = value.strip()
+        if candidate.startswith(("{", "[")):
+            try:
+                decoded = json.loads(candidate)
+            except json.JSONDecodeError:
+                return
+            if isinstance(decoded, (Mapping, list)):
+                yield from _nested_mappings(decoded)
 
 
 def _json_fragments(text: str) -> Iterable[Mapping[str, Any]]:
