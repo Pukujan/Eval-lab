@@ -3,13 +3,13 @@
 ## Program state
 
 TASK-0001 local bootstrap is complete.
-TASK-0002 through TASK-0006 planning was accepted in PR #11.
+TASK-0002 through TASK-0006 implementation is merged; TASK-0006 merged in PR #21.
 
 The program is extended with TASK-0007 through TASK-0009 to fully use the user's existing model subscriptions/resources after the measurement foundation is complete.
 
 ## Main objective
 
-Continue with TASK-0002 as the next implementation gate.
+Continue with TASK-0007 as the next implementation gate.
 
 ## Model-access decisions
 
@@ -25,7 +25,7 @@ Continue with TASK-0002 as the next implementation gate.
 
 ## Next task
 
-TASK-0006 — Lightweight Local Judge Baseline (#10)
+TASK-0007 — External Judge and Teacher Bakeoff (#12)
 
 ## Queued foundation
 
@@ -48,7 +48,7 @@ GitHub Actions runner scheduling remains infrastructure-only until runners are a
 
 ## Next atomic action
 
-TASK-0006 is active in dedicated worktree `D:\claude\eval-lab-TASK-0006` on branch `task/TASK-0006-lightweight-local-baseline`, starting from accepted `main` merge commit `644202fbdd49a3735775ae1c55d1e621de1044d6`.
+TASK-0006 completed in dedicated worktree `D:\claude\eval-lab-TASK-0006` on branch `task/TASK-0006-lightweight-local-baseline`, starting from accepted `main` merge commit `644202fbdd49a3735775ae1c55d1e621de1044d6`.
 
 ### 2026-09-20 — PR #15 contract validation
 
@@ -104,7 +104,17 @@ TASK-0006 local implementation and validation are complete. Qwen3-0.6B produced 
 
 Local gate: contract `OK`; Ruff clean; `55 passed in 0.55s` using Python `3.12.10`.
 
-Commit `6452bc8` records the calibrated experiment outputs and `b0202e2` records the final local gate. TASK-0006 is pushed in PR [#21](https://github.com/Pukujan/Eval-lab/pull/21). Next atomic action: merge PR #21 after the local merge gate, update local `main`, and only then create the TASK-0007 worktree. Do not start TASK-0007 until TASK-0006 is accepted and merged.
+Commit `6452bc8` records the calibrated experiment outputs, `b0202e2` records the final local gate, and `cf50421` records the review PR. TASK-0006 is pushed in PR [#21](https://github.com/Pukujan/Eval-lab/pull/21), merged into `main` at `6cde993b91a7daca1b51bd8615d38538e80c9f71`. Its jobs were blocked before workflow steps because the GitHub Actions budget prevented further use; the 3.12 jobs were cancelled as a matrix consequence. Local validation remains green.
+
+Next atomic action: update local `main` to the merge commit, then create the TASK-0007 worktree. Do not begin TASK-0007 before this main checkout update is complete.
 TASK-0005 is pushed in PR [#19](https://github.com/Pukujan/Eval-lab/pull/19) at commit `d8f038d1725ffcc1121bc0381ae6cabad2e4136b`.
 
 Next atomic action: merge PR #19 after the local merge gate, update local `main`, and only then create the TASK-0006 worktree.
+
+### 2026-09-20 — TASK-0006 merge checkpoint
+
+PR #21 merged TASK-0006 into `main` at `6cde993b91a7daca1b51bd8615d38538e80c9f71`. Local acceptance criteria are satisfied with repository contract `OK`, Ruff clean, and `55 passed in 0.55s`. GitHub Actions reported that the job was not started because an Actions budget prevented further use; the 3.12 matrix jobs were cancelled after the 3.11 budget failure. No workflow step ran.
+
+Files changed for TASK-0006 are committed on the task branch and included in the merged PR: Qwen judge adapter, runner, tests, raw/calibrated experiment artifacts, task log, and checkpoint log. No credentials, `.env` files, model weights, or caches were committed.
+
+Next atomic action: fast-forward the local `main` checkout to `6cde993b91a7daca1b51bd8615d38538e80c9f71`, then create the dedicated TASK-0007 worktree.
