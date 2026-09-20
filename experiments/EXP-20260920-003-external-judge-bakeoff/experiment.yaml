@@ -1,0 +1,38 @@
+id: EXP-20260920-003-external-judge-bakeoff
+status: planned
+hypothesis: External/subscription judges will provide useful disagreement and failure-cluster evidence on the same frozen objective records, while provider failures remain separable from wrong labels.
+created_at: '2026-09-20T18:55:00Z'
+code_commit: 9aabaa1af64d9956db0d9b07650dd98e6ed70ebc
+seed: 20250920
+context_limit: 4096
+dataset:
+  name: eval-lab-synthetic-plus-arc-task-0006-slice
+  version: task-0006-manifest
+  fingerprint: b7a84b15c5ca352f2689f546721d8038ce9b31ecff711be606016a6996e05521
+  split_policy: reuse committed TASK-0006 record IDs; no new split assignment
+judge:
+  provider: multi-provider
+  model: yolo-auto/qwen3.8-flash; opencode/nemotron-3.5-lightning-free; opencode/mimo-v2.5-free; opencode/grok-4.6
+  adapter_version: external-bakeoff-v1
+  prompt_version: external-forced-choice-v1
+rubric:
+  version: canonical-rubric-v1
+gold:
+  provenance_policy: deterministic_verifier or answer_key only; model output is never promoted to gold
+calibration:
+  method: none
+  split: none
+metrics:
+  - accuracy
+  - brier
+  - ece
+  - coverage
+  - latency
+artifacts:
+  - provider_census.json
+  - predictions.jsonl
+  - results.json
+  - report.md
+  - luna_audit_batch.jsonl
+  - sol_hard_disagreement_batch.jsonl
+notes: Smoke runs use 10 records per arm before the frozen 20-record slice. Stop an arm on unavailable credentials, unresolved model identity, provider policy conflict, or repeated rate limiting; retain the failure state.

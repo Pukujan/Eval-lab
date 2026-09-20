@@ -1,6 +1,6 @@
 # TASK-0007 — External Judge and Teacher Bakeoff
 
-- Status: queued
+- Status: active
 - Owner: Luna/local agent
 - Priority: P0
 - GitHub issue: #12
@@ -82,6 +82,20 @@ Stop an arm if credentials/subscription integration is unavailable, model identi
 ## Checkpoint log
 
 Append exact access results here.
+
+### 2026-09-20 — TASK-0007 start and pre-registration
+
+Created dedicated worktree `D:\\claude\\eval-lab-TASK-0007` on branch `task/TASK-0007-external-bakeoff` from accepted main `9aabaa1af64d9956db0d9b07650dd98e6ed70ebc`. Read `PROJECT.md`, `AGENTS.md`, `checkpoints/CURRENT.md`, this task file, `docs/EXPERIMENT_PROTOCOL.md`, `docs/SDD.md`, `docs/TDD.md`, and `docs/ACCESS_MODEL_MATRIX.md`.
+
+Environment/access observations:
+- Windows 11, Python `3.12.10`, OpenCode CLI `1.18.31`, Node `v24.14.1`.
+- A task-scoped ignored `.env` was created from `C:\\Users\\pujan\\OneDrive\\Desktop\\configs\\.env`; only provider aliases needed by this task were copied. Secret values were not printed or committed.
+- The source configuration exposes a Qwen-compatible URL/key pair. The task alias is `YOLO_AUTO_API_KEY` and the requested model is forced to the exact contract id `qwen3.8-flash`; the source's generic model value is not used.
+- `opencode models` enumerated current provider models, including `opencode/nemotron-3.5-lightning-free`, `opencode/mimo-v2.5-free`, `opencode/grok-4.6`, `opencode/gpt-5.6-luna`, `opencode/gpt-5.6-sol`, and `yolo-auto/qwen3.8-flash`.
+
+Pre-registration: `experiments/EXP-20260920-003-external-judge-bakeoff/README.md` and `experiment.yaml` freeze the hypothesis, 4,096-token cap, TASK-0006 record fingerprint, model arms, metrics, failure exclusions, and audit-batch policy before final predictions.
+
+Next atomic action: implement the provider-neutral external runner and perform 10-record smoke runs for the required YOLO-Auto, two OpenCode free, and surfaced SuperGrok arms.
 
 ## Handoff
 
