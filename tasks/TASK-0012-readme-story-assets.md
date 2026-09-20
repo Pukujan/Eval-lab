@@ -1,6 +1,6 @@
 # TASK-0012 — README Story and Supporting Visual System
 
-- Status: active
+- Status: completed on branch; PR #28 awaiting review
 - Owner: Codex/documentation and visual-design agent
 - Priority: P1
 - Branch: task/TASK-0012-readme-story-assets
@@ -91,7 +91,7 @@ Unresolved questions: none.
 
 ### 2026-09-20 — implementation checkpoint
 
-Status: implementation complete; ready to commit and push for review.
+Status: implementation complete; pushed in commit `52ebd17`; PR #28 is open for review.
 
 Completed: rewrote `README.md` around a human story and a skimmable technical explanation; kept only the original wide hero; added wide, square, and portrait supporting PNGs; replaced the rejected busy square illustration with a calmer subject-first version; added four matching SVG icons; removed unused alternative hero files.
 
@@ -99,13 +99,23 @@ Exact files changed: `README.md`, `assets/eval-lab-problem.png`, `assets/eval-la
 
 Commands run: `git diff --check`; `python scripts/check_repo_contract.py`; `ruff check .`; `PYTHONPATH=<repo>;<repo>\\src pytest -q`; image dimension inspection.
 
-Test results: repository contract OK; Ruff clean; `64 passed in 6.90s`; PNGs validated at 1672×941, 1254×1254, 1024×1536, plus the retained 1672×941 hero.
+Test results: repository contract OK; Ruff clean; `64 passed in 6.90s`; PNGs validated at 1672×941, 1254×1254, 1024×1536, plus the retained 1672×941 hero. GitHub Actions for PR #28 failed before checkout with empty step lists, consistent with the account runner-budget condition; no repository test step ran in CI.
 
 Decision: use concrete, human-scale examples and active voice in the README; keep the technical boundaries explicit; use responsive visual dimensions rather than repeating horizontal banners.
 
 Unresolved questions: none.
 
-Next atomic action: commit, push `task/TASK-0012-readme-story-assets`, and open a review PR.
+Next atomic action: review and merge PR #28 when accepted; no further implementation work is pending.
+
+## Review handoff
+
+PR: https://github.com/Pukujan/Eval-lab/pull/28
+
+Branch: `task/TASK-0012-readme-story-assets`
+
+Commit: `52ebd17`
+
+The primary hero remains `assets/eval-lab-banner.png`. The rejected busy square concept was replaced with `assets/eval-lab-system-square.png`; the README also uses `assets/eval-lab-problem.png`, `assets/eval-lab-evidence-portrait.png`, and four repository-native SVG icons. The old alternative hero files were removed.
 
 ## Handoff
 
