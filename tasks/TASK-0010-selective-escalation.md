@@ -510,6 +510,14 @@ The separate rolling canary was retried with `EVAL_LAB_PROVIDER_WORKERS=4`, `--p
 
 Next atomic action: commit the rolling output/results and checkpoint, then retry Qwen only after YOLO-Auto contention clears; do not substitute Grok or begin TASK-0002.
 
+### 2026-09-20 — Qwen availability recheck
+
+After the rolling run completed, a fresh three-record YOLO-Auto probe used `EVAL_LAB_PROVIDER_WORKERS=2`, base URL `https://yolo-auto.com/v1`, model `qwen3.8-flash`, and timeout `20`. It returned `3 provider_error` statuses. No labels or raw payloads were written. This confirms the current external Qwen availability condition is still unresolved rather than a threshold, schema, or routing defect.
+
+Decision: keep TASK-0010’s frozen provider set unchanged. Grok/Luna and local Qwen 1.7B/4B can be proposed as separately preregistered follow-up arms after TASK-0010 is accepted or explicitly provider-blocked; they cannot replace the required YOLO-Auto arm in this experiment. TASK-0006’s local Qwen3-0.6B remains the existing local baseline in the broader program.
+
+Next atomic action: leave the Qwen arm explicitly unresolved and retry only after provider contention changes; do not open a new arm or begin TASK-0002 from this checkpoint.
+
 ## Handoff
 
 Read, in order:

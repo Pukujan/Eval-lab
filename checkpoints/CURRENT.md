@@ -281,3 +281,9 @@ Next atomic action: retry only the Qwen arm during a stable YOLO-Auto window, th
 Rolling Jev was run separately with 4 workers, provider limit `500`, and 12-second timeout. Model `~typesafe/jev-latest` returned `500 ok`; pinned `typesafe/jev-1.13` remains a separate `500 ok` arm. `provider-rolling.jsonl` and `provider-pinned.jsonl` remain separate, with no pooled pinned/rolling estimate. Research artifacts were regenerated, benchmark release bytes were canonicalized to LF, and artifact validation returned checksums `ok`, RO-Crate `ok`, PROV-O parsed, SHACL conforms, CFF parsed, and paper present. Qwen remains unresolved with no final labels; the System-One smoke differential remains `1/1` comparable and agreeing.
 
 Next atomic action: commit the rolling output/results and checkpoint, then retry Qwen only after YOLO-Auto contention clears; do not substitute Grok or begin TASK-0002.
+
+### 2026-09-20 — Qwen availability recheck
+
+A fresh three-record YOLO-Auto probe for `qwen3.8-flash` with 2 workers and 20-second timeout returned `3 provider_error`; no labels or raw payloads were written. This remains an external provider availability condition. The frozen TASK-0010 arm set is unchanged. Grok/Luna and local Qwen 1.7B/4B remain candidates for a separately preregistered follow-up after TASK-0010 acceptance or explicit provider-blocking; TASK-0006’s local Qwen3-0.6B remains the existing broader-program baseline.
+
+Next atomic action: retry Qwen only after provider contention changes; retain TASK-0010 active and do not expand the current experiment or begin TASK-0002.
