@@ -1,6 +1,6 @@
 # TASK-0012 — README Story and Supporting Visual System
 
-- Status: completed on branch; PR #28 awaiting review
+- Status: completed and merged into `main`
 - Owner: Codex/documentation and visual-design agent
 - Priority: P1
 - Branch: task/TASK-0012-readme-story-assets
@@ -91,7 +91,7 @@ Unresolved questions: none.
 
 ### 2026-09-20 — implementation checkpoint
 
-Status: implementation complete; pushed in commit `52ebd17`; PR #28 is open for review.
+Status: implementation complete and merged into `main` via PR #28.
 
 Completed: rewrote `README.md` around a human story and a skimmable technical explanation; kept only the original wide hero; added wide, square, and portrait supporting PNGs; replaced the rejected busy square illustration with a calmer subject-first version; added four matching SVG icons; removed unused alternative hero files.
 
@@ -105,7 +105,7 @@ Decision: use concrete, human-scale examples and active voice in the README; kee
 
 Unresolved questions: none.
 
-Next atomic action: review and merge PR #28 when accepted; no further implementation work is pending.
+Next atomic action: none for TASK-0012; the README and visual system are available on `main`.
 
 ## Review handoff
 
@@ -115,7 +115,7 @@ Branch: `task/TASK-0012-readme-story-assets`
 
 Commit: `52ebd17`
 
-The primary hero remains `assets/eval-lab-banner.png`. The rejected busy square concept was replaced with `assets/eval-lab-system-square.png`; the README also uses `assets/eval-lab-problem.png`, `assets/eval-lab-evidence-portrait.png`, and four repository-native SVG icons. The old alternative hero files were removed.
+The primary hero remains `assets/eval-lab-banner.png`. The rejected busy square concept was replaced with `assets/eval-lab-system-square.png`; the README also uses `assets/eval-lab-problem.png`, `assets/eval-lab-evidence-portrait.png`, and four repository-native SVG icons. The old alternative hero files were removed. PR #28 merged at `c9411fb33e5d242cd90c333e552b30f82b6882fb`.
 
 ## Handoff
 
@@ -128,3 +128,21 @@ Read, in order:
 5. `docs/SDD.md`
 
 The existing primary hero `assets/eval-lab-banner.png` is retained. The README should use it once at the top and use the new supporting assets throughout the body.
+
+### 2026-09-20 — merge checkpoint
+
+Status: completed and merged into `main`.
+
+Completed work: confirmed PR #28 had no file-level merge conflict, diagnosed its red GitHub checks as pre-step runner-budget failures with empty job step lists, merged the PR normally, and fast-forwarded the original local `main` checkout.
+
+Exact files changed: `README.md`, `assets/eval-lab-problem.png`, `assets/eval-lab-system-square.png`, `assets/eval-lab-evidence-portrait.png`, `assets/icons/*.svg`, removed the two unused alternative hero PNGs, and this task file.
+
+Commands run: `gh pr view 28`; `gh pr merge 28 --merge --delete-branch=false`; `git fetch origin refs/heads/main:refs/remotes/origin/main`; `git merge --ff-only origin/main`.
+
+Test results: local contract, Ruff, diff check, and `64 passed` were recorded before merge. GitHub Actions still failed before checkout with empty job steps because the account runner budget was unavailable; no repository test step ran in CI.
+
+Decision: merge was appropriate because the branch was conflict-free and the local gate passed; the CI failure was external to the repository changes.
+
+Unresolved questions: GitHub Actions runner-budget availability remains an external repository condition.
+
+Next atomic action: none for TASK-0012; continue the active research task in its dedicated worktree.
