@@ -102,9 +102,9 @@ PR #19 merged TASK-0005 into `main` at `644202fbdd49a3735775ae1c55d1e621de1044d6
 
 TASK-0006 local implementation and validation are complete. Qwen3-0.6B produced 20/20 normalized predictions on the committed synthetic/ARC slice; the calibrated follow-up improved held-out NLL, Brier, and ECE using separate calibration records.
 
-Local gate: contract `OK`; Ruff clean; `55 passed in 1.34s` using Python `3.12.10`.
+Local gate: contract `OK`; Ruff clean; `55 passed in 0.55s` using Python `3.12.10`.
 
-Next atomic action: commit and push TASK-0006, open its review PR, and update the task/checkpoint log with the PR URL before merging. Do not start TASK-0007 until TASK-0006 is accepted and merged.
+Commit `6452bc8` records the calibrated experiment outputs and final checkpoint. Next atomic action: push TASK-0006, open its review PR, and update the task/checkpoint log with the PR URL before merging. Do not start TASK-0007 until TASK-0006 is accepted and merged.
 TASK-0005 is pushed in PR [#19](https://github.com/Pukujan/Eval-lab/pull/19) at commit `d8f038d1725ffcc1121bc0381ae6cabad2e4136b`.
 
 Next atomic action: merge PR #19 after the local merge gate, update local `main`, and only then create the TASK-0006 worktree.

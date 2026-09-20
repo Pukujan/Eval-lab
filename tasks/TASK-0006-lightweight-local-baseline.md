@@ -162,7 +162,7 @@ Calibration evidence:
 Validation commands and exact results:
 - `& D:\\claude\\eval-lab\\.venv\\Scripts\\python.exe scripts/check_repo_contract.py` -> `Repository contract OK`.
 - `& D:\\claude\\eval-lab\\.venv\\Scripts\\ruff.exe check .` -> `All checks passed!`.
-- `& D:\\claude\\eval-lab\\.venv\\Scripts\\python.exe -m pytest -q` -> `55 passed in 1.34s`.
+- `& D:\\claude\\eval-lab\\.venv\\Scripts\\python.exe -m pytest -q` -> `55 passed in 0.55s`.
 
 Decisions:
 - Use forced-choice conditional sequence log-likelihoods and softmax over the exact canonical class set; raw log-scores and normalized probabilities are retained.
@@ -174,7 +174,20 @@ Recommendation: use this evidence to define the next bounded research task aroun
 
 Blockers: none. The known GitHub Actions no-runner condition remains external infrastructure; local validation is green.
 
-Next atomic action: commit the completed TASK-0006 artifacts and checkpoint, push `task/TASK-0006-lightweight-local-baseline`, open the review PR, and update this log with its URL before merge.
+Next atomic action: push commit `6452bc8` on `task/TASK-0006-lightweight-local-baseline`, open the review PR, and update this log with its URL before merge.
+
+### 2026-09-20 — final local gate and commit
+
+Removed the temporary `.venv-qwen` runtime directory; model weights remained outside the repository. Reinstalled the package editable into the shared local validation environment so imports resolve from this dedicated worktree.
+
+Final commands and results:
+- `D:\\claude\\eval-lab\\.venv\\Scripts\\python.exe scripts/check_repo_contract.py` -> `Repository contract OK`.
+- `D:\\claude\\eval-lab\\.venv\\Scripts\\ruff.exe check .` -> `All checks passed!`.
+- `D:\\claude\\eval-lab\\.venv\\Scripts\\python.exe -m pytest -q` -> `55 passed in 0.55s`.
+- `git diff --check` -> clean before commit.
+- Commit `6452bc8` (`TASK-0006: record calibrated feasibility results`) -> recorded the calibrated experiment outputs, report, and checkpoint updates.
+
+Next atomic action: push `task/TASK-0006-lightweight-local-baseline`, open the review PR, and update this log with its URL before merge.
 
 ## Handoff
 
