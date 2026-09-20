@@ -1,6 +1,6 @@
 # TASK-0009 — Small Judge Training and Calibration Pilot
 
-- Status: ready-for-review
+- Status: completed — local acceptance criteria met; PR #24 merged
 - Owner: Luna/local agent
 - Priority: P0
 - GitHub issue: #14
@@ -146,6 +146,22 @@ CI diagnosis after local validation: runs `35534868582` (push) and `35534871113`
 Files and decisions are recorded in the completed EXP-008 bundle and the local checkpoint. No credentials, `.env` files, model weights, or caches were committed.
 
 Next atomic action: merge PR #24, record the merge checkpoint, fast-forward the original `main` checkout, and push the checkpoint commit to `main`. Do not start a dependent task.
+
+### 2026-09-20 — TASK-0009 merge checkpoint
+
+PR #24 (`https://github.com/Pukujan/Eval-lab/pull/24`) merged into `main` at `286731c035ea2149a98a64e4877ce2d768893631` on 2026-09-20 20:15:01 UTC. The dedicated worktree was `D:/claude/eval-lab-TASK-0009` on branch `task/TASK-0009-small-judge-training`.
+
+Environment: Windows PowerShell; Python `3.12.10`; Git `2.51.2.windows.1`; Node `v24.14.1`; OpenCode CLI `1.18.31`. Secret-bearing environment variables remained local and ignored; no values were printed or committed.
+
+Commands and results: `PYTHONPATH=src python scripts/run_small_judge_training.py --output-dir experiments/EXP-20260920-008-small-judge-training` completed EXP-008 and selected arm D; `python scripts/check_repo_contract.py` returned `Repository contract OK`; `ruff check .` returned `All checks passed!`; `PYTHONPATH=src python -m pytest -q` returned `64 passed in 4.35s`; `git diff --check` was clean; `gh pr merge 24 --merge --delete-branch=false` succeeded; `gh pr view 24 --json state,mergedAt,mergeCommit,url` returned `MERGED` with merge commit `286731c035ea2149a98a64e4877ce2d768893631`. CI runs `35534868582` and `35534871113` did not start workflow steps because the account Actions budget prevented further use; 3.12 jobs were cancelled.
+
+Files changed: `src/eval_lab/training.py`, `scripts/run_small_judge_training.py`, `tests/test_training.py`, all EXP-008 artifacts, the TASK-0009 log, and `checkpoints/CURRENT.md`. No credentials, `.env` files, model weights, or caches were committed.
+
+Decisions: accept the bounded single-answer pilot with arm D selected and arm E calibration retained as a reproducible artifact, while recording the calibration regression and pairwise/memory scope limits. Local evidence satisfies all acceptance criteria; CI is an external account condition.
+
+Blockers: none for TASK-0009 acceptance. GitHub Actions remains unavailable before workflow steps due to the account budget/no-runner condition.
+
+Next atomic action: fast-forward the original `D:/claude/eval-lab` checkout to `286731c035ea2149a98a64e4877ce2d768893631`, cherry-pick this post-merge checkpoint, and push `main`. No dependent task is queued.
 
 ## Handoff
 
