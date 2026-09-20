@@ -1,0 +1,37 @@
+id: EXP-20260920-001-qwen-0-6b-raw
+status: completed
+hypothesis: Qwen3-0.6B can produce reproducible forced-choice probabilities on a bounded mixed synthetic and ARC slice within local hardware limits.
+created_at: 2026-09-20T18:29:50.970369+00:00
+code_commit: 13ffb83f2618baf41f2d15ebabd8824b864d6c14
+seed: 20260920
+context_limit: 4096
+dataset:
+  name: synthetic-objective-v1 plus allenai/ai2_arc ARC-Challenge
+  version: ARC revision 210d026faf9955653af8916fad021475a3f00453
+  fingerprint: b7a84b15c5ca352f2689f546721d8038ce9b31ecff711be606016a6996e05521
+  split_policy: synthetic test records plus committed six-record ARC slice
+judge:
+  provider: local-transformers
+  model: Qwen/Qwen3-0.6B
+  adapter_version: qwen-forced-choice-v1
+  prompt_version: qwen-objective-judge-prompt-v1
+rubric:
+  version: canonical-record-rubric-v1
+gold:
+  provenance_policy: deterministic verifiers and ARC answer_key; model outputs are predictions only
+calibration:
+  method: none in raw arm
+  split: not applicable
+metrics:
+  - accuracy
+  - balanced_accuracy
+  - macro_f1
+  - brier
+  - nll
+  - ece
+  - latency
+artifacts:
+  - predictions.jsonl
+  - metrics.json
+  - report.md
+notes: GPU and runtime details are recorded in manifest.json. This feasibility arm has no successful Jev comparison because the provider smoke was rate limited.

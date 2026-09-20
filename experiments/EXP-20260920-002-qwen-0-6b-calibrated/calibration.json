@@ -1,0 +1,18 @@
+{
+  "applied_record_count": 9,
+  "artifact": {
+    "class_order": [
+      "pass",
+      "fail"
+    ],
+    "code_version": "eval-lab-0.1.0",
+    "fit_split": "calibration",
+    "input_semantics": "class probabilities; p_calibrated = softmax(log(p) / temperature)",
+    "method": "temperature",
+    "parameters": {
+      "temperature": 20.09618943455915
+    }
+  },
+  "fit_record_count": 6,
+  "status": "completed"
+}

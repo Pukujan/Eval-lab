@@ -25,7 +25,7 @@ Continue with TASK-0002 as the next implementation gate.
 
 ## Next task
 
-TASK-0005 — ARC-Challenge Public Benchmark Adapter (#9)
+TASK-0006 — Lightweight Local Judge Baseline (#10)
 
 ## Queued foundation
 
@@ -48,7 +48,7 @@ GitHub Actions runner scheduling remains infrastructure-only until runners are a
 
 ## Next atomic action
 
-TASK-0005 is active in dedicated worktree `D:\claude\eval-lab-TASK-0005` on branch `task/TASK-0005-public-benchmark`, starting from accepted `main` merge commit `ec083499e8ce77c8cf2cf0614b05265ead24dd93`.
+TASK-0006 is active in dedicated worktree `D:\claude\eval-lab-TASK-0006` on branch `task/TASK-0006-lightweight-local-baseline`, starting from accepted `main` merge commit `644202fbdd49a3735775ae1c55d1e621de1044d6`.
 
 ### 2026-09-20 — PR #15 contract validation
 
@@ -98,7 +98,13 @@ TASK-0005 local implementation and validation are complete. Live source revision
 
 Local gate: contract `OK`; Ruff clean; `52 passed in 0.77s` using Python `3.12.10`.
 
-Next atomic action: commit and push TASK-0005, open its review PR, and update the task/checkpoint log with the PR URL before merging.
+PR #19 merged TASK-0005 into `main` at `644202fbdd49a3735775ae1c55d1e621de1044d6`. TASK-0006 is active in `D:\claude\eval-lab-TASK-0006` on `task/TASK-0006-lightweight-local-baseline`.
+
+TASK-0006 local implementation and validation are complete. Qwen3-0.6B produced 20/20 normalized predictions on the committed synthetic/ARC slice; the calibrated follow-up improved held-out NLL, Brier, and ECE using separate calibration records.
+
+Local gate: contract `OK`; Ruff clean; `55 passed in 0.55s` using Python `3.12.10`.
+
+Commit `6452bc8` records the calibrated experiment outputs and `b0202e2` records the final local gate. TASK-0006 is pushed in PR [#21](https://github.com/Pukujan/Eval-lab/pull/21). Next atomic action: merge PR #21 after the local merge gate, update local `main`, and only then create the TASK-0007 worktree. Do not start TASK-0007 until TASK-0006 is accepted and merged.
 TASK-0005 is pushed in PR [#19](https://github.com/Pukujan/Eval-lab/pull/19) at commit `d8f038d1725ffcc1121bc0381ae6cabad2e4136b`.
 
 Next atomic action: merge PR #19 after the local merge gate, update local `main`, and only then create the TASK-0006 worktree.
