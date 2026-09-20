@@ -19,6 +19,7 @@ REQUIRED_FILES = [
     "docs/PROGRAM_PLAN.md",
     "docs/VALIDATION_MATRIX.md",
     "docs/LUNA_PROGRAM_HANDOFF.md",
+    "docs/ACCESS_MODEL_MATRIX.md",
     "checkpoints/CURRENT.md",
     "tasks/README.md",
     "tasks/TASK-0001-bootstrap-lab.md",
@@ -27,6 +28,9 @@ REQUIRED_FILES = [
     "tasks/TASK-0004-metrics-calibration.md",
     "tasks/TASK-0005-public-benchmark.md",
     "tasks/TASK-0006-lightweight-local-baseline.md",
+    "tasks/TASK-0007-external-judge-teacher-bakeoff.md",
+    "tasks/TASK-0008-teacher-hard-negatives.md",
+    "tasks/TASK-0009-small-judge-training.md",
     "experiments/README.md",
 ]
 
@@ -39,6 +43,9 @@ PROGRAM_TASKS = {
     "TASK-0004-metrics-calibration.md": "TASK-0002",
     "TASK-0005-public-benchmark.md": "TASK-0002",
     "TASK-0006-lightweight-local-baseline.md": "TASK-0005",
+    "TASK-0007-external-judge-teacher-bakeoff.md": "TASK-0006",
+    "TASK-0008-teacher-hard-negatives.md": "TASK-0007",
+    "TASK-0009-small-judge-training.md": "TASK-0008",
 }
 
 PROGRAM_HEADINGS = (
@@ -101,7 +108,16 @@ def check_program_checkpoint(failures: list[str]) -> None:
     program = ROOT / "docs" / "PROGRAM_PLAN.md"
     if program.is_file():
         program_text = program.read_text(encoding="utf-8")
-        for task_id in ("TASK-0002", "TASK-0003", "TASK-0004", "TASK-0005", "TASK-0006"):
+        for task_id in (
+            "TASK-0002",
+            "TASK-0003",
+            "TASK-0004",
+            "TASK-0005",
+            "TASK-0006",
+            "TASK-0007",
+            "TASK-0008",
+            "TASK-0009",
+        ):
             if task_id not in program_text:
                 error(f"PROGRAM_PLAN missing {task_id}", failures)
 
