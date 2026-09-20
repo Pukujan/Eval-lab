@@ -1,5 +1,7 @@
 # Eval Lab Project Contract
 
+<!-- continuity:project {"id":"eval-lab","protocol_version":"0.1.0-draft","schema":"project-continuity.project.v1","title":"Eval Lab"} -->
+
 ## Main goal
 
 Build a reproducible laboratory for evaluating and calibrating lightweight AI judge systems across multiple domains, with objective benchmarks and deterministic verifiers used as the primary source of truth wherever possible.
