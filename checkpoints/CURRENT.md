@@ -3,13 +3,13 @@
 ## Program state
 
 TASK-0001 local bootstrap is complete.
-TASK-0002 through TASK-0007 implementation is merged; TASK-0007 merged in PR #22.
+TASK-0002 through TASK-0008 implementation is merged; TASK-0008 merged in PR #23.
 
 The program is extended with TASK-0007 through TASK-0009 to fully use the user's existing model subscriptions/resources after the measurement foundation is complete.
 
 ## Main objective
 
-Continue with TASK-0008 as the next implementation gate.
+Continue with TASK-0009 as the next implementation gate.
 
 ## Model-access decisions
 
@@ -147,3 +147,13 @@ TASK-0008 produced EXP-20260920-007 with 5 independently verified YOLO-Auto hard
 Local gate: repository contract OK; Ruff clean; 60 passed in 1.60s. Provider timeouts are recorded separately from verifier outcomes. No credentials, .env files, or private data were committed.
 
 Next atomic action: commit the review checkpoint, push TASK-0008, open its review PR, and do not start TASK-0009 until TASK-0008 is accepted and merged.
+
+### 2026-09-20 — TASK-0008 merge checkpoint
+
+PR #23 (`https://github.com/Pukujan/Eval-lab/pull/23`) merged TASK-0008 into `main` at `bce665e8601686a860d14c4ed5671b33afa660ef` on 2026-09-20 19:59:24 UTC. Local acceptance was green: `python scripts/check_contract.py` returned `Repository contract OK`, `ruff check .` returned clean, and `pytest -q` returned `60 passed in 1.60s`. GitHub Actions still reported the external account Actions budget/no-runner condition before any workflow step.
+
+Environment: Windows PowerShell; Python 3.12.10; Git 2.51.2.windows.1; Node v24.14.1; OpenCode CLI 1.18.31. No secrets were printed or committed.
+
+Files changed: `scripts/generate_hard_negatives.py`, `tests/test_hard_negatives.py`, EXP-004 and EXP-007 experiment artifacts, the TASK-0008 log, and this checkpoint log. Decisions and blockers are recorded in the task log. The final corpus contains 5 independently verified hard negatives, 10 Luna audits, 10 Sol audits, and explicit rejected/timeout/provider-blocked states.
+
+Next atomic action: fast-forward `D:/claude/eval-lab` to `bce665e8601686a860d14c4ed5671b33afa660ef`, cherry-pick the post-merge checkpoint commit, push `main`, then create the TASK-0009 worktree. Do not start TASK-0009 before that update is complete.

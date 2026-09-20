@@ -1,6 +1,6 @@
 # TASK-0008 — Verified Teacher-Assisted Hard Negatives
 
-- Status: ready-for-review
+- Status: completed — local acceptance criteria met; PR #23 merged
 - Owner: Luna/local agent
 - Priority: P0
 - GitHub issue: #13
@@ -120,3 +120,19 @@ Next atomic action: commit the EXP-007 pre-registration and run the final append
 TASK-0008 is locally complete. Final experiment EXP-20260920-007 records 5 verified hard negatives, 10 Luna audits, 10 Sol audits, explicit rejected generation reasons, and SuperGrok unavailable status. Local gate: contract OK, Ruff clean, 60 passed in 1.60s.
 
 Next atomic action: push the task branch, open the review PR, and update this log with its URL before merge.
+
+### 2026-09-20 — TASK-0008 merge checkpoint
+
+PR #23 (`https://github.com/Pukujan/Eval-lab/pull/23`) merged into `main` at `bce665e8601686a860d14c4ed5671b33afa660ef` on 2026-09-20 19:59:24 UTC. The task branch was `task/TASK-0008-teacher-hard-negatives` and the dedicated worktree was `D:/claude/eval-lab-TASK-0008`.
+
+Environment: Windows PowerShell; Python 3.12.10; Git 2.51.2.windows.1; Node v24.14.1; OpenCode CLI 1.18.31. Secret-bearing environment variables were used locally through the ignored `.env`; no values were printed or committed.
+
+Commands and results: `python scripts/check_contract.py` returned `Repository contract OK`; `ruff check .` returned clean; `pytest -q` returned `60 passed in 1.60s`; `gh pr merge 23 --merge --delete-branch=false` succeeded; `gh pr view 23 --json state,mergedAt,mergeCommit,url` returned `MERGED`, merge commit `bce665e8601686a860d14c4ed5671b33afa660ef`, and the PR URL. GitHub Actions did not start a workflow step because the account Actions budget/no-runner condition remained in force.
+
+Files changed for TASK-0008: `scripts/generate_hard_negatives.py`, `tests/test_hard_negatives.py`, `experiments/EXP-20260920-004-teacher-hard-negatives/`, `experiments/EXP-20260920-007-teacher-hard-negatives/`, this task log, and `checkpoints/CURRENT.md`. No credentials, `.env` files, model weights, or caches were committed.
+
+Decisions: preserve EXP-004 and EXP-007 append-only; accept only deterministic-verifier-backed incorrect candidates; keep teacher output as weak supervision; exclude test sources and unverifiable/verifier-correct generations; retain Luna, Sol, timeout, and SuperGrok blocked status as explicit evidence.
+
+Blockers: 11 YOLO timeouts and the unavailable SuperGrok provider path reduced final accepted coverage to 5; GitHub Actions remains unavailable before workflow steps. These conditions are recorded and do not block the satisfied local acceptance criteria.
+
+Next atomic action: fast-forward the original `main` checkout to merge commit `bce665e8601686a860d14c4ed5671b33afa660ef`, cherry-pick the post-merge checkpoint commit, push `main`, then create the dedicated TASK-0009 worktree.
