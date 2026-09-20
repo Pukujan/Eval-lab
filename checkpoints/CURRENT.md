@@ -3,66 +3,49 @@
 ## Program state
 
 TASK-0001 local bootstrap is complete.
+TASK-0002 through TASK-0006 planning was accepted in PR #11.
 
-Planning for TASK-0002 through TASK-0006 is defined on the program planning branch.
+The program is extended with TASK-0007 through TASK-0009 to fully use the user's existing model subscriptions/resources after the measurement foundation is complete.
 
 ## Main objective
 
-Begin TASK-0002 only after the program plan is accepted/merged into the branch Luna will use.
+Continue with TASK-0002 as the next implementation gate.
 
-## Completed
+## Model-access decisions
 
-- clean repository bootstrap
-- Windows Python 3.12 local validation
-- repository contract, Ruff, and pytest pass
-- Jev endpoint connectivity established; live inference currently rate-limited by OpenCode free quota
-- GitHub Actions no-runner failure classified as account/runner infrastructure
-- v0 task sequence and validation gates defined for TASK-0002 through TASK-0006
+- Jev baseline uses exact model id `jev-1.13-free`; no automatic paid fallback.
+- Qwen3.8 Flash authoritative automated path is YOLO-Auto:
+  - base URL `https://yolo-auto.com/v1`
+  - model `qwen3.8-flash`
+  - environment variable `YOLO_AUTO_API_KEY`
+  - user reports the credential is already configured locally
+- SuperGrok should be actively used through supported subscription OAuth/OpenCode integration.
+- ChatGPT Luna/Sol should be actively used through reproducible audit-batch handoffs, not treated as OpenAI API access.
+- OpenCode free general models should be enumerated and benchmarked in a bounded representative set.
 
 ## Next task
 
 TASK-0002 — Canonical Schema and Objective Fixtures (#6)
 
-Its output is the stable data contract used by every later judge, metric, calibration method, and public benchmark adapter.
+## Queued foundation
 
-## Queued
-
-- TASK-0003 — Jev Objective Baseline (#7)
+- TASK-0003 — Jev Free Baseline (#7)
 - TASK-0004 — Metrics and Calibration (#8)
 - TASK-0005 — ARC-Challenge Adapter (#9)
 - TASK-0006 — Lightweight Local Judge (#10)
 
+## Queued extension
+
+- TASK-0007 — External Judge and Teacher Bakeoff (#12)
+- TASK-0008 — Verified Teacher Hard Negatives (#13)
+- TASK-0009 — Small Judge Training Pilot (#14)
+
 ## External conditions
 
-### Jev
+Jev may remain rate-limited; this is an execution state and does not block the rest of the program.
 
-Last TASK-0001 live request reached OpenCode and returned HTTP 429 FreeUsageLimitError.
-
-This does not block TASK-0002. TASK-0003 must model the condition as rate_limited. If quota remains unavailable, mocked provider validation is sufficient to continue to TASK-0004.
-
-### GitHub Actions
-
-Known jobs were dispatched without an assigned runner or steps. Continue to use exact local validation evidence until runner scheduling is restored.
+GitHub Actions runner scheduling remains infrastructure-only until runners are assigned; local validation remains authoritative.
 
 ## Next atomic action
 
-Accept/merge the program plan, then Luna creates a dedicated TASK-0002 worktree/branch from the accepted head and follows `docs/LUNA_PROGRAM_HANDOFF.md`.
-
-## Program-plan validation checkpoint
-
-### 2026-09-20 — Codex/local agent
-
-Validated the expected program branch head `0865d2914da6658f321160dc06525a6c12417fd4` on local Windows Python 3.12.10.
-
-Exact commands and results:
-
-- `git fetch --all --prune` -> completed; the single-branch clone required an explicit fetch of `program/TASK-0002-0006-plan`.
-- `git switch program/TASK-0002-0006-plan` -> local branch created from the verified remote head after the explicit fetch.
-- `git pull --ff-only` -> `Already up to date.`
-- `.venv\Scripts\python.exe scripts/check_repo_contract.py` -> `Repository contract OK`.
-- `.venv\Scripts\ruff.exe check .` -> `All checks passed!`.
-- `.venv\Scripts\python.exe -m pytest -q` -> `10 passed in 0.74s`.
-
-Decision: the program planning contract is locally accepted for merge. The known GitHub Actions no-runner condition remains infrastructure-only and does not weaken the local merge gate.
-
-Next atomic action: merge PR #11 into `main`, update local `main`, then create the dedicated TASK-0002 branch/worktree and begin only the scope in `tasks/TASK-0002-canonical-schema-fixtures.md`.
+Validate and merge the TASK-0007-0009 program extension, then continue TASK-0002 from accepted main. Do not skip the measurement foundation to start teacher generation early.
