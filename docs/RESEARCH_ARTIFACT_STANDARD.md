@@ -214,6 +214,7 @@ Project Continuity Modules (PCM) is a complementary continuity protocol, not the
 
 Current inspected PCM state:
 - repository: `Pukujan/project-continuity-modules`
+- inspected commit: `3a34b4a73842c824de5359f06e04568e8ce4aaa4`
 - status described as 0.1.0-draft
 - Git-native PROJECT/CURRENT/TASK/CHECKPOINT/CONTEXT PACK model
 - JSON Schema draft 2020-12 contracts
