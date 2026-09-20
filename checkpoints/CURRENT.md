@@ -3,13 +3,13 @@
 ## Program state
 
 TASK-0001 local bootstrap is complete.
-TASK-0002 through TASK-0008 implementation is merged; TASK-0008 merged in PR #23.
+TASK-0002 through TASK-0009 implementation is merged; TASK-0009 merged in PR #24.
 
 The program is extended with TASK-0007 through TASK-0009 to fully use the user's existing model subscriptions/resources after the measurement foundation is complete.
 
 ## Main objective
 
-Continue with TASK-0009 as the next implementation gate.
+TASK-0009 is complete; no dependent task is queued.
 
 ## Model-access decisions
 
@@ -25,7 +25,7 @@ Continue with TASK-0009 as the next implementation gate.
 
 ## Next task
 
-TASK-0009 — Small Judge Training and Calibration Pilot (#14)
+No next task is queued after TASK-0009.
 
 ## Queued foundation
 
@@ -59,6 +59,16 @@ Local gate: `python scripts/check_repo_contract.py` -> `Repository contract OK`;
 Files changed: `src/eval_lab/training.py`, `scripts/run_small_judge_training.py`, `tests/test_training.py`, EXP-008 artifacts, TASK-0009 log, and this checkpoint log. No source-family leakage was detected; test labels were not used in fitting, selection, or calibration.
 
 Next atomic action: commit the final TASK-0009 checkpoint, push the branch, open its review PR, and wait for acceptance/merge before any dependent task.
+
+### 2026-09-20 — TASK-0009 merge checkpoint
+
+PR #24 (`https://github.com/Pukujan/Eval-lab/pull/24`) merged TASK-0009 into `main` at `286731c035ea2149a98a64e4877ce2d768893631` on 2026-09-20 20:15:01 UTC. Local acceptance remained green: contract `OK`, Ruff clean, `64 passed in 4.35s`, and `git diff --check` clean. CI runs `35534868582` and `35534871113` reported the account Actions budget before workflow steps; the 3.12 jobs were cancelled.
+
+Environment: Windows PowerShell; Python `3.12.10`; Git `2.51.2.windows.1`; Node `v24.14.1`; OpenCode CLI `1.18.31`. No secrets were printed or committed.
+
+Files changed: `src/eval_lab/training.py`, `scripts/run_small_judge_training.py`, `tests/test_training.py`, EXP-008 artifacts, the TASK-0009 log, and this checkpoint log. No dependent task is queued.
+
+Next atomic action: fast-forward the original `D:/claude/eval-lab` checkout to `286731c035ea2149a98a64e4877ce2d768893631`, cherry-pick this checkpoint, and push `main`.
 
 ### 2026-09-20 — TASK-0009 review handoff
 
