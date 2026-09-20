@@ -17,6 +17,13 @@ Train and calibrate the first lightweight rubric judge using objective supervisi
 - TASK-0004 calibration/metrics
 - local feasibility evidence from TASK-0006
 
+## Outputs
+
+- selected student and rationale
+- reproducible training-arm configurations and fingerprints
+- ablation table with objective and calibration metrics
+- calibrated best artifact/configuration with retained provenance
+
 ## Student selection
 
 Eligible:

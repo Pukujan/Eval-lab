@@ -49,3 +49,15 @@ GitHub Actions runner scheduling remains infrastructure-only until runners are a
 ## Next atomic action
 
 Validate and merge the TASK-0007-0009 program extension, then continue TASK-0002 from accepted main. Do not skip the measurement foundation to start teacher generation early.
+
+### 2026-09-20 — PR #15 contract validation
+
+PR #15 initially failed the local planning contract because `tasks/TASK-0009-small-judge-training.md` lacked the required `## Outputs` heading. Added the missing task outputs without changing the program scope.
+
+After the correction, rerun the local merge gate on the PR branch:
+
+- `.venv\Scripts\python.exe scripts/check_repo_contract.py`
+- `.venv\Scripts\ruff.exe check .`
+- `.venv\Scripts\python.exe -m pytest -q`
+
+Next atomic action: commit and push the contract correction, rerun the three commands, then merge PR #15 if all pass.
