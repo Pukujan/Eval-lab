@@ -218,7 +218,7 @@ def main() -> None:
     parser.add_argument("--context-cap", type=int, default=4096)
     parser.add_argument("--limit", type=int, default=20)
     parser.add_argument("--arc-manifest", default="manifests/arc-challenge-slice.json")
-    parser.add_argument("--output-dir", default="experiments/EXP-20260920-002-qwen-0.6b-calibrated")
+    parser.add_argument("--output-dir", default="experiments/EXP-20260920-002-qwen-0-6b-calibrated")
     args = parser.parse_args()
     print(run(args))
 
