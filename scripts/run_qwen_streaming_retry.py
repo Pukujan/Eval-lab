@@ -38,7 +38,14 @@ def _load_dotenv(path: Path | None) -> dict[str, str]:
     return values
 
 
-def _load_records(benchmark: Path, limit: int) -> tuple[list[JudgeRecord], dict[str, str]]:
+def _load_records(
+    benchmark: Path, limit: int, record_ids_file: Path | None = None
+) -> tuple[list[JudgeRecord], dict[str, str]]:
+    requested_ids = (
+        {line.strip() for line in record_ids_file.read_text(encoding="utf-8").splitlines() if line.strip()}
+        if record_ids_file
+        else None
+    )
     records: list[JudgeRecord] = []
     domains: dict[str, str] = {}
     for raw in (benchmark / "records.jsonl").read_text(encoding="utf-8").splitlines():
@@ -46,12 +53,17 @@ def _load_records(benchmark: Path, limit: int) -> tuple[list[JudgeRecord], dict[
         if row["partition"] != "final_evaluation":
             continue
         record = JudgeRecord.model_validate(row["record"])
+        if requested_ids is not None and record.record_id not in requested_ids:
+            continue
         records.append(record)
         domains[record.record_id] = str(row["domain"])
-        if len(records) == limit:
+        if len(records) == (len(requested_ids) if requested_ids is not None else limit):
             break
-    if len(records) != limit:
-        raise ValueError(f"final-evaluation pool contains only {len(records)} records; need {limit}")
+    expected = len(requested_ids) if requested_ids is not None else limit
+    if len(records) != expected:
+        raise ValueError(f"final-evaluation pool contains only {len(records)} records; need {expected}")
+    if requested_ids is not None and {record.record_id for record in records} != requested_ids:
+        raise ValueError("requested record IDs are not all in the final-evaluation partition")
     if len({record.record_id for record in records}) != len(records):
         raise ValueError("final-evaluation record IDs are not unique")
     return records, domains
@@ -194,7 +206,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     if not api_key:
         raise RuntimeError("Qwen credential is unavailable")
     base_url = (environment.get("YOLO_AUTO_BASE_URL") or environment.get("QWEN_API_URL") or "https://api.yolo-auto.com/v1").rstrip("/")
-    records, domains = _load_records(Path(args.benchmark), args.limit)
+    records, domains = _load_records(Path(args.benchmark), args.limit, args.record_ids_file)
     with httpx.Client() as client:
         predictions = [_run_one(record, client=client, url=f"{base_url}/chat/completions", api_key=api_key, timeout=args.timeout) for record in records]
     (output / "predictions.jsonl").write_text(
@@ -229,6 +241,7 @@ def main() -> None:
     parser.add_argument("--benchmark", type=Path, default=Path("benchmark/eval-lab-select-v0.1.0"))
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--limit", type=int, default=1)
+    parser.add_argument("--record-ids-file", type=Path)
     parser.add_argument("--timeout", type=float, default=120.0)
     parser.add_argument("--env-file", type=Path)
     args = parser.parse_args()
