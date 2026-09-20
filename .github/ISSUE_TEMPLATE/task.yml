@@ -1,0 +1,40 @@
+name: Task
+description: Create a bounded task for one branch/worktree/agent.
+title: "TASK-____: "
+labels: ["task"]
+body:
+  - type: input
+    id: task_id
+    attributes:
+      label: Task ID
+      placeholder: TASK-0002
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: One bounded outcome.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Objective conditions for completion.
+    validations:
+      required: true
+  - type: textarea
+    id: files
+    attributes:
+      label: Allowed files / scope
+      description: Paths this task is expected to modify.
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies / blockers
+  - type: textarea
+    id: handoff
+    attributes:
+      label: Initial handoff
+      description: Exact first action for the receiving agent.

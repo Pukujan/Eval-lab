@@ -1,0 +1,44 @@
+name: Experiment
+description: Pre-register a new evaluation experiment.
+title: "EXP-YYYYMMDD-NNN: "
+labels: ["experiment"]
+body:
+  - type: input
+    id: exp_id
+    attributes:
+      label: Experiment ID
+      placeholder: EXP-20260920-001-jev-smoke
+    validations:
+      required: true
+  - type: textarea
+    id: hypothesis
+    attributes:
+      label: Hypothesis
+    validations:
+      required: true
+  - type: textarea
+    id: comparison
+    attributes:
+      label: Primary comparison
+    validations:
+      required: true
+  - type: textarea
+    id: dataset
+    attributes:
+      label: Dataset and split policy
+    validations:
+      required: true
+  - type: textarea
+    id: metrics
+    attributes:
+      label: Primary metrics
+    validations:
+      required: true
+  - type: textarea
+    id: calibration
+    attributes:
+      label: Calibration plan
+  - type: textarea
+    id: exclusions
+    attributes:
+      label: Exclusion / failure rules

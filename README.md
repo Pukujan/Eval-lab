@@ -1,31 +1,58 @@
 # Eval Lab
 
-Clean-slate lab for objective-grounded judge evaluation and calibration.
+Eval Lab is a clean, reproducible research lab for testing whether lightweight AI judges can make accurate and calibrated rubric decisions across objectively labeled domains.
 
-## v0 goals
+## Main research goal
 
-- Benchmark Jev as a fast structured classifier/judge.
-- Compare lightweight local students: Qwen3-4B, Qwen3-1.7B, and encoder classifiers.
-- Keep objective verifiers / benchmark answer keys separate from model-generated supervision.
-- Measure accuracy, balanced accuracy, Brier score, ECE, NLL, position bias, and selective-risk coverage.
-- Use stronger chat models only for rubric decomposition, critiques, hard-negative generation, and disagreement analysis.
+Measure lightweight judges such as Jev and small local models against deterministic verifiers and trusted benchmark answer keys, then quantify calibration, bias, selective risk, latency, and cost.
 
-## First experiment
+Strong chat models may help design rubrics, analyze failures, or generate adversarial cases, but they are not automatically treated as ground truth.
 
-1. Build a small held-out classification set with objective labels.
-2. Run Jev 1.13 Free on exactly the same examples and rubric wording.
-3. Run a local baseline on the same set.
-4. Fit calibration only on a separate calibration split.
-5. Evaluate once on untouched test data.
+## Start here
 
-## Setup
+For humans or agents:
+
+1. `PROJECT.md`
+2. `AGENTS.md`
+3. `checkpoints/CURRENT.md`
+4. the active `tasks/TASK-*.md`
+
+Design contracts:
+
+- `docs/PDD.md` — product/research intent
+- `docs/SDD.md` — system architecture
+- `docs/TDD.md` — test strategy
+- `docs/EXPERIMENT_PROTOCOL.md` — scientific experiment contract
+- `docs/HANDOFF_PROTOCOL.md` — multi-agent communication
+- `docs/CI_CD.md` — push/PR requirements
+
+## Local bootstrap
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate
+# activate .venv
+python -m pip install --upgrade pip
 pip install -e ".[dev]"
-export OPENCODE_API_KEY=...
+python scripts/check_repo_contract.py
+ruff check .
+pytest -q
+```
+
+For the first local handoff, follow `docs/LOCAL_BOOTSTRAP_LUNA.md`.
+
+Jev integration additionally requires `OPENCODE_API_KEY`:
+
+```bash
 python scripts/jev_smoke.py
 ```
 
-Do not commit API keys or private benchmark data.
+Never commit credentials.
+
+## Coordination model
+
+Git is project memory.
+
+- one task = one task file + branch/worktree
+- checkpoints are written before an agent stops
+- experiments are immutable after completion
+- chats are not authoritative project state
