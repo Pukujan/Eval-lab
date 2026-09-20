@@ -48,7 +48,13 @@ Scope is frozen to a compact TF-IDF plus logistic-regression single-answer corre
 
 Planned files: `src/eval_lab/training.py`, `scripts/run_small_judge_training.py`, `tests/test_training.py`, EXP-008 artifacts, the task log, and this checkpoint log.
 
-Next atomic action: implement and unit-test the training pilot, then commit the EXP-008 pre-registration before any final test evaluation.
+Next atomic action: run the preregistered EXP-008 final experiment, including frozen test evaluation, then run the full repository contract, Ruff, and pytest gates.
+
+### 2026-09-20 — TASK-0009 implementation and EXP-008 pre-registration
+
+The compact TF-IDF plus logistic-regression student, leakage-safe arm builder, JSON artifacts, metrics runner, and unit tests are implemented. EXP-008 pre-registration is frozen at `experiments/EXP-20260920-008-small-judge-training/` with code commit `2e3e244eeb856f7cfce2d4047f8357f0b19d1c91`; no final test evaluation occurred before the freeze. Targeted tests pass: `4 passed in 4.84s`.
+
+Next atomic action: execute EXP-008 after the pre-registration commit, then run the full local merge gate and record results before review.
 - TASK-0009 — Small Judge Training Pilot (#14)
 
 ## External conditions

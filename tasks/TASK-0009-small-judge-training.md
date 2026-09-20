@@ -97,6 +97,24 @@ Environment observed: Windows PowerShell; Python `3.12.10`; Git `2.51.2.windows.
 
 Next atomic action: implement the serializable student, leakage-safe arm builder, metrics/prediction runner, and unit tests; then commit the EXP-008 pre-registration before running the final test split.
 
+### 2026-09-20 — implementation and EXP-008 pre-registration
+
+Implemented the compact student and runner in `src/eval_lab/training.py` and `scripts/run_small_judge_training.py`, with focused coverage in `tests/test_training.py`. The student is TF-IDF plus balanced logistic regression with JSON-safe coefficients, normalized probabilities, per-prediction latency, training-row fingerprints, and no external model weights. Arms A-D are objective-only, criterion-paraphrase, verified-hard-negative, and combined; arm E is selected on dev NLL/accuracy and calibrated on calibration records only.
+
+Pre-registration is frozen in `experiments/EXP-20260920-008-small-judge-training/README.md` and `experiment.yaml` with code commit `2e3e244eeb856f7cfce2d4047f8357f0b19d1c91`. The final test split has not been run before this checkpoint.
+
+Commands and results:
+- `ruff check --fix src/eval_lab/training.py scripts/run_small_judge_training.py tests/test_training.py` -> two import fixes applied; subsequent targeted Ruff check is expected before final run.
+- `PYTHONPATH=src python -m pytest -q tests/test_training.py` -> `4 passed in 4.84s`.
+- `git commit -m "TASK-0009: implement compact training pilot"` -> commit `2e3e244eeb856f7cfce2d4047f8357f0b19d1c91`.
+- `git commit -m "TASK-0009: freeze EXP-008 pre-registration"` -> records the frozen experiment protocol and this checkpoint.
+
+Decision: use the compact linear student for this pilot because the available objective corpus is small and the artifact can be serialized, audited, and reproduced without downloading or committing transformer weights. Pairwise records remain out of scope and will be labeled not applicable in the report.
+
+Blockers: none. The known GitHub Actions account budget/no-runner condition remains external; local checks are authoritative.
+
+Next atomic action: run the preregistered EXP-008 final experiment, including frozen test evaluation, then run the full repository contract, Ruff, and pytest gates.
+
 ## Handoff
 
 Use the final ablation to define the next research task.

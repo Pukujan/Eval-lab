@@ -1,0 +1,42 @@
+id: EXP-20260920-008-small-judge-training
+status: pre_registered
+hypothesis: Verified hard negatives and concise rubric criteria improve a compact student judge without test leakage; temperature scaling reduces held-out calibration NLL.
+created_at: 2026-09-20T20:00:00Z
+code_commit: 2e3e244eeb856f7cfce2d4047f8357f0b19d1c91
+seed: 20260920
+context_limit: 4096
+dataset:
+  name: eval-lab-synthetic-objective-v1-plus-exp007-verified-hard-negatives
+  version: task-0009-v1
+  fingerprint: computed-at-run
+  split_policy: synthetic source-family split; train fit, dev selection, calibration fit, test evaluation
+judge:
+  provider: local
+  model: tfidf-logistic-v1
+  adapter_version: task-0009-single-correctness-v1
+  prompt_version: task-0009-text-render-v1
+rubric:
+  version: objective-correctness-v1
+gold:
+  provenance_policy: deterministic verifier only; teacher text is weak augmentation metadata
+calibration:
+  method: temperature
+  split: calibration
+metrics:
+  - accuracy
+  - balanced_accuracy
+  - macro_f1
+  - brier
+  - nll
+  - ece
+  - risk_coverage
+  - latency
+artifacts:
+  - README.md
+  - experiment.yaml
+  - results.json
+  - report.md
+  - predictions.jsonl
+  - manifest.json
+  - artifacts/
+notes: Arms A-D are selected on dev NLL and accuracy only. No test source or label may enter fitting, selection, or calibration. Stop on source-family leakage, untraceable teacher examples, or resource failure.
