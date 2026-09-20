@@ -540,6 +540,12 @@ Decision: preserve TASK-0010’s frozen provider/model protocol and mark the mis
 
 Next atomic action: when YOLO-Auto recovers, rerun the one-record smoke, then the deterministic 500-record Qwen prefix with separate output and artifact regeneration; otherwise obtain an explicit decision to accept the provider-blocked release.
 
+### 2026-09-20 — final CI verification for blocked handoff
+
+The provider-blocked handoff is pushed at `afb74595e26084abc1975e2bd3c51553dbd1c8ba`. CI run `35543406626` passed both Python 3.11 and 3.12, including install, repository contract, Ruff, and unit tests. The worktree is clean.
+
+Next atomic action: wait for YOLO-Auto availability or obtain explicit provider-blocked acceptance; do not substitute a model or begin TASK-0002.
+
 ## Handoff
 
 Read, in order:
