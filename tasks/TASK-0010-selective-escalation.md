@@ -480,6 +480,14 @@ Fix: change `.github/workflows/ci.yml` to invoke `python -m pytest -q`. Local va
 
 Next atomic action: commit/push the workflow invocation fix and inspect the fresh CI matrix; keep TASK-0010 active until CI and the unresolved Qwen/rolling provider acceptance criteria are addressed.
 
+### 2026-09-20 — CI benchmark checksum defect diagnosed
+
+Fresh CI runs `35541979823` and `35541981648` checked out `708e9fdf73595f42c72a8f9b9028b49bda85a213`. The `python -m pytest -q` invocation fixed collection, but both Python 3.11 and 3.12 failed one research-artifact test: `benchmark.yaml` had a checksum generated from Windows CRLF bytes while GitHub checked out LF bytes. All other test behavior was unchanged; the 3.11 install cancellation was a matrix consequence after the 3.12 failure, not a dependency defect.
+
+Fix: add `.gitattributes` with LF enforcement for `benchmark/eval-lab-select-v0.1.0/*`, normalize the frozen release files to LF, and regenerate `checksums.sha256` from the canonical LF bytes. Local validation returned repository contract `OK`, Ruff clean, `74 passed in 25.63s`, research-artifact validation `checksums ok`, `RO-Crate ok`, `PROV-O parsed`, `SHACL conforms`, `CFF parsed`, `paper present`, and clean `git diff --check`. Benchmark counts and fingerprint are unchanged.
+
+Next atomic action: commit/push the byte-stability fix and inspect the fresh CI matrix; keep TASK-0010 active until CI and the unresolved Qwen/rolling provider acceptance criteria are addressed.
+
 ## Handoff
 
 Read, in order:

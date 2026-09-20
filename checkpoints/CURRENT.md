@@ -257,3 +257,9 @@ Next atomic action: commit and push the CI import fix, then inspect the new CI r
 Duplicate CI runs `35541679787` and `35541681635` checked out `f65512b36132cb9a94c5fd5d420e486350410473`, completed installation, repository contract, and Ruff, then both Python 3.11 and 3.12 test jobs failed during collection because standalone `pytest -q` could not import `scripts`. Change `.github/workflows/ci.yml` to `python -m pytest -q`, preserving the repository test contract. Local validation: repository contract `OK`, Ruff clean, `74 passed in 31.38s`, and clean diff check.
 
 Next atomic action: commit/push the workflow fix and inspect the fresh CI matrix; retain the provider bulk blocker and do not begin TASK-0002.
+
+### 2026-09-20 — CI benchmark checksum defect diagnosed
+
+Fresh CI runs `35541979823` and `35541981648` reached the test suite after the `python -m pytest` fix. Both failed one checksum assertion because the frozen benchmark checksum was based on Windows CRLF bytes while GitHub checked out LF bytes. Added `.gitattributes` to enforce LF for `benchmark/eval-lab-select-v0.1.0/*`, normalized the release files, and regenerated `checksums.sha256` from canonical LF bytes. Local contract/Ruff/full pytest are green (`74 passed in 25.63s`), and research-artifact validation reports checksums `ok`, RO-Crate `ok`, PROV-O parsed, SHACL conforms, CFF parsed, and paper present.
+
+Next atomic action: commit/push the byte-stability fix and inspect the fresh CI matrix; retain the provider bulk blocker and do not begin TASK-0002.
