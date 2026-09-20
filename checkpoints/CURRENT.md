@@ -317,3 +317,9 @@ Next atomic action: wait for YOLO-Auto availability or obtain explicit provider-
 User authorized a separate follow-up bakeoff while TASK-0010 remains explicitly provider-blocked. The durable plan is `experiments/EXP-20260920-010-multi-subscription-bakeoff/PLAN.md` with machine-readable `experiment.yaml`. It freezes the existing EvalLab-Select fingerprint, the deterministic 500-record final-evaluation prefix, the arm-D student, the typed System-One specification, and separate Grok 4.6, Luna, and Sol OpenCode subscription arms. YOLO Qwen and local Qwen 1.7B/4B are deferred and will not be silently substituted.
 
 No new provider evaluation has started. Next atomic action: commit this plan, then implement and offline-test the subscription bakeoff runner/validator before any new provider call.
+
+### 2026-09-20 — EXP-20260920-010 offline runner checkpoint
+
+The plan is committed; the new runner/validator/tests are now implemented without provider calls. Targeted Ruff passes, targeted tests are `3 passed in 0.54s`, repository contract is `OK`, and diff check is clean. The runner uses the frozen 500-record final prefix and typed System-One v0.1.0, writes separate Grok/Luna/Sol outputs, and preserves unresolved failures. Qwen and local-weight arms remain deferred.
+
+Next atomic action: commit the implementation, run the full offline gate, then perform a bounded subscription smoke before the 500-record arms.

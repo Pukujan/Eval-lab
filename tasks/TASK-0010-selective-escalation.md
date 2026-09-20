@@ -553,6 +553,14 @@ The provider-blocked TASK-0010 handoff authorizes a separate append-only multi-s
 
 Status: plan-only; no new provider call or evaluation label has been produced. Exact planned commands, output files, missingness rules, uncertainty reporting, and acceptance boundary are recorded in the plan. Next atomic action: commit the plan, then implement and offline-test the runner/validator before provider execution.
 
+### 2026-09-20 — EXP-20260920-010 offline runner checkpoint
+
+Implemented the planned provider-independent OpenCode runner and validator: `scripts/run_multi_subscription_bakeoff.py`, `scripts/validate_multi_subscription_bakeoff.py`, and `tests/test_multi_subscription_bakeoff.py`. Added LF-stable experiment output rules and the required experiment `README.md`. No provider call has been made for EXP-010.
+
+Validation: targeted Ruff `All checks passed!`; targeted tests `3 passed in 0.54s`; repository contract `OK`; clean diff check. The runner freezes the final-record prefix, uses typed System-One v0.1.0, preserves one normalized prediction per record, records provider failures without fallback labels, and writes separate Grok/Luna/Sol outputs. Deferred Qwen and local-weight arms remain explicit.
+
+Next atomic action: commit this implementation, run the offline full gate, then execute a bounded subscription smoke on the frozen matched pool before attempting the planned 500-record arms.
+
 ## Handoff
 
 Read, in order:
