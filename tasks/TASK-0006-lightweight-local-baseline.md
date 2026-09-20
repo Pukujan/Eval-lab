@@ -187,7 +187,9 @@ Final commands and results:
 - `git diff --check` -> clean before commit.
 - Commit `6452bc8` (`TASK-0006: record calibrated feasibility results`) -> recorded the calibrated experiment outputs, report, and checkpoint updates.
 
-Next atomic action: push `task/TASK-0006-lightweight-local-baseline`, open the review PR, and update this log with its URL before merge.
+TASK-0006 is pushed in PR [#21](https://github.com/Pukujan/Eval-lab/pull/21) at commits `6452bc8` and `b0202e2`.
+
+Next atomic action: merge PR #21 after the local merge gate, update local `main`, and only then create the TASK-0007 worktree.
 
 ## Handoff
 

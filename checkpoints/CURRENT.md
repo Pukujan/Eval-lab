@@ -104,7 +104,7 @@ TASK-0006 local implementation and validation are complete. Qwen3-0.6B produced 
 
 Local gate: contract `OK`; Ruff clean; `55 passed in 0.55s` using Python `3.12.10`.
 
-Commit `6452bc8` records the calibrated experiment outputs and final checkpoint. Next atomic action: push TASK-0006, open its review PR, and update the task/checkpoint log with the PR URL before merging. Do not start TASK-0007 until TASK-0006 is accepted and merged.
+Commit `6452bc8` records the calibrated experiment outputs and `b0202e2` records the final local gate. TASK-0006 is pushed in PR [#21](https://github.com/Pukujan/Eval-lab/pull/21). Next atomic action: merge PR #21 after the local merge gate, update local `main`, and only then create the TASK-0007 worktree. Do not start TASK-0007 until TASK-0006 is accepted and merged.
 TASK-0005 is pushed in PR [#19](https://github.com/Pukujan/Eval-lab/pull/19) at commit `d8f038d1725ffcc1121bc0381ae6cabad2e4136b`.
 
 Next atomic action: merge PR #19 after the local merge gate, update local `main`, and only then create the TASK-0006 worktree.
