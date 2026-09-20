@@ -1,0 +1,22 @@
+{
+  "deferred_arms": {
+    "qwen_flash": {
+      "model": "qwen3.8-flash",
+      "provider": "yolo-auto",
+      "reason": "TASK-0010 YOLO-Auto provider block",
+      "status": "deferred_provider_blocked"
+    },
+    "qwen_local_1_7b": {
+      "model": "Qwen3-1.7B",
+      "provider": "local",
+      "reason": "no local weights in the standard Hugging Face cache",
+      "status": "deferred_weights_unavailable"
+    },
+    "qwen_local_4b": {
+      "model": "Qwen3-4B",
+      "provider": "local",
+      "reason": "no local weights in the standard Hugging Face cache",
+      "status": "deferred_weights_unavailable"
+    }
+  }
+}

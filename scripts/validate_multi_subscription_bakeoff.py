@@ -40,8 +40,15 @@ def validate(root: Path) -> dict[str, Any]:
     expected_count = int(results["counts"]["provider_evaluation"])
     if expected_count <= 0:
         raise ValueError("provider pool is empty")
+    reported_arms = results.get("arms")
+    if not isinstance(reported_arms, dict) or not reported_arms:
+        raise ValueError("results contain no attempted arms")
+    unknown_arms = sorted(set(reported_arms) - set(EXPECTED_MODELS))
+    if unknown_arms:
+        raise ValueError(f"unexpected arm(s): {unknown_arms}")
     validated: dict[str, dict[str, int]] = {}
-    for arm_id, model in EXPECTED_MODELS.items():
+    for arm_id in sorted(reported_arms):
+        model = EXPECTED_MODELS[arm_id]
         path = root / "predictions" / f"{arm_id}.jsonl"
         predictions = _load_predictions(path)
         if len(predictions) != expected_count:
