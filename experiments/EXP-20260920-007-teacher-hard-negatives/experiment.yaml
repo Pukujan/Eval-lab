@@ -1,8 +1,8 @@
 id: EXP-20260920-007-teacher-hard-negatives
-status: planned
+status: completed
 hypothesis: Structured teacher proposals can add difficult incorrect candidates while deterministic verification preserves objective truth and source-family split discipline.
 created_at: '2026-09-20T19:30:00Z'
-code_commit: 53ae158f7e5761ad67b3b666f3028c4bcd4fabe1
+code_commit: d8de8905f8eda8cadd8883d6f331f092952ba20e
 seed: 20260920
 context_limit: 4096
 dataset:

@@ -1,0 +1,42 @@
+{
+  "accepted_count": 5,
+  "audit_paths": [
+    "opencode/gpt-5.6-luna",
+    "opencode/gpt-5.6-sol"
+  ],
+  "code_commit": "d8de8905f8eda8cadd8883d6f331f092952ba20e",
+  "context_limit": 4096,
+  "created_at_utc": "2026-09-20T19:56:15.239405+00:00",
+  "dataset": {
+    "excluded_test_source_count": 4,
+    "fingerprint": "03cd497da246c641f84a89fd74380e1f340c327eab7850e0476b8379a7a1052c",
+    "name": "eval-lab-synthetic-objective-v1",
+    "source_problem_ids": [
+      "synthetic-arithmetic-01",
+      "synthetic-arithmetic-03",
+      "synthetic-arithmetic-04",
+      "synthetic-arithmetic-05",
+      "synthetic-arithmetic-06",
+      "synthetic-code-output-01",
+      "synthetic-code-output-03",
+      "synthetic-code-output-04",
+      "synthetic-code-output-05",
+      "synthetic-code-output-06",
+      "synthetic-multiple-choice-01",
+      "synthetic-multiple-choice-02",
+      "synthetic-multiple-choice-04",
+      "synthetic-multiple-choice-05",
+      "synthetic-multiple-choice-06",
+      "synthetic-structured-01",
+      "synthetic-structured-02",
+      "synthetic-structured-03",
+      "synthetic-structured-04",
+      "synthetic-structured-05"
+    ]
+  },
+  "id": "EXP-20260920-007-teacher-hard-negatives",
+  "rejected_count": 15,
+  "seed": 20260920,
+  "status": "completed",
+  "teacher_model": "qwen3.8-flash"
+}
