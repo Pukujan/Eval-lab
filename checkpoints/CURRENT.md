@@ -232,8 +232,22 @@ Files include the provider-independent routing core, selective benchmark/release
 
 Decision: keep TASK-0010 active with `completed_with_provider_statuses` because the required Qwen/rolling bulk final labels are unresolved. Next atomic action: commit and push this checkpoint, then retry only the missing provider arms or record a provider-blocked acceptance checkpoint; do not begin TASK-0002.
 
+### 2026-09-20 — CI collection defect
+
+The new push reached CI steps. Runs `35541435860` and `35541433231` passed repository contract and Ruff, then pytest collection failed because the clean environment could not import `scripts` (`ModuleNotFoundError` in four existing test modules). Added `scripts/__init__.py` as the minimal package marker. Local validation after the fix: contract `OK`, Ruff clean, `74 passed in 30.51s`, and clean diff check.
+
+Next atomic action: commit/push the CI package-marker fix and inspect the resulting CI run; retain the provider bulk blocker and do not begin TASK-0002.
+
 ### 2026-09-20 — TASK-0010 planning gate
 
 TASK-0010 worktree `D:/claude/eval-lab-TASK-0010` is on `task/TASK-0010-selective-escalation` at expected head `50312637a28a71e279387db6293f17b99a11ed10`. The required contract and Ruff checks pass. The shared editable environment pointed at TASK-0006, so pytest was rerun with the current worktree source path and returned `65 passed in 25.36s`. No planning-contract defect was found.
 
 Next atomic action: implement offline typed-question/routing, benchmark construction, and metamorphic/differential tests before any final evaluation labels or provider-scale run.
+
+### 2026-09-20 — CI collection defect diagnosed
+
+After commit `fb804569e841459671961f6cac9f8779219f3203` was pushed, CI runs `35541435860` and `35541433231` reached workflow steps. Contract and Ruff passed, but pytest collection failed on Python 3.12 because four existing test modules could not import `scripts` in the clean GitHub environment (`ModuleNotFoundError`). This was a real packaging defect masked by the local checkout path.
+
+Fix: add the minimal `scripts/__init__.py` package marker. Local rerun returned contract `OK`, Ruff clean, `74 passed in 30.51s`, and clean `git diff --check`. No project scope or experiment semantics changed.
+
+Next atomic action: commit and push the CI import fix, then inspect the new CI run. Keep TASK-0010 active until the provider acceptance blocker and the resulting CI run are resolved.

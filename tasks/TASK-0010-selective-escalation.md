@@ -462,6 +462,14 @@ Blockers: the pinned Jev arm has 500 final labels, but bulk rolling and Qwen fin
 
 Next atomic action: commit the current research bundle and checkpoint, push the task branch, then retry only the missing Qwen/rolling bulk arms during a stable provider window or leave them explicitly blocked in a follow-up checkpoint; do not claim TASK-0010 fully accepted until its provider acceptance criteria are resolved.
 
+### 2026-09-20 — CI collection defect diagnosed
+
+After commit `fb804569e841459671961f6cac9f8779219f3203` was pushed, CI runs `35541435860` and `35541433231` reached workflow steps. Contract and Ruff passed, but pytest collection failed on Python 3.12 because `tests/test_external_bakeoff.py`, `tests/test_hard_negatives.py`, `tests/test_program_contract.py`, and `tests/test_repo_contract.py` could not import `scripts` in the clean GitHub environment (`ModuleNotFoundError: No module named 'scripts'`). This was a real packaging defect masked by the local checkout path.
+
+Fix: add the minimal `scripts/__init__.py` package marker. Local rerun returned contract `OK`, Ruff clean, `74 passed in 30.51s`, and clean `git diff --check`. No project scope or experiment semantics changed.
+
+Next atomic action: commit and push the CI import fix, then inspect the new CI run. Keep TASK-0010 active until the provider acceptance blocker and the resulting CI run are resolved.
+
 ## Handoff
 
 Read, in order:
