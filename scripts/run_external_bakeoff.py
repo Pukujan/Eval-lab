@@ -591,6 +591,11 @@ def run(args: argparse.Namespace) -> Path:
         "yolo_auto_models_status": yolo_status,
         "yolo_auto_models": yolo_models,
         "requested_arms": list(selected_models),
+        "jev_comparison": {
+            "status": "unavailable_provider_blocked",
+            "model_id": "jev-1.13-free",
+            "reason": "TASK-0003 live smoke was rate-limited and no successful predictions were available to reuse",
+        },
     }
     results = {
         "experiment_id": EXPERIMENT_ID,
@@ -603,6 +608,7 @@ def run(args: argparse.Namespace) -> Path:
             provider_id: details["coverage"]["counts"]
             for provider_id, details in provider_reports.items()
         },
+        "jev_comparison": census["jev_comparison"],
         "audit_batches": {"luna_count": len(luna_batch), "sol_count": len(sol_batch)},
     }
     report_lines = [
@@ -615,6 +621,7 @@ def run(args: argparse.Namespace) -> Path:
         f"- OpenCode CLI: {census_version}",
         f"- YOLO-Auto /models status: {yolo_status}; exact qwen3.8-flash present: {YOLO_MODEL in yolo_models}",
         f"- Required free arms present: {census['required_free_models_present']}",
+        f"- Jev comparison: {census['jev_comparison']['status']}",
         "",
         "## Results",
         "",
