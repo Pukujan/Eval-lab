@@ -37,6 +37,11 @@ REQUIRED_FILES = [
     "docs/RESEARCH_ARTIFACT_STANDARD.md",
     "benchmark/README.md",
     "paper/README.md",
+    "benchmark/eval-lab-select-v0.1.0/benchmark.yaml",
+    "benchmark/eval-lab-select-v0.1.0/README.md",
+    "paper/references.bib",
+    "paper/main.tex",
+    "CITATION.cff",
     "experiments/README.md",
 ]
 
