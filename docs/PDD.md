@@ -144,3 +144,34 @@ A fresh clone can:
 8. run at least Qwen3-0.6B locally or document a concrete runtime incompatibility and use an approved lighter fallback;
 9. regenerate the v0 comparison report;
 10. resume from `checkpoints/CURRENT.md` and one task file.
+
+## 10. TASK-0010 publication and selective-escalation requirements
+
+FR-14: deterministic confidence-threshold routing with explicit unresolved provider-failure state.
+
+FR-15: threshold/provider/spec selection cannot consume final-evaluation labels.
+
+FR-16: calibrated routing is compared against raw-confidence and matched-random escalation controls.
+
+FR-17: low-error coverage claims include sample counts and uncertainty bounds.
+
+FR-18: pinned OpenRouter Jev and rolling Jev alias are distinct model arms.
+
+FR-19: a backend-neutral typed decision specification can be executed by Jev and an LLM-backed System-One adapter without changing legal labels/semantics.
+
+FR-20: TASK-0010 produces a semantic-versioned compact benchmark release with deterministic reconstruction and checksums.
+
+FR-21: TASK-0010 produces an arXiv-ready paper whose headline tables/figures are generated from committed result artifacts.
+
+FR-22: benchmark, experiment, model, calibration, thresholds, results, tables, and paper have machine-readable provenance.
+
+FR-23: research artifact validation is offline-capable and does not require provider credentials.
+
+Additional deliverables:
+- D-8: EvalLab-Select v0.1.0 benchmark release.
+- D-9: RO-Crate 1.3 research-object metadata.
+- D-10: PROV-O provenance graph plus stable SHACL validation shapes.
+- D-11: CITATION.cff 1.2.0 and DataCite-compatible release metadata.
+- D-12: arXiv-ready LaTeX paper source with reproducibility and limitations appendices.
+
+A negative or underpowered result is acceptable. The requirement is traceable evidence and calibrated claims, not a predetermined positive result.
