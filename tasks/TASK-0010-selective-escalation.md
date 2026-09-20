@@ -488,6 +488,12 @@ Fix: add `.gitattributes` with LF enforcement for `benchmark/eval-lab-select-v0.
 
 Next atomic action: commit/push the byte-stability fix and inspect the fresh CI matrix; keep TASK-0010 active until CI and the unresolved Qwen/rolling provider acceptance criteria are addressed.
 
+### 2026-09-20 — CI green checkpoint
+
+Commit `88ec75e184739cfc84ba9ccbacc5827a6da117a6` is pushed at the expected task branch head. CI runs `35542193123` (push) and `35542195848` (pull request) both passed on Python 3.11 and 3.12: install, repository contract, Ruff, and `python -m pytest -q`. This verifies the package-import and cross-platform benchmark-checksum fixes in GitHub’s clean environment.
+
+Next atomic action: retry the missing Qwen and rolling provider arms against the frozen final-evaluation record order, preserving separate output files and explicit failure statuses; do not begin TASK-0002.
+
 ## Handoff
 
 Read, in order:
