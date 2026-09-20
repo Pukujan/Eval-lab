@@ -234,6 +234,38 @@ class TextLogisticStudent:
         self.training_row_fingerprint = training_row_fingerprint(rows)
         return self
 
+    @classmethod
+    def from_artifact(cls, artifact: Mapping[str, Any]) -> TextLogisticStudent:
+        """Restore a frozen JSON artifact without fitting or reading a pickle."""
+
+        import numpy as np
+        from scipy.sparse import diags
+        from sklearn.feature_extraction.text import TfidfTransformer
+
+        if artifact.get("student_id") != STUDENT_ID:
+            raise ValueError("unsupported student artifact")
+        vectorizer_data = artifact.get("vectorizer")
+        classifier_data = artifact.get("classifier")
+        if not isinstance(vectorizer_data, Mapping) or not isinstance(classifier_data, Mapping):
+            raise TypeError("student artifact is missing vectorizer or classifier")
+        student = cls(seed=int(artifact.get("seed", 20260920)))
+        student.vectorizer.vocabulary_ = {
+            str(key): int(value) for key, value in dict(vectorizer_data["vocabulary"]).items()
+        }
+        student.vectorizer.fixed_vocabulary_ = True
+        student.vectorizer._tfidf = TfidfTransformer(norm="l2", use_idf=True, smooth_idf=True, sublinear_tf=True)
+        student.vectorizer._tfidf.idf_ = np.asarray(vectorizer_data["idf"], dtype=float)
+        student.vectorizer._tfidf._idf_diag = diags(student.vectorizer._tfidf.idf_)
+        student.vectorizer._tfidf.n_features_in_ = len(student.vectorizer.vocabulary_)
+        student.classifier.classes_ = np.asarray(classifier_data["classes"], dtype=object)
+        student.classifier.coef_ = np.asarray(classifier_data["coef"], dtype=float)
+        student.classifier.intercept_ = np.asarray(classifier_data["intercept"], dtype=float)
+        student.classifier.n_features_in_ = student.classifier.coef_.shape[1]
+        student.classifier.n_iter_ = np.asarray([1], dtype=np.int32)
+        student.training_row_count = int(artifact["training_row_count"])
+        student.training_row_fingerprint = str(artifact["training_row_fingerprint"])
+        return student
+
     def predict(self, records: Sequence[JudgeRecord]) -> list[JudgePrediction]:
         if not self.training_row_count:
             raise RuntimeError("student must be fit before prediction")
