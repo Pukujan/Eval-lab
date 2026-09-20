@@ -1,7 +1,7 @@
 # TASK-0006 — Lightweight Local Judge Baseline
 
-- Status: queued
-- Owner: Luna/local agent
+- Status: active
+- Owner: Codex/local agent
 - Priority: P0
 - GitHub issue: #10
 - Depends on: TASK-0002, TASK-0004, TASK-0005
@@ -77,6 +77,7 @@ If the chosen runtime cannot expose scores, label-only evaluation is allowed but
 ## Allowed files
 
 - `src/eval_lab/judges/qwen.py`
+- `scripts/run_qwen_baseline.py`
 - local runtime/config helpers
 - `tests/`
 - `pyproject.toml` local extra if needed
@@ -114,6 +115,20 @@ Stop before scaling model size if:
 ## Checkpoint log
 
 Append execution evidence here.
+
+### 2026-09-20 — Codex/local agent start
+
+Started from accepted TASK-0005 merge commit `644202fbdd49a3735775ae1c55d1e621de1044d6` in dedicated worktree `D:\claude\eval-lab-TASK-0006` on branch `task/TASK-0006-lightweight-local-baseline`.
+
+Read, in order: `PROJECT.md`, `AGENTS.md`, `checkpoints/CURRENT.md`, this task file, SDD section 10, TDD section 9, and `docs/ACCESS_MODEL_MATRIX.md`.
+
+Commands and results:
+- `git worktree add D:\\claude\\eval-lab-TASK-0006 -b task/TASK-0006-lightweight-local-baseline main` -> created at `644202fbdd49a3735775ae1c55d1e621de1044d6`.
+- `git status --short --branch` -> clean `task/TASK-0006-lightweight-local-baseline`.
+
+Decision: attempt `Qwen/Qwen3-0.6B` first with forced-choice scoring, a declared 4,096-token context cap, and a 20-record feasibility run before considering any larger model or fallback.
+
+Next atomic action: implement the local Qwen adapter/runtime configuration and run the required 20-record feasibility gate without committing model weights or caches.
 
 ## Handoff
 

@@ -1,0 +1,40 @@
+id: EXP-20260920-002-qwen-0.6b-calibrated
+status: planned
+hypothesis: Fitting one scalar temperature on separate synthetic calibration records will improve or preserve held-out single-label NLL without changing record selection or using test labels.
+created_at: 2026-09-20
+code_commit: pending-pre-registered-TASK-0006-checkpoint
+seed: 20260920
+context_limit: 4096
+dataset:
+  name: synthetic-objective-v1 plus allenai/ai2_arc ARC-Challenge
+  version: ARC revision 210d026faf9955653af8916fad021475a3f00453
+  fingerprint: b7a84b15c5ca352f2689f546721d8038ce9b31ecff711be606016a6996e05521
+  split_policy: synthetic test records plus committed six-record ARC slice; calibration records remain separate
+judge:
+  provider: local-transformers
+  model: Qwen/Qwen3-0.6B
+  adapter_version: qwen-forced-choice-v1
+  prompt_version: qwen-objective-judge-prompt-v1
+rubric:
+  version: canonical-record-rubric-v1
+gold:
+  provenance_policy: deterministic verifiers and ARC answer_key; model outputs are predictions only
+calibration:
+  method: scalar temperature scaling
+  split: synthetic calibration single-label records only
+metrics:
+  - accuracy
+  - balanced_accuracy
+  - macro_f1
+  - brier
+  - nll
+  - ece
+  - risk_coverage
+  - latency
+artifacts:
+  - predictions.jsonl
+  - calibrated_predictions.jsonl
+  - calibration.json
+  - results.json
+  - report.md
+notes: Stop if context truncation, record-ID mismatch, or non-comparable class-score semantics is observed. Jev comparison is unavailable unless successful provider predictions are supplied.

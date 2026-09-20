@@ -1,0 +1,190 @@
+"""Forced-choice local Qwen scoring over canonical judge records."""
+
+from __future__ import annotations
+
+import math
+import time
+from dataclasses import dataclass
+from typing import Any
+
+from eval_lab.schema import ExecutionStatus, JudgePrediction, JudgeRecord, JudgmentMode
+
+
+class ContextLimitError(ValueError):
+    """Raised when a record cannot fit the declared context cap."""
+
+
+@dataclass(frozen=True)
+class QwenRuntimeConfig:
+    """Reproducible local runtime settings."""
+
+    model_id: str = "Qwen/Qwen3-0.6B"
+    revision: str = "main"
+    context_cap: int = 4096
+    device: str | None = None
+    dtype: str | None = None
+    single_labels: tuple[str, str] = ("pass", "fail")
+
+    def __post_init__(self) -> None:
+        if self.context_cap <= 0:
+            raise ValueError("context_cap must be positive")
+        if len(self.single_labels) != 2 or len(set(self.single_labels)) != 2:
+            raise ValueError("single_labels must contain two distinct labels")
+
+
+_DEFAULT_CONFIG = QwenRuntimeConfig()
+
+
+def legal_labels(record: JudgeRecord, config: QwenRuntimeConfig | None = None) -> list[str]:
+    """Return the exact class set scored for a canonical record."""
+
+    if record.mode is JudgmentMode.PAIRWISE:
+        return ["A", "B", "TIE"]
+    return list((config or QwenRuntimeConfig()).single_labels)
+
+
+def format_judge_prompt(record: JudgeRecord) -> str:
+    """Format a short rubric prompt whose verdict boundary is explicit."""
+
+    rubric = "\n".join(f"- {criterion.description}" for criterion in record.rubric)
+    candidate_b = record.candidate_b if record.candidate_b is not None else "(not applicable)"
+    return (
+        "You are an objective evaluation judge.\n"
+        f"Question or task:\n{record.prompt}\n\n"
+        f"Candidate A:\n{record.candidate_a}\n\n"
+        f"Candidate B:\n{candidate_b}\n\n"
+        f"Rubric:\n{rubric}\n\n"
+        "Return exactly one legal verdict label after `Verdict:`."
+    )
+
+
+def softmax_scores(scores: dict[str, float]) -> dict[str, float]:
+    """Normalize finite raw log-scores without changing their key order."""
+
+    if not scores or any(not math.isfinite(value) for value in scores.values()):
+        raise ValueError("scores must be non-empty and finite")
+    maximum = max(scores.values())
+    exponentials = {label: math.exp(value - maximum) for label, value in scores.items()}
+    normalizer = sum(exponentials.values())
+    return {label: value / normalizer for label, value in exponentials.items()}
+
+
+def _token_ids(tokenizer: Any, text: str, *, add_special_tokens: bool = True) -> list[int]:
+    encoded = tokenizer(text, add_special_tokens=add_special_tokens)
+    input_ids = encoded["input_ids"] if isinstance(encoded, dict) else encoded.input_ids
+    if hasattr(input_ids, "tolist"):
+        input_ids = input_ids.tolist()
+    if input_ids and isinstance(input_ids[0], list):
+        input_ids = input_ids[0]
+    return [int(token) for token in input_ids]
+
+
+class QwenJudge:
+    """A lazy-loadable Qwen causal LM forced-choice scorer."""
+
+    def __init__(self, tokenizer: Any, model: Any, config: QwenRuntimeConfig) -> None:
+        self.tokenizer = tokenizer
+        self.model = model
+        self.config = config
+        self._torch = self._load_torch()
+        resolved_revision = getattr(getattr(model, "config", None), "_commit_hash", None)
+        self.runtime_revision = str(resolved_revision or config.revision)
+        self.device = str(getattr(model, "device", config.device or "cpu"))
+        self.dtype = str(getattr(getattr(model, "config", None), "torch_dtype", config.dtype or "float32"))
+
+    @staticmethod
+    def _load_torch() -> Any:
+        try:
+            import torch
+        except ImportError as exc:
+            raise RuntimeError("install the local extra to use the Qwen judge") from exc
+        return torch
+
+    @classmethod
+    def from_pretrained(cls, config: QwenRuntimeConfig = _DEFAULT_CONFIG) -> QwenJudge:
+        """Load the configured model; weights remain in the local HF cache."""
+
+        try:
+            import torch
+            from transformers import AutoModelForCausalLM, AutoTokenizer
+        except ImportError as exc:
+            raise RuntimeError("install the local extra to use the Qwen judge") from exc
+        device = config.device or ("cuda" if torch.cuda.is_available() else "cpu")
+        dtype_name = config.dtype or ("float16" if device.startswith("cuda") else "float32")
+        dtype = getattr(torch, dtype_name)
+        tokenizer = AutoTokenizer.from_pretrained(config.model_id, revision=config.revision)
+        model = AutoModelForCausalLM.from_pretrained(
+            config.model_id,
+            revision=config.revision,
+            torch_dtype=dtype,
+        )
+        model.to(device)
+        model.eval()
+        return cls(tokenizer, model, config)
+
+    def _score_label(self, prompt: str, label: str) -> tuple[float, int]:
+        prefix_text = prompt + "\nVerdict:"
+        prefix_ids = _token_ids(self.tokenizer, prefix_text)
+        continuation_ids = _token_ids(self.tokenizer, " " + label, add_special_tokens=False)
+        full_ids = prefix_ids + continuation_ids
+        if len(full_ids) > self.config.context_cap:
+            raise ContextLimitError(
+                f"record requires {len(full_ids)} tokens, context cap is {self.config.context_cap}"
+            )
+        if len(full_ids) <= len(prefix_ids):
+            raise RuntimeError("verdict label produced no continuation tokens")
+        torch = self._torch
+        input_ids = torch.tensor([full_ids], dtype=torch.long, device=self.model.device)
+        with torch.inference_mode():
+            logits = self.model(input_ids=input_ids).logits[0]
+        log_probabilities = torch.log_softmax(logits, dim=-1)
+        score = 0.0
+        for position in range(len(prefix_ids), len(full_ids)):
+            score += float(log_probabilities[position - 1, full_ids[position]].item())
+        return score, len(full_ids)
+
+    def predict_one(self, record: JudgeRecord) -> JudgePrediction:
+        """Score one record and emit normalized probabilities and raw log-scores."""
+
+        started = time.perf_counter()
+        prompt = format_judge_prompt(record)
+        labels = legal_labels(record, self.config)
+        scores = {label: self._score_label(prompt, label)[0] for label in labels}
+        probabilities = softmax_scores(scores)
+        label = max(probabilities, key=probabilities.get)
+        latency_ms = (time.perf_counter() - started) * 1000.0
+        return JudgePrediction(
+            record_id=record.record_id,
+            judge_id=self.config.model_id,
+            protocol_version="qwen-forced-choice-v1",
+            label=label,
+            probabilities=probabilities,
+            raw_scores=scores,
+            execution_status=ExecutionStatus.OK,
+            latency_ms=latency_ms,
+            provider_metadata={
+                "model_id": self.config.model_id,
+                "requested_revision": self.config.revision,
+                "resolved_revision": self.runtime_revision,
+                "runtime": "transformers",
+                "device": self.device,
+                "dtype": self.dtype,
+                "context_cap": self.config.context_cap,
+                "score_semantics": "sum conditional log-likelihood of legal label continuation",
+            },
+        )
+
+    def predict(self, records: list[JudgeRecord] | tuple[JudgeRecord, ...]) -> list[JudgePrediction]:
+        """Predict in input order, preserving record IDs and explicit runtime errors."""
+
+        return [self.predict_one(record) for record in records]
+
+
+__all__ = [
+    "ContextLimitError",
+    "QwenJudge",
+    "QwenRuntimeConfig",
+    "format_judge_prompt",
+    "legal_labels",
+    "softmax_scores",
+]
