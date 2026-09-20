@@ -1,6 +1,6 @@
 # TASK-0013 — README Skimmability, Content System, and CI Import Fix
 
-- Status: active
+- Status: completed on branch; PR review pending
 - Owner: Codex/documentation and CI agent
 - Priority: P1
 - Branch: task/TASK-0013-readme-skim-ci
@@ -40,7 +40,7 @@ The public GitHub Actions run now reaches the runner, checkout, installation, co
 - [x] Current visual assets have a manifest with roles, dimensions, references, and honest reproducibility limits.
 - [x] CI unit tests can import both `eval_lab` and the repository’s `scripts` namespace.
 - [x] Local contract, lint, and tests pass.
-- [ ] A fresh public GitHub Actions run passes on Python 3.11 and 3.12.
+- [x] A fresh public GitHub Actions run passes on Python 3.11 and 3.12.
 
 ## Commands
 
@@ -73,7 +73,7 @@ Next atomic action: apply the README emphasis, content/visual playbook, asset ma
 
 ### 2026-09-20 — implementation checkpoint
 
-Status: implementation complete locally; public CI rerun pending.
+Status: implementation complete; public CI run `35542108125` passed on both Python versions.
 
 Completed: added selective phrase-level bold/italic emphasis throughout `README.md`; linked the reusable content/visual system and asset manifest; documented human-first paragraph structure, marketing-post structure, prompt recipes, responsive dimensions, palette tokens, iteration rules, and reproducibility limits; added `PYTHONPATH: .:src` to the CI unit-test step.
 
@@ -81,13 +81,31 @@ Exact files changed: `README.md`, `docs/README_CONTENT_VISUAL_SYSTEM.md`, `asset
 
 Commands run: `git diff --check`; `python scripts/check_repo_contract.py`; `ruff check .`; `PYTHONPATH=.;src pytest -q`.
 
-Test results: repository contract OK; Ruff clean; `64 passed in 7.86s`. The previous public run `35541354152` reached the runner but failed test collection with `ModuleNotFoundError: No module named 'scripts'`; the workflow now supplies the missing import path.
+Test results: repository contract OK; Ruff clean; `64 passed in 7.86s`. Public run `35542108125` passed on Python 3.11 and 3.12 after the workflow supplied `PYTHONPATH: .:src`. The previous public run `35541354152` failed test collection with `ModuleNotFoundError: No module named 'scripts'`.
 
 Decision: keep formatting selective—bold the sentence-level decision, promise, boundary, or result a scanner needs, not every technical noun. Treat image generation as reproducible intent and review metadata, not pixel-identical output.
 
 Unresolved questions: public CI confirmation is pending.
 
-Next atomic action: commit and push this branch, trigger or observe the public CI run, and open a review PR.
+Next atomic action: commit the checkpoint, push the branch, and open a review PR.
+
+### 2026-09-20 — public CI acceptance checkpoint
+
+Status: implementation and public validation complete; PR review pending.
+
+Completed: pushed commit `8d88217`, triggered public CI, and confirmed both matrix jobs pass after the import-path fix.
+
+Exact files changed: `README.md`, `docs/README_CONTENT_VISUAL_SYSTEM.md`, `assets/README-ASSET-MANIFEST.yaml`, `.github/workflows/ci.yml`, and this task file.
+
+Commands run: `gh run watch 35542108125 --exit-status`.
+
+Test results: GitHub Actions run `35542108125` passed on Python 3.11 and 3.12; local contract, Ruff, diff check, and 64 tests also pass.
+
+Decision: retain the workflow fix because the repository uses a `src` package layout plus top-level test imports from `scripts`; explicitly adding both repository root and `src` makes the intended import contract visible and reproducible.
+
+Unresolved questions: none for this task.
+
+Next atomic action: commit and push the final task checkpoint, then review the PR.
 
 ## Handoff
 
