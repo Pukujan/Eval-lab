@@ -667,3 +667,16 @@ must be a separately timestamped experiment and cannot modify EXP-015.
 
 Next atomic action: normal review of the committed EXP-015 report; no further provider
 execution is required for TASK-0015.
+
+### 2026-09-21 — TASK-0016 Qwen retry preregistration
+
+TASK-0015 is complete and immutable. A new organized worktree
+`D:\\claude\\eval-lab\\.worktrees\\TASK-0016-qwen-retry` on branch
+`task/TASK-0016-qwen-rate-limit-retry` preregisters EXP-016, a Qwen-only retry of
+exactly the `317` blind records that were rate-limited in EXP-0015. The original Qwen
+provider error, Grok records, Luna records, prompt, pool, and gold labels are excluded
+from the retry.
+
+No new provider call has occurred in TASK-0016. Next atomic action: commit the
+preregistration, generate the frozen retry-ID manifest from EXP-0015, then run a
+one-record YOLO-Auto recovery smoke before the bulk retry.
