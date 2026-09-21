@@ -1,8 +1,8 @@
 # TASK-0014 — Adopt the reusable content-generation system
 
-<!-- eval-lab:task {"id":"TASK-0014","status":"awaiting_review","goal":"Dogfood the versioned content-generation-modules helper in Eval Lab and produce reviewable README, visual, and responsive HTML artifacts without changing research behavior.","branch":"task/TASK-0014-content-system-adoption","allowed_files":[".gitignore","AGENTS.md","checkpoints/CURRENT.md","tasks/TASK-0014-content-system-adoption.md",".content-system/**","assets/eval-lab-banner.png","assets/eval-lab-problem.png","assets/eval-lab-system-square.png","assets/eval-lab-evidence-portrait.png","docs/content-system-preview.md","docs/content-system-preview.html"],"helper_repository":"https://github.com/Pukujan/content-generation-modules","helper_version":"0.1.2","helper_commit":"cb8c18fa7789e4b651e1f963892bf056b0d3276d","next_action":"Open the preview PR and ask the user to review the rendered artifacts before any promotion into README.md."} -->
+<!-- eval-lab:task {"id":"TASK-0014","status":"awaiting_review","goal":"Dogfood the versioned content-generation-modules helper in Eval Lab and produce reviewable README, visual, and responsive HTML artifacts without changing research behavior.","branch":"task/TASK-0014-content-system-adoption","allowed_files":[".gitignore","AGENTS.md","checkpoints/CURRENT.md","tasks/TASK-0014-content-system-adoption.md","README.md",".content-system/**","assets/eval-lab-banner.png","assets/eval-lab-problem.png","assets/eval-lab-system-square.png","assets/eval-lab-evidence-portrait.png","docs/content-system-preview.md","docs/content-system-preview.html"],"helper_repository":"https://github.com/Pukujan/content-generation-modules","helper_version":"0.1.2","helper_commit":"cb8c18fa7789e4b651e1f963892bf056b0d3276d","next_action":"Review the updated README and rendered artifacts in PR #30 before merging the preview branch."} -->
 
-- Status: awaiting user review
+- Status: README updated on the preview branch; awaiting user review before merge
 - Owner: Codex current implementation session
 - Branch: `task/TASK-0014-content-system-adoption`
 - Helper: `Pukujan/content-generation-modules@v0.1.2` (`cb8c18fa7789e4b651e1f963892bf056b0d3276d`)
@@ -168,6 +168,33 @@ Blocked/uncertain:
 Next:
 
 - rerun adapter, repository, and responsive render validation, push the updated preview branch, and update PR #30 for review.
+
+### 2026-09-20 — README promotion staged
+
+Completed:
+
+- updated the canonical README on the preview branch with the reviewed story, bold/italic skim cues, the CGM contract reference, and the approved wide, square, and portrait assets;
+- kept the existing technical explanation and SVG helper-icon system intact;
+- updated the preview footer and checkpoint text so they describe README promotion as staged rather than merely proposed.
+
+Evidence:
+
+- README image paths resolve to the committed assets;
+- local contract, Ruff, and 64-test gates remain green;
+- GitHub Actions push and pull-request runs `35549659966` and `35549662574` pass on Python 3.11 and 3.12.
+
+Decisions:
+
+- keep the README update in PR #30 until the user reviews the rendered result;
+- do not change research code, experiment artifacts, or runtime behavior.
+
+Blocked/uncertain:
+
+- none; merge is waiting only on explicit human review.
+
+Next:
+
+- review the updated README in PR #30 and merge only after acceptance.
 
 ## Handoff
 

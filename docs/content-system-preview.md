@@ -1,6 +1,6 @@
 # Eval Lab content-system preview
 
-> This is a review artifact for TASK-0014. It does not replace the repository README until the user accepts the direction.
+> This is the reviewed content-system direction staged in the repository README on the preview branch.
 
 ## The story in one minute
 
@@ -42,4 +42,4 @@ The lab does not promote a strong model's opinion to ground truth. A provider fa
 
 ## Contract used
 
-This preview pins `content-generation-modules@v0.1.2` and its six modules: brand foundation, content context, writing direction, visual direction, image generation, and HTML demo. Narrative raster assets carry a short title and subtitle; SVG helper icons stay text-free.
+This preview pins `content-generation-modules@v0.1.2` and its six modules: brand foundation, content context, writing direction, visual direction, image generation, and HTML demo. Narrative raster assets carry a short title and subtitle; SVG helper icons stay text-free. The reviewed README uses these assets on this branch.
