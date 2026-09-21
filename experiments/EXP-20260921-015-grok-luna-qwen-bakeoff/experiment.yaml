@@ -20,14 +20,16 @@ typed_protocol:
   legal_pairwise_labels: [A, B, TIE]
 providers:
   - arm_id: grok
-    provider: opencode
-    requested_model: opencode/grok-build-0.1
-    access: authenticated_xai_subscription
+    provider: xai-grok-build-cli
+    requested_model: grok-4.6
+    access: direct_authenticated_xai_subscription
+    route: direct_grok_build_cli_subscription
     status: planned
   - arm_id: luna
-    provider: opencode
-    requested_model: opencode/gpt-5.6-luna
-    access: authenticated_chatgpt_subscription
+    provider: codex
+    requested_model: gpt-5.6-luna
+    access: direct_authenticated_chatgpt_subscription
+    route: direct_codex_chatgpt_subscription
     status: planned
   - arm_id: qwen_flash
     provider: yolo-auto
@@ -35,9 +37,10 @@ providers:
     access: configured_api_route
     status: planned
   - arm_id: sol
-    provider: opencode
-    requested_model: opencode/gpt-5.6-sol
-    access: authenticated_chatgpt_subscription
+    provider: codex
+    requested_model: gpt-5.6-sol
+    access: direct_authenticated_chatgpt_subscription
+    route: direct_codex_chatgpt_subscription
     status: optional
 evaluation:
   primary_partition: blind_holdout
@@ -71,4 +74,4 @@ artifacts:
   - report.md
   - provider-status.json
   - differential.json
-notes: EXP-014 remains immutable; the exploratory grok-4.6 preflight is retained separately, while the frozen core Grok arm is opencode/grok-build-0.1. This comparison has separate route smoke, output files, checksums, and provider-status accounting.
+notes: EXP-014 remains immutable; historical non-primary preflight evidence is retained separately, while the frozen core Grok arm invokes the direct authenticated xAI grok CLI and the Luna/Sol arms invoke the direct authenticated Codex CLI. This comparison has separate route smoke, output files, checksums, and provider-status accounting. OpenCode and OpenRouter are excluded from this experiment.

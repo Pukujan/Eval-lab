@@ -36,14 +36,14 @@ PROTOCOL = "eval-lab-system-one-v1"
 POOL = Path("experiments") / EXPERIMENT_ID
 ARMS = {
     "grok": {
-        "provider": "opencode",
-        "requested_model": "opencode/grok-build-0.1",
-        "route": "authenticated_xai_subscription",
+        "provider": "xai-grok-build-cli",
+        "requested_model": "grok-4.6",
+        "route": "direct_grok_build_cli_subscription",
     },
     "luna": {
-        "provider": "opencode",
-        "requested_model": "opencode/gpt-5.6-luna",
-        "route": "authenticated_chatgpt_subscription",
+        "provider": "codex",
+        "requested_model": "gpt-5.6-luna",
+        "route": "direct_codex_chatgpt_subscription",
     },
     "qwen_flash": {
         "provider": "yolo-auto",
@@ -51,9 +51,9 @@ ARMS = {
         "route": "yolo_auto_openai_compatible",
     },
     "sol": {
-        "provider": "opencode",
-        "requested_model": "opencode/gpt-5.6-sol",
-        "route": "authenticated_chatgpt_subscription",
+        "provider": "codex",
+        "requested_model": "gpt-5.6-sol",
+        "route": "direct_codex_chatgpt_subscription",
     },
 }
 
@@ -148,7 +148,7 @@ def _legal_labels(record: JudgeRecord) -> set[str]:
 
 
 def parse_label(text: str, record: JudgeRecord) -> str | None:
-    """Extract one legal label from an OpenCode response/event stream."""
+    """Extract one legal label from a direct CLI response/event stream."""
 
     legal = _legal_labels(record)
     for fragment in _json_fragments(text):
@@ -184,6 +184,9 @@ def _surfaced_models(text: str) -> list[str]:
                 value = mapping.get(key)
                 if isinstance(value, str) and value:
                     models.add(value)
+            model_usage = mapping.get("modelUsage")
+            if isinstance(model_usage, Mapping):
+                models.update(str(key) for key in model_usage if str(key))
     return sorted(models)
 
 
@@ -232,7 +235,7 @@ def _prediction(
     )
 
 
-def _run_opencode_one(
+def _run_codex_one(
     record: JudgeRecord,
     *,
     arm_id: str,
@@ -241,20 +244,133 @@ def _run_opencode_one(
     environment: dict[str, str],
     timeout: float,
 ) -> JudgePrediction:
+    """Run Codex CLI directly with the authenticated ChatGPT subscription."""
+
     started = time.perf_counter()
-    executable = environment.get("OPENCODE_EXE") or shutil.which("opencode") or "opencode"
+    executable = environment.get("CODEX_EXE") or shutil.which("codex") or "codex"
     command = [
         executable,
-        "run",
+        "exec",
         "--model",
         model,
-        "--format",
-        "json",
-        "--log-level",
-        "ERROR",
-        "--dir",
+        "--cd",
         str(Path.cwd()),
-        _prompt(record),
+        "--sandbox",
+        "read-only",
+        "--ephemeral",
+        "--json",
+        "-",
+    ]
+    try:
+        process = subprocess.run(
+            command,
+            input=_prompt(record),
+            capture_output=True,
+            text=True,
+            env=environment,
+            timeout=timeout,
+            check=False,
+        )
+    except OSError as exc:
+        return _prediction(
+            record,
+            arm_id=arm_id,
+            provider="codex",
+            model=model,
+            route=route,
+            status=ExecutionStatus.PROVIDER_ERROR,
+            started=started,
+            error={"kind": "process_error", "type": type(exc).__name__},
+        )
+    except subprocess.TimeoutExpired:
+        return _prediction(
+            record,
+            arm_id=arm_id,
+            provider="codex",
+            model=model,
+            route=route,
+            status=ExecutionStatus.PROVIDER_ERROR,
+            started=started,
+            error={"kind": "timeout"},
+        )
+    output = (process.stdout or "") + "\n" + (process.stderr or "")
+    surfaced: list[str] = []
+    thread_id: str | None = None
+    for line in (process.stdout or "").splitlines():
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if event.get("type") == "thread.started" and isinstance(event.get("thread_id"), str):
+            thread_id = event["thread_id"]
+    metadata = {"codex_cli": "codex", "thread_id": thread_id} if thread_id else {"codex_cli": "codex"}
+    if process.returncode != 0:
+        lower = output.lower()
+        status = ExecutionStatus.RATE_LIMITED if "429" in lower or "rate limit" in lower else ExecutionStatus.PROVIDER_ERROR
+        kind = "rate_limited" if status is ExecutionStatus.RATE_LIMITED else "process_exit"
+        return _prediction(
+            record,
+            arm_id=arm_id,
+            provider="codex",
+            model=model,
+            route=route,
+            status=status,
+            started=started,
+            error={"kind": kind, "returncode": process.returncode},
+            surfaced_model_ids=surfaced,
+        )
+    label = parse_label(output, record)
+    if label is None:
+        return _prediction(
+            record,
+            arm_id=arm_id,
+            provider="codex",
+            model=model,
+            route=route,
+            status=ExecutionStatus.PARSE_ERROR,
+            started=started,
+            error={"kind": "label_not_found"},
+            surfaced_model_ids=surfaced,
+        )
+    prediction = _prediction(
+        record,
+        arm_id=arm_id,
+        provider="codex",
+        model=model,
+        route=route,
+        status=ExecutionStatus.OK,
+        started=started,
+        label=label,
+        surfaced_model_ids=surfaced,
+    )
+    prediction.provider_metadata.update(metadata)
+    return prediction
+
+
+def _run_grok_build_one(
+    record: JudgeRecord,
+    *,
+    arm_id: str,
+    model: str,
+    route: str,
+    environment: dict[str, str],
+    timeout: float,
+) -> JudgePrediction:
+    """Run the direct xAI Grok Build CLI through the subscription session."""
+
+    started = time.perf_counter()
+    executable = environment.get("GROK_EXE") or shutil.which("grok") or "grok"
+    command = [
+        executable,
+        "--model",
+        model,
+        "--output-format",
+        "json",
+        "--no-subagents",
+        "--no-plan",
+        "--permission-mode",
+        "dontAsk",
+        f"--single={_prompt(record)}",
     ]
     try:
         process = subprocess.Popen(
@@ -269,7 +385,7 @@ def _run_opencode_one(
         return _prediction(
             record,
             arm_id=arm_id,
-            provider="opencode",
+            provider="xai-grok-build-cli",
             model=model,
             route=route,
             status=ExecutionStatus.PROVIDER_ERROR,
@@ -288,7 +404,7 @@ def _run_opencode_one(
         return _prediction(
             record,
             arm_id=arm_id,
-            provider="opencode",
+            provider="xai-grok-build-cli",
             model=model,
             route=route,
             status=ExecutionStatus.PROVIDER_ERROR,
@@ -304,7 +420,7 @@ def _run_opencode_one(
         return _prediction(
             record,
             arm_id=arm_id,
-            provider="opencode",
+            provider="xai-grok-build-cli",
             model=model,
             route=route,
             status=status,
@@ -317,7 +433,7 @@ def _run_opencode_one(
         return _prediction(
             record,
             arm_id=arm_id,
-            provider="opencode",
+            provider="xai-grok-build-cli",
             model=model,
             route=route,
             status=ExecutionStatus.PARSE_ERROR,
@@ -328,7 +444,7 @@ def _run_opencode_one(
     return _prediction(
         record,
         arm_id=arm_id,
-        provider="opencode",
+        provider="xai-grok-build-cli",
         model=model,
         route=route,
         status=ExecutionStatus.OK,
@@ -338,7 +454,29 @@ def _run_opencode_one(
     )
 
 
-def _run_opencode_arm(
+def _run_grok_build_arm(
+    records: list[JudgeRecord],
+    *,
+    arm_id: str,
+    model: str,
+    route: str,
+    environment: dict[str, str],
+    timeout: float,
+) -> list[JudgePrediction]:
+    return [
+        _run_grok_build_one(
+            record,
+            arm_id=arm_id,
+            model=model,
+            route=route,
+            environment=environment,
+            timeout=timeout,
+        )
+        for record in records
+    ]
+
+
+def _run_codex_arm(
     records: list[JudgeRecord],
     *,
     arm_id: str,
@@ -349,7 +487,7 @@ def _run_opencode_arm(
     workers: int,
 ) -> list[JudgePrediction]:
     def evaluate(record: JudgeRecord) -> JudgePrediction:
-        return _run_opencode_one(
+        return _run_codex_one(
             record,
             arm_id=arm_id,
             model=model,
@@ -540,8 +678,17 @@ def _run(args: argparse.Namespace) -> dict[str, Any]:
     reports: dict[str, Any] = {}
     for arm_id in selected_arms:
         arm = ARMS[arm_id]
-        if arm["provider"] == "opencode":
-            arm_predictions = _run_opencode_arm(
+        if arm_id == "grok":
+            arm_predictions = _run_grok_build_arm(
+                records,
+                arm_id=arm_id,
+                model=arm["requested_model"],
+                route=arm["route"],
+                environment=environment,
+                timeout=args.timeout,
+            )
+        elif arm["provider"] == "codex":
+            arm_predictions = _run_codex_arm(
                 records,
                 arm_id=arm_id,
                 model=arm["requested_model"],

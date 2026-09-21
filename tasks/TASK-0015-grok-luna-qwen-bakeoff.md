@@ -8,8 +8,8 @@
 
 ## Goal
 
-Run a fresh, preregistered matched comparison of Grok Build through the authenticated
-xAI/OpenCode subscription route, Luna through the authenticated ChatGPT/OpenCode route,
+Run a fresh, preregistered matched comparison of Grok Build through the direct
+authenticated xAI `grok` CLI, Luna through the direct authenticated Codex/ChatGPT route,
 and YOLO-Auto `qwen3.8-flash`. Keep the completed TASK-0012 experiment immutable.
 
 ## Scope and frozen inputs
@@ -20,9 +20,10 @@ and YOLO-Auto `qwen3.8-flash`. Keep the completed TASK-0012 experiment immutable
 - Source fingerprint: `b7edd61269f0f7757e734bc7e3f665ac2bcd6d908a1e56f73f0b0291d55b64d8`.
 - Typed packet: `eval-lab-system-one` v0.1.0, fingerprint
   `0d07bd8b8b60bd7f0b5b7a5f5819b7d329ea121f686b240e465695b6f6eca1e4`.
-- Core arms: requested `opencode/grok-build-0.1`, `opencode/gpt-5.6-luna`, and
+- Core arms: direct `grok` CLI using its authenticated xAI subscription (`grok-4.6`),
+  direct Codex CLI using `gpt-5.6-luna`, and
   YOLO-Auto `qwen3.8-flash`; each route records the exact surfaced model identity.
-- Optional arm: `opencode/gpt-5.6-sol`, enabled only when explicitly requested.
+- Optional arm: direct Codex CLI `gpt-5.6-sol`, enabled only when explicitly requested.
 - Primary comparison: blind-holdout accuracy, balanced accuracy, macro-F1, resolved
   coverage, Wilson 95% uncertainty, latency, and same-record agreement.
 
@@ -54,7 +55,7 @@ records, prompts, models, thresholds, or gold labels.
 ## Commands
 
 - `.venv\\Scripts\\python.exe scripts/freeze_grok_luna_qwen_pool.py`
-- `.venv\\Scripts\\python.exe scripts/run_grok_luna_qwen_bakeoff.py --partition public_selection --limit 1 --output experiments/EXP-20260921-015-grok-luna-qwen-bakeoff/runs/smoke`
+- `.venv\\Scripts\\python.exe scripts/run_grok_luna_qwen_bakeoff.py --partition public_selection --limit 1 --models grok,luna,qwen_flash --output experiments/EXP-20260921-015-grok-luna-qwen-bakeoff/runs/smoke-direct-20260921`
 - `.venv\\Scripts\\python.exe scripts/run_grok_luna_qwen_bakeoff.py --partition blind_holdout --output experiments/EXP-20260921-015-grok-luna-qwen-bakeoff/runs/blind`
 - `.venv\\Scripts\\python.exe scripts/validate_grok_luna_qwen_bakeoff.py --experiment ...`
 - `.venv\\Scripts\\python.exe scripts/check_repo_contract.py`
@@ -85,13 +86,13 @@ preregistration commit.
 
 Decision: use the full EXP-014 matched pool, with the blind partition as the primary
 score and the public partition as a separately labeled descriptive execution. Use
-OpenCode subscription routes for Grok/Luna and YOLO-Auto for Qwen; do not substitute
-OpenRouter or another provider.
+the direct Grok Build CLI for Grok, the direct Codex CLI for Luna, and YOLO-Auto
+for Qwen; do not use OpenCode or OpenRouter for any arm.
 
-The first `opencode/grok-4.6` call was exploratory only. The OpenCode catalog exposed
-the requested Grok Build model as `opencode/grok-build-0.1`, so the final core arm was
-corrected before any blind-holdout labels; the exploratory artifact is retained and
-not pooled with the Grok Build arm.
+The first non-primary preflight artifacts are historical only and are not part of the
+final comparison. The final Grok implementation invokes the direct `grok` executable,
+and the Luna/Sol implementations invoke the direct Codex CLI; OpenCode and OpenRouter
+are excluded from this task.
 
 Unresolved questions: provider availability and subscription quotas must be observed
 by smoke tests; no result is assumed in advance.
@@ -116,27 +117,56 @@ preregistration checkpoint, run the route smoke tests before any bulk partition.
 
 Status: active; final evaluation has not started.
 
-Completed: the initial one-record preflight attempted `opencode/grok-4.6` and ended
-as an explicit provider error. A read-only `opencode models` audit exposed the exact
-Grok Build catalog entry `opencode/grok-build-0.1`; the core arm and manifest were
-corrected before any blind-holdout labels. The prior Grok 4.6 preflight remains
-separate evidence and is not pooled with the Grok Build arm. Luna and Qwen smoke
-evidence remains separately recorded; Qwen returned one valid label.
+Completed: the initial non-primary preflights ended as explicit provider errors and
+are not part of the final arms. The direct xAI CLI was installed and authenticated via
+`grok login --device-auth`; `grok models` reports the direct session and default
+`grok-4.6`. A direct headless JSON probe returned a valid label and surfaced
+`grok-4.6-build` usage metadata. Luna and Qwen smoke evidence remains separately
+recorded; Qwen returned one valid label.
 
 Exact files changed: the Grok model entry in the runner, freeze metadata, plan,
 manifest, README, pool manifest/checksums, CURRENT checkpoint, and this task log.
 
-Commands run: `opencode auth --help`; `opencode auth list`; `opencode models` with
-catalog filtering; smoke validation for `runs/smoke`.
+Commands run: direct xAI CLI installation/login/model inspection; Codex CLI health
+inspection; smoke validation for `runs/smoke`.
 
 Test results: the smoke validator passed; the Qwen arm was `ok: 1`; the exploratory
 Grok 4.6 and Luna attempts were `provider_error: 1` each with no labels.
 
-Decision: freeze `opencode/grok-build-0.1` as the only primary Grok arm. Do not use
-the failed Grok 4.6 attempt as a substitute or silently reinterpret it.
+Decision: freeze the direct `grok` CLI with requested model `grok-4.6` as the only
+primary Grok arm and use direct Codex CLI models for Luna/Sol. Do not use the
+historical preflight attempts as substitutes or silently reinterpret them.
 
-Unresolved questions: the Grok Build route and Luna route still need independent
-one-record smoke results with their exact surfaced IDs before bulk execution.
+Unresolved questions: the direct Grok Build route and direct Codex Luna route still
+need independent one-record smoke results before bulk execution.
 
-Next atomic action: commit this model-identity correction, then smoke-test
-`opencode/grok-build-0.1` and the Luna route in a fresh output directory.
+Next atomic action: commit the direct-CLI route correction, then run the Grok Build
+direct-CLI smoke and the Luna route in separate fresh output files.
+
+### 2026-09-21 — direct-only route correction
+
+Status: active; no final evaluation labels have been requested.
+
+Completed: removed all active OpenCode and OpenRouter routes from TASK-0015. The
+runner and frozen metadata now use the direct authenticated xAI `grok` Build CLI for
+Grok, the direct authenticated Codex CLI subscription for Luna/Sol, and YOLO-Auto for
+Qwen Flash. The earlier `runs/smoke` output remains historical and is not reused or
+overwritten; the next artifact is a new `runs/smoke-direct-20260921` directory.
+
+Exact files changed: `scripts/run_grok_luna_qwen_bakeoff.py`,
+`scripts/freeze_grok_luna_qwen_pool.py`, the EXP-015 plan/README/manifests/checksums,
+`checkpoints/CURRENT.md`, and this task log.
+
+Commands run: `grok models`; `codex doctor`; direct headless Grok JSON probe; direct
+headless Codex Luna JSON probe; `python scripts/check_repo_contract.py`; `ruff check .`;
+`$env:PYTHONPATH='src'; python -m pytest -q`; and `git diff --check`.
+
+Test results: repository contract `OK`; Ruff clean; `98 passed in 6.27s`; diff check
+clean. The direct probes returned valid labels; the Grok probe surfaced
+`grok-4.6-build`, and Codex used the requested `gpt-5.6-luna` subscription route.
+
+Decision: only direct Grok Build CLI and direct Codex subscription CLI calls are
+permitted for the Grok/Luna/Sol arms. No OpenCode or OpenRouter fallback is allowed.
+
+Next atomic action: commit this route correction, then run and validate the fresh
+direct-only smoke for Grok, Luna, and Qwen Flash.

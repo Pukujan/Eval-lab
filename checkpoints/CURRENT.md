@@ -25,18 +25,18 @@ TASK-0009 and TASK-0010 selective escalation/research release are complete. TASK
   - model `qwen3.8-flash`
   - environment variable `YOLO_AUTO_API_KEY`
   - user reports the credential is already configured locally
-- SuperGrok should be actively used through supported subscription OAuth/OpenCode integration.
-- ChatGPT Luna/Sol should be actively used through reproducible audit-batch handoffs, not treated as OpenAI API access.
-- OpenCode free general models should be enumerated and benchmarked in a bounded representative set.
+- Grok Build is used only through the direct authenticated xAI `grok` CLI.
+- ChatGPT Luna/Sol are used only through the direct authenticated Codex subscription CLI.
+- OpenCode and OpenRouter are excluded from TASK-0015.
 
 ## Next task
 
 TASK-0015 is active in `D:/claude/eval-lab-TASK-0015-bakeoff`. Its new EXP-015
 preregistration uses the exact EXP-014 pool and typed System-One packet. Core arms are
-Grok Build `opencode/grok-build-0.1` through authenticated OpenCode/xAI, Luna through
-authenticated OpenCode/ChatGPT, and YOLO-Auto `qwen3.8-flash`; exact surfaced model
-IDs and provider failures must be recorded separately. Do not modify or overwrite
-EXP-014.
+Grok Build through the direct authenticated xAI `grok` CLI, Luna through the direct
+authenticated Codex/ChatGPT subscription, and YOLO-Auto `qwen3.8-flash`; exact
+surfaced model IDs and provider failures must be recorded separately. Do not modify or
+overwrite EXP-014.
 
 ## Queued foundation
 
@@ -107,9 +107,33 @@ separate TASK-0015 worktree was created at `D:/claude/eval-lab-TASK-0015-bakeoff
 branch `task/TASK-0015-grok-luna-qwen-bakeoff`. EXP-015 is preregistered to copy the
 exact 1,408-record EXP-014 pool and typed packet before any final provider labels.
 
-Next atomic action: commit the preregistration and offline runner/validator, then run
-one-record smoke tests for Grok, Luna, and Qwen Flash and preserve their surfaced model
-IDs and provider statuses.
+Next atomic action: commit the direct-only route correction and offline runner/validator,
+then run fresh one-record smoke tests for direct Grok Build CLI, direct Codex Luna, and
+Qwen Flash in a new output directory. Preserve surfaced model IDs and provider statuses.
+
+### 2026-09-21 — TASK-0015 direct-only route correction
+
+The active TASK-0015 route is now explicitly direct-only: Grok uses the authenticated
+xAI `grok` Build CLI; Luna and optional Sol use the authenticated Codex CLI with the
+ChatGPT subscription; Qwen remains YOLO-Auto `qwen3.8-flash`. OpenCode and OpenRouter
+are excluded from this experiment and are not valid fallbacks.
+
+Completed: rewired the runner, pool manifest, freeze script, experiment manifest, plan,
+README, task log, and active checkpoint to the direct routes. The earlier committed
+non-primary preflight output remains historical evidence and will not be reused or
+overwritten; the new smoke output must use `runs/smoke-direct-20260921/`.
+
+Direct route checks already passed without exposing credentials: `grok models` showed
+the authenticated xAI session with default `grok-4.6`; `codex doctor` showed ChatGPT
+authentication with configured `gpt-5.6-luna`; a headless direct Grok probe surfaced
+`grok-4.6-build`; and a headless direct Codex Luna probe returned the requested JSON
+label through `codex exec`.
+
+Files changed: direct route runner and freeze script; EXP-015 plan, README, manifest,
+pool manifest, and checksums; TASK-0015; and this checkpoint.
+
+Next atomic action: run the fresh direct-only smoke, validate it, then commit that
+smoke artifact before attempting the matched public or blind pool.
 
 ## Next atomic action
 

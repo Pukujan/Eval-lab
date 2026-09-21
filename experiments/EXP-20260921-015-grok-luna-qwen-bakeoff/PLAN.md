@@ -25,15 +25,15 @@ the benchmark answer keys and deterministic verifiers remain the only objective 
 
 | Arm | Requested model | Route | Role |
 | --- | --- | --- | --- |
-| `grok` | `opencode/grok-build-0.1` | authenticated OpenCode/xAI subscription | core |
-| `luna` | `opencode/gpt-5.6-luna` | authenticated OpenCode/ChatGPT subscription | core |
+| `grok` | `grok-4.6` | direct authenticated xAI Grok Build CLI subscription | core |
+| `luna` | `gpt-5.6-luna` | direct authenticated Codex/ChatGPT subscription | core |
 | `qwen_flash` | `qwen3.8-flash` | YOLO-Auto OpenAI-compatible API | core |
-| `sol` | `opencode/gpt-5.6-sol` | authenticated OpenCode/ChatGPT subscription | optional |
+| `sol` | `gpt-5.6-sol` | direct authenticated Codex/ChatGPT subscription | optional |
 
-The runner records requested and surfaced model IDs separately. The initial
-`opencode/grok-4.6` call is retained only as an exploratory preflight artifact after
-the CLI catalog revealed the exact `grok-build-0.1` model; it is not part of the
-primary arm. No final arm silently falls back to another model or provider.
+The runner records requested and surfaced model IDs separately. The primary Grok arm
+invokes the installed `grok` executable directly, and Luna/Sol invoke the Codex CLI
+directly through their authenticated ChatGPT subscription sessions. No final arm
+silently falls back to another model or provider.
 
 ## Evaluation rules
 
@@ -67,7 +67,7 @@ blind labels. No provider output is promoted to gold.
 
 - `README.md`, `PLAN.md`, `experiment.yaml`;
 - `pool-manifest.json`, copied source/typed-packet manifests, and pool checksums;
-- `runs/smoke/` with one normalized output per core arm;
+- `runs/smoke-direct-<date>/` with one normalized output per core arm;
 - `runs/blind/` and optionally `runs/public/` with one normalized output per arm;
 - `results.json`, `report.md`, `provider-status.json`, `differential.json` per run;
 - `checksums.sha256` per run and a root completion summary after all selected runs.

@@ -8,8 +8,8 @@ blind-holdout records, with source fingerprint
 `b7edd61269f0f7757e734bc7e3f665ac2bcd6d908a1e56f73f0b0291d55b64d8`. Every selected
 arm receives the same System-One typed prompt and record order.
 
-The core comparison is Grok Build (`opencode/grok-build-0.1`) through the authenticated OpenCode/xAI subscription route,
-Luna through the authenticated OpenCode/ChatGPT subscription route, and YOLO-Auto
+The core comparison is Grok Build through the direct authenticated xAI `grok` CLI,
+Luna through the direct authenticated Codex/ChatGPT subscription route, and YOLO-Auto
 `qwen3.8-flash`. Sol is optional. Requested model IDs and exact surfaced IDs are kept
 in every run's results and provider-status artifacts.
 

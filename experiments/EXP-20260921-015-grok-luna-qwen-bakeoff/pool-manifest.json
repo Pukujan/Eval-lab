@@ -14,13 +14,15 @@
   "provider_model_arms": [
     {
       "arm": "grok",
-      "provider": "opencode",
-      "requested_model": "opencode/grok-build-0.1"
+      "provider": "xai-grok-build-cli",
+      "requested_model": "grok-4.6",
+      "route": "direct_grok_build_cli_subscription"
     },
     {
       "arm": "luna",
-      "provider": "opencode",
-      "requested_model": "opencode/gpt-5.6-luna"
+      "provider": "codex",
+      "requested_model": "gpt-5.6-luna",
+      "route": "direct_codex_chatgpt_subscription"
     },
     {
       "arm": "qwen_flash",
@@ -30,8 +32,9 @@
     {
       "arm": "sol",
       "optional": true,
-      "provider": "opencode",
-      "requested_model": "opencode/gpt-5.6-sol"
+      "provider": "codex",
+      "requested_model": "gpt-5.6-sol",
+      "route": "direct_codex_chatgpt_subscription"
     }
   ],
   "record_count": 1408,
