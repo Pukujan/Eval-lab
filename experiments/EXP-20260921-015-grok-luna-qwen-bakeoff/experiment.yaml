@@ -1,5 +1,5 @@
 id: EXP-20260921-015-grok-luna-qwen-bakeoff
-status: planned
+status: completed
 hypothesis: Authenticated Grok and Luna subscription routes will be competitive with YOLO-Auto qwen3.8-flash on the same objective typed records, with distinct coverage and provider-status behavior.
 created_at: 2026-09-21
 plan_baseline_commit: 56bad5d1edb386f18e577a09eeccf56ab4c73c99

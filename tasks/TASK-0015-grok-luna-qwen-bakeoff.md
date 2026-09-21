@@ -43,14 +43,14 @@ records, prompts, models, thresholds, or gold labels.
 
 ## Acceptance criteria
 
-- [ ] Preregistration and the exact pool/typed prompt are committed before final
+- [x] Preregistration and the exact pool/typed prompt are committed before final
   blind-holdout labels are requested.
-- [ ] One-record smoke tests attempt every core route and retain surfaced model IDs.
-- [ ] The matched pool is attempted with separate normalized output files per arm.
-- [ ] Accuracy, coverage, Wilson uncertainty, latency, native-confidence availability,
+- [x] One-record smoke tests attempt every core route and retain surfaced model IDs.
+- [x] The matched pool is attempted with separate normalized output files per arm.
+- [x] Accuracy, coverage, Wilson uncertainty, latency, native-confidence availability,
   same-record agreement, and provider-status reports are present and validated.
-- [ ] No provider failure is counted as an ordinary wrong label.
-- [ ] Local contract, Ruff, tests, diff check, and experiment checksums pass.
+- [x] No provider failure is counted as an ordinary wrong label.
+- [x] Local contract, Ruff, tests, diff check, and experiment checksums pass.
 
 ## Commands
 
@@ -359,3 +359,44 @@ provider from public results. The blind holdout must remain separate and untouch
 Next atomic action: review this committed public artifact and explicitly decide whether
 to launch the blind holdout with the same frozen pool, typed prompt, direct-only routes,
 streaming, and separate output files.
+
+### 2026-09-21 — blind primary comparison complete
+
+Status: complete. The frozen `760`-record blind holdout was attempted once for every
+core arm using the direct-only routes and streaming. Grok and Luna were run in the
+combined checkpoint process until Grok completed; Luna and Qwen were completed in
+isolated arm-specific streaming processes to reduce wall time. The final combined
+artifact was assembled offline from byte-verified normalized checkpoints; no provider
+calls occurred during assembly.
+
+Final blind outcomes:
+
+- Grok Build direct xAI CLI: `756/760` resolved, coverage `0.9947`, accuracy
+  `0.4378306878`, with `4 provider_error` (`2 process_exit`, `2 timeout`); surfaced
+  model `grok-4.6-build`.
+- Luna direct Codex ChatGPT subscription: `760/760` resolved, coverage `1.0000`,
+  accuracy `0.9842105263`, all `ok`.
+- Qwen Flash YOLO-Auto: `442/760` resolved, coverage `0.5816`, resolved accuracy
+  `0.9909502262`, with `1 provider_error` and `317 rate_limited`.
+
+Exact files changed: completed experiment manifest and root summaries,
+`runs/blind-stream-parallel-20260921/` with normalized predictions, progress,
+results, report, differential, provider-status, and checksums, plus this task log
+and `checkpoints/CURRENT.md`. Temporary isolated arm directories were removed after
+their prediction hashes matched the combined artifact.
+
+Commands run: direct Grok/Luna/Qwen blind execution with four workers and streaming;
+offline `--resume` finalization; experiment validator; repository contract check;
+Ruff; full pytest; and `git diff --check`.
+
+Decision: the primary comparison is complete with provider missingness explicitly
+reported. Qwen's high resolved accuracy is conditional on only `442` records and must
+not be interpreted as full-coverage performance. Any rate-limit retry would require a
+new timestamped run and cannot overwrite this one. OpenCode and OpenRouter were not
+used.
+
+Unresolved questions: whether a separately preregistered retry study is worthwhile for
+Qwen's `317` rate-limited records; no retry is part of this completed one-pass result.
+
+Next atomic action: review the committed EXP-015 report; no further provider execution
+is required for TASK-0015.

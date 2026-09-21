@@ -643,3 +643,27 @@ labels were added. The blind holdout remains untouched.
 
 Next atomic action: review the public artifact and decide whether to authorize a
 separate blind-holdout run; do not alter the frozen pool or public results.
+
+### 2026-09-21 — TASK-0015 complete
+
+EXP-015 is complete from the organized `D:\\claude\\eval-lab\\.worktrees\\TASK-0015-bakeoff`
+worktree. The frozen blind holdout attempted all `760` records for all three core
+arms with streaming and four workers per arm. Direct Grok Build returned `756 ok` and
+`4 provider_error`; direct Codex Luna returned `760 ok`; YOLO-Auto Qwen Flash returned
+`442 ok`, `1 provider_error`, and `317 rate_limited`. The public selection remains
+separately reported and was not pooled into the primary blind score.
+
+The combined blind artifact is
+`experiments/EXP-20260921-015-grok-luna-qwen-bakeoff/runs/blind-stream-parallel-20260921/`;
+the experiment root now has `status: completed`, `results.json`, and `report.md`.
+Its validator passed, and the final repository gate passed: contract `OK`, Ruff clean,
+all tests passing, experiment checksums valid, and `git diff --check` clean. Temporary
+parallel arm directories were hash-verified and removed. No OpenCode or OpenRouter
+route was used.
+
+Decision: preserve provider failures/rate limits as unresolved execution states and
+close TASK-0015 without retries. A retry of Qwen's rate-limited records, if desired,
+must be a separately timestamped experiment and cannot modify EXP-015.
+
+Next atomic action: normal review of the committed EXP-015 report; no further provider
+execution is required for TASK-0015.
