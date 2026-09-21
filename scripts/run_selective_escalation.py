@@ -6,7 +6,6 @@ import argparse
 import json
 import os
 import platform
-import shutil
 import subprocess
 from collections import Counter
 from collections.abc import Mapping
@@ -284,7 +283,7 @@ def _write_predictions(
     path.parent.mkdir(parents=True, exist_ok=True)
     if source is not None:
         if source.resolve() != path.resolve():
-            shutil.copyfile(source, path)
+            path.write_bytes(source.read_bytes().replace(b"\r\n", b"\n"))
         return _load_predictions(path)
     path.write_bytes("".join(item.model_dump_json() + "\n" for item in predictions).encode("utf-8"))
     return predictions
