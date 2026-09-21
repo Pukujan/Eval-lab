@@ -1,0 +1,167 @@
+{
+  "base_output": "experiments\\EXP-20260921-013-qwen-multidomain-holdout\\qwen-public-20260921",
+  "created_at_utc": "2026-09-21T05:10:10.835532+00:00",
+  "experiment_id": "EXP-20260921-013-qwen-multidomain-holdout",
+  "metrics": {
+    "accuracy": 0.8591549295774648,
+    "by_dataset": {
+      "allenai/ai2_arc:ARC-Easy": {
+        "accuracy": 0.9746835443037974,
+        "correct": 154,
+        "records": 160,
+        "resolved": 158,
+        "status_counts": {
+          "ok": 158,
+          "parse_error": 2
+        }
+      },
+      "cais/mmlu:abstract_algebra": {
+        "accuracy": 0.9,
+        "correct": 18,
+        "records": 20,
+        "resolved": 20,
+        "status_counts": {
+          "ok": 20
+        }
+      },
+      "cais/mmlu:computer_security": {
+        "accuracy": 0.9,
+        "correct": 18,
+        "records": 20,
+        "resolved": 20,
+        "status_counts": {
+          "ok": 20
+        }
+      },
+      "cais/mmlu:elementary_mathematics": {
+        "accuracy": 0.85,
+        "correct": 17,
+        "records": 20,
+        "resolved": 20,
+        "status_counts": {
+          "ok": 20
+        }
+      },
+      "cais/mmlu:high_school_biology": {
+        "accuracy": 0.9,
+        "correct": 18,
+        "records": 20,
+        "resolved": 20,
+        "status_counts": {
+          "ok": 20
+        }
+      },
+      "cais/mmlu:high_school_world_history": {
+        "accuracy": 1.0,
+        "correct": 20,
+        "records": 20,
+        "resolved": 20,
+        "status_counts": {
+          "ok": 20
+        }
+      },
+      "cais/mmlu:logical_fallacies": {
+        "accuracy": 1.0,
+        "correct": 20,
+        "records": 20,
+        "resolved": 20,
+        "status_counts": {
+          "ok": 20
+        }
+      },
+      "cais/mmlu:machine_learning": {
+        "accuracy": 0.631578947368421,
+        "correct": 12,
+        "records": 20,
+        "resolved": 19,
+        "status_counts": {
+          "ok": 19,
+          "parse_error": 1
+        }
+      },
+      "cais/mmlu:professional_law": {
+        "accuracy": 0.85,
+        "correct": 17,
+        "records": 20,
+        "resolved": 20,
+        "status_counts": {
+          "ok": 20
+        }
+      },
+      "eval-lab-select-v0.1.0": {
+        "accuracy": 0.975,
+        "correct": 117,
+        "records": 120,
+        "resolved": 120,
+        "status_counts": {
+          "ok": 120
+        }
+      },
+      "eval-lab-synthetic:arithmetic": {
+        "accuracy": 1.0,
+        "correct": 11,
+        "records": 12,
+        "resolved": 11,
+        "status_counts": {
+          "ok": 11,
+          "parse_error": 1
+        }
+      },
+      "eval-lab-synthetic:code": {
+        "accuracy": 0.8181818181818182,
+        "correct": 9,
+        "records": 12,
+        "resolved": 11,
+        "status_counts": {
+          "ok": 11,
+          "parse_error": 1
+        }
+      },
+      "eval-lab-synthetic:multiple": {
+        "accuracy": 0.4166666666666667,
+        "correct": 5,
+        "records": 12,
+        "resolved": 12,
+        "status_counts": {
+          "ok": 12
+        }
+      },
+      "eval-lab-synthetic:structured": {
+        "accuracy": 0.5833333333333334,
+        "correct": 7,
+        "records": 12,
+        "resolved": 12,
+        "status_counts": {
+          "ok": 12
+        }
+      },
+      "openai/gsm8k:main": {
+        "accuracy": 0.6794871794871795,
+        "correct": 106,
+        "records": 160,
+        "resolved": 156,
+        "status_counts": {
+          "ok": 156,
+          "parse_error": 4
+        }
+      }
+    },
+    "correct": 549,
+    "records": 648,
+    "resolved": 639,
+    "status_counts": {
+      "ok": 639,
+      "parse_error": 9
+    }
+  },
+  "model": "qwen3.8-flash",
+  "partition": "public_selection",
+  "probabilities_available": false,
+  "provider": "yolo-auto",
+  "record_count": 648,
+  "retry_output": "experiments\\EXP-20260921-013-qwen-multidomain-holdout\\qwen-public-retry-20260921",
+  "status_counts": {
+    "ok": 639,
+    "parse_error": 9
+  }
+}
