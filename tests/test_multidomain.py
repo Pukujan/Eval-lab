@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+
 from eval_lab.datasets.multidomain import (
     canonicalize_choice_row,
     canonicalize_gsm8k_row,
@@ -9,6 +11,7 @@ from eval_lab.datasets.multidomain import (
     select_source_ids,
 )
 from eval_lab.schema import Split
+from scripts.run_multidomain_qwen import _load_pool
 
 
 def test_source_selection_is_deterministic_and_unique() -> None:
@@ -47,3 +50,26 @@ def test_gsm8k_answer_normalization_and_wrong_answer_are_deterministic() -> None
     assert records[1].candidate_a == "Final answer: 5"
     assert records[0].gold.label == "pass"
     assert records[1].gold.label == "fail"
+
+
+def test_qwen_runner_can_filter_a_retry_partition_by_record_id(tmp_path) -> None:
+    pool = tmp_path / "pool"
+    pool.mkdir()
+    records = canonicalize_gsm8k_row(
+        source_problem_id="gsm8k-main:test-00002",
+        question="What is 3 + 3?",
+        answer="#### 6",
+        split=Split.CALIBRATION,
+    )
+    rows = [
+        {"dataset": "gsm8k", "partition": "public_selection", "source_problem_id": record.source_problem_id, "record": record.model_dump(mode="json")}
+        for record in records
+    ]
+    (pool / "records.jsonl").write_text(
+        "\n".join(json.dumps(row) for row in rows) + "\n", encoding="utf-8"
+    )
+    ids = tmp_path / "ids.txt"
+    ids.write_text(records[1].record_id + "\n", encoding="utf-8")
+    selected, loaded = _load_pool(pool, "public_selection", ids)
+    assert len(selected) == len(loaded) == 1
+    assert loaded[0].record_id == records[1].record_id
