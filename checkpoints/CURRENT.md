@@ -1,15 +1,19 @@
 # Current Repository Checkpoint
 
+## Authoritative status
+
+TASK-0001 through TASK-0009 are merged. TASK-0010 is under corrective release audit: EXP-20260920-012-selective-escalation-qwen-streaming is the completion replay, and EXP-20260920-009-selective-escalation remains the planned baseline. The next program task remains unopened pending TASK-0010 commit and CI verification.
+
 ## Program state
 
 TASK-0001 local bootstrap is complete.
-TASK-0002 through TASK-0009 implementation is merged; TASK-0009 merged in PR #24. TASK-0010 acceptance is complete in EXP-20260920-012; TASK-0002 has not been started.
+TASK-0002 through TASK-0009 implementation is merged; TASK-0009 merged in PR #24. TASK-0010 local acceptance evidence is complete in the EXP-20260920-012 completion replay, with the corrective metrics and paper audit awaiting commit and CI verification.
 
 The program is extended with TASK-0007 through TASK-0009 to fully use the user's existing model subscriptions/resources after the measurement foundation is complete.
 
 ## Main objective
 
-TASK-0009 and TASK-0010 selective escalation/research release are complete; the next task remains unopened pending normal review/triage.
+TASK-0009 is complete. TASK-0010 selective escalation/research release is in corrective audit; the next program task remains unopened.
 
 ## Model-access decisions
 
@@ -25,7 +29,7 @@ TASK-0009 and TASK-0010 selective escalation/research release are complete; the 
 
 ## Next task
 
-TASK-0010 — Selective Escalation and System-One Differential Bench (#25).
+No new program task is open. Complete the TASK-0010 corrective audit at EXP-20260920-012, then leave the next program task unopened pending review.
 
 ## Queued foundation
 
@@ -91,7 +95,7 @@ GitHub Actions runner scheduling remains infrastructure-only until runners are a
 
 ## Next atomic action
 
-TASK-0009 is ready for review in dedicated worktree D:/claude/eval-lab-TASK-0009 on branch task/TASK-0009-small-judge-training, starting from merged TASK-0008 main bce665e8.
+TASK-0010 is complete at EXP-20260920-012. Leave the next program task unopened until review/triage. Historical checkpoint entries below are retained.
 
 ### 2026-09-20 — PR #15 contract validation
 
@@ -365,3 +369,25 @@ Next atomic action: commit and push this byte-stability correction, then verify 
 The byte-stability correction is commit `81d3130`. Replacement CI run `35555646443` passed both Python 3.11 and 3.12, including install, repository contract, Ruff, and unit tests. TASK-0010 acceptance remains complete; TASK-0002 remains unopened.
 
 Next atomic action: commit and push this final CI checkpoint, then verify the branch is clean and leave the repository at the completed TASK-0010 state.
+
+### 2026-09-20 — TASK-0010 local metric and paper-schema improvement
+
+Authoritative status: TASK-0001 through TASK-0009 merged; TASK-0010 is in corrective audit at EXP-20260920-012 with EXP-20260920-009 as the planned baseline. Local routing accounting, P1/P2 provider-only policies, required per-policy metrics, paper sections, and PCM notes were added without provider calls. Local gate: repository contract `OK`, Ruff clean, `87 passed`, research-artifact validation checksums `ok` / RO-Crate `ok` / SHACL `conforms`. The next program task remains unopened pending commit and CI verification.
+
+### 2026-09-20 — TASK-0010 corrective audit checkpoint
+
+Grok Build CLI `1.0.40 (eb1a2256660d)` was installed at `C:\Users\pujan\.grok\bin\grok.exe` and used through the authenticated xAI subscription route for a read-only audit followed by local offline edits. No OpenRouter/OpenCode provider call, credential read, `.env` change, commit, or push was made by that audit. The worktree is `D:\claude\eval-lab-TASK-0010` on `task/TASK-0010-selective-escalation`; Python is `3.12.10` from `D:\claude\eval-lab\.venv`; Git is `2.51.2.windows.1`; the expected remote head `50312637a28a71e279387db6293f17b99a11ed10` is an ancestor of the current local continuation.
+
+The audit corrected local-route provider accounting, added explicit P1 `pinned_jev_only` and P2 `qwen_flash_only` policies across the full final pool, and added provider-independent per-policy metrics, uncertainty/support flags, provider-only latency/cost/resource reporting, risk coverage, aggregate/per-domain summaries, focused unit tests, and the required paper/report material. The frozen EXP-012 counts remain threshold-selection `2,863`, final evaluation `2,356`, provider prefix `500`; policy count is now `19`; pinned Jev is `500/500 ok`, rolling Jev is `500/500 ok` as a separate canary, Qwen is `500/500 ok`, and the Jev/Qwen differential is `500` comparable with `486` agreements. Collapsed operating points are labeled descriptive/underpowered where the confidence-supported sample is insufficient; no distinction was fabricated.
+
+Exact local checks:
+
+- `D:\claude\eval-lab\.venv\Scripts\python.exe scripts/check_repo_contract.py` -> `Repository contract OK`.
+- `D:\claude\eval-lab\.venv\Scripts\ruff.exe check .` -> `All checks passed!`.
+- `$env:PYTHONPATH=\"$PWD\\src\"; D:\claude\eval-lab\.venv\Scripts\python.exe -m pytest -q` -> `87 passed in 3.91s`.
+- `$env:PYTHONPATH=\"$PWD\\src\"; D:\claude\eval-lab\.venv\Scripts\python.exe scripts/validate_research_artifacts.py --benchmark benchmark/eval-lab-select-v0.1.0` -> checksums `ok`, citation `parsed`, paper `present`, PROV-O `parsed`, RO-Crate `ok`, SHACL `conforms`.
+- `git diff --check` -> clean after LF normalization and removal of the report trailing blank line.
+
+Files changed are `checkpoints/CURRENT.md`, `tasks/TASK-0010-selective-escalation.md`, `scripts/run_selective_escalation.py`, `scripts/generate_research_artifacts.py`, `src/eval_lab/metrics/__init__.py`, new `src/eval_lab/metrics/policy.py`, new `tests/test_selective_policy_metrics.py`, EXP-012 derived results/report/routing/checksum files, and the generated paper/figure/table/limitations/reproducibility files. Benchmark records and frozen EXP-009 provider bytes were preserved. The benchmark fingerprint remains `18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5`.
+
+Decision: keep the frozen TASK-0009 TF-IDF plus logistic-regression arm D as the primary student, retain pinned and rolling Jev as separate arms, retain Qwen as the secondary provider arm, and finish TASK-0010 from committed offline evidence without substituting Grok. No blocker remains in the local implementation; the next atomic action is to commit this audit, replay/regenerate from the committed code, push the branch, and inspect CI before restoring the task to complete. Do not begin TASK-0002.

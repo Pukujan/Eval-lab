@@ -6,9 +6,10 @@ import argparse
 import json
 import os
 import platform
-import statistics
+import shutil
 import subprocess
 from collections import Counter
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
@@ -22,11 +23,12 @@ from eval_lab.escalation.providers import (
 )
 from eval_lab.escalation.routing import (
     Route,
-    evaluate_routing,
     matched_random_record_ids,
     route_prediction,
     select_threshold,
 )
+from eval_lab.metrics.latency import latency_summary
+from eval_lab.metrics.policy import summarize_policy_metrics
 from eval_lab.schema import ExecutionStatus, JudgePrediction, JudgeRecord
 from eval_lab.training import TextLogisticStudent
 
@@ -76,6 +78,38 @@ def _load_predictions(path: Path) -> list[JudgePrediction]:
     return [JudgePrediction.model_validate(json.loads(line)) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
+def _route_outcome(
+    *,
+    local: JudgePrediction | None,
+    external: JudgePrediction | None,
+    escalate: bool,
+) -> dict[str, Any]:
+    if not escalate:
+        if local is None:
+            raise ValueError("local prediction is required for a local route")
+        ok = local.execution_status is ExecutionStatus.OK
+        return {
+            "final_label": local.label if ok else None,
+            "provider_status": "not_called",
+            "provider_model": None,
+            "provider_error": None,
+        }
+    if external is None:
+        return {
+            "final_label": None,
+            "provider_status": "not_called",
+            "provider_model": None,
+            "provider_error": {"type": "provider_not_available"},
+        }
+    ok = external.execution_status is ExecutionStatus.OK
+    return {
+        "final_label": external.label if ok else None,
+        "provider_status": external.execution_status.value,
+        "provider_model": external.judge_id,
+        "provider_error": external.error,
+    }
+
+
 def _calibrated_predictions(
     predictions: list[JudgePrediction], artifact: CalibrationArtifact
 ) -> tuple[list[JudgePrediction], dict[str, float]]:
@@ -119,18 +153,35 @@ def _student_routes(
             threshold=threshold,
             calibrated_confidence=(calibrated_confidences or {}).get(record.record_id),
         )
-        local = local_predictions[record.record_id]
-        external = escalated_predictions.get(record.record_id)
-        selected = local if route.route is Route.LOCAL else external
         rows.append(
             {
                 **route.as_dict(),
-                "final_label": selected.label if selected and selected.execution_status is ExecutionStatus.OK else None,
-                "provider_status": selected.execution_status.value if selected else "not_called",
-                "provider_model": selected.judge_id if selected else None,
-                "provider_error": selected.error if selected else None,
+                **_route_outcome(
+                    local=local_predictions[record.record_id],
+                    external=escalated_predictions.get(record.record_id),
+                    escalate=route.route is Route.ESCALATE,
+                ),
             }
         )
+    return rows
+
+
+def _provider_only_rows(
+    records: list[JudgeRecord],
+    predictions_by_id: dict[str, JudgePrediction],
+    *,
+    model: str,
+) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for record in records:
+        outcome = _route_outcome(
+            local=None,
+            external=predictions_by_id.get(record.record_id),
+            escalate=True,
+        )
+        if outcome["provider_model"] is None:
+            outcome["provider_model"] = model
+        rows.append({"record_id": record.record_id, "route": Route.ESCALATE.value, **outcome})
     return rows
 
 
@@ -142,10 +193,101 @@ def _all_provider_rows(
     return {prediction.record_id: prediction for prediction in predictions}
 
 
+def _selected_predictions(
+    rows: list[dict[str, Any]],
+    local_by_id: Mapping[str, JudgePrediction],
+    provider_by_id: Mapping[str, JudgePrediction],
+) -> dict[str, JudgePrediction]:
+    selected: dict[str, JudgePrediction] = {}
+    for row in rows:
+        record_id = str(row["record_id"])
+        prediction = (
+            local_by_id.get(record_id)
+            if row.get("route") == Route.LOCAL.value
+            else provider_by_id.get(record_id)
+        )
+        if prediction is not None:
+            selected[record_id] = prediction
+    return selected
+
+
+def _ranking(
+    records: list[JudgeRecord],
+    predictions: Mapping[str, JudgePrediction],
+    confidences: Mapping[str, float],
+) -> tuple[list[bool], list[float]]:
+    correct: list[bool] = []
+    values: list[float] = []
+    for record in records:
+        prediction = predictions[record.record_id]
+        correct.append(prediction.label == record.gold.label)
+        values.append(float(confidences[record.record_id]))
+    return correct, values
+
+
+def _raw_confidences(predictions: list[JudgePrediction]) -> dict[str, float]:
+    return {prediction.record_id: max(prediction.probabilities.values()) for prediction in predictions}
+
+
 def _summary(
-    records: list[JudgeRecord], rows: list[dict[str, Any]], domains: dict[str, str]
+    records: list[JudgeRecord],
+    rows: list[dict[str, Any]],
+    domains: dict[str, str],
+    *,
+    selected_predictions: Mapping[str, JudgePrediction] | None = None,
+    ranking_correct: list[bool] | None = None,
+    ranking_confidence: list[float] | None = None,
+    target_error: float | None = None,
+    threshold: float | None = None,
 ) -> dict[str, Any]:
-    return evaluate_routing(records, rows, domain_by_record_id=domains)
+    return summarize_policy_metrics(
+        records,
+        rows,
+        domain_by_record_id=domains,
+        selected_predictions=selected_predictions,
+        ranking_correct=ranking_correct,
+        ranking_confidence=ranking_confidence,
+        target_error=target_error,
+        threshold=threshold,
+    )
+
+
+def _mark_collapsed(policy_results: dict[str, Any]) -> None:
+    families: dict[str, list[str]] = {}
+    for name in policy_results:
+        for target in TARGETS:
+            suffix = f"_target_{target:.2f}"
+            if name.endswith(suffix):
+                families.setdefault(name[: -len(suffix)], []).append(name)
+                break
+    for names in families.values():
+        signatures = []
+        for name in names:
+            point = policy_results[name].get("selected_operating_point") or {}
+            signatures.append((point.get("threshold"), policy_results[name].get("local_coverage")))
+        collapsed = len(names) > 1 and len(set(signatures)) == 1
+        collapsed_targets = [name.rsplit("_target_", 1)[-1] for name in names]
+        for name in names:
+            point = policy_results[name].get("selected_operating_point")
+            if not isinstance(point, dict):
+                continue
+            point["collapsed"] = collapsed
+            if collapsed:
+                point["collapsed_targets"] = collapsed_targets
+
+
+def _write_predictions(
+    path: Path,
+    predictions: list[JudgePrediction],
+    source: Path | None,
+) -> list[JudgePrediction]:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if source is not None:
+        if source.resolve() != path.resolve():
+            shutil.copyfile(source, path)
+        return _load_predictions(path)
+    path.write_bytes("".join(item.model_dump_json() + "\n" for item in predictions).encode("utf-8"))
+    return predictions
 
 
 def _provider_usage(predictions: list[JudgePrediction]) -> dict[str, Any]:
@@ -163,15 +305,11 @@ def _provider_usage(predictions: list[JudgePrediction]) -> dict[str, Any]:
         input_tokens += float(usage.get("input_tokens", 0.0) or 0.0)
         output_tokens += float(usage.get("output_tokens", 0.0) or 0.0)
         cost += float(usage.get("cost", 0.0) or 0.0)
+    latency = dict(latency_summary(latencies))
     return {
         "calls": len(predictions),
         "status_counts": dict(statuses),
-        "latency_ms": {
-            "count": len(latencies),
-            "mean": statistics.fmean(latencies) if latencies else None,
-            "median": statistics.median(latencies) if latencies else None,
-            "max": max(latencies) if latencies else None,
-        },
+        "latency_ms": latency,
         "usage_available_calls": usage_calls,
         "input_tokens": input_tokens if usage_calls else None,
         "output_tokens": output_tokens if usage_calls else None,
@@ -222,50 +360,53 @@ def run(
         )
         for target in TARGETS
     }
-    pinned = (
-        _load_predictions(pinned_predictions_path)
-        if pinned_predictions_path
-        else (
-            run_openrouter_jev(provider_records, model=OPENROUTER_PINNED_MODEL, timeout=provider_timeout)
-            if run_providers and include_pinned
-            else (_load_predictions(output / "provider-pinned.jsonl") if run_providers else [])
+    if pinned_predictions_path:
+        pinned_source = pinned_predictions_path
+        pinned_generated: list[JudgePrediction] = []
+    elif run_providers and include_pinned:
+        pinned_source = None
+        pinned_generated = run_openrouter_jev(
+            provider_records, model=OPENROUTER_PINNED_MODEL, timeout=provider_timeout
         )
-    )
-    rolling = (
-        _load_predictions(rolling_predictions_path)
-        if rolling_predictions_path
-        else (
-            run_openrouter_jev(provider_records, model=OPENROUTER_ROLLING_MODEL, timeout=provider_timeout)
-            if run_providers and include_rolling
-            else []
+    elif run_providers:
+        pinned_source = output / "provider-pinned.jsonl"
+        pinned_generated = []
+    else:
+        pinned_source = None
+        pinned_generated = []
+    if rolling_predictions_path:
+        rolling_source = rolling_predictions_path
+        rolling_generated: list[JudgePrediction] = []
+    elif run_providers and include_rolling:
+        rolling_source = None
+        rolling_generated = run_openrouter_jev(
+            provider_records, model=OPENROUTER_ROLLING_MODEL, timeout=provider_timeout
         )
-    )
-    qwen = (
-        _load_predictions(qwen_predictions_path)
-        if qwen_predictions_path
-        else (
-            run_yolo_qwen(
-                provider_records,
-                base_url=os.getenv("YOLO_AUTO_BASE_URL") or os.getenv("QWEN_API_URL", "https://api.yolo-auto.com/v1"),
-                timeout=provider_timeout,
-            )
-            if run_providers and include_qwen
-            else []
+    else:
+        rolling_source = None
+        rolling_generated = []
+    if qwen_predictions_path:
+        qwen_source = qwen_predictions_path
+        qwen_generated: list[JudgePrediction] = []
+    elif run_providers and include_qwen:
+        qwen_source = None
+        qwen_generated = run_yolo_qwen(
+            provider_records,
+            base_url=os.getenv("YOLO_AUTO_BASE_URL") or os.getenv("QWEN_API_URL", "https://api.yolo-auto.com/v1"),
+            timeout=provider_timeout,
         )
-    )
-    pinned_by_id = _all_provider_rows(provider_records, pinned, model_only=OPENROUTER_PINNED_MODEL) if pinned else {}
-    _rolling_by_id = _all_provider_rows(provider_records, rolling, model_only=OPENROUTER_ROLLING_MODEL) if rolling else {}
-    qwen_by_id = _all_provider_rows(provider_records, qwen, model_only="qwen3.8-flash") if qwen else {}
+    else:
+        qwen_source = None
+        qwen_generated = []
     output.mkdir(parents=True, exist_ok=True)
-    (output / "provider-pinned.jsonl").write_text(
-        "".join(prediction.model_dump_json() + "\n" for prediction in pinned), encoding="utf-8"
+    pinned = _write_predictions(output / "provider-pinned.jsonl", pinned_generated, pinned_source)
+    rolling = _write_predictions(output / "provider-rolling.jsonl", rolling_generated, rolling_source)
+    qwen = _write_predictions(output / "provider-qwen.jsonl", qwen_generated, qwen_source)
+    pinned_by_id = _all_provider_rows(provider_records, pinned, model_only=OPENROUTER_PINNED_MODEL) if pinned else {}
+    _rolling_by_id = (
+        _all_provider_rows(provider_records, rolling, model_only=OPENROUTER_ROLLING_MODEL) if rolling else {}
     )
-    (output / "provider-rolling.jsonl").write_text(
-        "".join(prediction.model_dump_json() + "\n" for prediction in rolling), encoding="utf-8"
-    )
-    (output / "provider-qwen.jsonl").write_text(
-        "".join(prediction.model_dump_json() + "\n" for prediction in qwen), encoding="utf-8"
-    )
+    qwen_by_id = _all_provider_rows(provider_records, qwen, model_only="qwen3.8-flash") if qwen else {}
     thresholds: dict[str, Any] = {
         "confidence_definition": "max calibrated class probability; raw arm uses max raw class probability",
         "target_error_rates": list(TARGETS),
@@ -274,22 +415,53 @@ def run(
         "selection_partition": "threshold_selection",
         "final_partition": "final_evaluation",
     }
-    (output / "thresholds.json").write_text(json.dumps(thresholds, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    (output / "thresholds.json").write_bytes(
+        (json.dumps(thresholds, indent=2, sort_keys=True) + "\n").encode("utf-8")
+    )
     all_rows: list[dict[str, Any]] = []
     policy_results: dict[str, Any] = {}
     local_raw_by_id = {prediction.record_id: prediction for prediction in final_raw}
     local_calibrated_by_id = {prediction.record_id: prediction for prediction in final_calibrated}
+    raw_confidence = _raw_confidences(final_raw)
+    calibrated_ranking = _ranking(final_records, local_calibrated_by_id, final_confidence)
+    raw_ranking = _ranking(final_records, local_raw_by_id, raw_confidence)
     local_only_rows = [
         {
             "record_id": record.record_id,
             "route": Route.LOCAL.value,
-            "final_label": local_raw_by_id[record.record_id].label,
-            "provider_status": "not_called",
+            **_route_outcome(
+                local=local_raw_by_id[record.record_id],
+                external=None,
+                escalate=False,
+            ),
         }
         for record in final_records
     ]
-    policy_results["local_only"] = _summary(final_records, local_only_rows, domains)
+    policy_results["local_only"] = _summary(
+        final_records,
+        local_only_rows,
+        domains,
+        selected_predictions=local_raw_by_id,
+        ranking_correct=raw_ranking[0],
+        ranking_confidence=raw_ranking[1],
+    )
     all_rows.extend({"policy": "local_only", **row} for row in local_only_rows)
+    pinned_only_rows = _provider_only_rows(final_records, pinned_by_id, model=OPENROUTER_PINNED_MODEL)
+    qwen_only_rows = _provider_only_rows(final_records, qwen_by_id, model="qwen3.8-flash")
+    policy_results["pinned_jev_only"] = _summary(
+        final_records,
+        pinned_only_rows,
+        domains,
+        selected_predictions=pinned_by_id,
+    )
+    policy_results["qwen_flash_only"] = _summary(
+        final_records,
+        qwen_only_rows,
+        domains,
+        selected_predictions=qwen_by_id,
+    )
+    all_rows.extend({"policy": "pinned_jev_only", **row} for row in pinned_only_rows)
+    all_rows.extend({"policy": "qwen_flash_only", **row} for row in qwen_only_rows)
     for target in TARGETS:
         suffix = f"target_{target:.2f}"
         calibrated_threshold = threshold_calibrated_selection[str(target)]["selected"]["threshold"]
@@ -318,39 +490,80 @@ def run(
             local_predictions=local_calibrated_by_id,
             escalated_predictions=qwen_by_id,
         )
-        for name, rows in (
-            (f"calibrated_local_to_jev_{suffix}", calibrated_jev),
-            (f"raw_local_to_jev_{suffix}", raw_jev),
-            (f"calibrated_local_to_qwen_flash_{suffix}", calibrated_qwen),
-        ):
-            policy_results[name] = _summary(final_records, rows, domains)
+        policy_specs = (
+            (
+                f"calibrated_local_to_jev_{suffix}",
+                calibrated_jev,
+                local_calibrated_by_id,
+                pinned_by_id,
+                calibrated_ranking,
+                calibrated_threshold,
+            ),
+            (
+                f"raw_local_to_jev_{suffix}",
+                raw_jev,
+                local_raw_by_id,
+                pinned_by_id,
+                raw_ranking,
+                raw_threshold,
+            ),
+            (
+                f"calibrated_local_to_qwen_flash_{suffix}",
+                calibrated_qwen,
+                local_calibrated_by_id,
+                qwen_by_id,
+                calibrated_ranking,
+                calibrated_threshold,
+            ),
+        )
+        for name, rows, local_map, provider_map, ranking, threshold in policy_specs:
+            policy_results[name] = _summary(
+                final_records,
+                rows,
+                domains,
+                selected_predictions=_selected_predictions(rows, local_map, provider_map),
+                ranking_correct=ranking[0],
+                ranking_confidence=ranking[1],
+                target_error=target,
+                threshold=threshold,
+            )
             all_rows.extend({"policy": name, **row} for row in rows)
         escalated_count = sum(row["route"] == Route.ESCALATE.value for row in calibrated_jev)
-        random_ids = set(matched_random_record_ids([record.record_id for record in final_records], escalated_count, seed=20260920))
+        random_ids = set(
+            matched_random_record_ids([record.record_id for record in final_records], escalated_count, seed=20260920)
+        )
         random_rows = []
         for record in final_records:
-            provider = pinned_by_id.get(record.record_id)
             use_provider = record.record_id in random_ids
-            selected = provider if use_provider else local_raw_by_id[record.record_id]
             random_rows.append(
                 {
                     "record_id": record.record_id,
                     "route": Route.ESCALATE.value if use_provider else Route.LOCAL.value,
-                    "final_label": selected.label if selected and selected.execution_status is ExecutionStatus.OK else None,
-                    "provider_status": selected.execution_status.value if selected else "not_called",
-                    "provider_model": selected.judge_id if selected and use_provider else None,
-                    "provider_error": selected.error if selected else {"type": "provider_not_available"},
+                    **_route_outcome(
+                        local=local_raw_by_id[record.record_id],
+                        external=pinned_by_id.get(record.record_id),
+                        escalate=use_provider,
+                    ),
                     "random_seed": 20260920,
                     "matched_escalation_count": escalated_count,
                 }
             )
         name = f"random_matched_to_jev_{suffix}"
-        policy_results[name] = _summary(final_records, random_rows, domains)
+        policy_results[name] = _summary(
+            final_records,
+            random_rows,
+            domains,
+            selected_predictions=_selected_predictions(random_rows, local_raw_by_id, pinned_by_id),
+            ranking_correct=raw_ranking[0],
+            ranking_confidence=raw_ranking[1],
+            target_error=target,
+            threshold=None,
+        )
         all_rows.extend({"policy": name, **row} for row in random_rows)
+    _mark_collapsed(policy_results)
     routing_path = output / "routing.jsonl"
-    routing_path.write_text(
-        "".join(json.dumps(row, sort_keys=True, separators=(",", ":")) + "\n" for row in all_rows),
-        encoding="utf-8",
+    routing_path.write_bytes(
+        "".join(json.dumps(row, sort_keys=True, separators=(",", ":")) + "\n" for row in all_rows).encode("utf-8")
     )
     differential = []
     for record in final_records:
@@ -407,14 +620,22 @@ def run(
         "system_one_differential": {"comparable_count": len(differential), "agreement_count": sum(item["agree"] for item in differential), "rows": differential},
         "unresolved_policy_rule": "provider failures remain unresolved and never fall back to a local label",
     }
-    (output / "results.json").write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    (output / "report.md").write_text(
-        f"# {experiment_id} — Selective escalation\n\n"
-        f"Benchmark fingerprint: `{payload['benchmark_fingerprint']}`\n\n"
-        f"Threshold-selection records: {len(threshold_records)}; final-evaluation records: {len(final_records)}; provider prefix: {len(provider_records)}.\n\n"
-        "Provider call counts, statuses, latency summaries, token usage, and reported costs are recorded in `results.json` under `provider_usage`; normalized per-record evidence remains in the provider JSONL files.\n\n"
-        "Provider failures remain unresolved and never fall back to a local label. Pinned Jev and rolling Jev are separate arms.\n",
-        encoding="utf-8",
+    (output / "results.json").write_bytes(
+        (json.dumps(payload, indent=2, sort_keys=True) + "\n").encode("utf-8")
+    )
+    (output / "report.md").write_bytes(
+        (
+            f"# {experiment_id} — Selective escalation\n\n"
+            f"Benchmark fingerprint: `{payload['benchmark_fingerprint']}`\n\n"
+            f"Threshold-selection records: {len(threshold_records)}; "
+            f"final-evaluation records: {len(final_records)}; "
+            f"provider prefix: {len(provider_records)}.\n\n"
+            "Provider call counts, statuses, latency summaries, token usage, and reported costs "
+            "are recorded in `results.json` under `provider_usage`; normalized per-record evidence "
+            "remains in the provider JSONL files.\n\n"
+            "Provider failures remain unresolved and never fall back to a local label. "
+            "Pinned Jev and rolling Jev are separate arms.\n"
+        ).encode()
     )
     return payload
 

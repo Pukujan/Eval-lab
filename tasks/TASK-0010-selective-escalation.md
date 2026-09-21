@@ -1,12 +1,13 @@
 # TASK-0010 — Selective Escalation, System-One Differential, and Reproducible Research Release
 
-- Status: complete
+- Status: active
 - Owner: Luna/local agent
 - Priority: P0
 - GitHub issue: #25
 - Depends on: TASK-0009
 - Branch: task/TASK-0010-selective-escalation
 - Planned experiment: EXP-20260920-009-selective-escalation
+- Completion replay: EXP-20260920-012-selective-escalation-qwen-streaming
 - Planned benchmark release: EvalLab-Select v0.1.0
 
 ## Goal
@@ -346,6 +347,7 @@ Jev-Ultrafast browser action routing is out of scope for TASK-0010 implementatio
 - `CITATION.cff`
 - `experiments/EXP-20260920-009-selective-escalation/`
 - `experiments/EXP-20260920-010-multi-subscription-bakeoff/`
+- `experiments/EXP-20260920-012-selective-escalation-qwen-streaming/`
 - `.github/workflows/ci.yml`
 - `.gitattributes` for byte-stable benchmark-release line endings
 - `scripts/check_repo_contract.py`
@@ -637,3 +639,29 @@ Next atomic action: commit and push the byte-stability fix, then inspect the rep
 The LF normalization and checksum correction is pushed in commit `81d3130`. Replacement CI run `35555646443` passed on both Python 3.11 and 3.12: install, repository contract, Ruff, and unit tests all passed. This closes the only CI defect found after the release checkpoint.
 
 Next atomic action: commit this final CI checkpoint, push it, verify the new head remains clean and green, and leave TASK-0002 unopened.
+
+### 2026-09-20 — routing accounting, required metrics, and paper sections
+
+Local improvement of TASK-0010 without provider calls, commits, or pushes. EXP-20260920-012 remains the completion replay; EXP-20260920-009 remains the planned baseline.
+
+Routing now records `provider_status=not_called` on every local route and reports provider status only on escalated routes. Explicit P1 `pinned_jev_only` and P2 `qwen_flash_only` policies cover the frozen final pool and keep missing provider records unresolved. Per-policy metrics use `eval_lab.metrics` primitives: accuracy, balanced accuracy, macro F1, coverage, escalation, Wilson intervals, unresolved rate, Brier/NLL/ECE or explicit unavailability, latency p95, external calls per 1,000, provider resource metadata, aggregate and per-domain metrics, risk-coverage, and 1/2/5/10% support flags. Thresholds remain selected on the threshold-selection partition.
+
+Offline replay regenerated EXP-012 derived artifacts from committed EXP-009 pinned/rolling files and the merged streaming Qwen 500-label artifact. Generated report and paper are sourced from `results.json`, include experiment `EXP-20260920-012-selective-escalation-qwen-streaming`, collapsed/descriptive target points, provider-only results, the Jev/Qwen differential (500 comparable, 486 agreements), and the metric table/figure. `paper/main.tex` contains the required section set plus PCM compatibility in the paper and `paper/limitations.md`.
+
+Commands:
+- `D:\claude\eval-lab\.venv\Scripts\python.exe scripts/check_repo_contract.py` -> `Repository contract OK`
+- `D:\claude\eval-lab\.venv\Scripts\ruff.exe check .` -> `All checks passed!`
+- `$env:PYTHONPATH="$PWD\src"; D:\claude\eval-lab\.venv\Scripts\python.exe -m pytest -q` -> `87 passed in 4.18s`
+- `$env:PYTHONPATH="$PWD\src"; D:\claude\eval-lab\.venv\Scripts\python.exe scripts/validate_research_artifacts.py --benchmark benchmark/eval-lab-select-v0.1.0` -> checksums `ok`, citation `parsed`, paper `present`, PROV-O `parsed`, RO-Crate `ok`, SHACL `conforms`
+
+Frozen EXP-009 provider bytes and benchmark `records.jsonl` were not rewritten. No credentials were read. Do not commit or push from this local improvement.
+
+### 2026-09-20 — TASK-0010 corrective audit checkpoint
+
+Grok Build CLI `1.0.40 (eb1a2256660d)` was used through the authenticated xAI subscription route for a read-only audit followed by local offline edits. No OpenRouter/OpenCode provider call, credential read, `.env` change, commit, or push was made by that audit. The worktree is `D:/claude/eval-lab-TASK-0010` on `task/TASK-0010-selective-escalation`; Python is `3.12.10` from `D:/claude/eval-lab/.venv`; Git is `2.51.2.windows.1`; the expected head `50312637a28a71e279387db6293f17b99a11ed10` is an ancestor of the current local continuation.
+
+The audit corrected local-route provider accounting, added explicit P1 `pinned_jev_only` and P2 `qwen_flash_only` policies across the full final pool, added provider-independent per-policy metrics, uncertainty/support flags, provider-only latency/cost/resource reporting, risk coverage, aggregate/per-domain summaries, focused unit tests, and the required paper/report material. EXP-012 remains frozen at threshold-selection `2,863`, final evaluation `2,356`, provider prefix `500`; the policy count is `19`; pinned Jev `500/500 ok`, rolling Jev `500/500 ok` as a separate canary, Qwen `500/500 ok`, and Jev/Qwen differential `500` comparable with `486` agreements. Collapsed operating points are labeled descriptive/underpowered where the confidence-supported sample is insufficient.
+
+Exact checks: `D:\claude\eval-lab\.venv\Scripts\python.exe scripts/check_repo_contract.py` -> `Repository contract OK`; `D:\claude\eval-lab\.venv\Scripts\ruff.exe check .` -> `All checks passed!`; `$env:PYTHONPATH=\"$PWD\\src\"; D:\claude\eval-lab\.venv\Scripts\python.exe -m pytest -q` -> `87 passed in 3.91s`; artifact validation -> checksums `ok`, citation `parsed`, paper `present`, PROV-O `parsed`, RO-Crate `ok`, SHACL `conforms`; `git diff --check` -> clean. Benchmark fingerprint remains `18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5`. Benchmark records and frozen EXP-009 provider bytes were preserved; no credentials were committed.
+
+Decision: keep the frozen TASK-0009 TF-IDF plus logistic-regression arm D as the primary student, retain pinned and rolling Jev as separate arms, retain Qwen as the secondary provider arm, and finish TASK-0010 from committed offline evidence without substituting Grok. No local implementation blocker remains. Next atomic action: commit this audit, replay/regenerate from the committed code, push the branch, and inspect CI before restoring TASK-0010 to complete. Do not begin TASK-0002.
