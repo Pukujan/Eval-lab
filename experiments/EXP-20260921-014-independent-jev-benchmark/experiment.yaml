@@ -1,0 +1,47 @@
+id: EXP-20260921-014-independent-jev-benchmark
+status: planning
+hypothesis: Jev will be competitive on objective typed decisions but show dataset-dependent calibration and perturbation behavior.
+created_at: 2026-09-21
+code_commit: 711450d
+seed: 20260921
+context_limit: 4096
+dataset:
+  name: independent Eval Lab objective pool
+  version: pending TASK-0011 completion and source freeze
+  fingerprint: pending
+  split_policy: source-problem disjoint public selection and blind holdout
+judge:
+  provider: pending
+  model: pending
+  adapter_version: pending
+  prompt_version: pending
+rubric:
+  version: pending independent typed objective packet
+gold:
+  provenance_policy: answer_key_or_deterministic_verifier_only
+calibration:
+  method: native probability metrics when the provider returns a verified distribution
+  split: calibration only; blind holdout excluded
+metrics:
+  - accuracy
+  - balanced_accuracy
+  - macro_f1
+  - brier_when_native_probabilities_available
+  - nll_when_native_probabilities_available
+  - ece_when_native_probabilities_available
+  - option_order_consistency
+  - rubric_paraphrase_consistency
+  - repeatability
+  - latency_p95
+  - actual_cost
+artifacts:
+  - README.md
+  - PLAN.md
+  - experiment.yaml
+  - source-manifest.json (after freeze)
+  - splits.json (after freeze)
+  - checksums.sha256 (after freeze)
+  - predictions.jsonl (after live run)
+  - results.json (after live run)
+  - report.md (after live run)
+notes: Planning only. JevBench is contextual external evidence and is excluded from the primary independent score.
