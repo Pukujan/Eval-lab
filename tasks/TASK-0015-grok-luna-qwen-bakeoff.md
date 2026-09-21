@@ -20,7 +20,7 @@ and YOLO-Auto `qwen3.8-flash`. Keep the completed TASK-0012 experiment immutable
 - Source fingerprint: `b7edd61269f0f7757e734bc7e3f665ac2bcd6d908a1e56f73f0b0291d55b64d8`.
 - Typed packet: `eval-lab-system-one` v0.1.0, fingerprint
   `0d07bd8b8b60bd7f0b5b7a5f5819b7d329ea121f686b240e465695b6f6eca1e4`.
-- Core arms: requested `opencode/grok-4.6`, `opencode/gpt-5.6-luna`, and
+- Core arms: requested `opencode/grok-build-0.1`, `opencode/gpt-5.6-luna`, and
   YOLO-Auto `qwen3.8-flash`; each route records the exact surfaced model identity.
 - Optional arm: `opencode/gpt-5.6-sol`, enabled only when explicitly requested.
 - Primary comparison: blind-holdout accuracy, balanced accuracy, macro-F1, resolved
@@ -88,6 +88,11 @@ score and the public partition as a separately labeled descriptive execution. Us
 OpenCode subscription routes for Grok/Luna and YOLO-Auto for Qwen; do not substitute
 OpenRouter or another provider.
 
+The first `opencode/grok-4.6` call was exploratory only. The OpenCode catalog exposed
+the requested Grok Build model as `opencode/grok-build-0.1`, so the final core arm was
+corrected before any blind-holdout labels; the exploratory artifact is retained and
+not pooled with the Grok Build arm.
+
 Unresolved questions: provider availability and subscription quotas must be observed
 by smoke tests; no result is assumed in advance.
 
@@ -106,3 +111,32 @@ Read, in order:
 The integration worktree is `D:/claude/eval-lab-TASK-0015-bakeoff` on branch
 `task/TASK-0015-grok-luna-qwen-bakeoff`. Keep EXP-014 immutable. After the
 preregistration checkpoint, run the route smoke tests before any bulk partition.
+
+### 2026-09-21 — model identity correction before final evaluation
+
+Status: active; final evaluation has not started.
+
+Completed: the initial one-record preflight attempted `opencode/grok-4.6` and ended
+as an explicit provider error. A read-only `opencode models` audit exposed the exact
+Grok Build catalog entry `opencode/grok-build-0.1`; the core arm and manifest were
+corrected before any blind-holdout labels. The prior Grok 4.6 preflight remains
+separate evidence and is not pooled with the Grok Build arm. Luna and Qwen smoke
+evidence remains separately recorded; Qwen returned one valid label.
+
+Exact files changed: the Grok model entry in the runner, freeze metadata, plan,
+manifest, README, pool manifest/checksums, CURRENT checkpoint, and this task log.
+
+Commands run: `opencode auth --help`; `opencode auth list`; `opencode models` with
+catalog filtering; smoke validation for `runs/smoke`.
+
+Test results: the smoke validator passed; the Qwen arm was `ok: 1`; the exploratory
+Grok 4.6 and Luna attempts were `provider_error: 1` each with no labels.
+
+Decision: freeze `opencode/grok-build-0.1` as the only primary Grok arm. Do not use
+the failed Grok 4.6 attempt as a substitute or silently reinterpret it.
+
+Unresolved questions: the Grok Build route and Luna route still need independent
+one-record smoke results with their exact surfaced IDs before bulk execution.
+
+Next atomic action: commit this model-identity correction, then smoke-test
+`opencode/grok-build-0.1` and the Luna route in a fresh output directory.

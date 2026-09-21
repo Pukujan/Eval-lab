@@ -21,7 +21,7 @@ typed_protocol:
 providers:
   - arm_id: grok
     provider: opencode
-    requested_model: opencode/grok-4.6
+    requested_model: opencode/grok-build-0.1
     access: authenticated_xai_subscription
     status: planned
   - arm_id: luna
@@ -71,4 +71,4 @@ artifacts:
   - report.md
   - provider-status.json
   - differential.json
-notes: EXP-014 remains immutable; this comparison has separate route smoke, output files, checksums, and provider-status accounting.
+notes: EXP-014 remains immutable; the exploratory grok-4.6 preflight is retained separately, while the frozen core Grok arm is opencode/grok-build-0.1. This comparison has separate route smoke, output files, checksums, and provider-status accounting.

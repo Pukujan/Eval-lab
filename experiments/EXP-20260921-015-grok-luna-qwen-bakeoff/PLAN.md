@@ -25,13 +25,15 @@ the benchmark answer keys and deterministic verifiers remain the only objective 
 
 | Arm | Requested model | Route | Role |
 | --- | --- | --- | --- |
-| `grok` | `opencode/grok-4.6` | authenticated OpenCode/xAI subscription | core |
+| `grok` | `opencode/grok-build-0.1` | authenticated OpenCode/xAI subscription | core |
 | `luna` | `opencode/gpt-5.6-luna` | authenticated OpenCode/ChatGPT subscription | core |
 | `qwen_flash` | `qwen3.8-flash` | YOLO-Auto OpenAI-compatible API | core |
 | `sol` | `opencode/gpt-5.6-sol` | authenticated OpenCode/ChatGPT subscription | optional |
 
-The runner records requested and surfaced model IDs separately. No arm silently falls
-back to another model or provider.
+The runner records requested and surfaced model IDs separately. The initial
+`opencode/grok-4.6` call is retained only as an exploratory preflight artifact after
+the CLI catalog revealed the exact `grok-build-0.1` model; it is not part of the
+primary arm. No final arm silently falls back to another model or provider.
 
 ## Evaluation rules
 

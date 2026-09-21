@@ -1,0 +1,41 @@
+{
+  "arms": {
+    "grok": {
+      "error_kinds": {
+        "process_exit": 1
+      },
+      "provider": "opencode",
+      "requested_model": "opencode/grok-4.6",
+      "route": "authenticated_xai_subscription",
+      "status_counts": {
+        "provider_error": 1
+      },
+      "surfaced_model_ids": []
+    },
+    "luna": {
+      "error_kinds": {
+        "process_exit": 1
+      },
+      "provider": "opencode",
+      "requested_model": "opencode/gpt-5.6-luna",
+      "route": "authenticated_chatgpt_subscription",
+      "status_counts": {
+        "provider_error": 1
+      },
+      "surfaced_model_ids": []
+    },
+    "qwen_flash": {
+      "error_kinds": {},
+      "provider": "yolo-auto",
+      "requested_model": "qwen3.8-flash",
+      "route": "yolo_auto_openai_compatible",
+      "status_counts": {
+        "ok": 1
+      },
+      "surfaced_model_ids": []
+    }
+  },
+  "experiment_id": "EXP-20260921-015-grok-luna-qwen-bakeoff",
+  "partition": "public_selection",
+  "run_id": "smoke"
+}

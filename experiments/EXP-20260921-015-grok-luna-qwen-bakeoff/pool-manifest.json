@@ -15,7 +15,7 @@
     {
       "arm": "grok",
       "provider": "opencode",
-      "requested_model": "opencode/grok-4.6"
+      "requested_model": "opencode/grok-build-0.1"
     },
     {
       "arm": "luna",

@@ -92,7 +92,7 @@ def _freeze(source: Path, output: Path) -> dict[str, Any]:
         "typed_spec_version": typed_spec["spec_version"],
         "primary_partition": "blind_holdout",
         "provider_model_arms": [
-            {"arm": "grok", "provider": "opencode", "requested_model": "opencode/grok-4.6"},
+            {"arm": "grok", "provider": "opencode", "requested_model": "opencode/grok-build-0.1"},
             {"arm": "luna", "provider": "opencode", "requested_model": "opencode/gpt-5.6-luna"},
             {"arm": "qwen_flash", "provider": "yolo-auto", "requested_model": "qwen3.8-flash"},
             {"arm": "sol", "provider": "opencode", "requested_model": "opencode/gpt-5.6-sol", "optional": True},

@@ -33,9 +33,10 @@ TASK-0009 and TASK-0010 selective escalation/research release are complete. TASK
 
 TASK-0015 is active in `D:/claude/eval-lab-TASK-0015-bakeoff`. Its new EXP-015
 preregistration uses the exact EXP-014 pool and typed System-One packet. Core arms are
-Grok through authenticated OpenCode/xAI, Luna through authenticated OpenCode/ChatGPT,
-and YOLO-Auto `qwen3.8-flash`; exact surfaced model IDs and provider failures must be
-recorded separately. Do not modify or overwrite EXP-014.
+Grok Build `opencode/grok-build-0.1` through authenticated OpenCode/xAI, Luna through
+authenticated OpenCode/ChatGPT, and YOLO-Auto `qwen3.8-flash`; exact surfaced model
+IDs and provider failures must be recorded separately. Do not modify or overwrite
+EXP-014.
 
 ## Queued foundation
 

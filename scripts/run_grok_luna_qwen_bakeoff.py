@@ -37,7 +37,7 @@ POOL = Path("experiments") / EXPERIMENT_ID
 ARMS = {
     "grok": {
         "provider": "opencode",
-        "requested_model": "opencode/grok-4.6",
+        "requested_model": "opencode/grok-build-0.1",
         "route": "authenticated_xai_subscription",
     },
     "luna": {
