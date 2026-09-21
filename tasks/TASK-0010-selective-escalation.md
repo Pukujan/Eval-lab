@@ -631,3 +631,9 @@ The first CI run for final commit `282865e` was `35555437302`. Repository contra
 Fix: normalize every text file covered by the benchmark and EXP-012 checksum manifests to LF bytes, then regenerate both manifests from those exact bytes. No data, provider labels, credentials, or experiment decisions changed. Corrected local results: `80 passed in 28.09s`, repository contract `OK`, artifact validation checksums `ok`, citation `parsed`, paper `present`, PROV-O `parsed`, RO-Crate `ok`, SHACL `conforms`, and `git diff --check` clean.
 
 Next atomic action: commit and push the byte-stability fix, then inspect the replacement CI run before treating TASK-0010 as fully delivered.
+
+### 2026-09-20 — replacement CI passed
+
+The LF normalization and checksum correction is pushed in commit `81d3130`. Replacement CI run `35555646443` passed on both Python 3.11 and 3.12: install, repository contract, Ruff, and unit tests all passed. This closes the only CI defect found after the release checkpoint.
+
+Next atomic action: commit this final CI checkpoint, push it, verify the new head remains clean and green, and leave TASK-0002 unopened.

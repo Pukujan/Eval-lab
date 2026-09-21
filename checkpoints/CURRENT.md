@@ -359,3 +359,9 @@ CI run `35555437302` for `282865e` passed contract and Ruff but failed unit test
 All checksum-covered text files in the benchmark and EXP-012 were normalized to LF, and both manifests were regenerated from the exact bytes. Local validation now returns `80 passed`, contract `OK`, artifact checksums `ok`, CFF parsed, paper present, PROV-O parsed, RO-Crate `ok`, SHACL `conforms`, and clean diff check. TASK-0010 acceptance artifacts remain complete and TASK-0002 remains unopened.
 
 Next atomic action: commit and push this byte-stability correction, then verify the replacement CI run.
+
+### 2026-09-20 — replacement CI passed
+
+The byte-stability correction is commit `81d3130`. Replacement CI run `35555646443` passed both Python 3.11 and 3.12, including install, repository contract, Ruff, and unit tests. TASK-0010 acceptance remains complete; TASK-0002 remains unopened.
+
+Next atomic action: commit and push this final CI checkpoint, then verify the branch is clean and leave the repository at the completed TASK-0010 state.
