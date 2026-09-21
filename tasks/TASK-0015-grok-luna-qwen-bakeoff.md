@@ -324,3 +324,38 @@ experiments/EXP-20260921-015-grok-luna-qwen-bakeoff/runs/public-stream-parallel-
 
 Next atomic action: finish the missing Luna records, run Qwen Flash, finalize and
 validate the public artifact, then checkpoint before any blind-holdout request.
+
+### 2026-09-21 — public matched run complete after organized resume
+
+Status: public selection complete; the task remains active only for the separately
+authorized blind-holdout decision. The run was resumed from the organized worktree
+`D:\\claude\\eval-lab\\.worktrees\\TASK-0015-bakeoff` with `--resume`, so completed
+Grok and Luna records were reused rather than rerun. The blind holdout remains
+untouched.
+
+Final public artifact: `experiments/EXP-20260921-015-grok-luna-qwen-bakeoff/runs/public-stream-parallel-20260921/`, with `648` frozen matched records per arm.
+
+Provider outcomes:
+
+- Grok Build: direct authenticated xAI CLI route only; requested `grok-4.6`, surfaced
+  `grok-4.6-build`, streaming enabled, `643 ok` and `5 provider_error` (`3 process_exit`,
+  `2 timeout`), resolved accuracy `0.3716951788`.
+- Luna: direct Codex ChatGPT subscription route only; requested `gpt-5.6-luna`,
+  streaming enabled, `648 ok`, resolved accuracy `0.9722222222`.
+- Qwen Flash: YOLO-Auto route only; requested and surfaced `qwen3.8-flash`, streaming
+  enabled, `647 ok` and `1 parse_error`, resolved accuracy `0.9706336940`.
+
+Exact files added: the finalized public run directory containing `results.json`,
+`differential.json`, `provider-status.json`, `report.md`, `checksums.sha256`, and the
+per-arm prediction/progress/checkpoint files. No OpenCode or OpenRouter route was used.
+
+Validation results: the experiment validator passed; repository contract passed; Ruff
+passed; the full test suite passed (`100 passed`); and `git diff --check` was clean.
+
+Decision: preserve the five Grok provider failures and one Qwen parse error as explicit
+unresolved outcomes with no fallback labels. Do not tune, relabel, or substitute a
+provider from public results. The blind holdout must remain separate and untouched.
+
+Next atomic action: review this committed public artifact and explicitly decide whether
+to launch the blind holdout with the same frozen pool, typed prompt, direct-only routes,
+streaming, and separate output files.

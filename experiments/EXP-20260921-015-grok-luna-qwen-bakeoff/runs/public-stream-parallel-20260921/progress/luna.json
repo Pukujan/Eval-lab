@@ -1,0 +1,15 @@
+{
+  "arm_id": "luna",
+  "completed_count": 648,
+  "last_record_id": "single-synthetic-structured-05-subtle",
+  "provider": "codex",
+  "record_count": 648,
+  "requested_model": "gpt-5.6-luna",
+  "route": "direct_codex_chatgpt_subscription",
+  "status_counts": {
+    "ok": 648
+  },
+  "streaming": true,
+  "updated_at_utc": "2026-09-21T18:15:45.841119+00:00",
+  "workers": 4
+}

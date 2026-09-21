@@ -622,3 +622,24 @@ Exact live commands are committed in `experiments/EXP-20260921-014-independent-j
 The final pinned robustness artifact has `60 ok`: repeatability `1.0`, option-order agreement `1.0`, and rubric-paraphrase agreement `0.9167`. Earlier 503 recovery artifacts remain preserved. No credential or `.env` file was written. Local validation: repository contract `OK`, Ruff clean, `94 passed`, checksums `0` mismatches, and `git diff --check` clean.
 
 Decision: TASK-0012 acceptance is satisfied. JevBench remains contextual evidence only; the independent Eval Lab metric vector is primary. Next atomic action: review TASK-0012; do not begin a dependent task without explicit triage.
+
+### 2026-09-21 — TASK-0015 public matched run complete
+
+The Eval Lab worktree organization is complete: all `18` registered worktrees are
+under `D:\\claude\\eval-lab\\.worktrees`, with no `eval-lab-*` sibling directories
+remaining directly under `D:\\claude`. TASK-0015 was resumed from the organized
+`TASK-0015-bakeoff` worktree without rerunning completed Grok or Luna checkpoints.
+
+EXP-20260921-015 public selection is finalized at `648` matched records per arm.
+Direct Grok Build CLI returned `643 ok` and `5 provider_error`; direct Codex Luna
+returned `648 ok`; YOLO-Auto Qwen Flash returned `647 ok` and `1 parse_error`. All
+three arms used streaming and their required direct-only routes. The finalized files
+are under `experiments/EXP-20260921-015-grok-luna-qwen-bakeoff/runs/public-stream-parallel-20260921/`.
+
+The experiment validator passed. Repository contract, Ruff, all `100` tests, and
+`git diff --check` passed. No OpenCode or OpenRouter call was used. Grok/provider
+failures and the Qwen parse error remain explicit unresolved outcomes; no fallback
+labels were added. The blind holdout remains untouched.
+
+Next atomic action: review the public artifact and decide whether to authorize a
+separate blind-holdout run; do not alter the frozen pool or public results.
