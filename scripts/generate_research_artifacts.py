@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import argparse
 import json
 from pathlib import Path
 from typing import Any
 
 BENCHMARK = Path("benchmark/eval-lab-select-v0.1.0")
 EXPERIMENT = Path("experiments/EXP-20260920-009-selective-escalation")
+SMOKE_EXPERIMENT = EXPERIMENT
 PAPER = Path("paper")
 
 
@@ -22,7 +24,7 @@ def _write_json(path: Path, value: Any) -> None:
 def _smoke_differential() -> dict[str, Any]:
     arms = {}
     for name in ("pinned", "rolling", "qwen"):
-        path = EXPERIMENT / "smoke" / f"{name}.jsonl"
+        path = SMOKE_EXPERIMENT / "smoke" / f"{name}.jsonl"
         arms[name] = _read_jsonl(path) if path.exists() else []
     by_arm = {name: {row["record_id"]: row for row in rows} for name, rows in arms.items()}
     comparable = []
@@ -121,7 +123,7 @@ ex:experiment a prov:Activity ;
     ex:status "{results['status']}" .
 
 ex:results a prov:Entity ;
-    dcterms:identifier "EXP-20260920-009-selective-escalation/results.json" ;
+    dcterms:identifier "{results['experiment_id']}/results.json" ;
     ex:providerEvaluationCount "{results['counts']['provider_evaluation']}"^^xsd:integer .
 '''
 
@@ -143,10 +145,11 @@ ex:BenchmarkShape a sh:NodeShape ;
 '''
 
 
-def _paper(results: dict[str, Any], differential: dict[str, Any]) -> None:
+def _paper(results: dict[str, Any], differential: dict[str, Any], experiment: Path) -> None:
     PAPER.mkdir(parents=True, exist_ok=True)
     generated = PAPER / "generated"
     generated.mkdir(exist_ok=True)
+    final_differential = results.get("system_one_differential", {})
     rows = []
     for policy, value in sorted(results["policies"].items()):
         resolved_risk = value["final_resolved_risk"]
@@ -182,7 +185,7 @@ def _paper(results: dict[str, Any], differential: dict[str, Any]) -> None:
         "```powershell\n"
         "$env:PYTHONPATH = \"$PWD\\src\"\n"
         ".venv\\Scripts\\python.exe scripts/build_selective_benchmark.py\n"
-        ".venv\\Scripts\\python.exe scripts/run_selective_escalation.py --skip-providers\n"
+        f".venv\\Scripts\\python.exe scripts/run_selective_escalation.py --skip-providers --output {experiment.as_posix()}\n"
         ".venv\\Scripts\\python.exe scripts/generate_research_artifacts.py\n"
         ".venv\\Scripts\\python.exe scripts/validate_research_artifacts.py --benchmark benchmark/eval-lab-select-v0.1.0\n"
         "```\n\n"
@@ -217,14 +220,14 @@ The primary student is the frozen TASK-0009 arm D artifact. Calibration uses the
 \\section{{Routing and controls}}
 Thresholds are selected only on the threshold-selection partition. We report local-only, calibrated and raw local-to-pinned-Jev policies, matched random escalation, and a calibrated local-to-Qwen policy. The rolling Jev alias is a separate canary.
 \\section{{Results}}
-Machine-generated routing results are in `generated/table_selective_results.tex`. The complete machine result is `../experiments/EXP-20260920-009-selective-escalation/results.json`.
+Machine-generated routing results are in `generated/table_selective_results.tex`. The complete machine result is `../experiments/{experiment.name}/results.json`.
 \\begin{{table}}[h]
 \\centering
 \\input{{generated/table_selective_results.tex}}
 \\caption{{Machine-generated routing results. Resolved risk excludes unresolved provider calls.}}
 \\end{{table}}
 \\section{{System-One differential}}
-The typed System-One specification is provider-independent. The smoke differential contains {differential['comparable_count']} comparable record(s), with {differential['agreement_count']} agreement(s). Pinned and rolling Jev outputs are stored separately.
+The typed System-One specification is provider-independent. The frozen final-prefix differential contains {final_differential.get('comparable_count', 0)} comparable record(s), with {final_differential.get('agreement_count', 0)} agreement(s). The separate smoke differential contains {differential['comparable_count']} comparable record(s), with {differential['agreement_count']} agreement(s). Pinned and rolling Jev outputs are stored separately.
 \\section{{Uncertainty}}
 Every low-error coverage summary includes an exact Wilson 95\\% interval. A nominal empirical risk below a target is not treated as supported when the interval upper bound exceeds that target.
 \\section{{Limitations and threats to validity}}
@@ -245,8 +248,11 @@ Run the commands in `reproducibility.md`. The release includes RO-Crate 1.3 meta
 def generate() -> None:
     results = json.loads((EXPERIMENT / "results.json").read_text(encoding="utf-8"))
     differential = _smoke_differential()
-    results["system_one_differential"] = differential
     results["provider_smoke"] = differential["arms"]
+    if "system_one_differential" in results:
+        results["system_one_smoke_differential"] = differential
+    else:
+        results["system_one_differential"] = differential
     _write_json(EXPERIMENT / "differential.json", differential)
     _write_json(EXPERIMENT / "results.json", results)
     _write_json(BENCHMARK / "ro-crate-metadata.json", _crate(results, differential))
@@ -265,8 +271,14 @@ def generate() -> None:
             "version": "0.1.0",
         },
     )
-    _paper(results, differential)
+    _paper(results, differential, EXPERIMENT)
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--experiment", type=Path, default=EXPERIMENT)
+    parser.add_argument("--smoke-experiment", type=Path)
+    args = parser.parse_args()
+    EXPERIMENT = args.experiment
+    SMOKE_EXPERIMENT = args.smoke_experiment or EXPERIMENT
     generate()

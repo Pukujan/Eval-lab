@@ -20,14 +20,14 @@ The primary student is the frozen TASK-0009 arm D artifact. Calibration uses the
 \section{Routing and controls}
 Thresholds are selected only on the threshold-selection partition. We report local-only, calibrated and raw local-to-pinned-Jev policies, matched random escalation, and a calibrated local-to-Qwen policy. The rolling Jev alias is a separate canary.
 \section{Results}
-Machine-generated routing results are in `generated/table_selective_results.tex`. The complete machine result is `../experiments/EXP-20260920-009-selective-escalation/results.json`.
+Machine-generated routing results are in `generated/table_selective_results.tex`. The complete machine result is `../experiments/EXP-20260920-012-selective-escalation-qwen-streaming/results.json`.
 \begin{table}[h]
 \centering
 \input{generated/table_selective_results.tex}
 \caption{Machine-generated routing results. Resolved risk excludes unresolved provider calls.}
 \end{table}
 \section{System-One differential}
-The typed System-One specification is provider-independent. The smoke differential contains 1 comparable record(s), with 1 agreement(s). Pinned and rolling Jev outputs are stored separately.
+The typed System-One specification is provider-independent. The frozen final-prefix differential contains 500 comparable record(s), with 486 agreement(s). The separate smoke differential contains 1 comparable record(s), with 1 agreement(s). Pinned and rolling Jev outputs are stored separately.
 \section{Uncertainty}
 Every low-error coverage summary includes an exact Wilson 95\% interval. A nominal empirical risk below a target is not treated as supported when the interval upper bound exceeds that target.
 \section{Limitations and threats to validity}

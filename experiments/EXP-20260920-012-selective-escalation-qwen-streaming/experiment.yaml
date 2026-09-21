@@ -1,5 +1,5 @@
 id: EXP-20260920-012-selective-escalation-qwen-streaming
-status: plan-only
+status: completed
 benchmark:
   name: EvalLab-Select
   version: 0.1.0
@@ -19,3 +19,12 @@ execution:
   provider_calls: false
   provider_records: 500
   target_error_rates: [0.01, 0.02, 0.05, 0.10]
+outcome:
+  threshold_selection_records: 2863
+  final_evaluation_records: 2356
+  provider_records: 500
+  pinned_jev_ok: 500
+  rolling_jev_ok: 500
+  qwen_ok: 500
+  qwen_system_one_comparable: 500
+  qwen_system_one_agreement: 486

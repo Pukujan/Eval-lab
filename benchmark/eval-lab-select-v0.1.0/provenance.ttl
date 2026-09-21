@@ -23,8 +23,8 @@ ex:experiment a prov:Activity ;
     prov:used ex:benchmark ;
     prov:generated ex:results ;
     prov:wasAssociatedWith ex:agent ;
-    ex:status "completed_with_provider_statuses" .
+    ex:status "completed" .
 
 ex:results a prov:Entity ;
-    dcterms:identifier "EXP-20260920-009-selective-escalation/results.json" ;
+    dcterms:identifier "EXP-20260920-012-selective-escalation-qwen-streaming/results.json" ;
     ex:providerEvaluationCount "500"^^xsd:integer .

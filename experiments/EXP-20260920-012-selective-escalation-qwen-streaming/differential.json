@@ -1,0 +1,36 @@
+{
+  "agreement_count": 1,
+  "arms": {
+    "pinned": {
+      "model": "typesafe/jev-1.13",
+      "status_counts": {
+        "ok": 1
+      }
+    },
+    "qwen": {
+      "model": "qwen3.8-flash",
+      "status_counts": {
+        "ok": 1
+      }
+    },
+    "rolling": {
+      "model": "~typesafe/jev-latest",
+      "status_counts": {
+        "ok": 1
+      }
+    }
+  },
+  "comparable_count": 1,
+  "rows": [
+    {
+      "all_agree": true,
+      "labels": {
+        "pinned": "pass",
+        "qwen": "pass",
+        "rolling": "pass"
+      },
+      "record_id": "arc-single:ACTAAP_2007_7_23:correct"
+    }
+  ],
+  "scope": "separate one-record provider smoke canary; not part of pinned/rolling pooled estimates"
+}

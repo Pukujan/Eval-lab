@@ -1,0 +1,3760 @@
+{
+  "benchmark_fingerprint": "18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5",
+  "calibration": {
+    "class_order": [
+      "pass",
+      "fail"
+    ],
+    "code_version": "task-0009-temperature-v1",
+    "fit_split": "calibration",
+    "input_semantics": "class probabilities; p_calibrated = softmax(log(p) / temperature)",
+    "method": "temperature",
+    "parameters": {
+      "temperature": 0.07059871330083402
+    }
+  },
+  "counts": {
+    "final_evaluation": 2356,
+    "provider_evaluation": 500,
+    "provider_selection": "deterministic prefix of frozen final-evaluation record order",
+    "threshold_selection": 2863
+  },
+  "environment": {
+    "git_commit": "c0bb452b9e5ff3392be772cad2cc18983e27ef16",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10"
+  },
+  "experiment_id": "EXP-20260920-012-selective-escalation-qwen-streaming",
+  "policies": {
+    "calibrated_local_to_jev_target_0.01": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 506,
+          "errors": 12
+        },
+        "code_output": {
+          "count": 1,
+          "errors": 0
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.21519524617996605,
+      "final_resolved_count": 507,
+      "final_resolved_errors": 12,
+      "final_resolved_risk": 0.023668639053254437,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.01359032828124242,
+        "upper": 0.04091084491047087
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 1,
+      "local_accepted_risk": 0.125,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.02241749145005667,
+        "upper": 0.4708881822128535
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 1849,
+        "ok": 507
+      },
+      "total_count": 2356,
+      "unresolved_count": 1849,
+      "unresolved_rate": 0.784804753820034
+    },
+    "calibrated_local_to_jev_target_0.02": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 506,
+          "errors": 12
+        },
+        "code_output": {
+          "count": 1,
+          "errors": 0
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.21519524617996605,
+      "final_resolved_count": 507,
+      "final_resolved_errors": 12,
+      "final_resolved_risk": 0.023668639053254437,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.01359032828124242,
+        "upper": 0.04091084491047087
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 1,
+      "local_accepted_risk": 0.125,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.02241749145005667,
+        "upper": 0.4708881822128535
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 1849,
+        "ok": 507
+      },
+      "total_count": 2356,
+      "unresolved_count": 1849,
+      "unresolved_rate": 0.784804753820034
+    },
+    "calibrated_local_to_jev_target_0.05": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 506,
+          "errors": 12
+        },
+        "code_output": {
+          "count": 1,
+          "errors": 0
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.21519524617996605,
+      "final_resolved_count": 507,
+      "final_resolved_errors": 12,
+      "final_resolved_risk": 0.023668639053254437,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.01359032828124242,
+        "upper": 0.04091084491047087
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 1,
+      "local_accepted_risk": 0.125,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.02241749145005667,
+        "upper": 0.4708881822128535
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 1849,
+        "ok": 507
+      },
+      "total_count": 2356,
+      "unresolved_count": 1849,
+      "unresolved_rate": 0.784804753820034
+    },
+    "calibrated_local_to_jev_target_0.10": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 506,
+          "errors": 12
+        },
+        "code_output": {
+          "count": 1,
+          "errors": 0
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.21519524617996605,
+      "final_resolved_count": 507,
+      "final_resolved_errors": 12,
+      "final_resolved_risk": 0.023668639053254437,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.01359032828124242,
+        "upper": 0.04091084491047087
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 1,
+      "local_accepted_risk": 0.125,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.02241749145005667,
+        "upper": 0.4708881822128535
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 1849,
+        "ok": 507
+      },
+      "total_count": 2356,
+      "unresolved_count": 1849,
+      "unresolved_rate": 0.784804753820034
+    },
+    "calibrated_local_to_qwen_flash_target_0.01": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 506,
+          "errors": 12
+        },
+        "code_output": {
+          "count": 1,
+          "errors": 0
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.21519524617996605,
+      "final_resolved_count": 507,
+      "final_resolved_errors": 12,
+      "final_resolved_risk": 0.023668639053254437,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.01359032828124242,
+        "upper": 0.04091084491047087
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 1,
+      "local_accepted_risk": 0.125,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.02241749145005667,
+        "upper": 0.4708881822128535
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 1849,
+        "ok": 507
+      },
+      "total_count": 2356,
+      "unresolved_count": 1849,
+      "unresolved_rate": 0.784804753820034
+    },
+    "calibrated_local_to_qwen_flash_target_0.02": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 506,
+          "errors": 12
+        },
+        "code_output": {
+          "count": 1,
+          "errors": 0
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.21519524617996605,
+      "final_resolved_count": 507,
+      "final_resolved_errors": 12,
+      "final_resolved_risk": 0.023668639053254437,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.01359032828124242,
+        "upper": 0.04091084491047087
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 1,
+      "local_accepted_risk": 0.125,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.02241749145005667,
+        "upper": 0.4708881822128535
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 1849,
+        "ok": 507
+      },
+      "total_count": 2356,
+      "unresolved_count": 1849,
+      "unresolved_rate": 0.784804753820034
+    },
+    "calibrated_local_to_qwen_flash_target_0.05": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 506,
+          "errors": 12
+        },
+        "code_output": {
+          "count": 1,
+          "errors": 0
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.21519524617996605,
+      "final_resolved_count": 507,
+      "final_resolved_errors": 12,
+      "final_resolved_risk": 0.023668639053254437,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.01359032828124242,
+        "upper": 0.04091084491047087
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 1,
+      "local_accepted_risk": 0.125,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.02241749145005667,
+        "upper": 0.4708881822128535
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 1849,
+        "ok": 507
+      },
+      "total_count": 2356,
+      "unresolved_count": 1849,
+      "unresolved_rate": 0.784804753820034
+    },
+    "calibrated_local_to_qwen_flash_target_0.10": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 506,
+          "errors": 12
+        },
+        "code_output": {
+          "count": 1,
+          "errors": 0
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.21519524617996605,
+      "final_resolved_count": 507,
+      "final_resolved_errors": 12,
+      "final_resolved_risk": 0.023668639053254437,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.01359032828124242,
+        "upper": 0.04091084491047087
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 1,
+      "local_accepted_risk": 0.125,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.02241749145005667,
+        "upper": 0.4708881822128535
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 1849,
+        "ok": 507
+      },
+      "total_count": 2356,
+      "unresolved_count": 1849,
+      "unresolved_rate": 0.784804753820034
+    },
+    "local_only": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 2344,
+          "errors": 1114
+        },
+        "arithmetic": {
+          "count": 3,
+          "errors": 1
+        },
+        "code_output": {
+          "count": 3,
+          "errors": 0
+        },
+        "multiple_choice": {
+          "count": 3,
+          "errors": 2
+        },
+        "structured": {
+          "count": 3,
+          "errors": 1
+        }
+      },
+      "escalation_rate": 0.0,
+      "execution_coverage": 1.0,
+      "final_resolved_count": 2356,
+      "final_resolved_errors": 1118,
+      "final_resolved_risk": 0.47453310696095075,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.45442741707922846,
+        "upper": 0.494721709209972
+      },
+      "local_accepted_count": 2356,
+      "local_accepted_errors": 1118,
+      "local_accepted_risk": 0.47453310696095075,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.45442741707922846,
+        "upper": 0.494721709209972
+      },
+      "local_coverage": 1.0,
+      "provider_status_counts": {
+        "not_called": 2356
+      },
+      "total_count": 2356,
+      "unresolved_count": 0,
+      "unresolved_rate": 0.0
+    },
+    "random_matched_to_jev_target_0.01": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 507,
+          "errors": 14
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.21519524617996605,
+      "final_resolved_count": 507,
+      "final_resolved_errors": 14,
+      "final_resolved_risk": 0.027613412228796843,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.016518718139242883,
+        "upper": 0.04581267307986822
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 3,
+      "local_accepted_risk": 0.375,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.13684428582359742,
+        "upper": 0.6942576053973727
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 1849,
+        "ok": 507
+      },
+      "total_count": 2356,
+      "unresolved_count": 1849,
+      "unresolved_rate": 0.784804753820034
+    },
+    "random_matched_to_jev_target_0.02": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 507,
+          "errors": 14
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.21519524617996605,
+      "final_resolved_count": 507,
+      "final_resolved_errors": 14,
+      "final_resolved_risk": 0.027613412228796843,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.016518718139242883,
+        "upper": 0.04581267307986822
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 3,
+      "local_accepted_risk": 0.375,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.13684428582359742,
+        "upper": 0.6942576053973727
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 1849,
+        "ok": 507
+      },
+      "total_count": 2356,
+      "unresolved_count": 1849,
+      "unresolved_rate": 0.784804753820034
+    },
+    "random_matched_to_jev_target_0.05": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 507,
+          "errors": 14
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.21519524617996605,
+      "final_resolved_count": 507,
+      "final_resolved_errors": 14,
+      "final_resolved_risk": 0.027613412228796843,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.016518718139242883,
+        "upper": 0.04581267307986822
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 3,
+      "local_accepted_risk": 0.375,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.13684428582359742,
+        "upper": 0.6942576053973727
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 1849,
+        "ok": 507
+      },
+      "total_count": 2356,
+      "unresolved_count": 1849,
+      "unresolved_rate": 0.784804753820034
+    },
+    "random_matched_to_jev_target_0.10": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 507,
+          "errors": 14
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.21519524617996605,
+      "final_resolved_count": 507,
+      "final_resolved_errors": 14,
+      "final_resolved_risk": 0.027613412228796843,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.016518718139242883,
+        "upper": 0.04581267307986822
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 3,
+      "local_accepted_risk": 0.375,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.13684428582359742,
+        "upper": 0.6942576053973727
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 1849,
+        "ok": 507
+      },
+      "total_count": 2356,
+      "unresolved_count": 1849,
+      "unresolved_rate": 0.784804753820034
+    },
+    "raw_local_to_jev_target_0.01": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 506,
+          "errors": 12
+        },
+        "code_output": {
+          "count": 1,
+          "errors": 0
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.21519524617996605,
+      "final_resolved_count": 507,
+      "final_resolved_errors": 12,
+      "final_resolved_risk": 0.023668639053254437,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.01359032828124242,
+        "upper": 0.04091084491047087
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 1,
+      "local_accepted_risk": 0.125,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.02241749145005667,
+        "upper": 0.4708881822128535
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 1849,
+        "ok": 507
+      },
+      "total_count": 2356,
+      "unresolved_count": 1849,
+      "unresolved_rate": 0.784804753820034
+    },
+    "raw_local_to_jev_target_0.02": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 506,
+          "errors": 12
+        },
+        "code_output": {
+          "count": 1,
+          "errors": 0
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.21519524617996605,
+      "final_resolved_count": 507,
+      "final_resolved_errors": 12,
+      "final_resolved_risk": 0.023668639053254437,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.01359032828124242,
+        "upper": 0.04091084491047087
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 1,
+      "local_accepted_risk": 0.125,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.02241749145005667,
+        "upper": 0.4708881822128535
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 1849,
+        "ok": 507
+      },
+      "total_count": 2356,
+      "unresolved_count": 1849,
+      "unresolved_rate": 0.784804753820034
+    },
+    "raw_local_to_jev_target_0.05": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 506,
+          "errors": 12
+        },
+        "code_output": {
+          "count": 1,
+          "errors": 0
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.21519524617996605,
+      "final_resolved_count": 507,
+      "final_resolved_errors": 12,
+      "final_resolved_risk": 0.023668639053254437,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.01359032828124242,
+        "upper": 0.04091084491047087
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 1,
+      "local_accepted_risk": 0.125,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.02241749145005667,
+        "upper": 0.4708881822128535
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 1849,
+        "ok": 507
+      },
+      "total_count": 2356,
+      "unresolved_count": 1849,
+      "unresolved_rate": 0.784804753820034
+    },
+    "raw_local_to_jev_target_0.10": {
+      "by_domain": {
+        "arc_challenge": {
+          "count": 506,
+          "errors": 12
+        },
+        "code_output": {
+          "count": 1,
+          "errors": 0
+        }
+      },
+      "escalation_rate": 0.9966044142614601,
+      "execution_coverage": 0.21519524617996605,
+      "final_resolved_count": 507,
+      "final_resolved_errors": 12,
+      "final_resolved_risk": 0.023668639053254437,
+      "final_resolved_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.01359032828124242,
+        "upper": 0.04091084491047087
+      },
+      "local_accepted_count": 8,
+      "local_accepted_errors": 1,
+      "local_accepted_risk": 0.125,
+      "local_accepted_risk_interval_95": {
+        "confidence_level": 0.95,
+        "lower": 0.02241749145005667,
+        "upper": 0.4708881822128535
+      },
+      "local_coverage": 0.003395585738539898,
+      "provider_status_counts": {
+        "not_called": 1849,
+        "ok": 507
+      },
+      "total_count": 2356,
+      "unresolved_count": 1849,
+      "unresolved_rate": 0.784804753820034
+    }
+  },
+  "provider_arms": {
+    "openrouter_pinned": {
+      "model": "typesafe/jev-1.13",
+      "status_counts": {
+        "ok": 500
+      }
+    },
+    "openrouter_rolling": {
+      "model": "~typesafe/jev-latest",
+      "status_counts": {
+        "ok": 500
+      }
+    },
+    "yolo_qwen_flash": {
+      "model": "qwen3.8-flash",
+      "status_counts": {
+        "ok": 500
+      }
+    }
+  },
+  "provider_smoke": {
+    "pinned": {
+      "model": "typesafe/jev-1.13",
+      "status_counts": {
+        "ok": 1
+      }
+    },
+    "qwen": {
+      "model": "qwen3.8-flash",
+      "status_counts": {
+        "ok": 1
+      }
+    },
+    "rolling": {
+      "model": "~typesafe/jev-latest",
+      "status_counts": {
+        "ok": 1
+      }
+    }
+  },
+  "status": "completed",
+  "student": {
+    "artifact": "experiments\\EXP-20260920-008-small-judge-training\\artifacts\\student_D.json",
+    "selected_arm": "D",
+    "student_id": "tfidf-logistic-v1"
+  },
+  "system_one_differential": {
+    "agreement_count": 486,
+    "comparable_count": 500,
+    "rows": [
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:ACTAAP_2007_7_31:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:ACTAAP_2007_7_31:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:ACTAAP_2007_7_36:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:ACTAAP_2007_7_36:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:ACTAAP_2007_7_3:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:ACTAAP_2007_7_3:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:ACTAAP_2008_5_10:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:ACTAAP_2008_5_10:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:ACTAAP_2008_7_4:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:ACTAAP_2008_7_4:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:ACTAAP_2009_5_12:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:ACTAAP_2009_5_12:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:ACTAAP_2009_5_8:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:ACTAAP_2009_5_8:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:ACTAAP_2009_7_8:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:ACTAAP_2009_7_8:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:ACTAAP_2010_5_1:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:ACTAAP_2010_5_1:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:ACTAAP_2010_5_7:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:ACTAAP_2010_5_7:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:ACTAAP_2010_7_12:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:ACTAAP_2010_7_12:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:ACTAAP_2010_7_14:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:ACTAAP_2010_7_14:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:ACTAAP_2010_7_3:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:ACTAAP_2010_7_3:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:ACTAAP_2011_5_16:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:ACTAAP_2011_5_16:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:ACTAAP_2011_5_1:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:ACTAAP_2011_5_1:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:ACTAAP_2011_5_8:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:ACTAAP_2011_5_8:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:ACTAAP_2012_7_9:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:ACTAAP_2012_7_9:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:ACTAAP_2013_5_17:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:ACTAAP_2013_5_17:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:ACTAAP_2013_5_8:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:ACTAAP_2013_5_8:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:ACTAAP_2013_7_16:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:ACTAAP_2013_7_16:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:ACTAAP_2013_7_2:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:ACTAAP_2013_7_2:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:ACTAAP_2014_5_8:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:ACTAAP_2014_5_8:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:ACTAAP_2014_7_13:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:ACTAAP_2014_7_13:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:ACTAAP_2014_7_3:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:ACTAAP_2014_7_3:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:ACTAAP_2014_7_5:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:ACTAAP_2014_7_5:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:ACTAAP_2015_7_9:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:ACTAAP_2015_7_9:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:AIMS_2008_4_5:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:AIMS_2008_4_5:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:AIMS_2008_8_11:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:AIMS_2008_8_11:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:AIMS_2008_8_13:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:AIMS_2008_8_13:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:AIMS_2008_8_6:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:AIMS_2008_8_6:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:AIMS_2009_4_12:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:AIMS_2009_4_12:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:AIMS_2009_4_4:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:AIMS_2009_4_4:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:AIMS_2009_4_5:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:AIMS_2009_4_5:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:AIMS_2009_8_14:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:AIMS_2009_8_14:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:AKDE&ED_2008_4_19:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:AKDE&ED_2008_4_19:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:AKDE&ED_2008_4_25:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:AKDE&ED_2008_4_25:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:AKDE&ED_2008_4_26:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:AKDE&ED_2008_4_26:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:AKDE&ED_2008_4_35:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:AKDE&ED_2008_4_35:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:AKDE&ED_2008_8_1:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:AKDE&ED_2008_8_1:wrong"
+      },
+      {
+        "agree": false,
+        "jev_label": "fail",
+        "qwen_label": "pass",
+        "record_id": "arc-single:AKDE&ED_2008_8_34:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:AKDE&ED_2008_8_34:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:AKDE&ED_2008_8_36:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:AKDE&ED_2008_8_36:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:AKDE&ED_2008_8_3:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:AKDE&ED_2008_8_3:wrong"
+      },
+      {
+        "agree": false,
+        "jev_label": "fail",
+        "qwen_label": "pass",
+        "record_id": "arc-single:AKDE&ED_2008_8_40:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:AKDE&ED_2008_8_40:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:AKDE&ED_2008_8_45:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:AKDE&ED_2008_8_45:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:AKDE&ED_2008_8_47:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:AKDE&ED_2008_8_47:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:AKDE&ED_2008_8_48:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:AKDE&ED_2008_8_48:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:AKDE&ED_2008_8_53:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:AKDE&ED_2008_8_53:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:AKDE&ED_2008_8_7:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:AKDE&ED_2008_8_7:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:AKDE&ED_2012_8_20:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:AKDE&ED_2012_8_20:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:AKDE&ED_2012_8_6:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:AKDE&ED_2012_8_6:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:CSZ10358:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:CSZ10358:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:CSZ20754:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:CSZ20754:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:CSZ30169:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:CSZ30169:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:CSZ30338:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:CSZ30338:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:CSZ_2005_5_CSZ10021:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:CSZ_2005_5_CSZ10021:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:CSZ_2009_8_CSZ20740:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:CSZ_2009_8_CSZ20740:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:FCAT_2008_5_1:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:FCAT_2008_5_1:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:FCAT_2008_5_2:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:FCAT_2008_5_2:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:LEAP_2000_8_2:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:LEAP_2000_8_2:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:LEAP_2000_8_4:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:LEAP_2000_8_4:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:LEAP_2001_8_10379:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:LEAP_2001_8_10379:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:LEAP_2002_4_10247:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:LEAP_2002_4_10247:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:LEAP_2005_8_10404:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:LEAP_2005_8_10404:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:LEAP_2007_4_10280:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:LEAP_2007_4_10280:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:LEAP_2007_8_10417:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:LEAP_2007_8_10417:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:LEAP_2007_8_10418:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:LEAP_2007_8_10418:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:LEAP_2009_8_10430:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:LEAP_2009_8_10430:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:LEAP_2011_8_10434:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:LEAP_2011_8_10434:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:LEAP__4_10225:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:LEAP__4_10225:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:LEAP__5_10312:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:LEAP__5_10312:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:LEAP__5_10315:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:LEAP__5_10315:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:LEAP__7_10339:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:LEAP__7_10339:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:LEAP__7_10348:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:LEAP__7_10348:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:LEAP__7_10351:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:LEAP__7_10351:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:LEAP__7_10352:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:LEAP__7_10352:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:LEAP__8_10365:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:LEAP__8_10365:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_1998_4_12:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_1998_4_12:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_1998_4_13:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_1998_4_13:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_1998_4_19:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_1998_4_19:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_1998_4_23:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_1998_4_23:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_1998_8_24:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_1998_8_24:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_1998_8_26:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_1998_8_26:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_1999_4_23:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_1999_4_23:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_1999_4_26:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_1999_4_26:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_1999_4_27:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_1999_4_27:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_1999_8_16:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_1999_8_16:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_1999_8_1:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_1999_8_1:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_1999_8_5:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_1999_8_5:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2000_4_10:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2000_4_10:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2000_4_26:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2000_4_26:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2000_4_30:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2000_4_30:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2000_4_34:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2000_4_34:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2000_4_36:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2000_4_36:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2000_8_22:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2000_8_22:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2000_8_29:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2000_8_29:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2001_5_2:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2001_5_2:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2001_5_3:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2001_5_3:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2001_8_4:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2001_8_4:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2002_8_11:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2002_8_11:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2002_8_17:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2002_8_17:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2003_5_14:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2003_5_14:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2003_5_33:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2003_5_33:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2003_8_11:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2003_8_11:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2003_8_21:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2003_8_21:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2003_8_29:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2003_8_29:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2003_8_31:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2003_8_31:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2003_8_7:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2003_8_7:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2004_5_11:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2004_5_11:wrong"
+      },
+      {
+        "agree": false,
+        "jev_label": "fail",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2004_5_33:correct"
+      },
+      {
+        "agree": false,
+        "jev_label": "pass",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2004_5_33:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2004_5_7:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2004_5_7:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2004_8_14:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2004_8_14:wrong"
+      },
+      {
+        "agree": false,
+        "jev_label": "pass",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2004_8_23:correct"
+      },
+      {
+        "agree": false,
+        "jev_label": "fail",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2004_8_23:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2004_8_3:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2004_8_3:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2004_8_7:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2004_8_7:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2004_9_10-v1:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2004_9_10-v1:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2004_9_15-v1:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2004_9_15-v1:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2004_9_21-v1:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2004_9_21-v1:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2004_9_2:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2004_9_2:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2004_9_5:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2004_9_5:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2005_5_24:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2005_5_24:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2005_5_25:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2005_5_25:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2005_5_34:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2005_5_34:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2005_8_12:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2005_8_12:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2005_8_2:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2005_8_2:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2005_8_6:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2005_8_6:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2005_8_7:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2005_8_7:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2005_9_17:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2005_9_17:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2005_9_21:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2005_9_21:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2005_9_6:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2005_9_6:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2006_8_12:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2006_8_12:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2006_8_13:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2006_8_13:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2006_8_1:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2006_8_1:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2006_8_24:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2006_8_24:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2006_8_31:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2006_8_31:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2006_9_12:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2006_9_12:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2006_9_17-v1:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2006_9_17-v1:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2006_9_1:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2006_9_1:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2006_9_28-v1:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2006_9_28-v1:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2006_9_30:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2006_9_30:wrong"
+      },
+      {
+        "agree": false,
+        "jev_label": "pass",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2006_9_34:correct"
+      },
+      {
+        "agree": false,
+        "jev_label": "fail",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2006_9_34:wrong"
+      },
+      {
+        "agree": false,
+        "jev_label": "pass",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2006_9_43:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2006_9_43:wrong"
+      },
+      {
+        "agree": false,
+        "jev_label": "pass",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2006_9_44:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2006_9_44:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2006_9_4:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2006_9_4:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2009_5_6518:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2009_5_6518:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2009_5_6519:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2009_5_6519:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2009_8_12:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2009_8_12:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2009_8_17:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2009_8_17:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2010_5_11984:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2010_5_11984:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2010_8_12005:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2010_8_12005:wrong"
+      },
+      {
+        "agree": false,
+        "jev_label": "fail",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2010_8_12016:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2010_8_12016:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2011_8_15365:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2011_8_15365:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2011_8_17694:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2011_8_17694:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2012_5_23614:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2012_5_23614:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2012_5_23625:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2012_5_23625:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2012_8_23640:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2012_8_23640:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2012_8_23651:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2012_8_23651:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2013_5_29411:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2013_5_29411:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2013_8_29416:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2013_8_29416:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2013_8_29425:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2013_8_29425:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2013_8_29435:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2013_8_29435:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2014_5_13:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2014_5_13:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2014_5_15:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2014_5_15:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2014_5_5:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2014_5_5:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2014_5_7:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2014_5_7:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2014_8_16:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2014_8_16:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2014_8_20:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2014_8_20:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2014_8_6:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2014_8_6:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2015_5_14:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2015_5_14:wrong"
+      },
+      {
+        "agree": false,
+        "jev_label": "fail",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2015_5_19:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2015_5_19:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_2016_8_15:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_2016_8_15:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_8_2014_8:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_8_2014_8:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MCAS_8_2015_18:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MCAS_8_2015_18:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MDSA_2007_5_16:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MDSA_2007_5_16:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MDSA_2007_5_2:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MDSA_2007_5_2:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MDSA_2007_8_17:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MDSA_2007_8_17:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MDSA_2007_8_24:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MDSA_2007_8_24:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MDSA_2007_8_30:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MDSA_2007_8_30:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MDSA_2007_8_3:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MDSA_2007_8_3:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MDSA_2007_8_42:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MDSA_2007_8_42:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MDSA_2008_4_19:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MDSA_2008_4_19:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MDSA_2008_8_20:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MDSA_2008_8_20:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MDSA_2008_8_27:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MDSA_2008_8_27:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MDSA_2008_8_3:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MDSA_2008_8_3:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MDSA_2009_4_1:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MDSA_2009_4_1:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MDSA_2009_4_34:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MDSA_2009_4_34:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MDSA_2009_5_20:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MDSA_2009_5_20:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MDSA_2009_5_25:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MDSA_2009_5_25:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MDSA_2009_5_39:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MDSA_2009_5_39:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MDSA_2009_8_2:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MDSA_2009_8_2:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MDSA_2010_4_20:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MDSA_2010_4_20:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MDSA_2010_5_29:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MDSA_2010_5_29:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MDSA_2011_5_23:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MDSA_2011_5_23:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MDSA_2011_5_3:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MDSA_2011_5_3:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MDSA_2012_8_16:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MDSA_2012_8_16:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MDSA_2012_8_6:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MDSA_2012_8_6:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MDSA_2013_8_20:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MDSA_2013_8_20:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MDSA_2013_8_23:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MDSA_2013_8_23:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MDSA_2013_8_32:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MDSA_2013_8_32:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MDSA_2013_8_40:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MDSA_2013_8_40:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MEAP_2005_5_12:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MEAP_2005_5_12:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MEAP_2005_5_14:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MEAP_2005_5_14:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MEAP_2005_5_15:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MEAP_2005_5_15:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MEAP_2005_8_13:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MEAP_2005_8_13:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MEAP_2005_8_21:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MEAP_2005_8_21:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MEAP_2005_8_39:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MEAP_2005_8_39:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MEAP_2005_8_45:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MEAP_2005_8_45:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MEA_2010_8_15:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MEA_2010_8_15:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MEA_2010_8_18:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MEA_2010_8_18:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MEA_2010_8_1:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MEA_2010_8_1:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MEA_2011_8_13:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MEA_2011_8_13:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MEA_2011_8_19:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MEA_2011_8_19:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MEA_2013_5_12:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MEA_2013_5_12:wrong"
+      },
+      {
+        "agree": false,
+        "jev_label": "fail",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MEA_2013_5_15:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MEA_2013_5_15:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MEA_2013_8_15:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MEA_2013_8_15:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MEA_2013_8_18:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MEA_2013_8_18:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MEA_2013_8_1:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MEA_2013_8_1:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MEA_2013_8_8:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MEA_2013_8_8:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MEA_2014_5_11:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MEA_2014_5_11:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MEA_2014_8_10:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MEA_2014_8_10:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MEA_2016_5_4:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MEA_2016_5_4:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MEA_2016_8_12:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MEA_2016_8_12:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MEA_2016_8_15:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MEA_2016_8_15:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MSA_2012_5_12:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MSA_2012_5_12:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MSA_2012_5_15:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MSA_2012_5_15:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MSA_2012_5_23:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MSA_2012_5_23:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MSA_2012_5_2:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MSA_2012_5_2:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MSA_2012_8_30:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MSA_2012_8_30:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MSA_2013_5_11:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MSA_2013_5_11:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MSA_2013_5_23:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MSA_2013_5_23:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:MSA_2015_8_30:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:MSA_2015_8_30:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:Mercury_175053:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:Mercury_175053:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:Mercury_175385:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:Mercury_175385:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:Mercury_175560:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:Mercury_175560:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:Mercury_175840:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:Mercury_175840:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:Mercury_176855:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:Mercury_176855:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:Mercury_177748:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:Mercury_177748:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:Mercury_177870:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:Mercury_177870:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:Mercury_178255:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:Mercury_178255:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:Mercury_178325:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:Mercury_178325:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:Mercury_179025:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:Mercury_179025:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:Mercury_180005:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:Mercury_180005:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:Mercury_180373:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:Mercury_180373:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:Mercury_180828:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:Mercury_180828:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:Mercury_183033:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:Mercury_183033:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:Mercury_183820:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:Mercury_183820:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:Mercury_183890:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:Mercury_183890:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:Mercury_184100:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:Mercury_184100:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:Mercury_184205:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:Mercury_184205:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:Mercury_184363:correct"
+      },
+      {
+        "agree": true,
+        "jev_label": "fail",
+        "qwen_label": "fail",
+        "record_id": "arc-single:Mercury_184363:wrong"
+      },
+      {
+        "agree": true,
+        "jev_label": "pass",
+        "qwen_label": "pass",
+        "record_id": "arc-single:Mercury_184730:correct"
+      },
+      {
+        "agree": false,
+        "jev_label": "fail",
+        "qwen_label": "pass",
+        "record_id": "arc-single:Mercury_184730:wrong"
+      }
+    ]
+  },
+  "system_one_smoke_differential": {
+    "agreement_count": 1,
+    "arms": {
+      "pinned": {
+        "model": "typesafe/jev-1.13",
+        "status_counts": {
+          "ok": 1
+        }
+      },
+      "qwen": {
+        "model": "qwen3.8-flash",
+        "status_counts": {
+          "ok": 1
+        }
+      },
+      "rolling": {
+        "model": "~typesafe/jev-latest",
+        "status_counts": {
+          "ok": 1
+        }
+      }
+    },
+    "comparable_count": 1,
+    "rows": [
+      {
+        "all_agree": true,
+        "labels": {
+          "pinned": "pass",
+          "qwen": "pass",
+          "rolling": "pass"
+        },
+        "record_id": "arc-single:ACTAAP_2007_7_23:correct"
+      }
+    ],
+    "scope": "separate one-record provider smoke canary; not part of pinned/rolling pooled estimates"
+  },
+  "unresolved_policy_rule": "provider failures remain unresolved and never fall back to a local label"
+}

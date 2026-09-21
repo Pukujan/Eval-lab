@@ -158,6 +158,10 @@ def run(
     include_rolling: bool = True,
     include_qwen: bool = True,
     include_pinned: bool = True,
+    pinned_predictions_path: Path | None = None,
+    rolling_predictions_path: Path | None = None,
+    qwen_predictions_path: Path | None = None,
+    experiment_id: str = "EXP-20260920-009-selective-escalation",
 ) -> dict[str, Any]:
     if env_file:
         _load_dotenv(env_file)
@@ -187,19 +191,35 @@ def run(
         for target in TARGETS
     }
     pinned = (
-        run_openrouter_jev(provider_records, model=OPENROUTER_PINNED_MODEL, timeout=provider_timeout)
-        if run_providers and include_pinned
-        else (_load_predictions(output / "provider-pinned.jsonl") if run_providers else [])
+        _load_predictions(pinned_predictions_path)
+        if pinned_predictions_path
+        else (
+            run_openrouter_jev(provider_records, model=OPENROUTER_PINNED_MODEL, timeout=provider_timeout)
+            if run_providers and include_pinned
+            else (_load_predictions(output / "provider-pinned.jsonl") if run_providers else [])
+        )
     )
     rolling = (
-        run_openrouter_jev(provider_records, model=OPENROUTER_ROLLING_MODEL, timeout=provider_timeout)
-        if run_providers and include_rolling
-        else []
+        _load_predictions(rolling_predictions_path)
+        if rolling_predictions_path
+        else (
+            run_openrouter_jev(provider_records, model=OPENROUTER_ROLLING_MODEL, timeout=provider_timeout)
+            if run_providers and include_rolling
+            else []
+        )
     )
     qwen = (
-        run_yolo_qwen(provider_records, base_url=os.getenv("YOLO_AUTO_BASE_URL") or os.getenv("QWEN_API_URL", "https://api.yolo-auto.com/v1"), timeout=provider_timeout)
-        if run_providers and include_qwen
-        else []
+        _load_predictions(qwen_predictions_path)
+        if qwen_predictions_path
+        else (
+            run_yolo_qwen(
+                provider_records,
+                base_url=os.getenv("YOLO_AUTO_BASE_URL") or os.getenv("QWEN_API_URL", "https://api.yolo-auto.com/v1"),
+                timeout=provider_timeout,
+            )
+            if run_providers and include_qwen
+            else []
+        )
     )
     pinned_by_id = _all_provider_rows(provider_records, pinned, model_only=OPENROUTER_PINNED_MODEL) if pinned else {}
     _rolling_by_id = _all_provider_rows(provider_records, rolling, model_only=OPENROUTER_ROLLING_MODEL) if rolling else {}
@@ -314,10 +334,9 @@ def run(
                 }
             )
     payload = {
-        "experiment_id": "EXP-20260920-009-selective-escalation",
+        "experiment_id": experiment_id,
         "status": "completed_with_provider_statuses"
-        if not run_providers
-        or any(
+        if any(
             arm["status_counts"].get("ok", 0) != len(provider_records)
             for arm in (
                 {
@@ -373,6 +392,10 @@ def main() -> None:
     parser.add_argument("--skip-rolling", action="store_true")
     parser.add_argument("--skip-qwen", action="store_true")
     parser.add_argument("--skip-pinned", action="store_true")
+    parser.add_argument("--pinned-predictions", type=Path)
+    parser.add_argument("--rolling-predictions", type=Path)
+    parser.add_argument("--qwen-predictions", type=Path)
+    parser.add_argument("--experiment-id", default="EXP-20260920-009-selective-escalation")
     args = parser.parse_args()
     payload = run(
         benchmark=args.benchmark,
@@ -384,6 +407,10 @@ def main() -> None:
         include_rolling=not args.skip_rolling,
         include_qwen=not args.skip_qwen,
         include_pinned=not args.skip_pinned,
+        pinned_predictions_path=args.pinned_predictions,
+        rolling_predictions_path=args.rolling_predictions,
+        qwen_predictions_path=args.qwen_predictions,
+        experiment_id=args.experiment_id,
     )
     print(json.dumps({"counts": payload["counts"], "provider_arms": payload["provider_arms"]}, sort_keys=True))
 

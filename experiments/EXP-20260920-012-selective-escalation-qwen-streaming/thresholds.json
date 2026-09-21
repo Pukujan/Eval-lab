@@ -1,0 +1,151 @@
+{
+  "calibrated": {
+    "0.01": {
+      "candidate_count": 2730,
+      "confidence_supported": false,
+      "selected": {
+        "accepted_count": 5,
+        "coverage": 0.0017464198393293748,
+        "error_count": 0,
+        "risk": 0.0,
+        "risk_interval_95": {
+          "confidence_level": 0.95,
+          "lower": 0.0,
+          "upper": 0.43448246478317476
+        },
+        "threshold": 0.9978525579730587
+      },
+      "target_error": 0.01
+    },
+    "0.02": {
+      "candidate_count": 2730,
+      "confidence_supported": false,
+      "selected": {
+        "accepted_count": 5,
+        "coverage": 0.0017464198393293748,
+        "error_count": 0,
+        "risk": 0.0,
+        "risk_interval_95": {
+          "confidence_level": 0.95,
+          "lower": 0.0,
+          "upper": 0.43448246478317476
+        },
+        "threshold": 0.9978525579730587
+      },
+      "target_error": 0.02
+    },
+    "0.05": {
+      "candidate_count": 2730,
+      "confidence_supported": false,
+      "selected": {
+        "accepted_count": 5,
+        "coverage": 0.0017464198393293748,
+        "error_count": 0,
+        "risk": 0.0,
+        "risk_interval_95": {
+          "confidence_level": 0.95,
+          "lower": 0.0,
+          "upper": 0.43448246478317476
+        },
+        "threshold": 0.9978525579730587
+      },
+      "target_error": 0.05
+    },
+    "0.1": {
+      "candidate_count": 2730,
+      "confidence_supported": false,
+      "selected": {
+        "accepted_count": 5,
+        "coverage": 0.0017464198393293748,
+        "error_count": 0,
+        "risk": 0.0,
+        "risk_interval_95": {
+          "confidence_level": 0.95,
+          "lower": 0.0,
+          "upper": 0.43448246478317476
+        },
+        "threshold": 0.9978525579730587
+      },
+      "target_error": 0.1
+    }
+  },
+  "confidence_definition": "max calibrated class probability; raw arm uses max raw class probability",
+  "final_partition": "final_evaluation",
+  "raw": {
+    "0.01": {
+      "candidate_count": 2730,
+      "confidence_supported": false,
+      "selected": {
+        "accepted_count": 5,
+        "coverage": 0.0017464198393293748,
+        "error_count": 0,
+        "risk": 0.0,
+        "risk_interval_95": {
+          "confidence_level": 0.95,
+          "lower": 0.0,
+          "upper": 0.43448246478317476
+        },
+        "threshold": 0.6067257963261566
+      },
+      "target_error": 0.01
+    },
+    "0.02": {
+      "candidate_count": 2730,
+      "confidence_supported": false,
+      "selected": {
+        "accepted_count": 5,
+        "coverage": 0.0017464198393293748,
+        "error_count": 0,
+        "risk": 0.0,
+        "risk_interval_95": {
+          "confidence_level": 0.95,
+          "lower": 0.0,
+          "upper": 0.43448246478317476
+        },
+        "threshold": 0.6067257963261566
+      },
+      "target_error": 0.02
+    },
+    "0.05": {
+      "candidate_count": 2730,
+      "confidence_supported": false,
+      "selected": {
+        "accepted_count": 5,
+        "coverage": 0.0017464198393293748,
+        "error_count": 0,
+        "risk": 0.0,
+        "risk_interval_95": {
+          "confidence_level": 0.95,
+          "lower": 0.0,
+          "upper": 0.43448246478317476
+        },
+        "threshold": 0.6067257963261566
+      },
+      "target_error": 0.05
+    },
+    "0.1": {
+      "candidate_count": 2730,
+      "confidence_supported": false,
+      "selected": {
+        "accepted_count": 5,
+        "coverage": 0.0017464198393293748,
+        "error_count": 0,
+        "risk": 0.0,
+        "risk_interval_95": {
+          "confidence_level": 0.95,
+          "lower": 0.0,
+          "upper": 0.43448246478317476
+        },
+        "threshold": 0.6067257963261566
+      },
+      "target_error": 0.1
+    }
+  },
+  "selection_partition": "threshold_selection",
+  "target_error_rates": [
+    0.01,
+    0.02,
+    0.05,
+    0.1
+  ]
+}
