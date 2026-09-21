@@ -1,0 +1,21 @@
+id: EXP-20260920-012-selective-escalation-qwen-streaming
+status: plan-only
+benchmark:
+  name: EvalLab-Select
+  version: 0.1.0
+  fingerprint: 18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5
+student:
+  source_task: TASK-0009
+  selected_arm: D
+providers:
+  pinned_jev: typesafe/jev-1.13
+  rolling_jev: ~typesafe/jev-latest
+  qwen_streaming: qwen3.8-flash
+inputs:
+  qwen: experiments/EXP-20260920-009-selective-escalation/qwen-streaming-final-merged-20260920-010/predictions.jsonl
+  pinned: experiments/EXP-20260920-009-selective-escalation/provider-pinned.jsonl
+  rolling: experiments/EXP-20260920-009-selective-escalation/provider-rolling.jsonl
+execution:
+  provider_calls: false
+  provider_records: 500
+  target_error_rates: [0.01, 0.02, 0.05, 0.10]
