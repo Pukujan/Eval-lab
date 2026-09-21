@@ -199,3 +199,19 @@ direct Codex Luna/Sol, and YOLO-Auto Qwen Flash; no OpenCode or OpenRouter fallb
 
 Next atomic action: commit the hardened runner and smoke artifacts, then run the
 matched public partition and preserve separate arm outputs.
+
+### 2026-09-21 — public execution in progress
+
+Status: active; public provider execution is running and the blind holdout remains
+untouched.
+
+Exact command: `$env:PYTHONPATH='src'; python
+scripts/run_grok_luna_qwen_bakeoff.py --partition public_selection --models
+grok,luna,qwen_flash --workers 4 --timeout 120 --env-file
+C:\Users\pujan\OneDrive\Desktop\configs\.env --output
+experiments/EXP-20260921-015-grok-luna-qwen-bakeoff/runs/public-direct-20260921`.
+
+The direct authenticated Grok Build CLI is the first arm and is cycling records under
+the per-record timeout. No OpenCode or OpenRouter command is used. The normalized
+public artifact is not yet complete; after termination, validate checksums, provider
+statuses, metrics, and differential output before any blind request.

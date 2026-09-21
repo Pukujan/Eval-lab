@@ -156,6 +156,22 @@ Files changed: the direct Grok invocation hardening and the two direct-only smok
 artifacts. Next atomic action: commit this checkpoint, then decide whether to proceed
 with the public matched pool before the blind holdout.
 
+### 2026-09-21 — TASK-0015 public execution in progress
+
+The frozen `public_selection` partition is active in the existing process; the blind
+holdout has not been requested. Exact command:
+
+`$env:PYTHONPATH='src'; python scripts/run_grok_luna_qwen_bakeoff.py --partition
+public_selection --models grok,luna,qwen_flash --workers 4 --timeout 120 --env-file
+C:\Users\pujan\OneDrive\Desktop\configs\.env --output
+experiments/EXP-20260921-015-grok-luna-qwen-bakeoff/runs/public-direct-20260921`.
+
+The direct Grok Build arm is first and is cycling records under the per-record timeout;
+the runner has not yet written its normalized arm artifact. No OpenCode or OpenRouter
+command is part of this process. Next atomic action: wait for the public run to
+terminate, validate checksums/statuses/metrics, and checkpoint the result before any
+blind-holdout execution.
+
 ## Next atomic action
 
 TASK-0010 is complete at EXP-20260920-012. Leave the next program task unopened until review/triage. Historical checkpoint entries below are retained.
