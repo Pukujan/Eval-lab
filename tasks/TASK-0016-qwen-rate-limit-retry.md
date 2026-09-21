@@ -61,6 +61,34 @@ one-record smoke only after this preregistration is committed.
 Next atomic action: commit this preregistration, generate the exact retry-ID manifest,
 then run the recovery smoke.
 
+### 2026-09-21 — recovery smoke passed
+
+Status: active; bulk retry not started yet.
+
+Completed: added an explicit `--experiment-id` runner option so TASK-0016 artifacts
+carry their own experiment identity. The corrected one-record YOLO-Auto smoke returned
+`ok: 1`, surfaced `qwen3.8-flash`, used the direct `yolo_auto_openai_compatible` route,
+and recorded streaming metadata. The initially mislabeled smoke output was removed and
+not retained.
+
+Exact files changed: `scripts/run_grok_luna_qwen_bakeoff.py`, this task log, and the
+smoke artifact under `experiments/EXP-20260921-016-qwen-rate-limit-retry/runs/`.
+
+Commands run: focused Ruff, diff check, and the corrected one-record smoke with
+`--experiment-id EXP-20260921-016-qwen-rate-limit-retry` and the frozen EXP-015 pool.
+
+Test results: focused Ruff passed; smoke status was `ok: 1`; provider-status metadata
+reported surfaced model `qwen3.8-flash` and the expected YOLO-Auto route.
+
+Decision: proceed with exactly the committed 317 retry IDs, one worker per provider
+request pool unless the provider behavior requires a documented stop. EXP-015 remains
+unchanged.
+
+Unresolved questions: how many of the 317 records the recovered request window will
+accept; any failures remain explicit.
+
+Next atomic action: commit the runner fix and smoke, then run the frozen 317-ID retry.
+
 ## Handoff
 
 Read in order: `PROJECT.md`, `checkpoints/CURRENT.md`, this task file, and

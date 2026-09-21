@@ -1,4 +1,4 @@
-"""Run one frozen matched arm set for EXP-20260921-015."""
+"""Run one frozen matched arm set for a declared experiment."""
 
 from __future__ import annotations
 
@@ -1183,7 +1183,7 @@ def _run(args: argparse.Namespace) -> dict[str, Any]:
 
     manifest = json.loads((pool / "pool-manifest.json").read_text(encoding="utf-8"))
     results = {
-        "experiment_id": EXPERIMENT_ID,
+        "experiment_id": args.experiment_id,
         "run_id": output.name,
         "status": "completed_with_provider_statuses",
         "partition": args.partition,
@@ -1219,7 +1219,7 @@ def _run(args: argparse.Namespace) -> dict[str, Any]:
     (output / "provider-status.json").write_text(
         json.dumps(
             {
-                "experiment_id": EXPERIMENT_ID,
+                "experiment_id": args.experiment_id,
                 "run_id": output.name,
                 "partition": args.partition,
                 "arms": {
@@ -1241,7 +1241,7 @@ def _run(args: argparse.Namespace) -> dict[str, Any]:
         encoding="utf-8",
     )
     lines = [
-        f"# {EXPERIMENT_ID} — {output.name}",
+        f"# {args.experiment_id} — {output.name}",
         "",
         f"Partition: `{args.partition}`; matched records: `{len(records)}`.",
         "",
@@ -1272,6 +1272,7 @@ def _run(args: argparse.Namespace) -> dict[str, Any]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--pool", type=Path, default=POOL)
+    parser.add_argument("--experiment-id", default=EXPERIMENT_ID)
     parser.add_argument("--partition", choices=("public_selection", "blind_holdout", "all"), required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--record-ids-file", type=Path)

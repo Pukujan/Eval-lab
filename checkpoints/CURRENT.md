@@ -680,3 +680,14 @@ from the retry.
 No new provider call has occurred in TASK-0016. Next atomic action: commit the
 preregistration, generate the frozen retry-ID manifest from EXP-0015, then run a
 one-record YOLO-Auto recovery smoke before the bulk retry.
+
+### 2026-09-21 — TASK-0016 recovery smoke passed
+
+The TASK-0016 one-record YOLO-Auto smoke passed with `ok: 1`, surfaced
+`qwen3.8-flash`, and used the direct streaming route. The shared runner now accepts
+`--experiment-id`, so the smoke and future retry artifacts are correctly labeled
+`EXP-20260921-016-qwen-rate-limit-retry`. The exact 317-ID manifest remains committed
+with SHA-256 `A89635149C2DED6015E897E17D565084D71DB6CD20F66B759E25CF6630C29C15`.
+
+No bulk retry has started. Next atomic action: commit the runner metadata fix and smoke,
+then execute the frozen 317-ID Qwen retry without touching EXP-015.
