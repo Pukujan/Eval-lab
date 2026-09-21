@@ -291,3 +291,19 @@ location `D:\claude\eval-lab\.worktrees\TASK-0015-bakeoff`.
 Next atomic action: move the registered Git worktree, verify its branch and partial
 artifacts at the new path, then resume the same public run with `--resume` from the
 organized location. Keep the blind holdout untouched.
+
+### 2026-09-21 — worktree consolidation complete; resume ready
+
+Status: active again from the organized worktree. All 18 registered Eval Lab
+worktrees now live under `D:\claude\eval-lab\.worktrees`; no `eval-lab-*` sibling
+directories remain directly under `D:\claude`. The TASK-0014 worktree was repaired
+after a native move and its stale empty source shell was removed.
+
+The TASK-0015 partial public run remains at
+`D:\claude\eval-lab\.worktrees\TASK-0015-bakeoff\experiments\EXP-20260921-015-grok-luna-qwen-bakeoff\runs\public-stream-parallel-20260921`.
+Grok remains `648/648` (`643 ok`, `5 provider_error`); Luna remains `532/648`
+(`532 ok`); Qwen remains unstarted. The branch and worktree identity are preserved.
+
+Next atomic action: resume from the organized path with `--resume --workers 4`,
+continue the missing Luna records, then run Qwen Flash and finalize/validate the
+public artifact before any blind-holdout request.

@@ -221,6 +221,19 @@ will be changed.
 Next atomic action: move and verify the registered worktree, then resume the public
 run from the organized path with `--resume`.
 
+### 2026-09-21 — TASK-0015 worktree consolidation complete
+
+All 18 registered Eval Lab worktrees are now contained under
+`D:\claude\eval-lab\.worktrees`; the old `D:\claude\eval-lab-TASK-*` and PR sibling
+paths are gone. The active TASK-0015 branch remains
+`task/TASK-0015-grok-luna-qwen-bakeoff` at
+`D:\claude\eval-lab\.worktrees\TASK-0015-bakeoff`. The paused public checkpoints
+are preserved: Grok `648/648`, Luna `532/648`, Qwen not started.
+
+Next atomic action: resume the existing public run from the organized worktree with
+`--resume --workers 4`; do not request blind-holdout records until public validation
+passes.
+
 ## Next atomic action
 
 TASK-0010 is complete at EXP-20260920-012. Leave the next program task unopened until review/triage. Historical checkpoint entries below are retained.
