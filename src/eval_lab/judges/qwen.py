@@ -25,6 +25,8 @@ class QwenRuntimeConfig:
     context_cap: int = 4096
     device: str | None = None
     dtype: str | None = None
+    quantization: str = "none"
+    gpu_memory_fraction: float | None = None
     single_labels: tuple[str, str] = ("pass", "fail")
     prompt_version: str = "qwen-legacy-v1"
 
@@ -33,6 +35,10 @@ class QwenRuntimeConfig:
             raise ValueError("context_cap must be positive")
         if len(self.single_labels) != 2 or len(set(self.single_labels)) != 2:
             raise ValueError("single_labels must contain two distinct labels")
+        if self.quantization not in {"none", "4bit", "8bit"}:
+            raise ValueError("quantization must be one of: none, 4bit, 8bit")
+        if self.gpu_memory_fraction is not None and not 0 < self.gpu_memory_fraction <= 1:
+            raise ValueError("gpu_memory_fraction must be between 0 and 1")
 
 
 _DEFAULT_CONFIG = QwenRuntimeConfig()
@@ -133,19 +139,33 @@ class QwenJudge:
 
         try:
             import torch
-            from transformers import AutoModelForCausalLM, AutoTokenizer
+            from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
         except ImportError as exc:
             raise RuntimeError("install the local extra to use the Qwen judge") from exc
         device = config.device or ("cuda" if torch.cuda.is_available() else "cpu")
         dtype_name = config.dtype or ("float16" if device.startswith("cuda") else "float32")
         dtype = getattr(torch, dtype_name)
+        if device.startswith("cuda") and config.gpu_memory_fraction is not None:
+            torch.cuda.set_per_process_memory_fraction(config.gpu_memory_fraction, device=device)
         tokenizer = AutoTokenizer.from_pretrained(config.model_id, revision=config.revision)
-        model = AutoModelForCausalLM.from_pretrained(
-            config.model_id,
-            revision=config.revision,
-            torch_dtype=dtype,
-        )
-        model.to(device)
+        load_kwargs: dict[str, Any] = {
+            "revision": config.revision,
+            "torch_dtype": dtype,
+        }
+        if config.quantization == "4bit":
+            load_kwargs["quantization_config"] = BitsAndBytesConfig(
+                load_in_4bit=True,
+                bnb_4bit_compute_dtype=dtype,
+                bnb_4bit_quant_type="nf4",
+                bnb_4bit_use_double_quant=True,
+            )
+            load_kwargs["device_map"] = {"": device}
+        elif config.quantization == "8bit":
+            load_kwargs["quantization_config"] = BitsAndBytesConfig(load_in_8bit=True)
+            load_kwargs["device_map"] = {"": device}
+        model = AutoModelForCausalLM.from_pretrained(config.model_id, **load_kwargs)
+        if config.quantization == "none":
+            model.to(device)
         model.eval()
         return cls(tokenizer, model, config)
 

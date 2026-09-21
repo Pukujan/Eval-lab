@@ -747,3 +747,15 @@ The local runner now checkpoints every Qwen 4B prediction immediately and suppor
 validated `--resume`; duplicate 4B model copies will not be launched on the 8 GiB
 GPU. The next atomic action is to commit that runner checkpoint and start the frozen
 public-selection calibration run.
+
+### 2026-09-21 — TASK-0017 memory-safe Qwen runtime validated
+
+The local Qwen 4B runtime is now 4-bit NF4 double-quantized with float16 compute,
+a 2,048-token cap, and an 0.8 per-process CUDA memory fraction. The frozen pool's
+maximum measured prompt is 755 tokens. The bounded smoke returned `1/1 ok`; external
+monitoring observed about 2.8–2.9 GiB used on the 8 GiB RTX 4060 during loading,
+then about 0.26 GiB after exit. The prior full-precision run was interrupted before
+any public or blind labels and is retained only as feasibility evidence.
+
+Next atomic action: commit the optimization checkpoint, then run public calibration
+with one Qwen process and the memory-safe settings.

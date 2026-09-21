@@ -1,0 +1,19 @@
+{
+  "experiment_id": "EXP-20260921-017-judge-calibration",
+  "run_id": "smoke-qwen4b-4bit-20260921",
+  "runtime": {
+    "context_cap": 2048,
+    "device": "cuda:0",
+    "dtype": "torch.float16",
+    "model_id": "Qwen/Qwen3-4B",
+    "prompt_version": "eval-lab-system-one-local-v1",
+    "quantization": "4bit",
+    "requested_revision": "main",
+    "resolved_revision": "1cfa9a7208912126459214e8b04321603b3df60c",
+    "runtime": "transformers",
+    "score_semantics": "sum conditional log-likelihood of legal label continuation followed by softmax"
+  },
+  "status_counts": {
+    "ok": 1
+  }
+}

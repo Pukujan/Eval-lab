@@ -72,3 +72,15 @@ def test_runtime_config_records_prompt_version() -> None:
     config = QwenRuntimeConfig(prompt_version="eval-lab-system-one-local-v1")
     assert config.prompt_version == "eval-lab-system-one-local-v1"
 
+
+def test_runtime_config_accepts_memory_safe_quantization_modes() -> None:
+    assert QwenRuntimeConfig(quantization="4bit").quantization == "4bit"
+    with pytest.raises(ValueError, match="quantization"):
+        QwenRuntimeConfig(quantization="unsupported")
+
+
+def test_runtime_config_validates_gpu_memory_fraction() -> None:
+    assert QwenRuntimeConfig(gpu_memory_fraction=0.8).gpu_memory_fraction == 0.8
+    with pytest.raises(ValueError, match="gpu_memory_fraction"):
+        QwenRuntimeConfig(gpu_memory_fraction=1.1)
+

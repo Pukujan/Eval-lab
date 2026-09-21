@@ -228,6 +228,8 @@ def _runtime_metadata(judge: QwenJudge, config: QwenRuntimeConfig) -> dict[str, 
         "resolved_revision": judge.runtime_revision,
         "device": judge.device,
         "dtype": judge.dtype,
+        "quantization": config.quantization,
+        "gpu_memory_fraction": config.gpu_memory_fraction,
         "context_cap": config.context_cap,
         "prompt_version": config.prompt_version,
         "score_semantics": "sum conditional log-likelihood of legal label continuation followed by softmax",
@@ -284,6 +286,8 @@ def run(args: argparse.Namespace) -> Path:
         context_cap=args.context_cap,
         device=args.device,
         dtype=args.dtype,
+        quantization=args.quantization,
+        gpu_memory_fraction=args.gpu_memory_fraction,
         prompt_version=PROMPT_VERSION,
     )
     started = time.perf_counter()
@@ -370,9 +374,11 @@ def main() -> None:
     parser.add_argument("--calibration-run", type=Path)
     parser.add_argument("--model-id", default="Qwen/Qwen3-4B")
     parser.add_argument("--revision", default="main")
-    parser.add_argument("--context-cap", type=int, default=4096)
+    parser.add_argument("--context-cap", type=int, default=2048)
     parser.add_argument("--device")
     parser.add_argument("--dtype")
+    parser.add_argument("--quantization", choices=("none", "4bit", "8bit"), default="4bit")
+    parser.add_argument("--gpu-memory-fraction", type=float, default=0.8)
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--resume", action="store_true")
     args = parser.parse_args()

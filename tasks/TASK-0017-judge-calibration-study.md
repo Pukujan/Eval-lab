@@ -29,6 +29,9 @@ outputs look calibrated.
 
 - Core local arm: `Qwen/Qwen3-4B` forced-choice conditional log-likelihoods over
   `pass/fail` and `A/B/TIE`, with raw scores and normalized probabilities retained.
+  The execution runtime is bitsandbytes 4-bit NF4 double quantization with float16
+  compute and a 2,048-token cap; the measured maximum frozen-pool prompt is 755
+  input tokens, so the cap does not truncate this pool.
 - Calibration is fit separately by judgment mode on successful local predictions from
   `public_selection`, then applied without reading blind labels.
 - Primary comparison: local raw versus local temperature-calibrated probabilities
@@ -197,3 +200,56 @@ has been warmed on more than one record.
 
 Next atomic action: commit the resumable runner, then start the frozen
 `public_selection` calibration run.
+
+### 2026-09-21 — memory-safe Qwen runtime amendment
+
+Status: active; the prior full-precision smoke is retained as feasibility evidence,
+but no public or blind calibration labels were produced under that runtime.
+
+Completed: paused the local process while it was loading the unquantized Qwen 4B
+weights after the user reported excessive GPU memory use. Confirmed the model is
+`Qwen/Qwen3-4B` with a model maximum of 40,960 tokens, while the experiment prompt
+cap was 4,096 and the frozen pool's measured maximum input was only 755 tokens.
+The runtime is amended before final evaluation to use bitsandbytes NF4 double
+quantization with float16 compute and a 2,048-token cap. This should reduce the
+roughly 8 GiB unquantized weight footprint enough for the 8 GiB RTX 4060 while
+retaining the same forced-choice score semantics.
+
+Exact files changed: the Qwen runtime adapter and runner, EXP-017 manifest, and
+focused Qwen runtime tests. The external bitsandbytes and accelerate packages are
+installed only in the local ignored environment; no weights or credentials enter
+Git.
+
+Validation still required: one-record 4-bit smoke must record actual VRAM/runtime
+metadata and pass the existing focused tests before public scaling resumes.
+
+Next atomic action: run the bounded 4-bit Qwen smoke with the 2,048-token cap and
+inspect GPU memory before deciding whether to resume public calibration.
+
+### 2026-09-21 — memory-safe 4-bit smoke passed
+
+Status: active; public calibration remains paused pending this optimization gate.
+
+Completed: installed the local-only `bitsandbytes` and `accelerate` runtime
+packages, then ran the one-record Qwen 4B smoke with NF4 double quantization,
+float16 compute, a 2,048-token cap, and an 0.8 per-process CUDA memory fraction.
+The run returned `1/1 ok`, valid probabilities, `cuda:0`, model revision
+`1cfa9a7208912126459214e8b04321603b3df60c`, and retained a complete normalized
+smoke artifact. During loading, external GPU monitoring observed approximately
+2.8–2.9 GiB used on the 8 GiB RTX 4060; after exit, usage returned to about
+0.26 GiB. This is materially below the prior unquantized roughly 8 GiB weight
+footprint.
+
+Exact files changed: the Qwen runtime adapter, local runner, EXP-017 manifest,
+focused Qwen tests, and the 4-bit smoke artifact under
+`experiments/EXP-20260921-017-judge-calibration/runs/smoke-qwen4b-4bit-20260921/`.
+
+Validation: Ruff clean; focused Qwen tests now pass (`8 passed`); `git diff --check`
+clean. No public or blind labels were produced under the old full-precision
+runtime, and no provider route was invoked.
+
+Decision: resume only with the 4-bit runtime, one model process, 2,048-token cap,
+and 0.8 CUDA memory fraction. Do not launch duplicate Qwen copies.
+
+Next atomic action: commit this optimization checkpoint, then start the frozen
+public-selection calibration run with the memory-safe settings.
