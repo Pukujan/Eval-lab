@@ -1,0 +1,74 @@
+id: EXP-20260921-015-grok-luna-qwen-bakeoff
+status: planned
+hypothesis: Authenticated Grok and Luna subscription routes will be competitive with YOLO-Auto qwen3.8-flash on the same objective typed records, with distinct coverage and provider-status behavior.
+created_at: 2026-09-21
+plan_baseline_commit: 56bad5d1edb386f18e577a09eeccf56ab4c73c99
+seed: 20260921
+context_limit: 4096
+dataset:
+  name: independent Eval Lab objective pool copied from EXP-014
+  version: EXP-20260921-015 exact source freeze
+  fingerprint: b7edd61269f0f7757e734bc7e3f665ac2bcd6d908a1e56f73f0b0291d55b64d8
+  blind_record_ids_fingerprint: 409428fc71b447d0114dd7a1929cbed34269a4318ef249c108582b70069d8d61
+  count: 1408
+  split_policy: source-problem disjoint public selection and blind holdout; blind is primary
+typed_protocol:
+  spec_id: eval-lab-system-one
+  spec_version: 0.1.0
+  fingerprint: 0d07bd8b8b60bd7f0b5b7a5f5819b7d329ea121f686b240e465695b6f6eca1e4
+  legal_single_labels: [pass, fail]
+  legal_pairwise_labels: [A, B, TIE]
+providers:
+  - arm_id: grok
+    provider: opencode
+    requested_model: opencode/grok-4.6
+    access: authenticated_xai_subscription
+    status: planned
+  - arm_id: luna
+    provider: opencode
+    requested_model: opencode/gpt-5.6-luna
+    access: authenticated_chatgpt_subscription
+    status: planned
+  - arm_id: qwen_flash
+    provider: yolo-auto
+    requested_model: qwen3.8-flash
+    access: configured_api_route
+    status: planned
+  - arm_id: sol
+    provider: opencode
+    requested_model: opencode/gpt-5.6-sol
+    access: authenticated_chatgpt_subscription
+    status: optional
+evaluation:
+  primary_partition: blind_holdout
+  public_partition_role: descriptive_only
+  one_pass_per_selected_record: true
+  missingness_rule: unresolved provider calls are excluded from resolved metrics and never receive fallback labels
+  probability_rule: only validated native probability maps enable confidence/risk metrics
+  calibration_method: none; descriptive native probabilities only
+  confidence_level: 0.95
+metrics:
+  - accuracy
+  - balanced_accuracy
+  - macro_f1
+  - wilson_95_accuracy_interval
+  - resolved_coverage
+  - unresolved_rate
+  - latency_p50
+  - latency_p95
+  - native_probability_availability
+  - risk_coverage_when_native_probabilities_available
+  - same_record_agreement
+  - provider_status_counts
+artifacts:
+  - PLAN.md
+  - README.md
+  - experiment.yaml
+  - pool-manifest.json
+  - typed-question-spec.json
+  - runs/
+  - results.json
+  - report.md
+  - provider-status.json
+  - differential.json
+notes: EXP-014 remains immutable; this comparison has separate route smoke, output files, checksums, and provider-status accounting.

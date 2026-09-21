@@ -2,7 +2,9 @@
 
 ## Authoritative status
 
-TASK-0001 through TASK-0011 are complete in the current release line. TASK-0012 is active in a dedicated worktree with its independent source pool and typed protocol frozen; no live TASK-0012 provider evaluation has started.
+TASK-0001 through TASK-0011 are complete in the current release line. TASK-0012 is
+complete in its dedicated independent Jev worktree. TASK-0015 is active in a fresh
+worktree for the matched Grok/Luna/Qwen Flash comparison; EXP-014 remains immutable.
 
 ## Program state
 
@@ -29,7 +31,11 @@ TASK-0009 and TASK-0010 selective escalation/research release are complete. TASK
 
 ## Next task
 
-TASK-0012 is active in `D:/claude/eval-lab-TASK-0012-Jev`. Its independent source IDs, splits, typed packet, model arms, and perturbation schedule are frozen in EXP-014. The pinned blind result is complete; rolling and robustness artifacts retain provider failures separately. Next action is provider-recovery robustness execution. Do not use JevBench tasks, labels, or its composite score as the primary benchmark.
+TASK-0015 is active in `D:/claude/eval-lab-TASK-0015-bakeoff`. Its new EXP-015
+preregistration uses the exact EXP-014 pool and typed System-One packet. Core arms are
+Grok through authenticated OpenCode/xAI, Luna through authenticated OpenCode/ChatGPT,
+and YOLO-Auto `qwen3.8-flash`; exact surfaced model IDs and provider failures must be
+recorded separately. Do not modify or overwrite EXP-014.
 
 ## Queued foundation
 
@@ -92,6 +98,17 @@ Next atomic action: execute EXP-008 after the pre-registration commit, then run 
 Jev may remain rate-limited; this is an execution state and does not block the rest of the program.
 
 GitHub Actions runner scheduling remains infrastructure-only until runners are assigned; local validation remains authoritative.
+
+### 2026-09-21 — TASK-0015 opened
+
+TASK-0012 independent Jev benchmark acceptance is complete at commit `56bad5d`. A
+separate TASK-0015 worktree was created at `D:/claude/eval-lab-TASK-0015-bakeoff` on
+branch `task/TASK-0015-grok-luna-qwen-bakeoff`. EXP-015 is preregistered to copy the
+exact 1,408-record EXP-014 pool and typed packet before any final provider labels.
+
+Next atomic action: commit the preregistration and offline runner/validator, then run
+one-record smoke tests for Grok, Luna, and Qwen Flash and preserve their surfaced model
+IDs and provider statuses.
 
 ## Next atomic action
 
