@@ -575,3 +575,27 @@ Read, in order:
 8. `docs/RESEARCH_ARTIFACT_STANDARD.md`
 
 Implement offline routing + metadata validation first. Freeze EXP-009 and benchmark split/fingerprints before opening final labels. Smoke-test providers only after offline invariants pass.
+
+### 2026-09-20 — provider-path diagnosis and OpenCode run stopped
+
+Status: EXP-20260920-010 was stopped before any final arm file was written because its configured OpenCode path was not the claimed subscription route. The dedicated worktree uses Windows PowerShell, Python 3.12.10 from the shared `D:/claude/eval-lab/.venv`, and `PYTHONPATH=D:/claude/eval-lab-TASK-0010/src`; the local `.env` remained ignored and credentials were not printed.
+
+Exact checks and results: `opencode --version` returned `1.18.31`; `opencode models` exposed `opencode/grok-4.6`, `opencode-go/grok-4.6`, and `litellm/grok-4.6`. `opencode auth list` showed stored OpenCode Zen/Go and named credentials but no active entitlement details. A bounded `opencode run --model opencode-go/grok-4.6 ...` returned HTTP 403, `An active OpenCode Go subscription is required to use Go models`; `opencode run --model opencode/grok-4.6 ...` returned HTTP 402, `Insufficient account funds`, from `https://opencode.ai/zen/v1/responses`; `litellm/grok-4.6` returned a connection failure for `http://localhost:4000/v1/chat/completions`. No `grok` or `grok-build` executable was present on PATH. The in-flight EXP-010 command was terminated with `taskkill /F /T` before `predictions/grok.jsonl` existed.
+
+Decision: do not claim the slow OpenCode Zen canary as subscription evidence and do not retry the exhausted route. The already committed EXP-010 plan and bounded smoke/canary remain separate evidence; its final 500-record output is absent. The Qwen streaming arm is recorded separately under EXP-009 retry artifacts.
+
+Next atomic action: use an actually available provider path under a new frozen experiment ID, preserving the OpenCode route diagnosis and all prior outputs.
+
+### 2026-09-20 — EXP-20260920-011 OpenRouter provider-blocked result
+
+Plan and files: committed plan `experiments/EXP-20260920-011-openrouter-multi-subscription-bakeoff/PLAN.md`, manifest, and README at `5e7df93`; committed streaming runner and offline SSE test at `1d53b29`; committed validator and 1-record three-arm smoke at `d6d4ebb`; committed final normalized output at `5277827`. Arms were frozen as OpenRouter `x-ai/grok-4.6`, `openai/gpt-5.6-luna`, and `openai/gpt-5.6-sol`; benchmark fingerprint remained `18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5` and the provider pool was the deterministic first 500 final-evaluation records.
+
+Exact execution: OpenRouter `/v1/models` returned HTTP 200 and confirmed all three IDs. Smoke command `python scripts/run_openrouter_multi_subscription_bakeoff.py --benchmark benchmark/eval-lab-select-v0.1.0 --output experiments/EXP-20260920-011-openrouter-multi-subscription-bakeoff/smoke --limit 1 --timeout 120 --workers 1 --env-file .env` returned `grok/luna/sol: 1 ok`; validator passed. Final command used the same runner with `--limit 500 --timeout 120 --workers 4 --env-file .env`; validator returned `grok: 368 ok, 132 provider_error`, `luna: 500 provider_error`, `sol: 500 provider_error`. All 632 provider errors were HTTP 402, `Insufficient account funds`; no labels were fabricated and no fallback was used. The output checksums and differential artifacts validate, with zero pairwise comparable records for the blocked arms.
+
+Full local verification after this work: repository contract `OK`; Ruff `All checks passed!`; pytest `80 passed in 31.55s`; research-artifact validation returned checksums `ok`, citation parsed, paper present, PROV-O parsed, RO-Crate `ok`, and SHACL conforms. CI run `35546251591` for the preceding pushed head passed; the current result commit is the next push checkpoint.
+
+Files changed: `.gitattributes`; EXP-010 plan/runner/validator/smoke/probe/canary and parser fixes; EXP-009 Qwen streaming retry, targeted retry, merged 500-label artifact, and merge manifest; EXP-011 plan/manifest/README, OpenRouter runner/validator, smoke, final predictions, provider-status, differential, report, and checksums; focused streaming tests.
+
+Blocker: OpenCode Go has no active subscription, OpenCode Zen has insufficient funds, LiteLLM is unavailable, and the OpenRouter account exhausted funds after 368 Grok labels. The Qwen streaming merged artifact is complete at `500 ok`, but selective-routing outputs have not yet been regenerated from that streaming Qwen arm.
+
+Next atomic action: regenerate the frozen TASK-0010 selective-routing and matched-random outputs using the validated Qwen streaming 500-label artifact while keeping Jev pinned/rolling separate; then update the final research artifacts and checkpoint the resulting metrics. Do not begin TASK-0002.

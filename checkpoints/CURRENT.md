@@ -323,3 +323,19 @@ No new provider evaluation has started. Next atomic action: commit this plan, th
 The plan is committed; the new runner/validator/tests are now implemented without provider calls. Targeted Ruff passes, targeted tests are `3 passed in 0.54s`, repository contract is `OK`, and diff check is clean. The runner uses the frozen 500-record final prefix and typed System-One v0.1.0, writes separate Grok/Luna/Sol outputs, and preserves unresolved failures. Qwen and local-weight arms remain deferred.
 
 Next atomic action: commit the implementation, run the full offline gate, then perform a bounded subscription smoke before the 500-record arms.
+
+### 2026-09-20 — provider-path diagnosis and OpenCode run stopped
+
+EXP-010 was stopped before any final arm file was written after direct path checks showed the configured OpenCode route was not a subscription entitlement. `opencode --version` was `1.18.31`; the catalog exposed `opencode/grok-4.6`, `opencode-go/grok-4.6`, and `litellm/grok-4.6`. The explicit Go probe returned HTTP 403 requiring an active OpenCode Go subscription; the regular OpenCode Grok probe returned HTTP 402 insufficient account funds at `https://opencode.ai/zen/v1/responses`; LiteLLM returned a connection failure at `http://localhost:4000/v1/chat/completions`; no Grok CLI was installed. The running EXP-010 process was terminated before `predictions/grok.jsonl` existed. No credentials or raw prompts were printed.
+
+Decision: preserve EXP-010’s plan and smoke/canary as separate route evidence, but do not claim its final evaluation. Use a new experiment ID for the available OpenRouter path.
+
+### 2026-09-20 — EXP-20260920-011 OpenRouter provider-blocked result
+
+Durable plan `experiments/EXP-20260920-011-openrouter-multi-subscription-bakeoff/PLAN.md` was committed before evaluation at `5e7df93`. The runner and offline streaming test are at `1d53b29`; the validator and 1-record smoke are at `d6d4ebb`; final normalized outputs are at `5277827`. OpenRouter model census returned HTTP 200 for `x-ai/grok-4.6`, `openai/gpt-5.6-luna`, and `openai/gpt-5.6-sol`. The smoke returned `1 ok` for each arm. The deterministic 500-record command with four workers returned Grok `368 ok/132 HTTP 402`, Luna `500 HTTP 402`, and Sol `500 HTTP 402`; the 402 errors identify account balance exhaustion. No fallback labels or credentials were written.
+
+Local verification: repository contract `OK`, Ruff clean, `80 passed in 31.55s`, and research-artifact validation checksums `ok`, citation parsed, paper present, PROV-O parsed, RO-Crate `ok`, SHACL conforms. CI run `35546251591` passed for the preceding pushed head. The current head is `5277827` and must be pushed with this checkpoint.
+
+Decision: retain the OpenRouter outputs as `completed_with_provider_statuses`, keep OpenCode Zen/Go and OpenRouter results separate, and do not retry the exhausted account. The Qwen streaming merged artifact is independently complete at `500 ok` under `EXP-20260920-009-selective-escalation/qwen-streaming-final-merged-20260920-010`.
+
+Next atomic action: use the validated Qwen 500-label artifact to regenerate TASK-0010 selective-routing, matched-random, and differential results, then regenerate/check research artifacts and record exact metrics. Do not begin TASK-0002.
