@@ -1,6 +1,6 @@
 # TASK-0010 — Selective Escalation, System-One Differential, and Reproducible Research Release
 
-- Status: active
+- Status: complete
 - Owner: Luna/local agent
 - Priority: P0
 - GitHub issue: #25
@@ -683,3 +683,24 @@ Exact environment: Windows PowerShell, worktree `D:\claude\eval-lab-TASK-0010`, 
 The regenerated EXP-012 result retains fingerprint `18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5`, policy count `19`, pinned/rolling/Qwen `500/500 ok`, and Jev/Qwen differential `500` comparable with `486` agreements. Files changed are the EXP-012 derived results/report/routing/checksum files and generated paper/figure/table/limitations/reproducibility files. Frozen benchmark records and EXP-009 provider inputs remain unchanged. No credentials or `.env` files were read or committed.
 
 Decision: local TASK-0010 acceptance evidence is green and the derived release is ready for its artifact commit. The task remains active until that commit is pushed and CI for the new head is inspected. Next atomic action: commit the regenerated EXP-012 and paper artifacts, push `task/TASK-0010-selective-escalation`, inspect the CI matrix, and then restore TASK-0010 to complete if CI remains green. Do not begin TASK-0002.
+
+### 2026-09-20 — TASK-0010 final acceptance
+
+Status: `complete`. The audited source and derived release are pushed on `task/TASK-0010-selective-escalation` at `c93c445eff384f72c93979c52107c5453e89fcc9`. The commits are `833e937` for policy metrics/paper generation, `6e8df8e` for LF-stable replay outputs, `ac220cc` for report-ending stability, and `c93c445` for the regenerated EXP-012 research release and checkpoint. Draft PR #26 is updated by the branch push.
+
+Exact environment: Windows PowerShell, worktree `D:\claude\eval-lab-TASK-0010`, branch `task/TASK-0010-selective-escalation`, Python `3.12.10` from `D:\claude\eval-lab\.venv`, Git `2.51.2.windows.1`, Grok Build CLI `1.0.40 (eb1a2256660d)` at `C:\Users\pujan\.grok\bin\grok.exe` through the authenticated xAI subscription route. The corrective audit used Grok Build for inspection/local edits only; it made no OpenRouter/OpenCode provider call and no credential or `.env` file was read or committed.
+
+Final local commands and results:
+
+- `D:\claude\eval-lab\.venv\Scripts\python.exe scripts/check_repo_contract.py` -> `Repository contract OK`.
+- `D:\claude\eval-lab\.venv\Scripts\ruff.exe check .` -> `All checks passed!`.
+- `$env:PYTHONPATH=\"$PWD\\src\"; D:\claude\eval-lab\.venv\Scripts\python.exe -m pytest -q` -> `87 passed in 4.30s`.
+- `$env:PYTHONPATH=\"$PWD\\src\"; D:\claude\eval-lab\.venv\Scripts\python.exe scripts/validate_research_artifacts.py --benchmark benchmark/eval-lab-select-v0.1.0` -> checksums `ok`, citation `parsed`, paper `present`, PROV-O `parsed`, RO-Crate `ok`, SHACL `conforms`.
+- `git diff --check` -> clean before push.
+- GitHub Actions CI run `35559286318` (`https://github.com/Pukujan/Eval-lab/actions/runs/35559286318`) -> success on Python `3.11` and `3.12`; install, repository contract, Ruff, and unit tests all passed. Only non-failing platform deprecation annotations were emitted.
+
+Final frozen evidence: benchmark `EvalLab-Select v0.1.0`, fingerprint `18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5`, ARC revision `210d026faf9955653af8916fad021475a3f00453`, canonicalization `eval-lab-select-single-v1`, confidence `max(calibrated class probability)`, targets `0.01/0.02/0.05/0.10`, typed System-One `eval-lab-system-one` v0.1.0, and frozen primary student TASK-0009 TF-IDF plus logistic-regression arm D. EXP-012 has `2,863` threshold-selection records, `2,356` final-evaluation records, a deterministic `500`-record provider prefix, `19` routing policies, pinned Jev `500/500 ok`, rolling Jev `500/500 ok` as a separate canary, Qwen `500/500 ok`, and Jev/Qwen differential `500` comparable with `486` agreements. Low-error operating points are labeled descriptive/underpowered when Wilson support is insufficient.
+
+Files delivered include the provider-independent routing core and tests, selective results and matched random controls, Jev/System-One differential, benchmark source manifest/splits/checksums, RO-Crate 1.3 metadata, PROV-O, SHACL shapes, valid CITATION.cff, machine-generated paper tables/figures, completed `paper/main.tex`, reproducibility appendix, limitations/threats-to-validity, and exact reproduction commands. No benchmark records, frozen EXP-009 provider inputs, credentials, or `.env` files were changed or committed.
+
+Decision: TASK-0010 acceptance criteria are satisfied. Keep pinned and rolling Jev separate, keep Qwen as the secondary provider arm, keep Grok Build as an audit/continuity tool rather than replacing the primary student, and leave TASK-0002 unopened. Next atomic action: normal review/triage of PR #26; no new implementation task is authorized by this checkpoint.
