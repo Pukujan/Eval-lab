@@ -3,13 +3,13 @@
 ## Program state
 
 TASK-0001 local bootstrap is complete.
-TASK-0002 through TASK-0009 implementation is merged; TASK-0009 merged in PR #24.
+TASK-0002 through TASK-0009 implementation is merged; TASK-0009 merged in PR #24. TASK-0010 acceptance is complete in EXP-20260920-012; TASK-0002 has not been started.
 
 The program is extended with TASK-0007 through TASK-0009 to fully use the user's existing model subscriptions/resources after the measurement foundation is complete.
 
 ## Main objective
 
-TASK-0009 is complete; TASK-0010 selective escalation/research release is active.
+TASK-0009 and TASK-0010 selective escalation/research release are complete; the next task remains unopened pending normal review/triage.
 
 ## Model-access decisions
 
@@ -339,3 +339,15 @@ Local verification: repository contract `OK`, Ruff clean, `80 passed in 31.55s`,
 Decision: retain the OpenRouter outputs as `completed_with_provider_statuses`, keep OpenCode Zen/Go and OpenRouter results separate, and do not retry the exhausted account. The Qwen streaming merged artifact is independently complete at `500 ok` under `EXP-20260920-009-selective-escalation/qwen-streaming-final-merged-20260920-010`.
 
 Next atomic action: use the validated Qwen 500-label artifact to regenerate TASK-0010 selective-routing, matched-random, and differential results, then regenerate/check research artifacts and record exact metrics. Do not begin TASK-0002.
+
+### 2026-09-20 — TASK-0010 acceptance complete
+
+EXP-20260920-012 is the completed selective-routing release. Environment: `D:/claude/eval-lab-TASK-0010`, branch `task/TASK-0010-selective-escalation`, Windows PowerShell, Python 3.12.10 from `D:/claude/eval-lab/.venv`, with `PYTHONPATH=$PWD/src`; the dedicated worktree has no `.venv`. The equivalent shared-environment contract and Ruff checks passed, and the source-layout pytest command passed `80 tests`.
+
+The exact replay command, generation command, checksum counts, artifact validator output, and file-level decisions are recorded in the TASK-0010 checkpoint log. Frozen fingerprint remains `18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5`, with `2,863` threshold-selection records and `2,356` final-evaluation records. The deterministic provider prefix is `500` records. Pinned `typesafe/jev-1.13`, rolling `~typesafe/jev-latest`, and YOLO-Auto `qwen3.8-flash` each have `500/500 ok`; pinned and rolling are separate. The Jev/Qwen differential is `500` comparable with `486` agreements, and the smoke differential is `1/1`.
+
+EXP-012 contains `17` routing policies, matched random controls, Wilson intervals, provider call/latency/usage summaries, benchmark source manifest/splits/checksums, RO-Crate 1.3, PROV-O, SHACL, valid CFF, generated paper tables/figure, completed `paper/main.tex`, reproducibility commands, and limitations. Final local validation: repository contract `OK`; Ruff clean; `80 passed`; research-artifact validation checksums `ok`, citation `parsed`, paper `present`, PROV-O `parsed`, RO-Crate `ok`, SHACL `conforms`.
+
+Decision: mark TASK-0010 complete. OpenRouter EXP-011 remains separate provider-status evidence with HTTP 402 account-funds failures; no credentials or raw responses were committed. Do not begin TASK-0002.
+
+Next atomic action: commit and push the final checkpoint, then inspect CI for the pushed head.

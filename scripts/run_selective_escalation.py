@@ -6,6 +6,7 @@ import argparse
 import json
 import os
 import platform
+import statistics
 import subprocess
 from collections import Counter
 from pathlib import Path
@@ -145,6 +146,37 @@ def _summary(
     records: list[JudgeRecord], rows: list[dict[str, Any]], domains: dict[str, str]
 ) -> dict[str, Any]:
     return evaluate_routing(records, rows, domain_by_record_id=domains)
+
+
+def _provider_usage(predictions: list[JudgePrediction]) -> dict[str, Any]:
+    latencies = [prediction.latency_ms for prediction in predictions if prediction.latency_ms is not None]
+    statuses = Counter(prediction.execution_status.value for prediction in predictions)
+    input_tokens = 0.0
+    output_tokens = 0.0
+    cost = 0.0
+    usage_calls = 0
+    for prediction in predictions:
+        usage = prediction.provider_metadata.get("usage")
+        if not isinstance(usage, dict):
+            continue
+        usage_calls += 1
+        input_tokens += float(usage.get("input_tokens", 0.0) or 0.0)
+        output_tokens += float(usage.get("output_tokens", 0.0) or 0.0)
+        cost += float(usage.get("cost", 0.0) or 0.0)
+    return {
+        "calls": len(predictions),
+        "status_counts": dict(statuses),
+        "latency_ms": {
+            "count": len(latencies),
+            "mean": statistics.fmean(latencies) if latencies else None,
+            "median": statistics.median(latencies) if latencies else None,
+            "max": max(latencies) if latencies else None,
+        },
+        "usage_available_calls": usage_calls,
+        "input_tokens": input_tokens if usage_calls else None,
+        "output_tokens": output_tokens if usage_calls else None,
+        "cost": cost if usage_calls else None,
+    }
 
 
 def run(
@@ -366,16 +398,22 @@ def run(
             "openrouter_rolling": {"model": OPENROUTER_ROLLING_MODEL, "status_counts": dict(Counter(item.execution_status.value for item in rolling))},
             "yolo_qwen_flash": {"model": "qwen3.8-flash", "status_counts": dict(Counter(item.execution_status.value for item in qwen))},
         },
+        "provider_usage": {
+            OPENROUTER_PINNED_MODEL: _provider_usage(pinned),
+            OPENROUTER_ROLLING_MODEL: _provider_usage(rolling),
+            "qwen3.8-flash": _provider_usage(qwen),
+        },
         "policies": policy_results,
         "system_one_differential": {"comparable_count": len(differential), "agreement_count": sum(item["agree"] for item in differential), "rows": differential},
         "unresolved_policy_rule": "provider failures remain unresolved and never fall back to a local label",
     }
     (output / "results.json").write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     (output / "report.md").write_text(
-        "# EXP-20260920-009 — Selective escalation\n\n"
+        f"# {experiment_id} — Selective escalation\n\n"
         f"Benchmark fingerprint: `{payload['benchmark_fingerprint']}`\n\n"
-        f"Threshold records: {len(threshold_records)}; final records: {len(final_records)}.\n\n"
-        "Provider statuses and unresolved calls are retained in `results.json` and the normalized provider JSONL files.\n",
+        f"Threshold-selection records: {len(threshold_records)}; final-evaluation records: {len(final_records)}; provider prefix: {len(provider_records)}.\n\n"
+        "Provider call counts, statuses, latency summaries, token usage, and reported costs are recorded in `results.json` under `provider_usage`; normalized per-record evidence remains in the provider JSONL files.\n\n"
+        "Provider failures remain unresolved and never fall back to a local label. Pinned Jev and rolling Jev are separate arms.\n",
         encoding="utf-8",
     )
     return payload

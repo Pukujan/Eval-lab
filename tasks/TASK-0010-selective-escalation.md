@@ -1,6 +1,6 @@
 # TASK-0010 — Selective Escalation, System-One Differential, and Reproducible Research Release
 
-- Status: active
+- Status: complete
 - Owner: Luna/local agent
 - Priority: P0
 - GitHub issue: #25
@@ -355,29 +355,29 @@ Jev-Ultrafast browser action routing is out of scope for TASK-0010 implementatio
 
 ## Acceptance criteria
 
-- [ ] frozen TASK-0009 student reproduced
-- [ ] larger routing pool created without source leakage
-- [ ] final labels isolated from threshold/provider/spec selection
-- [ ] P0-P7 policies/arms run or external infeasibility explicitly recorded
-- [ ] pinned Jev model remains `typesafe/jev-1.13`
-- [ ] rolling Jev alias remains a separate canary
-- [ ] provider failures remain explicit/unresolved
-- [ ] metamorphic suite passes
-- [ ] differential suite passes
-- [ ] confidence bounds accompany low-error coverage
-- [ ] cost/latency/call usage reported
-- [ ] experiment preregistration frozen before final evaluation
-- [ ] EvalLab-Select v0.1.0 benchmark release reproducibly rebuilds
-- [ ] RO-Crate metadata validates structurally
-- [ ] PROV-O provenance graph covers benchmark, model, calibration, thresholds, predictions, results, and paper
-- [ ] SHACL shapes validate required research graph invariants
-- [ ] CITATION.cff is present and valid
-- [ ] paper sources reproduce all reported result tables from committed artifacts
-- [ ] paper contains reproducibility and limitations sections
-- [ ] PCM compatibility/mapping documented
-- [ ] repository contract passes
-- [ ] Ruff passes
-- [ ] full pytest suite passes
+- [x] frozen TASK-0009 student reproduced
+- [x] larger routing pool created without source leakage
+- [x] final labels isolated from threshold/provider/spec selection
+- [x] P0-P7 policies/arms run or external infeasibility explicitly recorded
+- [x] pinned Jev model remains `typesafe/jev-1.13`
+- [x] rolling Jev alias remains a separate canary
+- [x] provider failures remain explicit/unresolved
+- [x] metamorphic suite passes
+- [x] differential suite passes
+- [x] confidence bounds accompany low-error coverage
+- [x] cost/latency/call usage reported
+- [x] experiment preregistration frozen before final evaluation
+- [x] EvalLab-Select v0.1.0 benchmark release reproducibly rebuilds
+- [x] RO-Crate metadata validates structurally
+- [x] PROV-O provenance graph covers benchmark, model, calibration, thresholds, predictions, results, and paper
+- [x] SHACL shapes validate required research graph invariants
+- [x] CITATION.cff is present and valid
+- [x] paper sources reproduce all reported result tables from committed artifacts
+- [x] paper contains reproducibility and limitations sections
+- [x] PCM compatibility/mapping documented
+- [x] repository contract passes
+- [x] Ruff passes
+- [x] full pytest suite passes
 
 ## Validation
 
@@ -599,3 +599,27 @@ Files changed: `.gitattributes`; EXP-010 plan/runner/validator/smoke/probe/canar
 Blocker: OpenCode Go has no active subscription, OpenCode Zen has insufficient funds, LiteLLM is unavailable, and the OpenRouter account exhausted funds after 368 Grok labels. The Qwen streaming merged artifact is complete at `500 ok`, but selective-routing outputs have not yet been regenerated from that streaming Qwen arm.
 
 Next atomic action: regenerate the frozen TASK-0010 selective-routing and matched-random outputs using the validated Qwen streaming 500-label artifact while keeping Jev pinned/rolling separate; then update the final research artifacts and checkpoint the resulting metrics. Do not begin TASK-0002.
+
+### 2026-09-20 — EXP-20260920-012 completed and acceptance closed
+
+Status: `complete`. The frozen TASK-0010 selective-routing release now uses EXP-20260920-012, an append-only replay of the frozen benchmark and student with committed provider artifacts. The replay was run in `D:/claude/eval-lab-TASK-0010` on branch `task/TASK-0010-selective-escalation` with Windows PowerShell, Python 3.12.10 from `D:/claude/eval-lab/.venv`, and `PYTHONPATH=$PWD/src`. The dedicated worktree has no local `.venv`; the plain `.venv\\Scripts\\...` commands therefore failed to launch there, while the shared-environment equivalents below passed.
+
+Exact commands and results:
+
+- `D:\\claude\\eval-lab\\.venv\\Scripts\\python.exe scripts/check_repo_contract.py` -> `Repository contract OK`.
+- `D:\\claude\\eval-lab\\.venv\\Scripts\\ruff.exe check .` -> `All checks passed!`.
+- `$env:PYTHONPATH = "$PWD\\src"; D:\\claude\\eval-lab\\.venv\\Scripts\\python.exe -m pytest -q` -> `80 passed`.
+- `$env:PYTHONPATH = "$PWD\\src"; D:\\claude\\eval-lab\\.venv\\Scripts\\python.exe scripts/validate_research_artifacts.py --benchmark benchmark/eval-lab-select-v0.1.0` -> checksums `ok`, citation `parsed`, paper `present`, PROV-O `parsed`, RO-Crate `ok`, SHACL `conforms`.
+- `$env:PYTHONPATH = "$PWD\\src"; D:\\claude\\eval-lab\\.venv\\Scripts\\python.exe scripts/run_selective_escalation.py --benchmark benchmark/eval-lab-select-v0.1.0 --output experiments/EXP-20260920-012-selective-escalation-qwen-streaming --skip-providers --provider-limit 500 --pinned-predictions experiments/EXP-20260920-009-selective-escalation/provider-pinned.jsonl --rolling-predictions experiments/EXP-20260920-009-selective-escalation/provider-rolling.jsonl --qwen-predictions experiments/EXP-20260920-009-selective-escalation/qwen-streaming-final-merged-20260920-010/predictions.jsonl --experiment-id EXP-20260920-012-selective-escalation-qwen-streaming` -> threshold `2863`, final `2356`, provider `500`; pinned `500 ok`, rolling `500 ok`, Qwen `500 ok`.
+- `$env:PYTHONPATH = "$PWD\\src"; D:\\claude\\eval-lab\\.venv\\Scripts\\python.exe scripts/generate_research_artifacts.py --experiment experiments/EXP-20260920-012-selective-escalation-qwen-streaming --smoke-experiment experiments/EXP-20260920-009-selective-escalation` -> generated the paper, tables, figure, RO-Crate, PROV-O, SHACL, and reproducibility appendix.
+- The benchmark and EXP-012 checksum manifests were regenerated with SHA-256 over every committed file except the manifest itself: `10` benchmark entries and `11` experiment entries.
+
+Frozen evidence: EvalLab-Select v0.1.0 fingerprint `18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5`; ARC source revision `210d026faf9955653af8916fad021475a3f00453`; canonicalization `eval-lab-select-single-v1`; confidence is maximum calibrated class probability; targets are `0.01`, `0.02`, `0.05`, and `0.10`; typed System-One is `eval-lab-system-one` v0.1.0; primary student is frozen TASK-0009 TF-IDF plus logistic-regression arm D. The deterministic provider prefix is the first `500` final-evaluation records and is disjoint from threshold selection.
+
+Provider/model results: pinned OpenRouter `typesafe/jev-1.13` is `500/500 ok`, rolling OpenRouter `~typesafe/jev-latest` is a separate `500/500 ok` canary, and YOLO-Auto `qwen3.8-flash` is `500/500 ok` from one-record streaming requests. The final Jev/Qwen System-One differential has `500` comparable records and `486` agreements; the separate smoke differential is `1/1`. EXP-012 reports `500` calls per arm, per-arm status counts, latency summaries, and usage where supplied: pinned Jev cost `$0.008354262` and mean latency `225.363 ms`; rolling Jev cost `$0.008354262` and mean latency `238.794 ms`; Qwen mean latency `632.822 ms` with provider usage unavailable. The routing result contains `17` policies, including matched random controls, Wilson 95% intervals, and unresolved-provider handling.
+
+Files changed in this checkpoint: `scripts/run_selective_escalation.py` now writes provider call/latency/usage summaries and a correctly identified report; `scripts/generate_research_artifacts.py` writes exact EXP-012 reproduction commands; EXP-012 results/report/differential/routing/threshold/checksum files; benchmark checksum and generated metadata files; `paper/reproducibility.md`; this task and `checkpoints/CURRENT.md`. No credential, raw response, or `.env` file was committed.
+
+Decision: TASK-0010 acceptance criteria are satisfied and the task is marked complete. OpenRouter EXP-011 remains a separate provider-status experiment whose final arms were blocked by HTTP 402 account-funds errors after a 1-record smoke; OpenCode Go/Zen and LiteLLM route checks remain separate diagnostics. Those routes do not alter the completed primary TASK-0010 experiment, and TASK-0002 remains out of scope.
+
+Next atomic action: commit and push this final checkpoint, inspect the CI run for the pushed head, and leave TASK-0002 unopened.

@@ -20,7 +20,7 @@
     "threshold_selection": 2863
   },
   "environment": {
-    "git_commit": "c0bb452b9e5ff3392be772cad2cc18983e27ef16",
+    "git_commit": "4bedddbcbe99ba6b22e6ba79bf6185500d24ff03",
     "platform": "Windows-11-10.0.26200-SP0",
     "python": "3.12.10"
   },
@@ -706,6 +706,56 @@
       "status_counts": {
         "ok": 1
       }
+    }
+  },
+  "provider_usage": {
+    "qwen3.8-flash": {
+      "calls": 500,
+      "cost": null,
+      "input_tokens": null,
+      "latency_ms": {
+        "count": 500,
+        "max": 1695.5714000214357,
+        "mean": 632.8224233991932,
+        "median": 567.1407500049099
+      },
+      "output_tokens": null,
+      "status_counts": {
+        "ok": 500
+      },
+      "usage_available_calls": 0
+    },
+    "typesafe/jev-1.13": {
+      "calls": 500,
+      "cost": 0.008354262000000001,
+      "input_tokens": 198911.0,
+      "latency_ms": {
+        "count": 500,
+        "max": 717.7309999824502,
+        "mean": 225.36297459888738,
+        "median": 216.49500000057742
+      },
+      "output_tokens": 16000.0,
+      "status_counts": {
+        "ok": 500
+      },
+      "usage_available_calls": 500
+    },
+    "~typesafe/jev-latest": {
+      "calls": 500,
+      "cost": 0.008354262000000001,
+      "input_tokens": 198911.0,
+      "latency_ms": {
+        "count": 500,
+        "max": 1386.3002999860328,
+        "mean": 238.7941055992269,
+        "median": 223.58420000819024
+      },
+      "output_tokens": 16000.0,
+      "status_counts": {
+        "ok": 500
+      },
+      "usage_available_calls": 500
     }
   },
   "status": "completed",

@@ -145,7 +145,12 @@ ex:BenchmarkShape a sh:NodeShape ;
 '''
 
 
-def _paper(results: dict[str, Any], differential: dict[str, Any], experiment: Path) -> None:
+def _paper(
+    results: dict[str, Any],
+    differential: dict[str, Any],
+    experiment: Path,
+    smoke_experiment: Path,
+) -> None:
     PAPER.mkdir(parents=True, exist_ok=True)
     generated = PAPER / "generated"
     generated.mkdir(exist_ok=True)
@@ -185,8 +190,8 @@ def _paper(results: dict[str, Any], differential: dict[str, Any], experiment: Pa
         "```powershell\n"
         "$env:PYTHONPATH = \"$PWD\\src\"\n"
         ".venv\\Scripts\\python.exe scripts/build_selective_benchmark.py\n"
-        f".venv\\Scripts\\python.exe scripts/run_selective_escalation.py --skip-providers --output {experiment.as_posix()}\n"
-        ".venv\\Scripts\\python.exe scripts/generate_research_artifacts.py\n"
+        f".venv\\Scripts\\python.exe scripts/run_selective_escalation.py --skip-providers --provider-limit 500 --output {experiment.as_posix()} --pinned-predictions experiments/EXP-20260920-009-selective-escalation/provider-pinned.jsonl --rolling-predictions experiments/EXP-20260920-009-selective-escalation/provider-rolling.jsonl --qwen-predictions experiments/EXP-20260920-009-selective-escalation/qwen-streaming-final-merged-20260920-010/predictions.jsonl --experiment-id {results['experiment_id']}\n"
+        f".venv\\Scripts\\python.exe scripts/generate_research_artifacts.py --experiment {experiment.as_posix()} --smoke-experiment {smoke_experiment.as_posix()}\n"
         ".venv\\Scripts\\python.exe scripts/validate_research_artifacts.py --benchmark benchmark/eval-lab-select-v0.1.0\n"
         "```\n\n"
         "Provider smoke calls are isolated with `scripts/smoke_task0010_providers.py`; pinned and rolling Jev outputs are never pooled.\n",
@@ -271,7 +276,7 @@ def generate() -> None:
             "version": "0.1.0",
         },
     )
-    _paper(results, differential, EXPERIMENT)
+    _paper(results, differential, EXPERIMENT, SMOKE_EXPERIMENT)
 
 
 if __name__ == "__main__":
