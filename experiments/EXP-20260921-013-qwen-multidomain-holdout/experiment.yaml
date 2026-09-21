@@ -1,0 +1,45 @@
+id: EXP-20260921-013-qwen-multidomain-holdout
+status: planned
+hypothesis: Qwen3.8 Flash will outperform the frozen lightweight student on objective tasks, with dataset-dependent reliability and latency.
+created_at: 2026-09-21
+code_commit: 4b4356ac36f71ffd69e44f4b44526880addc675f
+seed: 20260921
+context_limit: 4096
+dataset:
+  name: multidomain objective holdout pool
+  version: preregistered; source revisions recorded in source-manifest.json
+  fingerprint: pending freeze
+  split_policy: source_problem_id deterministic family split; public development versus blind holdout
+judge:
+  provider: yolo-auto
+  model: qwen3.8-flash
+  adapter_version: eval-lab-system-one-v0.1.0-streaming
+  prompt_version: eval-lab-system-one-v0.1.0
+rubric:
+  version: objective-answer-key-or-verifier-v1
+gold:
+  provenance_policy: answer_key_or_deterministic_verifier_only
+calibration:
+  method: unavailable unless real provider probabilities/logprobs or a separately declared local forced-choice arm exists
+  split: calibration only; blind holdout excluded
+metrics:
+  - accuracy
+  - balanced_accuracy
+  - macro_f1
+  - unresolved_rate
+  - latency_p95
+  - position_swap_consistency
+  - rubric_paraphrase_consistency
+  - brier_when_probabilities_available
+  - ece_when_probabilities_available
+artifacts:
+  - PLAN.md
+  - experiment.yaml
+  - source-manifest.json
+  - splits.json
+  - holdout-manifest.json
+  - checksums.sha256
+  - predictions.jsonl
+  - results.json
+  - report.md
+notes: No blind holdout labels have been evaluated; no provider call is authorized before preregistration commit.

@@ -2,7 +2,7 @@
 
 ## Authoritative status
 
-TASK-0001 through TASK-0010 are complete. EXP-20260920-012-selective-escalation-qwen-streaming is the TASK-0010 completion replay, and EXP-20260920-009-selective-escalation remains the planned baseline. The next program task remains unopened pending review/triage.
+TASK-0001 through TASK-0010 are complete in the current release line. TASK-0011 is active in the follow-on Qwen multidomain holdout worktree, based on the accepted TASK-0010 head while PR #26 remains open for merge. The next program task remains unopened.
 
 ## Program state
 
@@ -13,7 +13,7 @@ The program is extended with TASK-0007 through TASK-0009 to fully use the user's
 
 ## Main objective
 
-TASK-0009 and TASK-0010 selective escalation/research release are complete; the next program task remains unopened pending normal review/triage.
+TASK-0009 and TASK-0010 selective escalation/research release are complete. TASK-0011 now evaluates Qwen across additional objective datasets and blind holdouts; no later task is open.
 
 ## Model-access decisions
 
@@ -29,7 +29,7 @@ TASK-0009 and TASK-0010 selective escalation/research release are complete; the 
 
 ## Next task
 
-No new program task is open. TASK-0010 is complete at EXP-20260920-012; EXP-009 remains the planned baseline.
+TASK-0011 is the active follow-on task. Its next atomic action is to commit the preregistration and run a one-record Qwen smoke; do not evaluate the blind holdout before the manifest freeze.
 
 ## Queued foundation
 
@@ -430,3 +430,15 @@ Final frozen evidence: benchmark `EvalLab-Select v0.1.0`, fingerprint `18a440b4f
 Files delivered include the provider-independent routing core and tests, selective results and matched random controls, Jev/System-One differential, benchmark source manifest/splits/checksums, RO-Crate 1.3 metadata, PROV-O, SHACL shapes, valid CITATION.cff, machine-generated paper tables/figures, completed `paper/main.tex`, reproducibility appendix, limitations/threats-to-validity, and exact reproduction commands. No benchmark records, frozen EXP-009 provider inputs, credentials, or `.env` files were changed or committed.
 
 Decision: TASK-0010 acceptance criteria are satisfied. Keep pinned and rolling Jev separate, keep Qwen as the secondary provider arm, keep Grok Build as an audit/continuity tool rather than replacing the primary student, and leave TASK-0002 unopened. Next atomic action: normal review/triage of PR #26; no new implementation task is authorized by this checkpoint.
+
+### 2026-09-21 — TASK-0011 preregistration
+
+TASK-0010 is complete but PR #26 remains an open draft. A follow-on worktree `D:/claude/eval-lab-TASK-0011-Qwen` was created from TASK-0010 head `4b4356ac36f71ffd69e44f4b44526880addc675f` on branch `task/TASK-0011-multidomain-qwen-holdout`. The new experiment is `EXP-20260921-013-qwen-multidomain-holdout`.
+
+Scope is frozen before new Qwen labels: YOLO-Auto `qwen3.8-flash` streaming over ARC-Challenge, ARC-Easy, GSM8K, selected MIT-licensed MMLU subjects, and the existing four-domain deterministic synthetic fixtures. Original public test partitions are blind holdouts; source-family variants cannot cross splits; objective gold remains answer-key or deterministic-verifier provenance. Qwen confidence is not treated as calibrated probability unless real probabilities/logprobs are returned.
+
+Exact metadata checks: Hugging Face API resolved GSM8K revision `740312add88f781978c0658806c59bc2815b9866` with MIT metadata, MMLU revision `c30699e8356da336a370243923dbaf21066bb9fe` with MIT metadata, and ARC revision `210d026faf9955653af8916fad021475a3f00453` with CC BY-SA 4.0 metadata. No provider call or holdout label evaluation has occurred.
+
+Files added: `tasks/TASK-0011-multidomain-qwen-holdout.md`, `experiments/EXP-20260921-013-qwen-multidomain-holdout/PLAN.md`, `experiment.yaml`, and `README.md`; this checkpoint was updated.
+
+Next atomic action: commit the preregistration and checkpoint, then run a one-record Qwen3.8 Flash smoke with the existing typed streaming adapter. Do not evaluate the blind holdout until source, split, and holdout manifests are committed.
