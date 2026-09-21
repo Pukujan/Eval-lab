@@ -145,7 +145,13 @@ def _run_one(record: JudgeRecord, *, client: httpx.Client, url: str, api_key: st
             timeout=timeout,
         ) as response:
             if response.status_code == 429:
-                return _error(record, status=ExecutionStatus.RATE_LIMITED, started=started, kind="rate_limited")
+                return _error(
+                    record,
+                    status=ExecutionStatus.RATE_LIMITED,
+                    started=started,
+                    kind="rate_limited",
+                    retry_after=response.headers.get("Retry-After"),
+                )
             if response.status_code >= 400:
                 return _error(
                     record,
