@@ -14,6 +14,8 @@ from typing import Any
 
 import httpx
 
+from eval_lab.metrics.classification import classification_metrics
+from eval_lab.metrics.latency import latency_summary
 from eval_lab.schema import ExecutionStatus, JudgePrediction, JudgeRecord
 
 try:
@@ -23,6 +25,17 @@ except ModuleNotFoundError:
 
 MODEL = "qwen3.8-flash"
 EXPERIMENT_ID = "EXP-20260921-013-qwen-multidomain-holdout"
+
+
+def _binomial_interval(successes: int, trials: int) -> dict[str, float] | None:
+    if trials <= 0:
+        return None
+    z = 1.959963984540054
+    estimate = successes / trials
+    denominator = 1 + z * z / trials
+    center = (estimate + z * z / (2 * trials)) / denominator
+    margin = z * ((estimate * (1 - estimate) / trials + z * z / (4 * trials * trials)) ** 0.5) / denominator
+    return {"lower": max(0.0, center - margin), "upper": min(1.0, center + margin)}
 
 
 def _load_pool(
@@ -68,29 +81,75 @@ def _prediction_row(
 
 
 def _metrics(rows: list[dict[str, Any]], predictions: list[JudgePrediction]) -> dict[str, Any]:
-    by_dataset: dict[str, list[tuple[str, str | None, ExecutionStatus]]] = defaultdict(list)
+    by_dataset: dict[str, list[tuple[str, str | None, ExecutionStatus, float | None]]] = defaultdict(list)
     for row, prediction in zip(rows, predictions, strict=True):
-        by_dataset[row["dataset"]].append((row["gold_label"], prediction.label, prediction.execution_status))
+        by_dataset[row["dataset"]].append(
+            (row["gold_label"], prediction.label, prediction.execution_status, prediction.latency_ms)
+        )
     metrics: dict[str, Any] = {}
     for dataset, values in sorted(by_dataset.items()):
-        resolved = [(gold, label) for gold, label, status in values if status is ExecutionStatus.OK and label is not None]
+        resolved = [
+            (gold, label)
+            for gold, label, status, _latency in values
+            if status is ExecutionStatus.OK and label is not None
+        ]
+        classification = (
+            classification_metrics(
+                [gold for gold, _label in resolved],
+                [label for _gold, label in resolved],
+            )
+            if resolved
+            else {
+                "accuracy": None,
+                "balanced_accuracy": None,
+                "macro_f1": None,
+                "brier": None,
+                "nll": None,
+                "ece": None,
+            }
+        )
+        latencies = [latency for _gold, _label, _status, latency in values if latency is not None]
         metrics[dataset] = {
             "records": len(values),
             "resolved": len(resolved),
             "correct": sum(gold == label for gold, label in resolved),
-            "accuracy": (sum(gold == label for gold, label in resolved) / len(resolved)) if resolved else None,
-            "status_counts": dict(Counter(status.value for _, _, status in values)),
+            "unresolved_rate": (len(values) - len(resolved)) / len(values),
+            "accuracy_95_ci": _binomial_interval(
+                sum(gold == label for gold, label in resolved), len(resolved)
+            ),
+            **classification,
+            "latency": latency_summary(latencies),
+            "status_counts": dict(Counter(status.value for _, _, status, _latency in values)),
         }
     resolved = [
         (row["gold_label"], prediction.label)
         for row, prediction in zip(rows, predictions, strict=True)
         if prediction.execution_status is ExecutionStatus.OK and prediction.label is not None
     ]
+    classification = (
+        classification_metrics(
+            [gold for gold, _label in resolved],
+            [label for _gold, label in resolved],
+        )
+        if resolved
+        else {
+            "accuracy": None,
+            "balanced_accuracy": None,
+            "macro_f1": None,
+            "brier": None,
+            "nll": None,
+            "ece": None,
+        }
+    )
+    latencies = [prediction.latency_ms for prediction in predictions if prediction.latency_ms is not None]
     return {
         "records": len(rows),
         "resolved": len(resolved),
         "correct": sum(gold == label for gold, label in resolved),
-        "accuracy": (sum(gold == label for gold, label in resolved) / len(resolved)) if resolved else None,
+        "unresolved_rate": (len(rows) - len(resolved)) / len(rows),
+        "accuracy_95_ci": _binomial_interval(sum(gold == label for gold, label in resolved), len(resolved)),
+        **classification,
+        "latency": latency_summary(latencies),
         "status_counts": dict(Counter(prediction.execution_status.value for prediction in predictions)),
         "by_dataset": metrics,
     }
@@ -140,11 +199,9 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "granularity": "one_record_per_request",
         "elapsed_seconds": time.perf_counter() - started,
         "metrics": _metrics(normalized, predictions),
-        "latency_ms": {
-            "count": len([prediction for prediction in predictions if prediction.latency_ms is not None]),
-            "mean": (sum(prediction.latency_ms for prediction in predictions if prediction.latency_ms is not None) / len([prediction for prediction in predictions if prediction.latency_ms is not None])) if any(prediction.latency_ms is not None for prediction in predictions) else None,
-            "p95": sorted(prediction.latency_ms for prediction in predictions if prediction.latency_ms is not None)[max(0, int(0.95 * len([prediction for prediction in predictions if prediction.latency_ms is not None])) - 1)] if any(prediction.latency_ms is not None for prediction in predictions) else None,
-        },
+        "latency_ms": latency_summary(
+            [prediction.latency_ms for prediction in predictions if prediction.latency_ms is not None]
+        ),
         "probabilities_available": any(prediction.probabilities is not None for prediction in predictions),
         "gold_not_used_for_provider_request": True,
         "created_at_utc": datetime.now(UTC).isoformat(),
