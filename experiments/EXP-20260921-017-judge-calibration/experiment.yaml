@@ -1,5 +1,5 @@
 id: EXP-20260921-017-judge-calibration
-status: preregistered
+status: completed
 hypothesis: Local Qwen 4B forced-choice probabilities will become more reliable after temperature scaling fit only on public calibration records, improving held-out probability metrics and selective-risk behavior.
 created_at: 2026-09-21
 plan_baseline_commit: f446271c7cdb94ba19aa491de2e135705651d5fb
@@ -57,4 +57,4 @@ artifacts:
   - report.md
   - reference-comparison.json
   - checksums.sha256
-notes: EXP-015 and EXP-014 remain immutable. The 4B local arm uses bitsandbytes NF4 double quantization with float16 compute to fit the 8 GiB RTX 4060; the frozen prompts have a measured maximum of 755 input tokens, so the 2048-token cap preserves the full pool. Direct Grok Build, Luna, remote Qwen Flash, and pinned Jev are offline label-only references; no OpenCode or OpenRouter calls are permitted.
+notes: EXP-015 and EXP-014 remain immutable. The 4B local arm uses bitsandbytes NF4 double quantization with float16 compute to fit the 8 GiB RTX 4060; the frozen prompts have a measured maximum of 755 input tokens, so the 2048-token cap preserves the full pool. Direct Grok Build, Luna, remote Qwen Flash, and pinned Jev are offline label-only references; no OpenCode or OpenRouter calls are permitted in TASK-0017. The separate Jev-only EXP-018 may use OpenRouter.
