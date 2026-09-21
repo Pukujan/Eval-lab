@@ -9,3 +9,5 @@ $env:PYTHONPATH = "$PWD\src"
 ```
 
 Provider smoke calls are isolated with `scripts/smoke_task0010_providers.py`; pinned and rolling Jev outputs are never pooled.
+
+Project Continuity Modules (PCM) was inspected at `Pukujan/project-continuity-modules@3a34b4a73842c824de5359f06e04568e8ce4aaa4`. Eval Lab maps PROJECT.md to PCM PROJECT, checkpoints/CURRENT.md to CURRENT, TASK files to TASK, and checkpoint logs to CHECKPOINT. PCM currently exposes minimal and software templates; its planned research profile is not implemented, so this release treats PCM as a continuity compatibility reference and keeps RO-Crate 1.3 plus PROV-O as the scientific provenance standard.
