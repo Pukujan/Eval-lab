@@ -307,3 +307,20 @@ Grok remains `648/648` (`643 ok`, `5 provider_error`); Luna remains `532/648`
 Next atomic action: resume from the organized path with `--resume --workers 4`,
 continue the missing Luna records, then run Qwen Flash and finalize/validate the
 public artifact before any blind-holdout request.
+
+### 2026-09-21 — resumed from organized worktree
+
+Status: active. Resume was confirmed from
+`D:\claude\eval-lab\.worktrees\TASK-0015-bakeoff`; Grok’s complete checkpoint was
+skipped, Luna’s 532 existing records were reused, and the runner has continued with
+four direct streamed Codex sessions. Live Luna progress is `539/648`, all `ok`.
+
+Exact resume command: `$env:PYTHONPATH='src'; python
+scripts/run_grok_luna_qwen_bakeoff.py --partition public_selection --models
+grok,luna,qwen_flash --workers 4 --timeout 120 --env-file
+C:\Users\pujan\OneDrive\Desktop\configs\.env --output
+experiments/EXP-20260921-015-grok-luna-qwen-bakeoff/runs/public-stream-parallel-20260921
+--resume`.
+
+Next atomic action: finish the missing Luna records, run Qwen Flash, finalize and
+validate the public artifact, then checkpoint before any blind-holdout request.

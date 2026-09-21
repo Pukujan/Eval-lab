@@ -234,6 +234,17 @@ Next atomic action: resume the existing public run from the organized worktree w
 `--resume --workers 4`; do not request blind-holdout records until public validation
 passes.
 
+### 2026-09-21 — TASK-0015 resumed from organized path
+
+The resumable public run is live from
+`D:\claude\eval-lab\.worktrees\TASK-0015-bakeoff`. It skipped Grok’s completed
+`648/648` checkpoint, reused Luna’s `532` existing records, and has advanced Luna to
+`539/648` with four direct `codex-jsonl` streaming sessions. Qwen has not started;
+the blind holdout remains untouched.
+
+Next atomic action: monitor the resumed Luna checkpoint, then run and validate Qwen
+and the finalized public artifact from the same organized worktree.
+
 ## Next atomic action
 
 TASK-0010 is complete at EXP-20260920-012. Leave the next program task unopened until review/triage. Historical checkpoint entries below are retained.
