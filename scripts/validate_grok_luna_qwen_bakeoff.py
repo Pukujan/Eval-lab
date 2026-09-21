@@ -1,4 +1,4 @@
-"""Validate one normalized run from EXP-20260921-015."""
+"""Validate one normalized run from a declared experiment."""
 
 from __future__ import annotations
 
@@ -35,10 +35,10 @@ def _load_predictions(path: Path) -> list[JudgePrediction]:
     ]
 
 
-def validate(root: Path) -> dict[str, Any]:
+def validate(root: Path, *, expected_experiment_id: str = EXPERIMENT_ID) -> dict[str, Any]:
     _check_checksums(root)
     results = json.loads((root / "results.json").read_text(encoding="utf-8"))
-    if results.get("experiment_id") != EXPERIMENT_ID:
+    if results.get("experiment_id") != expected_experiment_id:
         raise ValueError("wrong experiment ID")
     record_count = int(results["record_count"])
     if record_count <= 0 or not results.get("record_ids_unique"):
@@ -77,7 +77,7 @@ def validate(root: Path) -> dict[str, Any]:
             raise ValueError(f"{arm_id} surfaced model IDs disagree with results")
         validated[arm_id] = counts
     return {
-        "experiment_id": EXPERIMENT_ID,
+        "experiment_id": expected_experiment_id,
         "run_id": results["run_id"],
         "partition": results["partition"],
         "record_count": record_count,
@@ -88,8 +88,9 @@ def validate(root: Path) -> dict[str, Any]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--experiment", type=Path, required=True)
+    parser.add_argument("--experiment-id", default=EXPERIMENT_ID)
     args = parser.parse_args()
-    print(json.dumps(validate(args.experiment), sort_keys=True))
+    print(json.dumps(validate(args.experiment, expected_experiment_id=args.experiment_id), sort_keys=True))
 
 
 if __name__ == "__main__":

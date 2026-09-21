@@ -27,13 +27,13 @@ Grok, Luna, or Sol calls are permitted.
 
 ## Acceptance criteria
 
-- [ ] Preregistration and retry-ID manifest are committed before retry labels.
-- [ ] A recovery smoke records the surfaced Qwen model ID and streaming metadata.
-- [ ] Exactly the frozen rate-limited IDs are attempted once.
-- [ ] Retry accuracy, coverage, Wilson uncertainty, latency, and status counts are
+- [x] Preregistration and retry-ID manifest are committed before retry labels.
+- [x] A recovery smoke records the surfaced Qwen model ID and streaming metadata.
+- [x] Exactly the frozen rate-limited IDs are attempted once.
+- [x] Retry accuracy, coverage, Wilson uncertainty, latency, and status counts are
   reported separately from EXP-015.
-- [ ] Original EXP-015 artifacts remain byte-identical.
-- [ ] Repository contract, Ruff, tests, diff check, and retry checksums pass.
+- [x] Original EXP-015 artifacts remain byte-identical.
+- [x] Repository contract, Ruff, tests, diff check, and retry checksums pass.
 
 ## Checkpoint log
 
@@ -88,6 +88,33 @@ Unresolved questions: how many of the 317 records the recovered request window w
 accept; any failures remain explicit.
 
 Next atomic action: commit the runner fix and smoke, then run the frozen 317-ID retry.
+
+### 2026-09-21 — Qwen retry complete
+
+Status: complete. The frozen retry set contained exactly `317` unique IDs and every
+record was attempted once through direct YOLO-Auto streaming with one worker.
+
+Final result: `317/317 ok`, coverage `1.0000`, accuracy `0.9526813880`, Wilson 95%
+interval `[0.9234052218, 0.9711175779]`, surfaced model `qwen3.8-flash`, and no
+provider failures, rate limits, or parse errors.
+
+Exact files changed: completed EXP-016 manifest, root `results.json` and `report.md`,
+retry run outputs under `runs/retry-20260921/`, the explicit experiment-ID support in
+the shared runner and validator, and this task/checkpoint log.
+
+Commands run: the 317-record direct YOLO-Auto streaming retry; explicit EXP-015 and
+EXP-016 validators; focused Ruff; and diff checks. The full repository gate remains
+the final verification step before commit.
+
+Decision: keep EXP-015 frozen as the one-pass primary comparison. Treat EXP-016 as
+separate recovery evidence; do not silently merge the recovered predictions into the
+EXP-015 Qwen score.
+
+Unresolved questions: none for TASK-0016. Any further Qwen retry requires another
+timestamped experiment ID.
+
+Next atomic action: run the full repository gate, commit TASK-0016, and leave EXP-015
+unchanged.
 
 ## Handoff
 

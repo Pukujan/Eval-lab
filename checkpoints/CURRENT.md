@@ -691,3 +691,18 @@ with SHA-256 `A89635149C2DED6015E897E17D565084D71DB6CD20F66B759E25CF6630C29C15`.
 
 No bulk retry has started. Next atomic action: commit the runner metadata fix and smoke,
 then execute the frozen 317-ID Qwen retry without touching EXP-015.
+
+### 2026-09-21 — TASK-0016 Qwen retry complete
+
+EXP-016 retried exactly the `317` EXP-015 Qwen rate-limited blind records. All `317`
+returned `ok` through direct YOLO-Auto `qwen3.8-flash` streaming with one worker.
+Resolved accuracy is `0.9526813880` with Wilson 95% interval `[0.9234052218, 0.9711175779]`.
+
+The retry is finalized under
+`experiments/EXP-20260921-016-qwen-rate-limit-retry/runs/retry-20260921/` and remains
+separate from EXP-015. The shared runner and validator now accept explicit experiment
+IDs, preserving correct metadata for both experiments. No OpenCode or OpenRouter route
+was used, and EXP-015 was not modified.
+
+Next atomic action: run the full repository gate, commit TASK-0016, and leave the
+primary EXP-015 result frozen.
