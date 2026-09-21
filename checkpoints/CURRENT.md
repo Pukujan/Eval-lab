@@ -775,3 +775,10 @@ calibration has not started.
 
 Next atomic action: review the public result and then run the blind holdout with
 the same memory-safe configuration.
+
+TASK-0017 / EXP-017 is now complete. The blind Qwen 4B run is `760/760 ok` with
+raw accuracy `0.4460526316`; public-only calibration improves blind Brier/NLL/ECE
+to `0.5160339956 / 0.7430236502 / 0.0783406392` without changing accuracy. The
+experiment-level report, reference comparison, and checksums are assembled. The
+full repository pytest run and final diff check are the last local gates before
+handoff; do not modify EXP-015, EXP-014, or EXP-018.

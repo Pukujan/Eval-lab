@@ -220,14 +220,19 @@ def _checksums(root: Path) -> None:
     (root / "checksums.sha256").write_text("\n".join(entries) + "\n", encoding="utf-8")
 
 
-def _runtime_metadata(judge: QwenJudge, config: QwenRuntimeConfig) -> dict[str, Any]:
+def _runtime_metadata(
+    judge: QwenJudge | None,
+    config: QwenRuntimeConfig,
+    existing: list[JudgePrediction] | None = None,
+) -> dict[str, Any]:
+    first_metadata = existing[0].provider_metadata if judge is None and existing else {}
     return {
         "runtime": "transformers",
         "model_id": config.model_id,
         "requested_revision": config.revision,
-        "resolved_revision": judge.runtime_revision,
-        "device": judge.device,
-        "dtype": judge.dtype,
+        "resolved_revision": judge.runtime_revision if judge is not None else first_metadata.get("resolved_revision", config.revision),
+        "device": judge.device if judge is not None else first_metadata.get("device", config.device or "cpu"),
+        "dtype": judge.dtype if judge is not None else first_metadata.get("dtype", config.dtype or "float32"),
         "quantization": config.quantization,
         "gpu_memory_fraction": config.gpu_memory_fraction,
         "context_cap": config.context_cap,
@@ -291,7 +296,6 @@ def run(args: argparse.Namespace) -> Path:
         prompt_version=PROMPT_VERSION,
     )
     started = time.perf_counter()
-    judge = QwenJudge.from_pretrained(config)
     raw_path = output / "raw_predictions.jsonl"
     progress_path = output / "progress.json"
     existing = _load_predictions(raw_path) if args.resume and raw_path.is_file() else []
@@ -302,8 +306,10 @@ def run(args: argparse.Namespace) -> Path:
     if not existing:
         raw_path.write_text("", encoding="utf-8")
     pending = [record for record in records if record.record_id not in by_id]
+    judge = QwenJudge.from_pretrained(config) if pending else None
     with raw_path.open("a", encoding="utf-8") as handle:
         for record in pending:
+            assert judge is not None
             prediction = _predict(judge, record, model_id=config.model_id, config=config)
             by_id[prediction.record_id] = prediction
             if args.empty_cache_every and len(by_id) % args.empty_cache_every == 0:
@@ -315,7 +321,7 @@ def run(args: argparse.Namespace) -> Path:
     if set(by_id) != expected_ids:
         raise RuntimeError("local Qwen run did not produce one result per selected record")
     predictions = [by_id[record.record_id] for record in records]
-    runtime = _runtime_metadata(judge, config)
+    runtime = _runtime_metadata(judge, config, list(by_id.values()))
     raw_report = build_report(records, predictions, domain_by_record_id=domains)
     modes: dict[str, Any] | None = None
     if args.partition == "public_selection":
@@ -355,7 +361,10 @@ def run(args: argparse.Namespace) -> Path:
         "latency": latency_summary([prediction.latency_ms for prediction in predictions if prediction.latency_ms is not None]),
         "raw_report": raw_report,
         "calibrated_report": calibrated_report,
-        "calibration": {"modes": modes, "fit_source": "public_selection" if args.partition == "public_selection" else args.calibration_run},
+        "calibration": {
+            "modes": modes,
+            "fit_source": "public_selection" if args.partition == "public_selection" else str(args.calibration_run),
+        },
         "environment": {"platform": platform.platform(), "python": platform.python_version()},
     }
     (output / "results.json").write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")

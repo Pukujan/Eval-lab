@@ -1,6 +1,6 @@
 # TASK-0017 — Judge calibration study
 
-- Status: active
+- Status: completed
 - Owner: Codex/research execution agent
 - Priority: P1
 - Branch: task/TASK-0017-calibration-study
@@ -58,19 +58,19 @@ outputs look calibrated.
 
 ## Acceptance criteria
 
-- [ ] Preregistration and exact source fingerprints are committed before blind local
+- [x] Preregistration and exact source fingerprints are committed before blind local
   evaluation.
-- [ ] Local Qwen 4B feasibility smoke records model identity, revision, context cap,
+- [x] Local Qwen 4B feasibility smoke records model identity, revision, context cap,
   runtime, device, dtype, latency, and probability availability.
-- [ ] Public calibration predictions are complete or explicitly marked unavailable;
+- [x] Public calibration predictions are complete or explicitly marked unavailable;
   calibration fit uses only the public calibration split.
-- [ ] Blind local predictions are complete or preserve explicit execution failures;
+- [x] Blind local predictions are complete or preserve explicit execution failures;
   raw and calibrated metrics are computed without blind-label leakage.
-- [ ] Direct-provider and pinned-Jev references remain immutable and are only reused
+- [x] Direct-provider and pinned-Jev references remain immutable and are only reused
   offline.
-- [ ] Report includes accuracy, Brier, NLL, ECE, risk/coverage, calibration artifact,
+- [x] Report includes accuracy, Brier, NLL, ECE, risk/coverage, calibration artifact,
   coverage, latency, and provider/reference status limitations.
-- [ ] Repository contract, Ruff, tests, diff check, and experiment checksums pass.
+- [x] Repository contract, Ruff, tests, diff check, and experiment checksums pass.
 
 ## Validation
 
@@ -306,3 +306,30 @@ FP16 checkpoint remains separate and is not included in this result.
 
 Next atomic action: review the public artifact, then run the blind holdout with
 the same memory-safe runtime and no calibration fit on blind labels.
+
+### 2026-09-21 — blind evaluation and EXP-017 assembly complete
+
+Status: completed. Public selection and blind holdout are finalized under the
+memory-safe Qwen 4B runtime; no further provider execution is required.
+
+Completed: finalized the blind output at `760/760 ok`, applied calibration fitted
+only on public_selection, and assembled experiment-level `results.json`,
+`report.md`, `reference-comparison.json`, and root checksums. Blind raw accuracy
+was `0.4460526316`; calibrated accuracy was unchanged, while Brier improved from
+`0.7036824847` to `0.5160339956`, NLL from `1.0767295166` to `0.7430236502`,
+and ECE from `0.3411375292` to `0.0783406392`.
+
+Exact files changed: the blind run artifact, EXP-017 root report artifacts,
+`scripts/report_judge_calibration.py`, this task file, and the checkpoint.
+
+Runtime: `Qwen/Qwen3-4B`, revision `1cfa9a7208912126459214e8b04321603b3df60c`,
+4-bit NF4 double quantization, float16 compute, `cuda:0`, 2,048-token cap, 0.8
+CUDA memory fraction, and per-record cache release. The prior FP16 partial run
+remains separately marked and is excluded from all primary results.
+
+Validation: root and run checksums valid; repository contract OK; Ruff clean;
+focused Qwen tests `8 passed`; report assembly completed; full repository pytest
+and final diff check remain the last local handoff gate.
+
+Next atomic action: run the full repository test suite, then commit the completed
+EXP-017 checkpoint. Keep EXP-015, EXP-014, and EXP-018 immutable.
