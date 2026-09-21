@@ -262,6 +262,12 @@ class QwenJudge:
 
         return [self.predict_one(record) for record in records]
 
+    def release_cuda_cache(self) -> None:
+        """Release unused CUDA allocator blocks between checkpointed records."""
+
+        if self.device.startswith("cuda"):
+            self._torch.cuda.empty_cache()
+
 
 __all__ = [
     "ContextLimitError",

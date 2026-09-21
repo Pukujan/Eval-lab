@@ -306,6 +306,8 @@ def run(args: argparse.Namespace) -> Path:
         for record in pending:
             prediction = _predict(judge, record, model_id=config.model_id, config=config)
             by_id[prediction.record_id] = prediction
+            if args.empty_cache_every and len(by_id) % args.empty_cache_every == 0:
+                judge.release_cuda_cache()
             handle.write(prediction.model_dump_json() + "\n")
             handle.flush()
             os.fsync(handle.fileno())
@@ -379,11 +381,14 @@ def main() -> None:
     parser.add_argument("--dtype")
     parser.add_argument("--quantization", choices=("none", "4bit", "8bit"), default="4bit")
     parser.add_argument("--gpu-memory-fraction", type=float, default=0.8)
+    parser.add_argument("--empty-cache-every", type=int, default=1)
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--resume", action="store_true")
     args = parser.parse_args()
-    if args.limit < 0 or args.context_cap <= 0:
-        raise SystemExit("--limit must be non-negative and --context-cap must be positive")
+    if args.limit < 0 or args.context_cap <= 0 or args.empty_cache_every < 0:
+        raise SystemExit(
+            "--limit must be non-negative, --context-cap must be positive, and --empty-cache-every must be non-negative"
+        )
     print(run(args))
 
 

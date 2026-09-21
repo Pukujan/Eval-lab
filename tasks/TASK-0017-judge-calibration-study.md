@@ -253,3 +253,26 @@ and 0.8 CUDA memory fraction. Do not launch duplicate Qwen copies.
 
 Next atomic action: commit this optimization checkpoint, then start the frozen
 public-selection calibration run with the memory-safe settings.
+
+### 2026-09-21 — public run paused for allocator control
+
+Status: active; optimized public run is paused at `560/648` successful records.
+
+Completed: the 4-bit public run loaded successfully and reached `560/648` with
+all statuses `ok`. External GPU monitoring saw memory rise from roughly 5.0 GiB
+to 6.96 GiB as the CUDA allocator retained blocks across varying prompt sizes.
+The process was stopped before the physical 8 GiB limit; all 560 predictions are
+preserved in the resumable output directory
+`runs/public-qwen4b-4bit-20260921/`.
+
+Decision: add an explicit `empty_cache_every` control, defaulting to every record
+for this 8 GiB run, so unused CUDA allocator blocks are released after each
+checkpoint. The existing partial output must be resumed with the same 4-bit
+configuration after this code checkpoint; it must not be mixed with the paused
+FP16 output.
+
+Unresolved: confirm that cache release keeps resumed memory below the safety target
+while completing the remaining 88 public records.
+
+Next atomic action: commit the allocator-control change, resume the existing
+4-bit public output, and monitor VRAM until finalization.

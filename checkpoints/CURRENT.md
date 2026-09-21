@@ -759,3 +759,9 @@ any public or blind labels and is retained only as feasibility evidence.
 
 Next atomic action: commit the optimization checkpoint, then run public calibration
 with one Qwen process and the memory-safe settings.
+
+The optimized public Qwen run reached `560/648` successful records before being
+paused because external GPU memory rose to about `6.96 GiB` from allocator caching.
+Those checkpoints are preserved in `public-qwen4b-4bit-20260921/`. The runner now
+adds per-record CUDA cache release before resuming the remaining 88 records; the
+paused FP16 output remains separate and will never be mixed into EXP-017.
