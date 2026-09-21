@@ -15,7 +15,11 @@ from typing import Any
 import httpx
 
 from eval_lab.schema import ExecutionStatus, JudgePrediction, JudgeRecord
-from scripts.run_qwen_streaming_retry import _load_dotenv, _run_one
+
+try:
+    from scripts.run_qwen_streaming_retry import _load_dotenv, _run_one
+except ModuleNotFoundError:
+    from run_qwen_streaming_retry import _load_dotenv, _run_one
 
 MODEL = "qwen3.8-flash"
 EXPERIMENT_ID = "EXP-20260921-013-qwen-multidomain-holdout"
