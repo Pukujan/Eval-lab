@@ -2,7 +2,7 @@
 
 ## Authoritative status
 
-TASK-0001 through TASK-0011 are complete in the current release line. TASK-0012 is planned in a separate worktree for an independent JevBench audit and benchmark; no live TASK-0012 provider evaluation has started.
+TASK-0001 through TASK-0011 are complete in the current release line. TASK-0012 is active in a dedicated worktree with its independent source pool and typed protocol frozen; no live TASK-0012 provider evaluation has started.
 
 ## Program state
 
@@ -13,7 +13,7 @@ The program is extended with TASK-0007 through TASK-0009 to fully use the user's
 
 ## Main objective
 
-TASK-0009 and TASK-0010 selective escalation/research release are complete. TASK-0011 now has completed Qwen results across additional objective datasets and blind holdouts. TASK-0012 is planned as an independent Jev benchmark.
+TASK-0009 and TASK-0010 selective escalation/research release are complete. TASK-0011 has completed Qwen results across additional objective datasets and blind holdouts. TASK-0012 is now frozen for an independent Jev benchmark.
 
 ## Model-access decisions
 
@@ -29,7 +29,7 @@ TASK-0009 and TASK-0010 selective escalation/research release are complete. TASK
 
 ## Next task
 
-TASK-0012 is planned in `D:/claude/eval-lab-TASK-0012-Jev`. First action is to freeze its independent Eval Lab source IDs, splits, typed packet, model arms, and perturbation schedule. Do not use JevBench tasks, labels, or its composite score as the primary benchmark.
+TASK-0012 is active in `D:/claude/eval-lab-TASK-0012-Jev`. Its independent source IDs, splits, typed packet, model arms, and perturbation schedule are frozen in EXP-014. Next action is pinned and rolling one-record smoke, then separate blind evaluation. Do not use JevBench tasks, labels, or its composite score as the primary benchmark.
 
 ## Queued foundation
 

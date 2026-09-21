@@ -93,6 +93,21 @@ def test_typed_spec_matches_provider_wire_contract() -> None:
     assert qwen.label == "pass"
 
 
+def test_typed_spec_supports_declared_label_order_permutation() -> None:
+    record = _records()[0]
+    spec = build_decision_spec(record, label_order=("fail", "pass"))
+    assert spec.legal_labels == ["fail", "pass"]
+    assert list(spec.provider_payload()["questions"]["verdict"]["criteria"]) == ["fail", "pass"]
+    with pytest.raises(ValueError, match="permutation"):
+        build_decision_spec(record, label_order=("pass", "unknown"))
+
+
+def test_typed_spec_supports_declared_instruction_override() -> None:
+    record = _records()[0]
+    spec = build_decision_spec(record, instruction_override="Use the frozen paraphrase.")
+    assert spec.primary_question.instructions == "Use the frozen paraphrase."
+
+
 def test_provider_adapters_keep_models_separate_and_fail_without_fallback(monkeypatch: pytest.MonkeyPatch) -> None:
     record = _records()[0]
 

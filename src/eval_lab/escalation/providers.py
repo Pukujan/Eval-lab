@@ -284,6 +284,8 @@ def run_openrouter_jev(
     url: str = OPENROUTER_DECISIONS_URL,
     client: httpx.Client | None = None,
     timeout: float = 60.0,
+    label_orders: Mapping[str, Sequence[str]] | None = None,
+    instruction_overrides: Mapping[str, str] | None = None,
 ) -> list[JudgePrediction]:
     """Run a single isolated pinned or rolling Jev arm."""
 
@@ -292,7 +294,11 @@ def run_openrouter_jev(
     key = api_key or os.getenv("OPENROUTER_API_KEY")
 
     def payload(record: JudgeRecord) -> dict[str, Any]:
-        spec = build_decision_spec(record)
+        spec = build_decision_spec(
+            record,
+            label_order=(label_orders or {}).get(record.record_id),
+            instruction_override=(instruction_overrides or {}).get(record.record_id),
+        )
         return {"model": model, **spec.provider_payload(), "spec_id": spec.spec_id, "spec_version": spec.spec_version}
 
     return _run_http(
@@ -316,6 +322,8 @@ def run_yolo_qwen(
     base_url: str = YOLO_AUTO_BASE_URL,
     client: httpx.Client | None = None,
     timeout: float = 60.0,
+    label_orders: Mapping[str, Sequence[str]] | None = None,
+    instruction_overrides: Mapping[str, str] | None = None,
 ) -> list[JudgePrediction]:
     """Run YOLO-Auto's OpenAI-compatible Qwen arm with explicit failure states."""
 
@@ -324,7 +332,11 @@ def run_yolo_qwen(
     key = api_key or os.getenv("YOLO_AUTO_API_KEY") or os.getenv("YOLO_API_KEY") or os.getenv("QWEN_API_KEY")
 
     def payload(record: JudgeRecord) -> dict[str, Any]:
-        spec = build_decision_spec(record)
+        spec = build_decision_spec(
+            record,
+            label_order=(label_orders or {}).get(record.record_id),
+            instruction_override=(instruction_overrides or {}).get(record.record_id),
+        )
         typed = json.dumps(spec.provider_payload(), sort_keys=True)
         return {
             "model": model,

@@ -1,13 +1,13 @@
 # TASK-0012 — Independent Jev Benchmark and JevBench Audit
 
-- Status: planned — protocol audit and preregistration only; no live evaluation started
+- Status: active — independent source/protocol frozen; live provider evaluation not yet started
 - Owner: Eval Lab/local agent
 - Priority: P1
 - Depends on: TASK-0011 completion and blind-holdout checkpoint
 - Branch: `task/TASK-0012-independent-jev-benchmark`
 - Worktree: `D:/claude/eval-lab-TASK-0012-Jev`
 - Planned experiment: `EXP-20260921-014-independent-jev-benchmark`
-- Base commit: `711450d`
+- Base commit: `b23682a` (completed TASK-0011 multidomain Qwen holdout)
 
 ## Goal
 
@@ -65,14 +65,14 @@ The final record counts and fingerprint are intentionally pending TASK-0011 comp
 ## Acceptance criteria
 
 - [ ] JevBench audit is committed with source links, scoring rules, and threats to validity.
-- [ ] independent source manifest and split fingerprint are frozen before live final evaluation;
+- [x] independent source manifest and split fingerprint are frozen before live final evaluation;
 - [ ] JevBench tasks and labels are excluded from the primary independent score;
 - [ ] pinned Jev, rolling Jev, Qwen, and local comparison arms use identical canonical record IDs where available;
 - [ ] native probability metrics and label-only outputs are kept distinct;
 - [ ] option-order, paraphrase, repeatability, and provider-failure tests pass;
 - [ ] per-domain metrics, uncertainty, latency, cost, and coverage are reported;
 - [ ] no composite score is used as the primary acceptance criterion;
-- [ ] repository contract, Ruff, pytest, and experiment checksum validation pass;
+- [ ] repository contract, Ruff, pytest, and experiment checksum validation pass after the freeze commit;
 - [ ] TASK-0011 is complete before the live TASK-0012 run begins.
 
 ## Outputs
@@ -112,10 +112,22 @@ Decision: use the Eval Lab objective datasets and deterministic verifiers as the
 
 Next atomic action: finish TASK-0011, then freeze the independent source pool, split IDs, canonical packet, model arms, and perturbation schedule before any TASK-0012 final labels.
 
+### 2026-09-21 — independent source and protocol freeze
+
+TASK-0011 is complete at commit `b23682a`. The independent TASK-0012 pool is frozen in `experiments/EXP-20260921-014-independent-jev-benchmark/` from the objective records in EXP-013, with JevBench task text, labels, and composite results explicitly excluded. The pool contains `648` public-selection records and `760` blind-holdout records, `1,408` unique records, `824` source problem IDs, and zero duplicated record IDs. The source fingerprint is `b7edd61269f0f7757e734bc7e3f665ac2bcd6d908a1e56f73f0b0291d55b64d8`; the blind record-ID fingerprint is `409428fc71b447d0114dd7a1929cbed34269a4318ef249c108582b70069d8d61`.
+
+The frozen typed packet is `eval-lab-system-one` v`0.1.0`, context limit `4096`, single labels `pass/fail`, pairwise labels `A/B/TIE`, confidence defined as native normalized provider probabilities only, and target error rates `0.01`, `0.02`, and `0.05`. Provider arms are pinned `typesafe/jev-1.13`, separate rolling `~typesafe/jev-latest`, comparison Qwen `qwen3.8-flash`, TASK-0009 local arm D `tfidf-logistic-v1`, and a frozen majority baseline. The perturbation schedule and typed packet hashes are recorded in `freeze.json` and `perturbations.json`.
+
+Files added or changed: `src/eval_lab/escalation/spec.py`, `src/eval_lab/escalation/providers.py`, `tests/test_selective_escalation.py`, `scripts/freeze_independent_jev_benchmark.py`, `scripts/run_independent_jev_arm.py`, `scripts/run_independent_jev_perturbations.py`, `scripts/report_independent_jev.py`, the EXP-014 frozen manifests, and this task log.
+
+Offline targeted tests pass: Ruff clean; `94 passed in 3.76s` before the final reporting-script import cleanup. No provider call or final label was made under EXP-014. Pinned and rolling Jev outputs will remain separate.
+
+Decision: the independent primary score is a metric vector over objective Eval Lab gold; JevBench remains contextual audit evidence only. Next atomic action: commit and push this freeze, then run one-record pinned and rolling Jev smoke calls, recording provider identity and status before the full blind evaluation.
+
 ## Handoff
 
 Worktree: `D:/claude/eval-lab-TASK-0012-Jev`
 Branch: `task/TASK-0012-independent-jev-benchmark`
 Experiment: `EXP-20260921-014-independent-jev-benchmark`
-Status: planning only; no live provider calls
-Next atomic action: wait for TASK-0011 completion, then perform the TASK-0012 source/split freeze.
+Status: source/protocol frozen; no live provider calls yet
+Next atomic action: run pinned and rolling Jev one-record smoke calls, then execute the blind primary arms without pooling results.

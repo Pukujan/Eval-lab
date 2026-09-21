@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -68,7 +69,13 @@ class DecisionSpec(BaseModel):
         }
 
 
-def build_decision_spec(record: JudgeRecord, *, context_limit: int = 4096) -> DecisionSpec:
+def build_decision_spec(
+    record: JudgeRecord,
+    *,
+    context_limit: int = 4096,
+    label_order: Sequence[str] | None = None,
+    instruction_override: str | None = None,
+) -> DecisionSpec:
     """Compile a canonical record into the single typed semantic contract."""
 
     request = build_direct_request(record)
@@ -78,10 +85,15 @@ def build_decision_spec(record: JudgeRecord, *, context_limit: int = 4096) -> De
         labels = ["pass", "fail"]
     else:
         labels = [item.value for item in PairwiseLabel]
+    if label_order is not None:
+        ordered = list(label_order)
+        if set(ordered) != set(labels) or len(ordered) != len(labels):
+            raise ValueError("label_order must be a permutation of the legal labels")
+        labels = ordered
     question = TypedQuestion(
         question_id=question_id,
         question_type="choice",
-        instructions=str(question_payload["instructions"]),
+        instructions=instruction_override or str(question_payload["instructions"]),
         legal_labels=labels,
         score_order=labels,
     )
