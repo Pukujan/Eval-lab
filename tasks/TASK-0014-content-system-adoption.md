@@ -1,11 +1,11 @@
 # TASK-0014 — Adopt the reusable content-generation system
 
-<!-- eval-lab:task {"id":"TASK-0014","status":"awaiting_review","goal":"Dogfood the versioned content-generation-modules helper in Eval Lab and produce reviewable README, visual, and responsive HTML artifacts without changing research behavior.","branch":"task/TASK-0014-content-system-adoption","allowed_files":[".gitignore","AGENTS.md","checkpoints/CURRENT.md","tasks/TASK-0014-content-system-adoption.md",".content-system/**","docs/content-system-preview.md","docs/content-system-preview.html"],"helper_repository":"https://github.com/Pukujan/content-generation-modules","helper_version":"0.1.1","helper_commit":"3e89100fed61da19bd3d3f17ad336f189b576c38","next_action":"Open the preview PR and ask the user to review the rendered artifacts before any promotion into README.md."} -->
+<!-- eval-lab:task {"id":"TASK-0014","status":"awaiting_review","goal":"Dogfood the versioned content-generation-modules helper in Eval Lab and produce reviewable README, visual, and responsive HTML artifacts without changing research behavior.","branch":"task/TASK-0014-content-system-adoption","allowed_files":[".gitignore","AGENTS.md","checkpoints/CURRENT.md","tasks/TASK-0014-content-system-adoption.md",".content-system/**","assets/eval-lab-banner.png","assets/eval-lab-problem.png","assets/eval-lab-system-square.png","assets/eval-lab-evidence-portrait.png","docs/content-system-preview.md","docs/content-system-preview.html"],"helper_repository":"https://github.com/Pukujan/content-generation-modules","helper_version":"0.1.2","helper_commit":"cb8c18fa7789e4b651e1f963892bf056b0d3276d","next_action":"Open the preview PR and ask the user to review the rendered artifacts before any promotion into README.md."} -->
 
 - Status: awaiting user review
 - Owner: Codex current implementation session
 - Branch: `task/TASK-0014-content-system-adoption`
-- Helper: `Pukujan/content-generation-modules@v0.1.1` (`3e89100fed61da19bd3d3f17ad336f189b576c38`)
+- Helper: `Pukujan/content-generation-modules@v0.1.2` (`cb8c18fa7789e4b651e1f963892bf056b0d3276d`)
 - Scope: project adapter plus reviewable content/visual/HTML preview only
 
 ## Goal
@@ -19,9 +19,10 @@ Use the reusable content-generation contract in Eval Lab so a fresh agent can pr
 - `tasks/TASK-0014-content-system-adoption.md`;
 - `.content-system/**`;
 - `docs/content-system-preview.md`;
-- `docs/content-system-preview.html`.
+- `docs/content-system-preview.html`;
+- the four named narrative raster assets under `assets/` when the title/subtitle contract requires regeneration.
 
-Do not change research code, experiment artifacts, existing README copy, existing image files, CI, or runtime behavior in this preview task.
+Do not change research code, experiment artifacts, existing README copy, CI, or runtime behavior in this preview task. SVG icons and tiny helper graphics remain unchanged and text-free.
 
 ## Acceptance criteria
 
@@ -35,6 +36,7 @@ Do not change research code, experiment artifacts, existing README copy, existin
 - [x] responsive HTML preview works at wide, tablet, and mobile widths;
 - [x] repository contract, adapter validation, local tests, and preview render checks pass;
 - [x] no target changes are merged without explicit user review.
+- [x] every narrative raster asset carries a short title and subtitle; SVG/helper assets remain text-free.
 
 ## Review evidence to record
 
@@ -137,6 +139,35 @@ Blocked/uncertain:
 Next:
 
 - review the rendered Markdown/HTML/PDF artifacts and decide whether to promote the content system into the canonical README.
+
+### 2026-09-20 — Narrative image text contract update
+
+Completed:
+
+- advanced the adapter pin to `content-generation-modules` v0.1.2 at `cb8c18fa7789e4b651e1f963892bf056b0d3276d`;
+- regenerated the problem, square system, and portrait evidence raster assets with restrained exact title/subtitle copy while preserving the accepted hero and text-free SVG icons;
+- recorded the exact image copy and visual rule in the manifest and visual style contract.
+
+Evidence:
+
+- problem title/subtitle: `Plausible is not proven` / `A confident answer still needs evidence before it becomes a judgment.`;
+- system title/subtitle: `Judge the uncertainty` / `Compare evidence, measure confidence, and route the hard cases.`;
+- evidence title/subtitle: `Keep the trail` / `Every verdict should point back to data, rules, and review.`;
+- generated assets visually inspected for subject visibility, low noise, and readable copy.
+
+Decisions:
+
+- keep one hero only; supporting assets use wide, square, and portrait roles for device coverage;
+- retain SVG icons without embedded words because they are helper visuals rather than narrative illustrations;
+- keep README promotion and merge gated on user review.
+
+Blocked/uncertain:
+
+- none for the adapter or asset update; final human acceptance remains open.
+
+Next:
+
+- rerun adapter, repository, and responsive render validation, push the updated preview branch, and update PR #30 for review.
 
 ## Handoff
 

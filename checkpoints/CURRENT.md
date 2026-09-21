@@ -2,7 +2,7 @@
 
 ## Active content-system preview
 
-TASK-0014 is awaiting user review in [PR #30](https://github.com/Pukujan/Eval-lab/pull/30) on `task/TASK-0014-content-system-adoption`. It pins `Pukujan/content-generation-modules@v0.1.1` at commit `3e89100fed61da19bd3d3f17ad336f189b576c38`. The preview-only adapter and rendered artifacts are complete; the first stale-base CI failure was corrected by merging current `main`, and run `35546113184` passes on Python 3.11 and 3.12. The next atomic action is user review before changing the canonical README.
+TASK-0014 is awaiting user review in [PR #30](https://github.com/Pukujan/Eval-lab/pull/30) on `task/TASK-0014-content-system-adoption`. It pins `Pukujan/content-generation-modules@v0.1.2` at commit `cb8c18fa7789e4b651e1f963892bf056b0d3276d`. The preview-only adapter and rendered artifacts are complete; the first stale-base CI failure was corrected by merging current `main`, and run `35546113184` passes on Python 3.11 and 3.12. The narrative raster assets now all carry a short title and subtitle, while SVG helper icons stay text-free. The next atomic action is user review before changing the canonical README.
 
 ## Program state
 

@@ -1,11 +1,11 @@
 {
   "schema_version": "content-generation.asset-manifest.v1",
-  "system_version": "0.1.0",
+  "system_version": "0.1.2",
   "assets": [
-    {"path": "assets/eval-lab-banner.png", "role": "hero introduction", "orientation": "wide", "dimensions": "1672x941", "text_policy": "short project title and promise", "prompt_recipe": "human researcher and friendly robot with simple evaluation evidence panel", "review": "accepted"},
-    {"path": "assets/eval-lab-problem.png", "role": "problem explanation", "orientation": "wide", "dimensions": "1672x941", "text_policy": "minimal", "prompt_recipe": "one readable conflict between plausible outputs and evidence", "review": "accepted"},
-    {"path": "assets/eval-lab-system-square.png", "role": "technical system explanation", "orientation": "square", "dimensions": "1254x1254", "text_policy": "minimal", "prompt_recipe": "calm human and robot review a simple three-step decision path", "review": "accepted"},
-    {"path": "assets/eval-lab-evidence-portrait.png", "role": "evidence and review detail", "orientation": "portrait", "dimensions": "1024x1536", "text_policy": "minimal", "prompt_recipe": "vertical research scene with visible evidence and human review", "review": "accepted"},
+    {"path": "assets/eval-lab-banner.png", "role": "hero introduction", "orientation": "wide", "dimensions": "1672x941", "text_policy": "exact short title plus subtitle; existing small attribution retained", "prompt_recipe": "human researcher and friendly robot with simple evaluation evidence panel; title Eval Lab; subtitle Build AI judges you can trust", "review": "accepted"},
+    {"path": "assets/eval-lab-problem.png", "role": "problem explanation", "orientation": "wide", "dimensions": "1672x941", "text_policy": "exact short title plus subtitle", "prompt_recipe": "one readable conflict between plausible outputs and evidence; title Plausible is not proven; subtitle A confident answer still needs evidence before it becomes a judgment.", "review": "accepted"},
+    {"path": "assets/eval-lab-system-square.png", "role": "technical system explanation", "orientation": "square", "dimensions": "1254x1254", "text_policy": "exact short title plus subtitle", "prompt_recipe": "calm human and robot review a simple three-step decision path; title Judge the uncertainty; subtitle Compare evidence, measure confidence, and route the hard cases.", "review": "accepted"},
+    {"path": "assets/eval-lab-evidence-portrait.png", "role": "evidence and review detail", "orientation": "portrait", "dimensions": "1024x1536", "text_policy": "exact short title plus subtitle", "prompt_recipe": "vertical research scene with visible evidence and human review; title Keep the trail; subtitle Every verdict should point back to data, rules, and review.", "review": "accepted"},
     {"path": "assets/icons/objective-truth.svg", "role": "objective evidence icon", "orientation": "svg", "dimensions": "64x64 viewBox", "text_policy": "none", "review": "accepted"},
     {"path": "assets/icons/calibrated-confidence.svg", "role": "calibration icon", "orientation": "svg", "dimensions": "64x64 viewBox", "text_policy": "none", "review": "accepted"},
     {"path": "assets/icons/selective-routing.svg", "role": "routing icon", "orientation": "svg", "dimensions": "64x64 viewBox", "text_policy": "none", "review": "accepted"},

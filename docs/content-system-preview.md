@@ -42,4 +42,4 @@ The lab does not promote a strong model's opinion to ground truth. A provider fa
 
 ## Contract used
 
-This preview pins `content-generation-modules@v0.1.1` and its six modules: brand foundation, content context, writing direction, visual direction, image generation, and HTML demo.
+This preview pins `content-generation-modules@v0.1.2` and its six modules: brand foundation, content context, writing direction, visual direction, image generation, and HTML demo. Narrative raster assets carry a short title and subtitle; SVG helper icons stay text-free.

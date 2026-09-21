@@ -19,7 +19,7 @@
     "leave breathing room around the main subject",
     "support the story rather than replacing the README explanation"
   ],
-  "text_policy": "minimal in-image text; detailed explanation belongs in Markdown or HTML",
+  "text_policy": "Every narrative raster asset carries one exact short title plus one exact short subtitle; SVGs, logos, and tiny helper graphics stay text-free.",
   "roles": {
     "hero": {"orientation": "wide", "dimensions": "1672x941", "path": "assets/eval-lab-banner.png"},
     "problem": {"orientation": "wide", "dimensions": "1672x941", "path": "assets/eval-lab-problem.png"},
@@ -29,7 +29,8 @@
   },
   "reject_when": [
     "the supporting diagram covers or competes with the human/AI subjects",
-    "the image contains many competing panels or unreadable text",
+    "the title or subtitle is unreadable",
+    "the image contains many competing panels or unreadable secondary text",
     "contrast becomes more important than comprehension",
     "the asset reads like a second hero banner instead of a supporting explanation",
     "the crop removes the central relationship at mobile or tablet sizes"
