@@ -351,3 +351,11 @@ EXP-012 contains `17` routing policies, matched random controls, Wilson interval
 Decision: mark TASK-0010 complete. OpenRouter EXP-011 remains separate provider-status evidence with HTTP 402 account-funds failures; no credentials or raw responses were committed. Do not begin TASK-0002.
 
 Next atomic action: commit and push the final checkpoint, then inspect CI for the pushed head.
+
+### 2026-09-20 — final CI byte-stability fix
+
+CI run `35555437302` for `282865e` passed contract and Ruff but failed unit tests on Python 3.11 and 3.12 because Windows-generated benchmark metadata had CRLF bytes while the committed checksum manifest was computed over the pre-normalized working bytes. The failing test was `test_benchmark_records_round_trip_and_checksums_are_current`; the mismatch was isolated to the generated benchmark metadata bytes, not the benchmark records or experiment logic.
+
+All checksum-covered text files in the benchmark and EXP-012 were normalized to LF, and both manifests were regenerated from the exact bytes. Local validation now returns `80 passed`, contract `OK`, artifact checksums `ok`, CFF parsed, paper present, PROV-O parsed, RO-Crate `ok`, SHACL `conforms`, and clean diff check. TASK-0010 acceptance artifacts remain complete and TASK-0002 remains unopened.
+
+Next atomic action: commit and push this byte-stability correction, then verify the replacement CI run.

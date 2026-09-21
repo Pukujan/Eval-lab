@@ -623,3 +623,11 @@ Files changed in this checkpoint: `scripts/run_selective_escalation.py` now writ
 Decision: TASK-0010 acceptance criteria are satisfied and the task is marked complete. OpenRouter EXP-011 remains a separate provider-status experiment whose final arms were blocked by HTTP 402 account-funds errors after a 1-record smoke; OpenCode Go/Zen and LiteLLM route checks remain separate diagnostics. Those routes do not alter the completed primary TASK-0010 experiment, and TASK-0002 remains out of scope.
 
 Next atomic action: commit and push this final checkpoint, inspect the CI run for the pushed head, and leave TASK-0002 unopened.
+
+### 2026-09-20 — CI byte-stability defect diagnosed and fixed
+
+The first CI run for final commit `282865e` was `35555437302`. Repository contract and Ruff passed on Python 3.11 and 3.12, but unit tests failed in both jobs at `tests/test_selective_artifacts.py::test_benchmark_records_round_trip_and_checksums_are_current`. The committed checksum for `benchmark/eval-lab-select-v0.1.0/datacite.json` was `066c4449...`, while CI saw the committed blob as `1419496f...`; the same Windows line-ending mismatch affected generated PROV-O, RO-Crate, and SHACL files. Local working-tree validation had hidden this because the checksum was generated before Git's `eol=lf` normalization.
+
+Fix: normalize every text file covered by the benchmark and EXP-012 checksum manifests to LF bytes, then regenerate both manifests from those exact bytes. No data, provider labels, credentials, or experiment decisions changed. Corrected local results: `80 passed in 28.09s`, repository contract `OK`, artifact validation checksums `ok`, citation `parsed`, paper `present`, PROV-O `parsed`, RO-Crate `ok`, SHACL `conforms`, and `git diff --check` clean.
+
+Next atomic action: commit and push the byte-stability fix, then inspect the replacement CI run before treating TASK-0010 as fully delivered.
