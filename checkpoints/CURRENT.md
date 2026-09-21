@@ -191,6 +191,19 @@ Next atomic action: commit this runner/smoke checkpoint, then launch the fresh
 parallel public-selection run with four workers. Keep the blind holdout untouched
 until public outputs are complete and validated.
 
+### 2026-09-21 — TASK-0015 fresh parallel public execution
+
+The new public run is live at
+`experiments/EXP-20260921-015-grok-luna-qwen-bakeoff/runs/public-stream-parallel-20260921`.
+It uses the direct xAI `grok` CLI, direct Codex subscription CLI, and YOLO-Auto Qwen
+routes only, with four concurrent workers per arm and streaming enabled. The Grok
+progress checkpoint reached `11/648` records, all `ok`, with four direct xAI child
+sessions observed. Luna and Qwen have not started because the runner preserves arm
+boundaries; the blind holdout remains untouched.
+
+Next atomic action: monitor the live per-arm progress JSON, validate the completed
+public artifact, and only then decide whether to request the blind holdout.
+
 ## Next atomic action
 
 TASK-0010 is complete at EXP-20260920-012. Leave the next program task unopened until review/triage. Historical checkpoint entries below are retained.

@@ -253,3 +253,24 @@ rate-limit mix must be observed during the new public execution.
 Next atomic action: commit this streaming runner checkpoint, then launch a fresh
 parallel public-selection run with `--workers 4`; monitor its per-arm progress files
 and validate the completed artifact before any blind-holdout request.
+
+### 2026-09-21 — fresh parallel public execution in progress
+
+Status: active. The prior non-streaming attempt is stopped; the new run is the only
+active TASK-0015 provider execution and the blind holdout remains untouched.
+
+Exact command: `$env:PYTHONPATH='src'; python
+scripts/run_grok_luna_qwen_bakeoff.py --partition public_selection --models
+grok,luna,qwen_flash --workers 4 --timeout 120 --env-file
+C:\Users\pujan\OneDrive\Desktop\configs\.env --output
+experiments/EXP-20260921-015-grok-luna-qwen-bakeoff/runs/public-stream-parallel-20260921`.
+
+Observed checkpoint: the Grok arm has four concurrent direct xAI CLI sessions and
+has completed `11/648` records, all `ok`, with `streaming: true` and route
+`direct_grok_build_cli_subscription`. Luna and Qwen will start only after the Grok
+arm boundary; each will also use four concurrent streaming workers. The process is
+live and no final output artifact exists yet.
+
+Next atomic action: continue monitoring `runs/public-stream-parallel-20260921/progress/`,
+then validate the completed public artifact and record provider statuses before any
+blind-holdout execution.
