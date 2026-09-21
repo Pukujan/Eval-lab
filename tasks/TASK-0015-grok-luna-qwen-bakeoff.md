@@ -215,3 +215,41 @@ The direct authenticated Grok Build CLI is the first arm and is cycling records 
 the per-record timeout. No OpenCode or OpenRouter command is used. The normalized
 public artifact is not yet complete; after termination, validate checksums, provider
 statuses, metrics, and differential output before any blind request.
+
+### 2026-09-21 — parallel streaming runner checkpoint
+
+Status: active; the prior sequential non-streaming public attempt was terminated
+before any normalized public predictions were written. Its output directory remains
+empty and no blind-holdout request was made.
+
+Completed: changed the runner to use multiple isolated direct CLI sessions. Grok now
+uses `--output-format streaming-json` with the native JSON schema and a unique
+`--leader-socket` per session; Luna/Sol consume the direct `codex exec --json` event
+stream; Qwen Flash consumes OpenAI-compatible SSE with `stream: true`. All three
+arms run through the shared worker pool and checkpoint one normalized prediction and
+one progress JSON after each record. The normalized results remain ordered by the
+frozen pool even when completion order is parallel.
+
+Exact files changed: `scripts/run_grok_luna_qwen_bakeoff.py`,
+`tests/test_grok_luna_qwen_bakeoff.py`, this task log, and the fresh streaming smoke
+artifacts under `runs/smoke-stream-grok2-20260921/` and
+`runs/smoke-stream-all-20260921/`.
+
+Commands run: direct CLI streaming probe; focused Ruff; focused pytest; fresh
+streaming Grok smoke; fresh combined Grok/Luna/Qwen smoke; and the run validator.
+
+Test results: focused bakeoff tests `6 passed`; Ruff clean; combined streaming smoke
+validated with Grok `ok: 1` and surfaced `grok-4.6-build`, Luna `ok: 1` through
+`gpt-5.6-luna`, and Qwen `ok: 1` through `qwen3.8-flash`. The smoke metadata records
+`grok-streaming-json`, `codex-jsonl`, and `openai-sse` event counts.
+
+Decision: use parallel independent sessions, not Grok-spawned subagents, for the
+matched run. This keeps every record an independently attributable direct provider
+request while reducing wall-clock time. OpenCode and OpenRouter remain excluded.
+
+Unresolved questions: provider concurrency limits and the final full-pool timeout/
+rate-limit mix must be observed during the new public execution.
+
+Next atomic action: commit this streaming runner checkpoint, then launch a fresh
+parallel public-selection run with `--workers 4`; monitor its per-arm progress files
+and validate the completed artifact before any blind-holdout request.

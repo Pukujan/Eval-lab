@@ -1,7 +1,17 @@
 from __future__ import annotations
 
+import json
+
+import httpx
+
 from eval_lab.schema import GoldLabel, GoldProvenance, JudgeRecord, JudgmentMode, Split
-from scripts.run_grok_luna_qwen_bakeoff import _differential, _wilson, parse_label
+from scripts.run_grok_luna_qwen_bakeoff import (
+    _differential,
+    _grok_json_schema,
+    _qwen_stream_response,
+    _wilson,
+    parse_label,
+)
 
 
 def _record(record_id: str = "record-1") -> JudgeRecord:
@@ -49,3 +59,32 @@ def test_differential_excludes_unresolved_records() -> None:
     result = _differential([record], {"a": [ok_a], "b": [ok_b], "c": [unresolved]})
     assert result["pairs"]["a__vs__b"]["agreement_count"] == 0
     assert result["pairs"]["a__vs__c"]["comparable_count"] == 0
+
+
+def test_grok_schema_keeps_record_legal_labels() -> None:
+    schema = _grok_json_schema(_record())
+    assert '"enum":["fail","pass"]' in schema
+    assert '"additionalProperties":false' in schema
+
+
+def test_qwen_sse_stream_reassembles_typed_content() -> None:
+    body = "\n\n".join(
+        [
+            "data: "
+            + json.dumps(
+                {"model": "qwen3.8-flash", "choices": [{"delta": {"content": '{"label":"'}}]}
+            ),
+            "data: "
+            + json.dumps(
+                {"model": "qwen3.8-flash", "choices": [{"delta": {"content": 'pass"}'}}]}
+            ),
+            'data: {"usage":{"prompt_tokens":3,"completion_tokens":2}}',
+            "data: [DONE]",
+        ]
+    ).encode()
+    response = httpx.Response(200, content=body, request=httpx.Request("POST", "https://example.test"))
+    content, surfaced, usage, event_count = _qwen_stream_response(response, record=_record())
+    assert content == '{"label":"pass"}'
+    assert surfaced == ["qwen3.8-flash"]
+    assert usage == {"prompt_tokens": 3, "completion_tokens": 2}
+    assert event_count == 3

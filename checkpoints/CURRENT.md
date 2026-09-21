@@ -172,6 +172,25 @@ command is part of this process. Next atomic action: wait for the public run to
 terminate, validate checksums/statuses/metrics, and checkpoint the result before any
 blind-holdout execution.
 
+### 2026-09-21 — TASK-0015 parallel streaming checkpoint
+
+The old sequential, non-streaming public attempt was terminated before it wrote
+normalized predictions. TASK-0015 now has a fresh, validated streaming runner:
+parallel isolated direct xAI Grok CLI sessions use `grok-streaming-json` and unique
+leader sockets; direct Codex Luna/Sol sessions consume `codex-jsonl`; and YOLO-Auto
+Qwen Flash consumes OpenAI SSE. Each completed record is immediately checkpointed to
+the arm JSONL and progress JSON, while final normalized order remains frozen-pool
+order. No OpenCode or OpenRouter route is active.
+
+Fresh combined smoke `runs/smoke-stream-all-20260921/` validated Grok `ok: 1` with
+surfaced `grok-4.6-build`, Luna `ok: 1` with requested `gpt-5.6-luna`, and Qwen
+`ok: 1` with `qwen3.8-flash`; validator passed. Focused tests are `6 passed` and
+Ruff is clean.
+
+Next atomic action: commit this runner/smoke checkpoint, then launch the fresh
+parallel public-selection run with four workers. Keep the blind holdout untouched
+until public outputs are complete and validated.
+
 ## Next atomic action
 
 TASK-0010 is complete at EXP-20260920-012. Leave the next program task unopened until review/triage. Historical checkpoint entries below are retained.

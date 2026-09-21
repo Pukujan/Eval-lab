@@ -7,20 +7,24 @@ import hashlib
 import json
 import os
 import platform
+import queue
 import re
 import shutil
 import subprocess
+import tempfile
+import threading
 import time
+import uuid
 from collections import Counter
-from collections.abc import Iterable, Mapping
-from concurrent.futures import ThreadPoolExecutor
+from collections.abc import Callable, Iterable, Mapping
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 import httpx
 
-from eval_lab.escalation.providers import run_yolo_qwen
+from eval_lab.escalation.providers import normalize_typed_response
 from eval_lab.escalation.spec import build_decision_spec
 from eval_lab.reporting import build_report
 from eval_lab.schema import (
@@ -247,6 +251,125 @@ def _prediction(
     )
 
 
+def _stream_metadata(stream_format: str, event_count: int) -> dict[str, Any]:
+    return {
+        "streaming": True,
+        "stream_format": stream_format,
+        "stream_event_count": event_count,
+    }
+
+
+def _with_stream_metadata(
+    prediction: JudgePrediction,
+    *,
+    stream_format: str,
+    event_count: int,
+) -> JudgePrediction:
+    prediction.provider_metadata.update(_stream_metadata(stream_format, event_count))
+    return prediction
+
+
+def _stream_reader(pipe: Any, stream_name: str, events: queue.Queue[tuple[str, str | None]]) -> None:
+    try:
+        for line in iter(pipe.readline, ""):
+            events.put((stream_name, line))
+    finally:
+        events.put((stream_name, None))
+
+
+def _run_streaming_process(
+    command: list[str],
+    *,
+    environment: dict[str, str],
+    timeout: float,
+    input_text: str | None = None,
+    on_stdout_line: Callable[[str], None] | None = None,
+) -> tuple[int | None, str, str, bool, int]:
+    """Run a CLI while consuming stdout/stderr incrementally.
+
+    The direct Grok and Codex CLIs emit newline-delimited events. Dedicated
+    reader threads prevent either pipe from filling while the parent process
+    receives stdout events as they arrive. The returned transcript remains
+    available for the existing typed-label parser.
+    """
+
+    process = subprocess.Popen(
+        command,
+        stdin=subprocess.PIPE if input_text is not None else None,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        bufsize=1,
+        env=environment,
+        creationflags=getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0),
+    )
+    if input_text is not None and process.stdin is not None:
+        try:
+            process.stdin.write(input_text)
+            process.stdin.close()
+        except OSError:
+            pass
+
+    events: queue.Queue[tuple[str, str | None]] = queue.Queue()
+    readers = [
+        threading.Thread(target=_stream_reader, args=(process.stdout, "stdout", events), daemon=True),
+        threading.Thread(target=_stream_reader, args=(process.stderr, "stderr", events), daemon=True),
+    ]
+    for reader in readers:
+        reader.start()
+
+    stdout_parts: list[str] = []
+    stderr_parts: list[str] = []
+    closed: set[str] = set()
+    event_count = 0
+    timed_out = False
+    deadline = time.monotonic() + timeout
+    while len(closed) < 2:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            timed_out = True
+            break
+        try:
+            stream_name, line = events.get(timeout=min(0.25, remaining))
+        except queue.Empty:
+            continue
+        if line is None:
+            closed.add(stream_name)
+            continue
+        if stream_name == "stdout":
+            stdout_parts.append(line)
+            event_count += 1
+            if on_stdout_line is not None:
+                on_stdout_line(line)
+        else:
+            stderr_parts.append(line)
+
+    if timed_out:
+        subprocess.run(
+            ["taskkill", "/F", "/T", "/PID", str(process.pid)],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    try:
+        process.wait(timeout=2 if timed_out else max(0.1, deadline - time.monotonic()))
+    except subprocess.TimeoutExpired:
+        subprocess.run(
+            ["taskkill", "/F", "/T", "/PID", str(process.pid)],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        timed_out = True
+    for reader in readers:
+        reader.join(timeout=1)
+    return process.returncode, "".join(stdout_parts), "".join(stderr_parts), timed_out, event_count
+
+
+def _isolated_grok_leader_socket() -> Path:
+    return Path(tempfile.gettempdir()) / f"eval-lab-grok-{os.getpid()}-{threading.get_ident()}-{uuid.uuid4().hex}.sock"
+
+
 def _run_codex_one(
     record: JudgeRecord,
     *,
@@ -274,41 +397,46 @@ def _run_codex_one(
         "-",
     ]
     try:
-        process = subprocess.run(
+        returncode, stdout, stderr, timed_out, event_count = _run_streaming_process(
             command,
-            input=_prompt(record),
-            capture_output=True,
-            text=True,
-            env=environment,
+            environment=environment,
+            input_text=_prompt(record),
             timeout=timeout,
-            check=False,
         )
     except OSError as exc:
-        return _prediction(
-            record,
-            arm_id=arm_id,
-            provider="codex",
-            model=model,
-            route=route,
-            status=ExecutionStatus.PROVIDER_ERROR,
-            started=started,
-            error={"kind": "process_error", "type": type(exc).__name__},
+        return _with_stream_metadata(
+            _prediction(
+                record,
+                arm_id=arm_id,
+                provider="codex",
+                model=model,
+                route=route,
+                status=ExecutionStatus.PROVIDER_ERROR,
+                started=started,
+                error={"kind": "process_error", "type": type(exc).__name__},
+            ),
+            stream_format="codex-jsonl",
+            event_count=0,
         )
-    except subprocess.TimeoutExpired:
-        return _prediction(
-            record,
-            arm_id=arm_id,
-            provider="codex",
-            model=model,
-            route=route,
-            status=ExecutionStatus.PROVIDER_ERROR,
-            started=started,
-            error={"kind": "timeout"},
+    if timed_out:
+        return _with_stream_metadata(
+            _prediction(
+                record,
+                arm_id=arm_id,
+                provider="codex",
+                model=model,
+                route=route,
+                status=ExecutionStatus.PROVIDER_ERROR,
+                started=started,
+                error={"kind": "timeout"},
+            ),
+            stream_format="codex-jsonl",
+            event_count=event_count,
         )
-    output = (process.stdout or "") + "\n" + (process.stderr or "")
-    surfaced: list[str] = []
+    output = stdout + "\n" + stderr
+    surfaced = _surfaced_models(output)
     thread_id: str | None = None
-    for line in (process.stdout or "").splitlines():
+    for line in stdout.splitlines():
         try:
             event = json.loads(line)
         except json.JSONDecodeError:
@@ -316,11 +444,11 @@ def _run_codex_one(
         if event.get("type") == "thread.started" and isinstance(event.get("thread_id"), str):
             thread_id = event["thread_id"]
     metadata = {"codex_cli": "codex", "thread_id": thread_id} if thread_id else {"codex_cli": "codex"}
-    if process.returncode != 0:
+    if returncode != 0:
         lower = output.lower()
         status = ExecutionStatus.RATE_LIMITED if "429" in lower or "rate limit" in lower else ExecutionStatus.PROVIDER_ERROR
         kind = "rate_limited" if status is ExecutionStatus.RATE_LIMITED else "process_exit"
-        return _prediction(
+        prediction = _prediction(
             record,
             arm_id=arm_id,
             provider="codex",
@@ -328,12 +456,14 @@ def _run_codex_one(
             route=route,
             status=status,
             started=started,
-            error={"kind": kind, "returncode": process.returncode},
+            error={"kind": kind, "returncode": returncode},
             surfaced_model_ids=surfaced,
         )
+        prediction.provider_metadata.update(metadata)
+        return _with_stream_metadata(prediction, stream_format="codex-jsonl", event_count=event_count)
     label = parse_label(output, record)
     if label is None:
-        return _prediction(
+        prediction = _prediction(
             record,
             arm_id=arm_id,
             provider="codex",
@@ -344,6 +474,8 @@ def _run_codex_one(
             error={"kind": "label_not_found"},
             surfaced_model_ids=surfaced,
         )
+        prediction.provider_metadata.update(metadata)
+        return _with_stream_metadata(prediction, stream_format="codex-jsonl", event_count=event_count)
     prediction = _prediction(
         record,
         arm_id=arm_id,
@@ -356,7 +488,7 @@ def _run_codex_one(
         surfaced_model_ids=surfaced,
     )
     prediction.provider_metadata.update(metadata)
-    return prediction
+    return _with_stream_metadata(prediction, stream_format="codex-jsonl", event_count=event_count)
 
 
 def _run_grok_build_one(
@@ -372,12 +504,13 @@ def _run_grok_build_one(
 
     started = time.perf_counter()
     executable = environment.get("GROK_EXE") or shutil.which("grok") or "grok"
+    leader_socket = _isolated_grok_leader_socket()
     command = [
         executable,
         "--model",
         model,
         "--output-format",
-        "json",
+        "streaming-json",
         "--json-schema",
         _grok_json_schema(record),
         "--max-turns",
@@ -388,19 +521,18 @@ def _run_grok_build_one(
         "--no-plan",
         "--permission-mode",
         "dontAsk",
+        "--leader-socket",
+        str(leader_socket),
         f"--single={_prompt(record)}",
     ]
     try:
-        process = subprocess.Popen(
+        returncode, stdout, stderr, timed_out, event_count = _run_streaming_process(
             command,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            env=environment,
-            creationflags=getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0),
+            environment=environment,
+            timeout=timeout,
         )
     except OSError as exc:
-        return _prediction(
+        prediction = _prediction(
             record,
             arm_id=arm_id,
             provider="xai-grok-build-cli",
@@ -410,16 +542,11 @@ def _run_grok_build_one(
             started=started,
             error={"kind": "process_error", "type": type(exc).__name__},
         )
-    try:
-        stdout, stderr = process.communicate(timeout=timeout)
-    except subprocess.TimeoutExpired:
-        subprocess.run(
-            ["taskkill", "/F", "/T", "/PID", str(process.pid)],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        return _prediction(
+        return _with_stream_metadata(prediction, stream_format="grok-streaming-json", event_count=0)
+    finally:
+        leader_socket.unlink(missing_ok=True)
+    if timed_out:
+        prediction = _prediction(
             record,
             arm_id=arm_id,
             provider="xai-grok-build-cli",
@@ -429,13 +556,14 @@ def _run_grok_build_one(
             started=started,
             error={"kind": "timeout"},
         )
-    output = (stdout or "") + "\n" + (stderr or "")
+        return _with_stream_metadata(prediction, stream_format="grok-streaming-json", event_count=event_count)
+    output = stdout + "\n" + stderr
     surfaced = _surfaced_models(output)
-    if process.returncode != 0:
+    if returncode != 0:
         lower = output.lower()
         status = ExecutionStatus.RATE_LIMITED if "429" in lower or "rate limit" in lower else ExecutionStatus.PROVIDER_ERROR
         kind = "rate_limited" if status is ExecutionStatus.RATE_LIMITED else "process_exit"
-        return _prediction(
+        prediction = _prediction(
             record,
             arm_id=arm_id,
             provider="xai-grok-build-cli",
@@ -443,12 +571,13 @@ def _run_grok_build_one(
             route=route,
             status=status,
             started=started,
-            error={"kind": kind, "returncode": process.returncode},
+            error={"kind": kind, "returncode": returncode},
             surfaced_model_ids=surfaced,
         )
+        return _with_stream_metadata(prediction, stream_format="grok-streaming-json", event_count=event_count)
     label = parse_label(output, record)
     if label is None:
-        return _prediction(
+        prediction = _prediction(
             record,
             arm_id=arm_id,
             provider="xai-grok-build-cli",
@@ -459,7 +588,8 @@ def _run_grok_build_one(
             error={"kind": "label_not_found"},
             surfaced_model_ids=surfaced,
         )
-    return _prediction(
+        return _with_stream_metadata(prediction, stream_format="grok-streaming-json", event_count=event_count)
+    prediction = _prediction(
         record,
         arm_id=arm_id,
         provider="xai-grok-build-cli",
@@ -470,6 +600,7 @@ def _run_grok_build_one(
         label=label,
         surfaced_model_ids=surfaced,
     )
+    return _with_stream_metadata(prediction, stream_format="grok-streaming-json", event_count=event_count)
 
 
 def _run_grok_build_arm(
@@ -480,18 +611,104 @@ def _run_grok_build_arm(
     route: str,
     environment: dict[str, str],
     timeout: float,
+    workers: int,
+    prediction_path: Path,
+    progress_path: Path,
 ) -> list[JudgePrediction]:
-    return [
-        _run_grok_build_one(
+    return _run_parallel_arm(
+        records,
+        arm_id=arm_id,
+        provider="xai-grok-build-cli",
+        model=model,
+        route=route,
+        workers=workers,
+        prediction_path=prediction_path,
+        progress_path=progress_path,
+        evaluate=lambda record: _run_grok_build_one(
             record,
             arm_id=arm_id,
             model=model,
             route=route,
             environment=environment,
             timeout=timeout,
+        ),
+    )
+
+
+def _run_parallel_arm(
+    records: list[JudgeRecord],
+    *,
+    arm_id: str,
+    provider: str,
+    model: str,
+    route: str,
+    workers: int,
+    prediction_path: Path,
+    progress_path: Path,
+    evaluate: Callable[[JudgeRecord], JudgePrediction],
+) -> list[JudgePrediction]:
+    """Evaluate records concurrently and checkpoint each normalized result."""
+
+    prediction_path.parent.mkdir(parents=True, exist_ok=True)
+    progress_path.parent.mkdir(parents=True, exist_ok=True)
+    prediction_path.write_text("", encoding="utf-8")
+    by_record_id: dict[str, JudgePrediction] = {}
+
+    def safe_evaluate(record: JudgeRecord) -> JudgePrediction:
+        try:
+            return evaluate(record)
+        except Exception as exc:  # noqa: BLE001  # keep one unexpected provider/adapter fault local to its record
+            return _prediction(
+                record,
+                arm_id=arm_id,
+                provider=provider,
+                model=model,
+                route=route,
+                status=ExecutionStatus.PROVIDER_ERROR,
+                started=time.perf_counter(),
+                error={"kind": "runner_exception", "type": type(exc).__name__},
+            )
+
+    def checkpoint(prediction: JudgePrediction, handle: Any) -> None:
+        by_record_id[prediction.record_id] = prediction
+        handle.write(prediction.model_dump_json() + "\n")
+        handle.flush()
+        os.fsync(handle.fileno())
+        progress_path.write_text(
+            json.dumps(
+                {
+                    "arm_id": arm_id,
+                    "provider": provider,
+                    "route": route,
+                    "requested_model": model,
+                    "streaming": True,
+                    "workers": workers,
+                    "record_count": len(records),
+                    "completed_count": len(by_record_id),
+                    "status_counts": dict(sorted(Counter(item.execution_status.value for item in by_record_id.values()).items())),
+                    "last_record_id": prediction.record_id,
+                    "updated_at_utc": datetime.now(UTC).isoformat(),
+                },
+                indent=2,
+                sort_keys=True,
+            )
+            + "\n",
+            encoding="utf-8",
         )
-        for record in records
-    ]
+
+    with prediction_path.open("a", encoding="utf-8") as handle:
+        if workers <= 1:
+            for record in records:
+                checkpoint(safe_evaluate(record), handle)
+        else:
+            with ThreadPoolExecutor(max_workers=workers) as executor:
+                futures = {executor.submit(safe_evaluate, record): record.record_id for record in records}
+                for future in as_completed(futures):
+                    checkpoint(future.result(), handle)
+
+    if set(by_record_id) != {record.record_id for record in records}:
+        raise RuntimeError(f"arm {arm_id} did not produce one result per record")
+    return [by_record_id[record.record_id] for record in records]
 
 
 def _run_codex_arm(
@@ -503,21 +720,200 @@ def _run_codex_arm(
     environment: dict[str, str],
     timeout: float,
     workers: int,
+    prediction_path: Path,
+    progress_path: Path,
 ) -> list[JudgePrediction]:
-    def evaluate(record: JudgeRecord) -> JudgePrediction:
-        return _run_codex_one(
+    return _run_parallel_arm(
+        records,
+        arm_id=arm_id,
+        provider="codex",
+        model=model,
+        route=route,
+        workers=workers,
+        prediction_path=prediction_path,
+        progress_path=progress_path,
+        evaluate=lambda record: _run_codex_one(
             record,
             arm_id=arm_id,
             model=model,
             route=route,
             environment=environment,
             timeout=timeout,
-        )
+        ),
+    )
 
-    if workers <= 1:
-        return [evaluate(record) for record in records]
-    with ThreadPoolExecutor(max_workers=workers) as executor:
-        return list(executor.map(evaluate, records))
+
+def _qwen_payload(record: JudgeRecord, model: str) -> dict[str, Any]:
+    decision = build_decision_spec(record)
+    return {
+        "model": model,
+        "messages": [
+            {"role": "system", "content": "Return a JSON object with a legal label."},
+            {"role": "user", "content": json.dumps(decision.provider_payload(), sort_keys=True)},
+        ],
+        "temperature": 0,
+        "stream": True,
+    }
+
+
+def _qwen_stream_response(
+    response: httpx.Response,
+    *,
+    record: JudgeRecord,
+) -> tuple[str, list[str], dict[str, Any] | None, int]:
+    parts: list[str] = []
+    surfaced: set[str] = set()
+    usage: dict[str, Any] | None = None
+    event_count = 0
+    for raw_line in response.iter_lines():
+        line = raw_line.decode() if isinstance(raw_line, bytes) else raw_line
+        line = line.strip()
+        if not line:
+            continue
+        if line.startswith("data:"):
+            line = line[5:].strip()
+        if line == "[DONE]":
+            continue
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(event, Mapping):
+            continue
+        event_count += 1
+        model_id = event.get("model")
+        if isinstance(model_id, str) and model_id:
+            surfaced.add(model_id)
+        raw_usage = event.get("usage")
+        if isinstance(raw_usage, Mapping):
+            usage = {str(key): value for key, value in raw_usage.items()}
+        choices = event.get("choices")
+        if not isinstance(choices, list):
+            continue
+        for choice in choices:
+            if not isinstance(choice, Mapping):
+                continue
+            delta = choice.get("delta") or choice.get("message")
+            if not isinstance(delta, Mapping):
+                continue
+            content = delta.get("content")
+            if isinstance(content, str):
+                parts.append(content)
+            elif isinstance(content, list):
+                for block in content:
+                    if isinstance(block, Mapping) and isinstance(block.get("text"), str):
+                        parts.append(block["text"])
+    if not parts:
+        raise ValueError(f"stream contained no message content for {record.record_id}")
+    return "".join(parts), sorted(surfaced), usage, event_count
+
+
+def _run_qwen_one(
+    record: JudgeRecord,
+    *,
+    arm_id: str,
+    model: str,
+    route: str,
+    api_key: str | None,
+    base_url: str,
+    client: httpx.Client,
+    timeout: float,
+) -> JudgePrediction:
+    started = time.perf_counter()
+    if not api_key:
+        return _with_stream_metadata(
+            _prediction(
+                record,
+                arm_id=arm_id,
+                provider="yolo-auto",
+                model=model,
+                route=route,
+                status=ExecutionStatus.SKIPPED,
+                started=started,
+                error={"kind": "missing_api_key"},
+            ),
+            stream_format="openai-sse",
+            event_count=0,
+        )
+    try:
+        with client.stream(
+            "POST",
+            f"{base_url.rstrip('/')}/chat/completions",
+            headers={"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"},
+            json=_qwen_payload(record, model),
+        ) as response:
+            if response.status_code == 429:
+                prediction = _prediction(
+                    record,
+                    arm_id=arm_id,
+                    provider="yolo-auto",
+                    model=model,
+                    route=route,
+                    status=ExecutionStatus.RATE_LIMITED,
+                    started=started,
+                    error={"kind": "rate_limited", "status_code": response.status_code},
+                )
+                return _with_stream_metadata(prediction, stream_format="openai-sse", event_count=0)
+            if response.status_code >= 400:
+                prediction = _prediction(
+                    record,
+                    arm_id=arm_id,
+                    provider="yolo-auto",
+                    model=model,
+                    route=route,
+                    status=ExecutionStatus.PROVIDER_ERROR,
+                    started=started,
+                    error={"kind": "provider_error", "status_code": response.status_code},
+                )
+                return _with_stream_metadata(prediction, stream_format="openai-sse", event_count=0)
+            content, surfaced, usage, event_count = _qwen_stream_response(response, record=record)
+        response_payload: dict[str, Any] = {
+            "model": surfaced[-1] if surfaced else model,
+            "choices": [{"message": {"content": content}}],
+        }
+        if usage is not None:
+            response_payload["usage"] = usage
+        prediction = normalize_typed_response(
+            response_payload,
+            record,
+            provider="yolo-auto",
+            model=model,
+            latency_ms=(time.perf_counter() - started) * 1000.0,
+        )
+        prediction.provider_metadata.update(
+            {
+                "arm_id": arm_id,
+                "requested_model": model,
+                "route": route,
+                "base_url": base_url,
+                "surfaced_model_ids": surfaced,
+            }
+        )
+        return _with_stream_metadata(prediction, stream_format="openai-sse", event_count=event_count)
+    except httpx.TimeoutException:
+        prediction = _prediction(
+            record,
+            arm_id=arm_id,
+            provider="yolo-auto",
+            model=model,
+            route=route,
+            status=ExecutionStatus.PROVIDER_ERROR,
+            started=started,
+            error={"kind": "timeout"},
+        )
+        return _with_stream_metadata(prediction, stream_format="openai-sse", event_count=0)
+    except (httpx.HTTPError, OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+        prediction = _prediction(
+            record,
+            arm_id=arm_id,
+            provider="yolo-auto",
+            model=model,
+            route=route,
+            status=ExecutionStatus.PARSE_ERROR if isinstance(exc, (TypeError, ValueError, json.JSONDecodeError)) else ExecutionStatus.PROVIDER_ERROR,
+            started=started,
+            error={"kind": "parse_error" if isinstance(exc, (TypeError, ValueError, json.JSONDecodeError)) else "adapter_error", "type": type(exc).__name__},
+        )
+        return _with_stream_metadata(prediction, stream_format="openai-sse", event_count=0)
 
 
 def _run_qwen_arm(
@@ -528,52 +924,49 @@ def _run_qwen_arm(
     route: str,
     environment: dict[str, str],
     timeout: float,
+    workers: int,
+    prediction_path: Path,
+    progress_path: Path,
 ) -> list[JudgePrediction]:
     api_key = environment.get("YOLO_AUTO_API_KEY") or environment.get("YOLO_API_KEY") or environment.get("QWEN_API_KEY")
-    base_url = (
-        environment.get("YOLO_AUTO_BASE_URL")
-        or environment.get("QWEN_API_URL")
-        or "https://api.yolo-auto.com/v1"
-    )
-    predictions: list[JudgePrediction] = []
-    with httpx.Client(timeout=timeout) as client:
-        for record in records:
-            started = time.perf_counter()
-            try:
-                prediction = run_yolo_qwen(
-                    [record],
-                    model=model,
-                    api_key=api_key,
-                    base_url=base_url,
-                    client=client,
-                    timeout=timeout,
-                )[0]
-            except (httpx.HTTPError, OSError, ValueError) as exc:
-                prediction = _prediction(
-                    record,
-                    arm_id=arm_id,
-                    provider="yolo-auto",
-                    model=model,
-                    route=route,
-                    status=ExecutionStatus.PROVIDER_ERROR,
-                    started=started,
-                    error={"kind": "adapter_error", "type": type(exc).__name__},
-                )
-            prediction.provider_metadata.update(
-                {
-                    "arm_id": arm_id,
-                    "requested_model": model,
-                    "route": route,
-                    "base_url": base_url,
-                    "surfaced_model_ids": [
-                        str(prediction.provider_metadata["resolved_model"])
-                    ]
-                    if prediction.provider_metadata.get("resolved_model")
-                    else [],
-                }
-            )
-            predictions.append(prediction)
-    return predictions
+    base_url = environment.get("YOLO_AUTO_BASE_URL") or environment.get("QWEN_API_URL") or "https://api.yolo-auto.com/v1"
+    clients: list[httpx.Client] = []
+    clients_lock = threading.Lock()
+    thread_state = threading.local()
+
+    def evaluate(record: JudgeRecord) -> JudgePrediction:
+        client = getattr(thread_state, "client", None)
+        if client is None:
+            client = httpx.Client(timeout=timeout)
+            thread_state.client = client
+            with clients_lock:
+                clients.append(client)
+        return _run_qwen_one(
+            record,
+            arm_id=arm_id,
+            model=model,
+            route=route,
+            api_key=api_key,
+            base_url=base_url,
+            client=client,
+            timeout=timeout,
+        )
+
+    try:
+        return _run_parallel_arm(
+            records,
+            arm_id=arm_id,
+            provider="yolo-auto",
+            model=model,
+            route=route,
+            workers=workers,
+            prediction_path=prediction_path,
+            progress_path=progress_path,
+            evaluate=evaluate,
+        )
+    finally:
+        for client in clients:
+            client.close()
 
 
 def _wilson(successes: int, trials: int) -> dict[str, float] | None:
@@ -685,6 +1078,8 @@ def _run(args: argparse.Namespace) -> dict[str, Any]:
     output.mkdir(parents=True, exist_ok=True)
     prediction_dir = output / "predictions"
     prediction_dir.mkdir()
+    progress_dir = output / "progress"
+    progress_dir.mkdir()
     pool = Path(args.pool)
     selected_rows, records, domains = _load_pool(pool, args.partition, args.limit, args.record_ids_file)
     environment = {**_load_dotenv(Path(args.env_file) if args.env_file else None), **os.environ}
@@ -704,6 +1099,9 @@ def _run(args: argparse.Namespace) -> dict[str, Any]:
                 route=arm["route"],
                 environment=environment,
                 timeout=args.timeout,
+                workers=args.workers,
+                prediction_path=prediction_dir / f"{arm_id}.jsonl",
+                progress_path=progress_dir / f"{arm_id}.json",
             )
         elif arm["provider"] == "codex":
             arm_predictions = _run_codex_arm(
@@ -714,6 +1112,8 @@ def _run(args: argparse.Namespace) -> dict[str, Any]:
                 environment=environment,
                 timeout=args.timeout,
                 workers=args.workers,
+                prediction_path=prediction_dir / f"{arm_id}.jsonl",
+                progress_path=progress_dir / f"{arm_id}.json",
             )
         else:
             arm_predictions = _run_qwen_arm(
@@ -723,6 +1123,9 @@ def _run(args: argparse.Namespace) -> dict[str, Any]:
                 route=arm["route"],
                 environment=environment,
                 timeout=args.timeout,
+                workers=args.workers,
+                prediction_path=prediction_dir / f"{arm_id}.jsonl",
+                progress_path=progress_dir / f"{arm_id}.json",
             )
         predictions[arm_id] = arm_predictions
         (prediction_dir / f"{arm_id}.jsonl").write_text(
@@ -743,6 +1146,16 @@ def _run(args: argparse.Namespace) -> dict[str, Any]:
             "typed_question_spec_fingerprint": manifest["typed_question_spec_fingerprint"],
         },
         "record_count": len(records),
+        "execution": {
+            "workers": args.workers,
+            "streaming": True,
+            "stream_formats": {
+                "grok": "grok-streaming-json",
+                "luna": "codex-jsonl",
+                "sol": "codex-jsonl",
+                "qwen_flash": "openai-sse",
+            },
+        },
         "record_ids_unique": len({record.record_id for record in records}) == len(records),
         "provider_pool_order_sha256": hashlib.sha256(
             "\n".join(row["record"]["record_id"] for row in selected_rows).encode("utf-8")
