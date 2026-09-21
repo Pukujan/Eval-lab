@@ -25,15 +25,29 @@ MODEL = "qwen3.8-flash"
 EXPERIMENT_ID = "EXP-20260921-013-qwen-multidomain-holdout"
 
 
-def _load_pool(path: Path, partition: str) -> tuple[list[dict[str, Any]], list[JudgeRecord]]:
+def _load_pool(
+    path: Path, partition: str, record_ids_file: Path | None = None
+) -> tuple[list[dict[str, Any]], list[JudgeRecord]]:
     rows = [
         json.loads(line)
         for line in (path / "records.jsonl").read_text(encoding="utf-8").splitlines()
         if line.strip()
     ]
-    selected = [row for row in rows if row["partition"] == partition]
+    requested = (
+        {line.strip() for line in record_ids_file.read_text(encoding="utf-8").splitlines() if line.strip()}
+        if record_ids_file is not None
+        else None
+    )
+    selected = [
+        row
+        for row in rows
+        if row["partition"] == partition
+        and (requested is None or row["record"]["record_id"] in requested)
+    ]
     if not selected:
         raise ValueError(f"no records found for partition {partition!r}")
+    if requested is not None and {row["record"]["record_id"] for row in selected} != requested:
+        raise ValueError("retry record IDs are not all present in the requested partition")
     records = [JudgeRecord.model_validate(row["record"]) for row in selected]
     if len({record.record_id for record in records}) != len(records):
         raise ValueError("partition contains duplicate record IDs")
@@ -88,7 +102,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         raise FileExistsError(f"refusing to overwrite non-empty output: {output}")
     output.mkdir(parents=True, exist_ok=True)
     pool = Path(args.pool)
-    rows, records = _load_pool(pool, args.partition)
+    rows, records = _load_pool(pool, args.partition, args.record_ids_file)
     environment = {**_load_dotenv(Path(args.env_file) if args.env_file else None), **os.environ}
     api_key = environment.get("YOLO_AUTO_API_KEY") or environment.get("YOLO_API_KEY") or environment.get("QWEN_API_KEY")
     if not api_key:
@@ -119,6 +133,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "pool_fingerprint": json.loads((pool / "source-manifest.json").read_text(encoding="utf-8"))["records_fingerprint"],
         "holdout_manifest_fingerprint": json.loads((pool / "holdout-manifest.json").read_text(encoding="utf-8"))["record_ids_fingerprint"],
         "record_count": len(records),
+        "record_ids_file": str(args.record_ids_file) if args.record_ids_file else None,
         "workers": args.workers,
         "timeout_seconds": args.timeout,
         "streaming": True,
@@ -152,6 +167,7 @@ def main() -> None:
     parser.add_argument("--pool", type=Path, default=Path("experiments/EXP-20260921-013-qwen-multidomain-holdout"))
     parser.add_argument("--partition", choices=("public_selection", "blind_holdout"), required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--record-ids-file", type=Path)
     parser.add_argument("--timeout", type=float, default=120.0)
     parser.add_argument("--workers", type=int, default=1)
     parser.add_argument("--env-file", type=Path)
