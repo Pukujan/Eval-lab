@@ -146,7 +146,8 @@ class QwenJudge:
         dtype_name = config.dtype or ("float16" if device.startswith("cuda") else "float32")
         dtype = getattr(torch, dtype_name)
         if device.startswith("cuda") and config.gpu_memory_fraction is not None:
-            torch.cuda.set_per_process_memory_fraction(config.gpu_memory_fraction, device=device)
+            memory_device = device if ":" in device else f"{device}:0"
+            torch.cuda.set_per_process_memory_fraction(config.gpu_memory_fraction, device=memory_device)
         tokenizer = AutoTokenizer.from_pretrained(config.model_id, revision=config.revision)
         load_kwargs: dict[str, Any] = {
             "revision": config.revision,
