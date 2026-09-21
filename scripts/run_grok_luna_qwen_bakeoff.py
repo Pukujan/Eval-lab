@@ -1112,9 +1112,9 @@ def _run(args: argparse.Namespace) -> dict[str, Any]:
         raise FileExistsError(f"refusing to resume an already finalized output: {output}")
     output.mkdir(parents=True, exist_ok=True)
     prediction_dir = output / "predictions"
-    prediction_dir.mkdir()
+    prediction_dir.mkdir(exist_ok=True)
     progress_dir = output / "progress"
-    progress_dir.mkdir()
+    progress_dir.mkdir(exist_ok=True)
     pool = Path(args.pool)
     selected_rows, records, domains = _load_pool(pool, args.partition, args.limit, args.record_ids_file)
     environment = {**_load_dotenv(Path(args.env_file) if args.env_file else None), **os.environ}
