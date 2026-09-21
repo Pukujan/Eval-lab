@@ -64,11 +64,11 @@ The final record counts and fingerprint are intentionally pending TASK-0011 comp
 
 ## Acceptance criteria
 
-- [ ] JevBench audit is committed with source links, scoring rules, and threats to validity.
+- [x] JevBench audit is committed with source links, scoring rules, and threats to validity.
 - [x] independent source manifest and split fingerprint are frozen before live final evaluation;
-- [ ] JevBench tasks and labels are excluded from the primary independent score;
-- [ ] pinned Jev, rolling Jev, Qwen, and local comparison arms use identical canonical record IDs where available;
-- [ ] native probability metrics and label-only outputs are kept distinct;
+- [x] JevBench tasks and labels are excluded from the primary independent score;
+- [x] pinned Jev, rolling Jev, Qwen, and local comparison arms use identical canonical record IDs where available;
+- [x] native probability metrics and label-only outputs are kept distinct;
 - [x] option-order, paraphrase, and repeatability live perturbation coverage is complete; provider-failure accounting is complete;
 - [x] per-domain metrics, uncertainty, latency, cost, and coverage are reported;
 - [x] no composite score is used as the primary acceptance criterion;
@@ -165,3 +165,9 @@ Branch: `task/TASK-0012-independent-jev-benchmark`
 Experiment: `EXP-20260921-014-independent-jev-benchmark`
 Status: completed; pinned primary and separate rolling/robustness artifacts recorded
 Next atomic action: review the committed TASK-0012 independent benchmark; do not start a dependent task without explicit triage.
+
+### 2026-09-21 — completion audit correction
+
+The completion audit verified the pushed branch `0675ca9`, clean experiment checksums (`46` entries, `0` mismatches), frozen source and blind fingerprints, all live provider artifacts, and the final local gate. Four acceptance checkboxes were corrected from unchecked to checked because their evidence was already present: committed audit, JevBench exclusion, identical canonical IDs across comparison arms, and separation of native probabilities from label-only outputs. No experiment data or protocol changed.
+
+Next atomic action: review TASK-0012; no dependent task is authorized.
