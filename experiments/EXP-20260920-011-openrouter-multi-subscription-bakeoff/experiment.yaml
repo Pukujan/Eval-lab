@@ -1,0 +1,44 @@
+id: EXP-20260920-011-openrouter-multi-subscription-bakeoff
+status: plan-only
+hypothesis: >
+  OpenRouter access to the configured Grok 4.6, Luna, and Sol arms can provide
+  matched typed judgments while the OpenCode subscription paths are unavailable.
+created_at: 2026-09-20
+benchmark:
+  name: EvalLab-Select
+  version: 0.1.0
+  fingerprint: 18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5
+  source_revision: 210d026faf9955653af8916fad021475a3f00453
+  canonicalization_version: eval-lab-select-single-v1
+  threshold_selection_records: 2863
+  final_evaluation_records: 2356
+  provider_prefix_records: 500
+student:
+  source_task: TASK-0009
+  selected_arm: D
+  model_family: tfidf-logistic-regression
+typed_system_one:
+  spec_id: eval-lab-system-one
+  spec_version: 0.1.0
+  context_limit: 4096
+arms:
+  grok:
+    provider: openrouter
+    model: x-ai/grok-4.6
+  luna:
+    provider: openrouter
+    model: openai/gpt-5.6-luna
+  sol:
+    provider: openrouter
+    model: openai/gpt-5.6-sol
+execution:
+  endpoint: https://openrouter.ai/api/v1/chat/completions
+  streaming: true
+  granularity: one_record_per_request
+  api_key_env: OPENROUTER_API_KEY
+  timeout_seconds: 120
+  workers: 4
+deferred:
+  qwen_flash: EXP-20260920-009-selective-escalation/qwen-streaming-final-merged-20260920-010
+  local_qwen_1_7b: weights_unavailable
+  local_qwen_4b: weights_unavailable
