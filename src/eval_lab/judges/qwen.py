@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import json
 import math
 import time
 from dataclasses import dataclass
 from typing import Any
 
+from eval_lab.escalation.spec import build_decision_spec
 from eval_lab.schema import ExecutionStatus, JudgePrediction, JudgeRecord, JudgmentMode
 
 
@@ -24,6 +26,7 @@ class QwenRuntimeConfig:
     device: str | None = None
     dtype: str | None = None
     single_labels: tuple[str, str] = ("pass", "fail")
+    prompt_version: str = "qwen-legacy-v1"
 
     def __post_init__(self) -> None:
         if self.context_cap <= 0:
@@ -43,8 +46,32 @@ def legal_labels(record: JudgeRecord, config: QwenRuntimeConfig | None = None) -
     return list((config or QwenRuntimeConfig()).single_labels)
 
 
-def format_judge_prompt(record: JudgeRecord) -> str:
+def format_system_one_judge_prompt(record: JudgeRecord, *, context_cap: int = 4096) -> str:
+    """Format the repository-owned typed System-One payload for local scoring."""
+
+    decision = build_decision_spec(record, context_limit=context_cap)
+    payload = {"record_id": decision.record_id, **decision.provider_payload()}
+    labels = ", ".join(decision.legal_labels)
+    return (
+        "You are a strictly typed objective evaluation judge. "
+        f"Return exactly one legal verdict from [{labels}] after `Verdict:`. "
+        "Use only the supplied state, question, and criteria.\n\n"
+        + json.dumps(payload, sort_keys=True)
+    )
+
+
+def format_judge_prompt(
+    record: JudgeRecord,
+    *,
+    prompt_version: str = "qwen-legacy-v1",
+    context_cap: int = 4096,
+) -> str:
     """Format a short rubric prompt whose verdict boundary is explicit."""
+
+    if prompt_version == "eval-lab-system-one-local-v1":
+        return format_system_one_judge_prompt(record, context_cap=context_cap)
+    if prompt_version != "qwen-legacy-v1":
+        raise ValueError(f"unsupported Qwen prompt version: {prompt_version}")
 
     rubric = "\n".join(f"- {criterion.description}" for criterion in record.rubric)
     candidate_b = record.candidate_b if record.candidate_b is not None else "(not applicable)"
@@ -147,7 +174,11 @@ class QwenJudge:
         """Score one record and emit normalized probabilities and raw log-scores."""
 
         started = time.perf_counter()
-        prompt = format_judge_prompt(record)
+        prompt = format_judge_prompt(
+            record,
+            prompt_version=self.config.prompt_version,
+            context_cap=self.config.context_cap,
+        )
         labels = legal_labels(record, self.config)
         scores = {label: self._score_label(prompt, label)[0] for label in labels}
         probabilities = softmax_scores(scores)
@@ -156,7 +187,7 @@ class QwenJudge:
         return JudgePrediction(
             record_id=record.record_id,
             judge_id=self.config.model_id,
-            protocol_version="qwen-forced-choice-v1",
+            protocol_version=self.config.prompt_version,
             label=label,
             probabilities=probabilities,
             raw_scores=scores,
@@ -171,6 +202,7 @@ class QwenJudge:
                 "dtype": self.dtype,
                 "context_cap": self.config.context_cap,
                 "score_semantics": "sum conditional log-likelihood of legal label continuation",
+                "prompt_version": self.config.prompt_version,
             },
         )
 
@@ -185,6 +217,7 @@ __all__ = [
     "QwenJudge",
     "QwenRuntimeConfig",
     "format_judge_prompt",
+    "format_system_one_judge_prompt",
     "legal_labels",
     "softmax_scores",
 ]

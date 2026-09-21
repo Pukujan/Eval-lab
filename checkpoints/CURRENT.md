@@ -706,3 +706,22 @@ was used, and EXP-015 was not modified.
 
 Next atomic action: run the full repository gate, commit TASK-0016, and leave the
 primary EXP-015 result frozen.
+
+### 2026-09-21 — TASK-0017 judge calibration study opened
+
+TASK-0016 is complete and immutable. A new organized worktree
+`D:\\claude\\eval-lab\\.worktrees\\TASK-0017-calibration` on branch
+`task/TASK-0017-calibration-study` is opened from commit `f446271`.
+
+EXP-017 preregisters a local `Qwen/Qwen3-4B` forced-choice calibration study over
+the exact EXP-015 pool. Public-selection records fit one temperature artifact per
+judgment mode; blind-holdout records are evaluation-only. Existing direct Grok Build,
+Luna, remote Qwen Flash, and pinned Jev outputs are reused offline as immutable
+label-only references. No OpenCode or OpenRouter route is allowed.
+
+The machine has a Transformers/PyTorch runtime and an RTX 4060 Laptop GPU, but the
+Qwen 4B checkpoint is not currently cached; the next gate is a bounded local
+feasibility smoke with explicit runtime/quantization evidence before blind scaling.
+
+Next atomic action: commit the EXP-017 preregistration and local prompt scaffolding,
+then run the bounded local Qwen 4B smoke without changing EXP-015 or EXP-014.

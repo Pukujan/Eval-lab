@@ -3,6 +3,7 @@ import pytest
 from eval_lab.judges.qwen import (
     QwenRuntimeConfig,
     format_judge_prompt,
+    format_system_one_judge_prompt,
     legal_labels,
     softmax_scores,
 )
@@ -37,6 +38,22 @@ def test_legal_labels_and_prompt_are_canonical() -> None:
     assert "Candidate A:" in prompt
     assert "Candidate B:" in prompt
     assert "Verdict:" in prompt
+
+
+def test_system_one_prompt_is_typed_and_declared() -> None:
+    prompt = format_judge_prompt(
+        _record(JudgmentMode.SINGLE),
+        prompt_version="eval-lab-system-one-local-v1",
+    )
+    assert '"state"' in prompt
+    assert '"questions"' in prompt
+    assert "Verdict:" in prompt
+
+
+def test_system_one_prompt_builder_matches_direct_payload_shape() -> None:
+    prompt = format_system_one_judge_prompt(_record(JudgmentMode.PAIRWISE))
+    assert '"criteria"' in prompt
+    assert "A, B, TIE" in prompt
 
 
 def test_softmax_preserves_order_and_normalizes() -> None:
