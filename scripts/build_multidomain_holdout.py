@@ -265,8 +265,14 @@ def _checksums(root: Path) -> None:
 
 def build(args: argparse.Namespace) -> dict[str, Any]:
     output = Path(args.output)
-    if output.exists() and any(output.iterdir()):
-        raise FileExistsError(f"refusing to overwrite non-empty output: {output}")
+    if output.exists():
+        existing = {path.name for path in output.iterdir()}
+        allowed = {"PLAN.md", "README.md", "experiment.yaml"} | {
+            name for name in existing if name.startswith("smoke-qwen-")
+        }
+        unexpected = existing - allowed
+        if unexpected:
+            raise FileExistsError(f"refusing to overwrite existing artifacts: {sorted(unexpected)}")
     output.mkdir(parents=True, exist_ok=True)
     rows = _existing_records(Path(args.benchmark), public_limit=args.existing_public, holdout_limit=args.existing_holdout)
     rows.extend(_arc_easy(public_limit=args.dataset_public, holdout_limit=args.dataset_holdout))
