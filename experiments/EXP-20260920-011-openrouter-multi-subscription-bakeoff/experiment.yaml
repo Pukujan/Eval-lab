@@ -1,5 +1,5 @@
 id: EXP-20260920-011-openrouter-multi-subscription-bakeoff
-status: plan-only
+status: completed_with_provider_statuses
 hypothesis: >
   OpenRouter access to the configured Grok 4.6, Luna, and Sol arms can provide
   matched typed judgments while the OpenCode subscription paths are unavailable.
@@ -38,6 +38,11 @@ execution:
   api_key_env: OPENROUTER_API_KEY
   timeout_seconds: 120
   workers: 4
+outcome:
+  grok: "368 ok; 132 http_status 402"
+  luna: "500 http_status 402"
+  sol: "500 http_status 402"
+  status: account_balance_exhausted
 deferred:
   qwen_flash: EXP-20260920-009-selective-escalation/qwen-streaming-final-merged-20260920-010
   local_qwen_1_7b: weights_unavailable

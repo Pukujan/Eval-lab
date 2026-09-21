@@ -1,0 +1,21 @@
+{
+  "arms": [
+    "grok",
+    "luna",
+    "sol"
+  ],
+  "pairs": {
+    "grok__vs__luna": {
+      "agreement_count": 0,
+      "comparable_count": 0
+    },
+    "grok__vs__sol": {
+      "agreement_count": 0,
+      "comparable_count": 0
+    },
+    "luna__vs__sol": {
+      "agreement_count": 0,
+      "comparable_count": 0
+    }
+  }
+}
