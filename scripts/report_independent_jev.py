@@ -37,6 +37,8 @@ def _load_pool(pool: Path, partition: str) -> tuple[list[dict[str, Any]], list[J
 
 
 def _load_prediction_rows(path: Path) -> dict[str, JudgePrediction]:
+    if path.is_dir():
+        path = path / "predictions.jsonl"
     predictions: dict[str, JudgePrediction] = {}
     for line in path.read_text(encoding="utf-8").splitlines():
         if not line.strip():
@@ -177,6 +179,13 @@ def _run(args: argparse.Namespace) -> dict[str, Any]:
         "gold_not_used_for_provider_requests": True,
         "jevbench_excluded": True,
     }
+    robustness = None
+    if args.perturbations is not None:
+        robustness_path = Path(args.perturbations)
+        if robustness_path.is_dir():
+            robustness_path = robustness_path / "results.json"
+        robustness = json.loads(robustness_path.read_text(encoding="utf-8"))
+        results["robustness"] = robustness
     output = pool / "results.json"
     output.write_text(json.dumps(results, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     lines = [
@@ -204,6 +213,13 @@ def _run(args: argparse.Namespace) -> dict[str, Any]:
             "",
             f"Pinned Jev vs Qwen agreement on comparable records: `{differentials['pinned_vs_qwen']['agreement_rate']}`.",
             f"Pinned Jev vs local student agreement on comparable records: `{differentials['pinned_vs_local']['agreement_rate']}`.",
+            *(
+                [
+                    f"Robustness subset: repeatability `{robustness['repeatability_rate']}`, option-order agreement `{robustness['option_order_agreement_rate']}`, rubric-paraphrase agreement `{robustness['rubric_paraphrase_agreement_rate']}`.",
+                ]
+                if robustness is not None
+                else []
+            ),
             "",
             "Provider failures remain unresolved; rolling Jev is a separate canary and is never pooled with pinned Jev.",
         ]
@@ -219,6 +235,7 @@ def main() -> None:
     parser.add_argument("--rolling", type=Path, required=True)
     parser.add_argument("--qwen", type=Path, default=QWEN_SOURCE)
     parser.add_argument("--student", type=Path, default=STUDENT_SOURCE)
+    parser.add_argument("--perturbations", type=Path)
     args = parser.parse_args()
     print(json.dumps(_run(args), sort_keys=True))
 

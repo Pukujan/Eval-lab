@@ -1,8 +1,8 @@
 id: EXP-20260921-014-independent-jev-benchmark
-status: frozen
+status: completed
 hypothesis: Jev will be competitive on objective typed decisions but show dataset-dependent calibration and perturbation behavior.
 created_at: 2026-09-21
-code_commit: pending freeze commit
+code_commit: 108a80eb761b8f5f87374b881fa4711a37c319d6
 seed: 20260921
 context_limit: 4096
 dataset:
@@ -44,4 +44,4 @@ artifacts:
   - predictions.jsonl (after live run)
   - results.json (after live run)
   - report.md (after live run)
-notes: Source and typed protocol frozen before live labels. JevBench is contextual external evidence and is excluded from the primary independent score. Pinned and rolling Jev are separate arms.
+notes: Source and typed protocol frozen before live labels. Pinned primary evaluation and the pre-frozen robustness subset are complete; rolling is a separately stopped canary. JevBench is contextual external evidence and is excluded from the primary independent score. Pinned and rolling Jev are separate arms.

@@ -1,0 +1,13 @@
+{
+  "experiment_id": "EXP-20260921-014-independent-jev-benchmark",
+  "model": "typesafe/jev-1.13",
+  "option_order_resolved": 0,
+  "primary_arm_separate": true,
+  "repeatability": {},
+  "repeatability_rate": null,
+  "rubric_paraphrase_resolved": 0,
+  "schedule_fingerprint": "47108ecb7c4de3e49974a289f985c8f03a03178fea2e05ca7b594558984687ce",
+  "status_counts": {
+    "provider_error": 60
+  }
+}

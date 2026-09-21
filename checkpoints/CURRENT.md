@@ -29,7 +29,7 @@ TASK-0009 and TASK-0010 selective escalation/research release are complete. TASK
 
 ## Next task
 
-TASK-0012 is active in `D:/claude/eval-lab-TASK-0012-Jev`. Its independent source IDs, splits, typed packet, model arms, and perturbation schedule are frozen in EXP-014. Next action is pinned and rolling one-record smoke, then separate blind evaluation. Do not use JevBench tasks, labels, or its composite score as the primary benchmark.
+TASK-0012 is active in `D:/claude/eval-lab-TASK-0012-Jev`. Its independent source IDs, splits, typed packet, model arms, and perturbation schedule are frozen in EXP-014. The pinned blind result is complete; rolling and robustness artifacts retain provider failures separately. Next action is provider-recovery robustness execution. Do not use JevBench tasks, labels, or its composite score as the primary benchmark.
 
 ## Queued foundation
 
@@ -460,3 +460,13 @@ TASK-0011 completed EXP-20260921-013. The frozen pool contains `648` public and 
 The final experiment bundle contains merged predictions, root `results.json`, root `report.md`, per-partition reports, limitations, source/split/holdout manifests, and `56` checksum entries with `0` mismatches. Local validation is contract `OK`, Ruff clean, `92 passed in 4.29s`, and research-artifact validation checksums `ok`, citation parsed, paper present, PROV-O parsed, RO-Crate `ok`, and SHACL conforms.
 
 TASK-0011 is complete. TASK-0012 remains planned only: its independent JevBench audit is committed at `c880215`, but no live Jev benchmark has started.
+
+### 2026-09-21 — TASK-0012 independent Jev benchmark complete
+
+EXP-014 is complete. The frozen independent pool is `648` public-selection plus `760` blind-holdout records, fingerprint `b7edd61269f0f7757e734bc7e3f665ac2bcd6d908a1e56f73f0b0291d55b64d8`, blind ID fingerprint `409428fc71b447d0114dd7a1929cbed34269a4318ef249c108582b70069d8d61`, and typed packet fingerprint `0d07bd8b8b60bd7f0b5b7a5f5819b7d329ea121f686b240e465695b6f6eca1e4`.
+
+Exact live commands are committed in `experiments/EXP-20260921-014-independent-jev-benchmark/commands.md`. Pinned `typesafe/jev-1.13` returned `760 ok`, `684/760` correct (`0.9000`, Wilson `[0.8766, 0.9194]`), balanced accuracy `0.9263`, macro-F1 `0.7483`, p95 `380.2734 ms`, and no native probabilities. Rolling `~typesafe/jev-latest` returned `263 ok`, `2 provider_error`, `495 skipped`, and stopped after two HTTP 503 errors; it is a separate nonrandom canary. Qwen comparison is `637/754` resolved correct (`0.8448`, unresolved `0.0079`); pinned-versus-Qwen agreement is `652/754` (`0.8647`).
+
+The final pinned robustness artifact has `60 ok`: repeatability `1.0`, option-order agreement `1.0`, and rubric-paraphrase agreement `0.9167`. Earlier 503 recovery artifacts remain preserved. No credential or `.env` file was written. Local validation: repository contract `OK`, Ruff clean, `94 passed`, checksums `0` mismatches, and `git diff --check` clean.
+
+Decision: TASK-0012 acceptance is satisfied. JevBench remains contextual evidence only; the independent Eval Lab metric vector is primary. Next atomic action: review TASK-0012; do not begin a dependent task without explicit triage.
