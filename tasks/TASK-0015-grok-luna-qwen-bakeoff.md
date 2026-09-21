@@ -274,3 +274,20 @@ live and no final output artifact exists yet.
 Next atomic action: continue monitoring `runs/public-stream-parallel-20260921/progress/`,
 then validate the completed public artifact and record provider statuses before any
 blind-holdout execution.
+
+### 2026-09-21 — user-requested pause for worktree organization
+
+Status: paused for relocation, with the provider process stopped safely. The partial
+public run is preserved rather than discarded: Grok is `648/648` (`643 ok`, `5
+provider_error`), Luna is `532/648` (`532 ok`), and Qwen has not started. The run has
+no final `results.json`; its per-arm JSONL and progress checkpoints are the resume
+source of truth.
+
+Completed: added explicit `--resume` support that validates existing normalized
+checkpoints, skips completed records, and appends only missing records. The active
+worktree is ready to move from `D:\claude\eval-lab-TASK-0015-bakeoff` to the organized
+location `D:\claude\eval-lab\.worktrees\TASK-0015-bakeoff`.
+
+Next atomic action: move the registered Git worktree, verify its branch and partial
+artifacts at the new path, then resume the same public run with `--resume` from the
+organized location. Keep the blind holdout untouched.

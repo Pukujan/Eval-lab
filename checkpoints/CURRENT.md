@@ -204,6 +204,23 @@ boundaries; the blind holdout remains untouched.
 Next atomic action: monitor the live per-arm progress JSON, validate the completed
 public artifact, and only then decide whether to request the blind holdout.
 
+### 2026-09-21 — TASK-0015 paused for organized worktree move
+
+The user requested a pause and relocation of the active work. The public provider
+process was stopped with its partial output preserved: Grok `648/648` (`643 ok`, `5
+provider_error`), Luna `532/648` (`532 ok`), and Qwen not started. The active run has
+no final result artifact yet, so its per-arm prediction/progress files are the
+authoritative resume checkpoints.
+
+The runner now supports `--resume`: it validates checkpoint IDs, skips completed
+records, appends only missing records, and finalizes the same run directory after all
+arms complete. The worktree will be moved to
+`D:\claude\eval-lab\.worktrees\TASK-0015-bakeoff`; no EXP-014 files or blind labels
+will be changed.
+
+Next atomic action: move and verify the registered worktree, then resume the public
+run from the organized path with `--resume`.
+
 ## Next atomic action
 
 TASK-0010 is complete at EXP-20260920-012. Leave the next program task unopened until review/triage. Historical checkpoint entries below are retained.

@@ -614,6 +614,7 @@ def _run_grok_build_arm(
     workers: int,
     prediction_path: Path,
     progress_path: Path,
+    existing_predictions: list[JudgePrediction] | None = None,
 ) -> list[JudgePrediction]:
     return _run_parallel_arm(
         records,
@@ -624,6 +625,7 @@ def _run_grok_build_arm(
         workers=workers,
         prediction_path=prediction_path,
         progress_path=progress_path,
+        existing_predictions=existing_predictions,
         evaluate=lambda record: _run_grok_build_one(
             record,
             arm_id=arm_id,
@@ -646,13 +648,19 @@ def _run_parallel_arm(
     prediction_path: Path,
     progress_path: Path,
     evaluate: Callable[[JudgeRecord], JudgePrediction],
+    existing_predictions: list[JudgePrediction] | None = None,
 ) -> list[JudgePrediction]:
     """Evaluate records concurrently and checkpoint each normalized result."""
 
     prediction_path.parent.mkdir(parents=True, exist_ok=True)
     progress_path.parent.mkdir(parents=True, exist_ok=True)
-    prediction_path.write_text("", encoding="utf-8")
-    by_record_id: dict[str, JudgePrediction] = {}
+    existing = existing_predictions or []
+    expected_ids = {record.record_id for record in records}
+    by_record_id = {prediction.record_id: prediction for prediction in existing}
+    if len(by_record_id) != len(existing) or not set(by_record_id).issubset(expected_ids):
+        raise ValueError(f"{arm_id} resume checkpoint has duplicate or out-of-pool records")
+    if existing_predictions is None:
+        prediction_path.write_text("", encoding="utf-8")
 
     def safe_evaluate(record: JudgeRecord) -> JudgePrediction:
         try:
@@ -696,17 +704,18 @@ def _run_parallel_arm(
             encoding="utf-8",
         )
 
+    pending_records = [record for record in records if record.record_id not in by_record_id]
     with prediction_path.open("a", encoding="utf-8") as handle:
         if workers <= 1:
-            for record in records:
+            for record in pending_records:
                 checkpoint(safe_evaluate(record), handle)
         else:
             with ThreadPoolExecutor(max_workers=workers) as executor:
-                futures = {executor.submit(safe_evaluate, record): record.record_id for record in records}
+                futures = {executor.submit(safe_evaluate, record): record.record_id for record in pending_records}
                 for future in as_completed(futures):
                     checkpoint(future.result(), handle)
 
-    if set(by_record_id) != {record.record_id for record in records}:
+    if set(by_record_id) != expected_ids:
         raise RuntimeError(f"arm {arm_id} did not produce one result per record")
     return [by_record_id[record.record_id] for record in records]
 
@@ -722,6 +731,7 @@ def _run_codex_arm(
     workers: int,
     prediction_path: Path,
     progress_path: Path,
+    existing_predictions: list[JudgePrediction] | None = None,
 ) -> list[JudgePrediction]:
     return _run_parallel_arm(
         records,
@@ -732,6 +742,7 @@ def _run_codex_arm(
         workers=workers,
         prediction_path=prediction_path,
         progress_path=progress_path,
+        existing_predictions=existing_predictions,
         evaluate=lambda record: _run_codex_one(
             record,
             arm_id=arm_id,
@@ -927,6 +938,7 @@ def _run_qwen_arm(
     workers: int,
     prediction_path: Path,
     progress_path: Path,
+    existing_predictions: list[JudgePrediction] | None = None,
 ) -> list[JudgePrediction]:
     api_key = environment.get("YOLO_AUTO_API_KEY") or environment.get("YOLO_API_KEY") or environment.get("QWEN_API_KEY")
     base_url = environment.get("YOLO_AUTO_BASE_URL") or environment.get("QWEN_API_URL") or "https://api.yolo-auto.com/v1"
@@ -963,6 +975,7 @@ def _run_qwen_arm(
             prediction_path=prediction_path,
             progress_path=progress_path,
             evaluate=evaluate,
+            existing_predictions=existing_predictions,
         )
     finally:
         for client in clients:
@@ -1071,10 +1084,32 @@ def _checksums(root: Path) -> None:
     (root / "checksums.sha256").write_text("\n".join(entries) + "\n", encoding="utf-8")
 
 
+def _load_prediction_checkpoint(
+    path: Path,
+    *,
+    records: list[JudgeRecord],
+    arm_id: str,
+) -> list[JudgePrediction]:
+    if not path.is_file():
+        return []
+    predictions = [
+        JudgePrediction.model_validate(json.loads(line))
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    expected_ids = {record.record_id for record in records}
+    ids = [prediction.record_id for prediction in predictions]
+    if len(ids) != len(set(ids)) or not set(ids).issubset(expected_ids):
+        raise ValueError(f"{arm_id} checkpoint contains duplicate or out-of-pool record IDs")
+    return predictions
+
+
 def _run(args: argparse.Namespace) -> dict[str, Any]:
     output = Path(args.output)
-    if output.exists() and any(output.iterdir()):
+    if output.exists() and any(output.iterdir()) and not args.resume:
         raise FileExistsError(f"refusing to overwrite non-empty output: {output}")
+    if args.resume and (output / "results.json").is_file():
+        raise FileExistsError(f"refusing to resume an already finalized output: {output}")
     output.mkdir(parents=True, exist_ok=True)
     prediction_dir = output / "predictions"
     prediction_dir.mkdir()
@@ -1091,6 +1126,15 @@ def _run(args: argparse.Namespace) -> dict[str, Any]:
     reports: dict[str, Any] = {}
     for arm_id in selected_arms:
         arm = ARMS[arm_id]
+        existing_predictions = (
+            _load_prediction_checkpoint(
+                prediction_dir / f"{arm_id}.jsonl",
+                records=records,
+                arm_id=arm_id,
+            )
+            if args.resume
+            else None
+        )
         if arm_id == "grok":
             arm_predictions = _run_grok_build_arm(
                 records,
@@ -1102,6 +1146,7 @@ def _run(args: argparse.Namespace) -> dict[str, Any]:
                 workers=args.workers,
                 prediction_path=prediction_dir / f"{arm_id}.jsonl",
                 progress_path=progress_dir / f"{arm_id}.json",
+                existing_predictions=existing_predictions,
             )
         elif arm["provider"] == "codex":
             arm_predictions = _run_codex_arm(
@@ -1114,6 +1159,7 @@ def _run(args: argparse.Namespace) -> dict[str, Any]:
                 workers=args.workers,
                 prediction_path=prediction_dir / f"{arm_id}.jsonl",
                 progress_path=progress_dir / f"{arm_id}.json",
+                existing_predictions=existing_predictions,
             )
         else:
             arm_predictions = _run_qwen_arm(
@@ -1126,6 +1172,7 @@ def _run(args: argparse.Namespace) -> dict[str, Any]:
                 workers=args.workers,
                 prediction_path=prediction_dir / f"{arm_id}.jsonl",
                 progress_path=progress_dir / f"{arm_id}.json",
+                existing_predictions=existing_predictions,
             )
         predictions[arm_id] = arm_predictions
         (prediction_dir / f"{arm_id}.jsonl").write_text(
@@ -1233,6 +1280,7 @@ def main() -> None:
     parser.add_argument("--timeout", type=float, default=120.0)
     parser.add_argument("--workers", type=int, default=1)
     parser.add_argument("--models", help="comma-separated arm IDs; default: grok,luna,qwen_flash")
+    parser.add_argument("--resume", action="store_true", help="resume normalized per-arm checkpoints in an existing run directory")
     args = parser.parse_args()
     if args.limit < 0 or args.workers <= 0:
         raise SystemExit("--limit must be non-negative and --workers must be positive")
