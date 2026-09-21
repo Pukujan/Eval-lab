@@ -170,6 +170,36 @@ class QwenJudge:
             score += float(log_probabilities[position - 1, full_ids[position]].item())
         return score, len(full_ids)
 
+    def _score_labels(self, prompt: str, labels: list[str]) -> dict[str, float]:
+        """Score legal labels in one forward pass when their continuations align."""
+
+        prefix_text = prompt + "\nVerdict:"
+        prefix_ids = _token_ids(self.tokenizer, prefix_text)
+        sequences = [prefix_ids + _token_ids(self.tokenizer, " " + label, add_special_tokens=False) for label in labels]
+        if any(len(sequence) > self.config.context_cap for sequence in sequences):
+            raise ContextLimitError(
+                f"record requires {max(len(sequence) for sequence in sequences)} tokens, "
+                f"context cap is {self.config.context_cap}"
+            )
+        if len({len(sequence) for sequence in sequences}) != 1 or any(
+            len(sequence) <= len(prefix_ids) for sequence in sequences
+        ):
+            return {label: self._score_label(prompt, label)[0] for label in labels}
+
+        torch = self._torch
+        input_ids = torch.tensor(sequences, dtype=torch.long, device=self.model.device)
+        with torch.inference_mode():
+            logits = self.model(input_ids=input_ids).logits
+        log_probabilities = torch.log_softmax(logits, dim=-1)
+        continuation_start = len(prefix_ids)
+        return {
+            label: sum(
+                float(log_probabilities[row, position - 1, token_id].item())
+                for position, token_id in enumerate(sequence[continuation_start:], start=continuation_start)
+            )
+            for row, (label, sequence) in enumerate(zip(labels, sequences, strict=True))
+        }
+
     def predict_one(self, record: JudgeRecord) -> JudgePrediction:
         """Score one record and emit normalized probabilities and raw log-scores."""
 
@@ -180,7 +210,7 @@ class QwenJudge:
             context_cap=self.config.context_cap,
         )
         labels = legal_labels(record, self.config)
-        scores = {label: self._score_label(prompt, label)[0] for label in labels}
+        scores = self._score_labels(prompt, labels)
         probabilities = softmax_scores(scores)
         label = max(probabilities, key=probabilities.get)
         latency_ms = (time.perf_counter() - started) * 1000.0

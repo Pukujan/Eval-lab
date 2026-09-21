@@ -67,3 +67,8 @@ def test_runtime_config_requires_positive_context_cap() -> None:
     with pytest.raises(ValueError, match="context_cap"):
         QwenRuntimeConfig(context_cap=0)
 
+
+def test_runtime_config_records_prompt_version() -> None:
+    config = QwenRuntimeConfig(prompt_version="eval-lab-system-one-local-v1")
+    assert config.prompt_version == "eval-lab-system-one-local-v1"
+

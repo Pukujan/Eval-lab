@@ -137,3 +137,38 @@ Active worktree: `D:/claude/eval-lab/.worktrees/TASK-0017-calibration` on branch
 Commit this preregistration before any blind local labels, then run the declared
 bounded Qwen 4B feasibility smoke. Keep all completed EXP-015 and EXP-014 artifacts
 byte-immutable.
+
+### 2026-09-21 — Qwen 4B feasibility smoke passed
+
+Status: active; full public and blind local evaluation has not started.
+
+Completed: downloaded the declared `Qwen/Qwen3-4B` checkpoint into the external
+Hugging Face cache, restored CUDA-enabled PyTorch and Transformers in the managed
+repository `.venv`, and ran the one-record public-selection smoke through the local
+forced-choice runner. The initial system-Python attempt failed before model execution
+because that interpreter had CPU-only PyTorch; it was retained as an environment
+diagnostic, not as a model result. The managed runtime then passed.
+
+Exact files changed: the smoke artifact under
+`experiments/EXP-20260921-017-judge-calibration/runs/smoke-qwen4b-20260921/`, the
+batched legal-label scoring path in `src/eval_lab/judges/qwen.py`, and its focused test.
+
+Commands run: CUDA/PyTorch/Transformers verification; one-record local Qwen 4B smoke;
+focused Ruff; focused Qwen tests; and `git diff --check`.
+
+Test results: CUDA PyTorch `2.11.0+cu128`, CUDA `12.8`, RTX 4060 detected;
+Transformers `5.17.0`; model revision `1cfa9a7208912126459214e8b04321603b3df60c`;
+device `cuda:0`; dtype `torch.float16`; `1/1 ok`; valid probabilities; latency
+`4714.69 ms`. Focused tests pass (`6 passed`) and Ruff is clean.
+
+Decision: retain the full-precision Qwen 4B local arm. Batch legal-label scoring in one
+forward pass per record to reduce the cost of the full pool. No quantized substitute,
+OpenCode route, OpenRouter route, or provider fallback is authorized.
+
+Unresolved questions: full-pool runtime and whether any records exceed the declared
+4,096-token cap. The one-record temperature artifact is smoke-only and is not evidence
+for calibration quality.
+
+Next atomic action: commit this smoke/runner checkpoint, then run the frozen public
+calibration partition with the managed CUDA environment before touching the blind
+holdout.

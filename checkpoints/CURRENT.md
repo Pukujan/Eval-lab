@@ -725,3 +725,20 @@ feasibility smoke with explicit runtime/quantization evidence before blind scali
 
 Next atomic action: commit the EXP-017 preregistration and local prompt scaffolding,
 then run the bounded local Qwen 4B smoke without changing EXP-015 or EXP-014.
+
+### 2026-09-21 — TASK-0017 Qwen 4B feasibility smoke passed
+
+The managed repository environment now has CUDA-enabled PyTorch `2.11.0+cu128`,
+CUDA `12.8`, Transformers `5.17.0`, and the RTX 4060 is visible. The declared
+one-record local Qwen 4B smoke passed with model revision
+`1cfa9a7208912126459214e8b04321603b3df60c`, `cuda:0`, float16, valid probabilities,
+and `1/1 ok`; the smoke latency was `4714.69 ms`.
+
+The first system-Python attempt failed before model execution because it used a
+CPU-only torch build; it is an environment diagnostic and not a model result. The
+local scorer now batches legal-label continuations into one forward pass per record.
+The smoke-only temperature artifact is not treated as calibration evidence.
+
+Next atomic action: commit the smoke and batching checkpoint, then run EXP-017
+public-selection calibration with the managed CUDA runtime. Do not touch the EXP-015
+blind outputs or invoke OpenCode/OpenRouter.
