@@ -97,7 +97,7 @@ The preregistration and experiment plan were committed in `1fdd2fc` before any Q
 
 ## Handoff
 
-Worktree: `D:/claude/eval-lab-TASK-0011-Qwen`  
-Branch: `task/TASK-0011-multidomain-qwen-holdout`  
-Experiment: `EXP-20260921-013-qwen-multidomain-holdout`  
+Worktree: `D:/claude/eval-lab-TASK-0011-Qwen`
+Branch: `task/TASK-0011-multidomain-qwen-holdout`
+Experiment: `EXP-20260921-013-qwen-multidomain-holdout`
 Next atomic action: commit the contract-heading correction, rerun contract/Ruff/pytest, then run a one-record Qwen3.8 Flash smoke. Keep the blind holdout unevaluated until its source and split manifests are frozen and committed.
