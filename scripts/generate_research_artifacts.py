@@ -341,7 +341,7 @@ def _report_markdown(results: dict[str, Any], experiment: Path) -> str:
             "",
         ]
     )
-    return "\n".join(lines) + "\n"
+    return "\n".join(lines).rstrip("\n") + "\n"
 
 
 def render_paper(
