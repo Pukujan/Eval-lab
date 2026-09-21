@@ -765,3 +765,13 @@ paused because external GPU memory rose to about `6.96 GiB` from allocator cachi
 Those checkpoints are preserved in `public-qwen4b-4bit-20260921/`. The runner now
 adds per-record CUDA cache release before resuming the remaining 88 records; the
 paused FP16 output remains separate and will never be mixed into EXP-017.
+
+The optimized public run is now complete at `648/648 ok`. Raw accuracy is
+`0.3950617284`; public-only temperature calibration leaves accuracy unchanged but
+improves Brier `0.7729421451 -> 0.5416915679`, NLL `1.2955413327 -> 0.8011710412`,
+and ECE `0.3718967481 -> 0.0991645340`. Runtime is Qwen 4B NF4 4-bit, float16,
+2,048-token cap, 0.8 CUDA memory fraction, and per-record cache release. Blind
+calibration has not started.
+
+Next atomic action: review the public result and then run the blind holdout with
+the same memory-safe configuration.

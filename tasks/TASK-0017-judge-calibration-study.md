@@ -276,3 +276,33 @@ while completing the remaining 88 public records.
 
 Next atomic action: commit the allocator-control change, resume the existing
 4-bit public output, and monitor VRAM until finalization.
+
+### 2026-09-21 — optimized public calibration complete
+
+Status: active; public selection is complete, blind holdout has not started.
+
+Completed: resumed the exact 4-bit public output and finished all `648/648`
+records with `648 ok`, no context failures, and one normalized probability map
+per record. Calibration fit used the public split only: 180 single records and
+468 pairwise records. Raw accuracy was `0.3950617284`; calibrated accuracy was
+unchanged, while Brier improved from `0.7729421451` to `0.5416915679`, NLL from
+`1.2955413327` to `0.8011710412`, and ECE from `0.3718967481` to `0.0991645340`.
+
+Exact files changed: finalized output under
+`experiments/EXP-20260921-017-judge-calibration/runs/public-qwen4b-4bit-20260921/`.
+
+Runtime evidence: `Qwen/Qwen3-4B`, revision
+`1cfa9a7208912126459214e8b04321603b3df60c`, `cuda:0`, float16 compute, 4-bit
+NF4 double quantization, 2,048-token cap, 0.8 CUDA memory fraction, and
+per-record cache release. External monitoring peaked around 6.96 GiB before the
+cache-release amendment; the resumed completion finalized without OOM and returned
+to about 0.38 GiB after exit. No intermediate peak was recorded during the final
+28-record resume, so the artifact's runtime configuration is the authoritative
+evidence for that segment.
+
+Validation: optimized output checksums were generated; Ruff, focused Qwen tests
+(`8 passed`), repository contract, and diff check passed. The earlier 182-record
+FP16 checkpoint remains separate and is not included in this result.
+
+Next atomic action: review the public artifact, then run the blind holdout with
+the same memory-safe runtime and no calibration fit on blind labels.
