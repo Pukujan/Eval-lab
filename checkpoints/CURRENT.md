@@ -742,3 +742,8 @@ The smoke-only temperature artifact is not treated as calibration evidence.
 Next atomic action: commit the smoke and batching checkpoint, then run EXP-017
 public-selection calibration with the managed CUDA runtime. Do not touch the EXP-015
 blind outputs or invoke OpenCode/OpenRouter.
+
+The local runner now checkpoints every Qwen 4B prediction immediately and supports
+validated `--resume`; duplicate 4B model copies will not be launched on the 8 GiB
+GPU. The next atomic action is to commit that runner checkpoint and start the frozen
+public-selection calibration run.

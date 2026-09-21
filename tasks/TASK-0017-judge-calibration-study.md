@@ -172,3 +172,28 @@ for calibration quality.
 Next atomic action: commit this smoke/runner checkpoint, then run the frozen public
 calibration partition with the managed CUDA environment before touching the blind
 holdout.
+
+### 2026-09-21 — resumable local runner checkpoint
+
+Status: active; public calibration run has not started.
+
+Completed: added per-record JSONL checkpointing, progress metadata, and explicit
+`--resume` support to the local Qwen calibration runner. Existing normalized records
+are validated by record ID and reused only when resuming the same unfinished output;
+finalized outputs cannot be overwritten or resumed.
+
+Exact files changed: `scripts/run_local_qwen_calibration.py`.
+
+Commands run: focused Ruff, focused Qwen tests, and `git diff --check`.
+
+Test results: Ruff clean; `6 passed` for the focused Qwen suite; diff check clean.
+
+Decision: launch public calibration only after this checkpoint is committed. Use the
+managed CUDA environment, one local model process, and immediate per-record progress
+checkpoints; do not parallelize duplicate 4B model copies on the 8 GiB GPU.
+
+Unresolved questions: full-pool throughput and any runtime failures after the model
+has been warmed on more than one record.
+
+Next atomic action: commit the resumable runner, then start the frozen
+`public_selection` calibration run.

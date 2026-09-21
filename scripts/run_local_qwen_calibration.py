@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import platform
 import time
 from collections import Counter
@@ -109,6 +110,25 @@ def _load_predictions(path: Path) -> list[JudgePrediction]:
         for line in path.read_text(encoding="utf-8").splitlines()
         if line.strip()
     ]
+
+
+def _write_progress(path: Path, predictions: list[JudgePrediction], *, record_count: int, model_id: str) -> None:
+    path.write_text(
+        json.dumps(
+            {
+                "model_id": model_id,
+                "record_count": record_count,
+                "completed_count": len(predictions),
+                "status_counts": dict(sorted(Counter(prediction.execution_status.value for prediction in predictions).items())),
+                "last_record_id": predictions[-1].record_id if predictions else None,
+                "updated_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            },
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
 
 
 def _mode_classes(mode: JudgmentMode) -> list[str]:
@@ -250,8 +270,12 @@ def _report_markdown(result: dict[str, Any]) -> str:
 
 def run(args: argparse.Namespace) -> Path:
     output = Path(args.output)
-    if output.exists() and any(output.iterdir()):
+    if output.exists() and (output / "results.json").is_file() and not args.resume:
+        raise FileExistsError(f"refusing to overwrite finalized output: {output}")
+    if output.exists() and any(output.iterdir()) and not args.resume:
         raise FileExistsError(f"refusing to overwrite non-empty output: {output}")
+    if args.resume and (output / "results.json").is_file():
+        raise FileExistsError(f"refusing to resume finalized output: {output}")
     output.mkdir(parents=True, exist_ok=True)
     records, domains, manifest = _load_records(Path(args.pool), args.partition, args.limit)
     config = QwenRuntimeConfig(
@@ -264,7 +288,27 @@ def run(args: argparse.Namespace) -> Path:
     )
     started = time.perf_counter()
     judge = QwenJudge.from_pretrained(config)
-    predictions = [_predict(judge, record, model_id=config.model_id, config=config) for record in records]
+    raw_path = output / "raw_predictions.jsonl"
+    progress_path = output / "progress.json"
+    existing = _load_predictions(raw_path) if args.resume and raw_path.is_file() else []
+    by_id = {prediction.record_id: prediction for prediction in existing}
+    expected_ids = {record.record_id for record in records}
+    if len(by_id) != len(existing) or not set(by_id).issubset(expected_ids):
+        raise ValueError("resume predictions contain duplicate or out-of-pool record IDs")
+    if not existing:
+        raw_path.write_text("", encoding="utf-8")
+    pending = [record for record in records if record.record_id not in by_id]
+    with raw_path.open("a", encoding="utf-8") as handle:
+        for record in pending:
+            prediction = _predict(judge, record, model_id=config.model_id, config=config)
+            by_id[prediction.record_id] = prediction
+            handle.write(prediction.model_dump_json() + "\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+            _write_progress(progress_path, list(by_id.values()), record_count=len(records), model_id=config.model_id)
+    if set(by_id) != expected_ids:
+        raise RuntimeError("local Qwen run did not produce one result per selected record")
+    predictions = [by_id[record.record_id] for record in records]
     runtime = _runtime_metadata(judge, config)
     raw_report = build_report(records, predictions, domain_by_record_id=domains)
     modes: dict[str, Any] | None = None
@@ -330,6 +374,7 @@ def main() -> None:
     parser.add_argument("--device")
     parser.add_argument("--dtype")
     parser.add_argument("--limit", type=int, default=0)
+    parser.add_argument("--resume", action="store_true")
     args = parser.parse_args()
     if args.limit < 0 or args.context_cap <= 0:
         raise SystemExit("--limit must be non-negative and --context-cap must be positive")
