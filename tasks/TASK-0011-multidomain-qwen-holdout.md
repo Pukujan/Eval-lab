@@ -1,6 +1,6 @@
 # TASK-0011 — Qwen Multidomain Evaluation and Blind Holdouts
 
-- Status: active
+- Status: completed — public and blind multidomain Qwen results finalized
 - Owner: Luna/local agent
 - Priority: P0
 - Depends on: TASK-0010 acceptance in PR #26
@@ -70,16 +70,16 @@ The provider route is primarily a label evaluation. Qwen self-reported confidenc
 
 ## Acceptance criteria
 
-- [ ] preregistration and source/license/revision manifest committed before holdout labels are evaluated;
-- [ ] at least ARC-Challenge plus two additional objective dataset families are evaluated, if their metadata and retrieval are available;
-- [ ] synthetic four-domain records are included without source-family leakage;
-- [ ] Qwen streaming smoke succeeds or is explicitly checkpointed as provider-blocked;
-- [ ] public and blind holdout results are separate and reproducible;
-- [ ] no provider/model judgment is promoted to objective gold;
-- [ ] per-dataset accuracy, balanced accuracy, macro F1, unresolved rate, latency, and provider status are reported;
-- [ ] probability calibration is reported only when supported by actual probability/logprob evidence;
-- [ ] repository contract, Ruff, pytest, and artifact validation pass;
-- [ ] TASK-0010 remains immutable and TASK-0002 is not started.
+- [x] preregistration and source/license/revision manifest committed before holdout labels are evaluated;
+- [x] at least ARC-Challenge plus two additional objective dataset families are evaluated, if their metadata and retrieval are available;
+- [x] synthetic four-domain records are included without source-family leakage;
+- [x] Qwen streaming smoke succeeds or is explicitly checkpointed as provider-blocked;
+- [x] public and blind holdout results are separate and reproducible;
+- [x] no provider/model judgment is promoted to objective gold;
+- [x] per-dataset accuracy, balanced accuracy, macro F1, unresolved rate, latency, and provider status are reported;
+- [x] probability calibration is reported only when supported by actual probability/logprob evidence;
+- [x] repository contract, Ruff, pytest, and artifact validation pass;
+- [x] TASK-0010 remains immutable and TASK-0002 is not started.
 
 ## Checkpoint rule
 
@@ -87,7 +87,7 @@ At each stopping point record exact environment, files changed, commands, datase
 
 ## Next atomic action
 
-After the provider retry window recorded below, run a one-record YOLO-Auto Qwen3.8 Flash recovery smoke. If it succeeds, retry only `blind-retry-record-ids.txt` with one worker, merge the immutable outputs, and regenerate the final per-dataset report. Do not change the frozen pool, prompt, model, or holdout decision before that retry.
+TASK-0011 is complete. The next program action is the separately planned TASK-0012 JevBench audit and independent benchmark, which must freeze its own source pool before any live Jev call.
 
 ## Checkpoint log
 
@@ -143,3 +143,30 @@ Exact commands and results:
 Decision: commit this offline reporting checkpoint and keep TASK-0011 active. Do not substitute OpenRouter, Jev, Grok, Luna, local Qwen, or any other provider for the frozen Qwen holdout. Do not use the blind partial score as a final score.
 
 Next atomic action: after the declared retry window, run the one-record recovery smoke; if accepted, retry the `322` unresolved blind records with one worker, merge with `qwen-blind-holdout-20260921`, regenerate the final report/checksums, rerun the full gates, and commit/push the completion checkpoint.
+
+### 2026-09-21 — TASK-0011 final acceptance
+
+Status: `completed`. Environment: Windows PowerShell, worktree `D:\claude\eval-lab-TASK-0011-Qwen`, branch `task/TASK-0011-multidomain-qwen-holdout`, Python `3.12.10` from `D:\claude\eval-lab\.venv`, Git `2.51.2.windows.1`. Provider route was YOLO-Auto streaming with model `qwen3.8-flash`; credential values were never printed or committed.
+
+The frozen source fingerprint is `b7edd61269f0f7757e734bc7e3f665ac2bcd6d908a1e56f73f0b0291d55b64d8`; blind record-ID fingerprint is `409428fc71b447d0114dd7a1929cbed34269a4318ef249c108582b70069d8d61`. Counts are `648` public-selection records and `760` blind-holdout records, `1,408` unique records, and zero source-family overlap. Public status is `639 ok`, `9 parse_error`; public resolved accuracy is `549/639 = 0.8591549296`. Blind retry status is `316 ok`, `6 parse_error`; merged blind status is `754 ok`, `6 parse_error`; blind resolved accuracy is `637/754 = 0.8448275862`, Wilson 95% interval `[0.8172424225, 0.8689169238]`, unresolved rate `0.0078947368`.
+
+Exact live commands:
+
+- `$env:PYTHONPATH='src'; D:\claude\eval-lab\.venv\Scripts\python.exe scripts/run_qwen_streaming_retry.py --benchmark benchmark/eval-lab-select-v0.1.0 --output experiments/EXP-20260921-013-qwen-multidomain-holdout/smoke-qwen-holdout-recovery-2-20260921 --limit 1 --timeout 120 --env-file C:\Users\pujan\OneDrive\Desktop\configs\.env` -> `ok: 1`.
+- `$env:PYTHONPATH='src'; D:\claude\eval-lab\.venv\Scripts\python.exe scripts/run_multidomain_qwen.py --pool experiments/EXP-20260921-013-qwen-multidomain-holdout --partition blind_holdout --record-ids-file experiments/EXP-20260921-013-qwen-multidomain-holdout/blind-retry-record-ids.txt --output experiments/EXP-20260921-013-qwen-multidomain-holdout/qwen-blind-retry-20260921 --workers 1 --timeout 120 --env-file C:\Users\pujan\OneDrive\Desktop\configs\.env` -> `322` requested, `316 ok`, `6 parse_error`.
+- `$env:PYTHONPATH='src'; D:\claude\eval-lab\.venv\Scripts\python.exe scripts/merge_multidomain_qwen.py --pool experiments/EXP-20260921-013-qwen-multidomain-holdout --partition blind_holdout --base experiments/EXP-20260921-013-qwen-multidomain-holdout/qwen-blind-holdout-20260921 --retry experiments/EXP-20260921-013-qwen-multidomain-holdout/qwen-blind-retry-20260921 --output experiments/EXP-20260921-013-qwen-multidomain-holdout/qwen-blind-merged-20260921` -> `760` records, `754 ok`, `6 parse_error`.
+- `$env:PYTHONPATH='src'; D:\claude\eval-lab\.venv\Scripts\python.exe scripts/finalize_multidomain_qwen.py --public experiments/EXP-20260921-013-qwen-multidomain-holdout/qwen-public-report-20260921 --blind experiments/EXP-20260921-013-qwen-multidomain-holdout/qwen-blind-report-20260921` -> completed root `results.json` and `report.md`.
+
+Files changed: new finalizer script, root experiment results/report/limitations, merged blind/retry/recovery artifacts, experiment README/manifest/checksums, this task log, and `checkpoints/CURRENT.md`. The report includes per-dataset accuracy, balanced accuracy, macro-F1, unresolved rate, latency, provider status, and Wilson intervals. Qwen probabilities/logprobs were unavailable, so no Qwen confidence calibration is claimed. TASK-0010 and its artifacts remain immutable.
+
+Exact validation results:
+
+- `D:\claude\eval-lab\.venv\Scripts\python.exe scripts/check_repo_contract.py` -> `Repository contract OK`.
+- `D:\claude\eval-lab\.venv\Scripts\ruff.exe check .` -> `All checks passed!`.
+- `$env:PYTHONPATH='src'; D:\claude\eval-lab\.venv\Scripts\python.exe -m pytest -q` -> `92 passed in 4.29s`.
+- `$env:PYTHONPATH='src'; D:\claude\eval-lab\.venv\Scripts\python.exe scripts/validate_research_artifacts.py --benchmark benchmark/eval-lab-select-v0.1.0` -> checksums `ok`, citation `parsed`, paper `present`, PROV-O `parsed`, RO-Crate `ok`, SHACL `conforms`.
+- Experiment checksum verification -> `56` entries, `0` mismatches; `git diff --check` clean apart from Git line-ending normalization notices.
+
+Decision: TASK-0011 acceptance criteria are satisfied. The next task is planned TASK-0012, which must use an independent Eval Lab source pool and must not use JevBench's tasks, labels, composite score, or estimated operational metrics as primary evidence.
+
+Next atomic action: push this final TASK-0011 checkpoint, then freeze EXP-0014's independent source IDs, splits, typed packet, pinned/rolling Jev arms, comparison arms, and perturbation schedule before any live Jev call.

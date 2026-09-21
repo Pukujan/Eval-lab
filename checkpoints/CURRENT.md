@@ -2,7 +2,7 @@
 
 ## Authoritative status
 
-TASK-0001 through TASK-0010 are complete in the current release line. TASK-0011 is active in the follow-on Qwen multidomain holdout worktree, based on the accepted TASK-0010 head while PR #26 remains open for merge. The next program task remains unopened.
+TASK-0001 through TASK-0011 are complete in the current release line. TASK-0012 is planned in a separate worktree for an independent JevBench audit and benchmark; no live TASK-0012 provider evaluation has started.
 
 ## Program state
 
@@ -13,7 +13,7 @@ The program is extended with TASK-0007 through TASK-0009 to fully use the user's
 
 ## Main objective
 
-TASK-0009 and TASK-0010 selective escalation/research release are complete. TASK-0011 now evaluates Qwen across additional objective datasets and blind holdouts; no later task is open.
+TASK-0009 and TASK-0010 selective escalation/research release are complete. TASK-0011 now has completed Qwen results across additional objective datasets and blind holdouts. TASK-0012 is planned as an independent Jev benchmark.
 
 ## Model-access decisions
 
@@ -29,7 +29,7 @@ TASK-0009 and TASK-0010 selective escalation/research release are complete. TASK
 
 ## Next task
 
-TASK-0011 is the active follow-on task. After the YOLO-Auto retry window, run a one-record Qwen smoke, retry the 322 unresolved blind record IDs at one worker, merge the immutable outputs, and regenerate the final multidataset report. Do not add sources, tune prompts, or substitute another provider before that retry.
+TASK-0012 is planned in `D:/claude/eval-lab-TASK-0012-Jev`. First action is to freeze its independent Eval Lab source IDs, splits, typed packet, model arms, and perturbation schedule. Do not use JevBench tasks, labels, or its composite score as the primary benchmark.
 
 ## Queued foundation
 
@@ -452,3 +452,11 @@ The offline report layer now emits per-dataset accuracy, Wilson 95% binomial int
 Local gate: contract `OK`; Ruff clean; `92 passed in 4.31s`; `git diff --check` clean; experiment checksum manifest `41` entries with `0` mismatches. Files changed are the multidomain runner/report/test, experiment reports/README/checksums, and checkpoint/task logs. No credentials were printed or committed.
 
 Decision: keep the blind partial result explicitly provisional and keep the frozen Qwen route unchanged. Next atomic action: after the retry window, recovery smoke, retry `322` IDs, merge, report, rerun gates, and commit/push the completion checkpoint.
+
+### 2026-09-21 — TASK-0011 complete
+
+TASK-0011 completed EXP-20260921-013. The frozen pool contains `648` public and `760` blind records with source fingerprint `b7edd61269f0f7757e734bc7e3f665ac2bcd6d908a1e56f73f0b0291d55b64d8` and blind record-ID fingerprint `409428fc71b447d0114dd7a1929cbed34269a4318ef249c108582b70069d8d61`. Public Qwen status is `639 ok`, `9 parse_error`; blind merged status is `754 ok`, `6 parse_error`. Public resolved accuracy is `0.8591549296`; blind resolved accuracy is `0.8448275862` with unresolved rate `0.0078947368`.
+
+The final experiment bundle contains merged predictions, root `results.json`, root `report.md`, per-partition reports, limitations, source/split/holdout manifests, and `56` checksum entries with `0` mismatches. Local validation is contract `OK`, Ruff clean, `92 passed in 4.29s`, and research-artifact validation checksums `ok`, citation parsed, paper present, PROV-O parsed, RO-Crate `ok`, and SHACL conforms.
+
+TASK-0011 is complete. TASK-0012 remains planned only: its independent JevBench audit is committed at `c880215`, but no live Jev benchmark has started.

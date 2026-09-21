@@ -1,5 +1,5 @@
 id: EXP-20260921-013-qwen-multidomain-holdout
-status: frozen
+status: completed
 hypothesis: Qwen3.8 Flash will outperform the frozen lightweight student on objective tasks, with dataset-dependent reliability and latency.
 created_at: 2026-09-21
 code_commit: 5d4c6e5311f566b47276687c423b174501950da3
@@ -39,7 +39,8 @@ artifacts:
   - splits.json
   - holdout-manifest.json
   - checksums.sha256
-  - predictions.jsonl
+  - limitations.md
   - results.json
   - report.md
-notes: Source and holdout manifests are frozen and committed before bulk evaluation; no holdout labels have been evaluated.
+  - predictions.jsonl
+notes: Source and holdout manifests were frozen and committed before bulk evaluation; provider labels were used only after execution for objective scoring. The completed blind merge retains six parse errors and no fabricated labels.

@@ -1,0 +1,912 @@
+{
+  "blind_record_ids_fingerprint": "409428fc71b447d0114dd7a1929cbed34269a4318ef249c108582b70069d8d61",
+  "calibration_status": "unavailable: provider returned labels without verifiable probabilities/logprobs",
+  "experiment_id": "EXP-20260921-013-qwen-multidomain-holdout",
+  "gold_not_used_for_provider_request": true,
+  "model": "qwen3.8-flash",
+  "partitions": {
+    "blind_holdout": {
+      "experiment_id": "EXP-20260921-013-qwen-multidomain-holdout",
+      "gold_not_used_for_provider_request": true,
+      "metrics": {
+        "accuracy": 0.8448275862068966,
+        "accuracy_95_ci": {
+          "lower": 0.8172424224982658,
+          "upper": 0.868916923823578
+        },
+        "balanced_accuracy": 0.8787557160304476,
+        "brier": null,
+        "by_dataset": {
+          "allenai/ai2_arc:ARC-Easy": {
+            "accuracy": 0.97,
+            "accuracy_95_ci": {
+              "lower": 0.9154806357094724,
+              "upper": 0.9897454759759611
+            },
+            "balanced_accuracy": 0.97,
+            "brier": null,
+            "correct": 97,
+            "ece": null,
+            "latency": {
+              "count": 100,
+              "max_ms": 1491.3765999954194,
+              "mean_ms": 541.909826999472,
+              "median_ms": 475.6348499940941,
+              "min_ms": 380.1198999863118,
+              "p95_ms": 991.6946999859646
+            },
+            "macro_f1": 0.6498214406037329,
+            "nll": null,
+            "records": 100,
+            "resolved": 100,
+            "status_counts": {
+              "ok": 100
+            },
+            "unresolved_rate": 0.0
+          },
+          "cais/mmlu:abstract_algebra": {
+            "accuracy": 0.9,
+            "accuracy_95_ci": {
+              "lower": 0.7694822477247771,
+              "upper": 0.9604204713173936
+            },
+            "balanced_accuracy": 0.9,
+            "brier": null,
+            "correct": 36,
+            "ece": null,
+            "latency": {
+              "count": 40,
+              "max_ms": 1147.882599994773,
+              "mean_ms": 533.7304975015286,
+              "median_ms": 477.13410000142176,
+              "min_ms": 398.75340001890436,
+              "p95_ms": 878.8353199997795
+            },
+            "macro_f1": 0.9,
+            "nll": null,
+            "records": 40,
+            "resolved": 40,
+            "status_counts": {
+              "ok": 40
+            },
+            "unresolved_rate": 0.0
+          },
+          "cais/mmlu:computer_security": {
+            "accuracy": 0.825,
+            "accuracy_95_ci": {
+              "lower": 0.6805000966821229,
+              "upper": 0.9125458625396408
+            },
+            "balanced_accuracy": 0.825,
+            "brier": null,
+            "correct": 33,
+            "ece": null,
+            "latency": {
+              "count": 40,
+              "max_ms": 1209.771699999692,
+              "mean_ms": 586.0898649967567,
+              "median_ms": 489.13815000560135,
+              "min_ms": 379.8563999880571,
+              "p95_ms": 999.2818999802693
+            },
+            "macro_f1": 0.8240100565681961,
+            "nll": null,
+            "records": 40,
+            "resolved": 40,
+            "status_counts": {
+              "ok": 40
+            },
+            "unresolved_rate": 0.0
+          },
+          "cais/mmlu:elementary_mathematics": {
+            "accuracy": 0.9,
+            "accuracy_95_ci": {
+              "lower": 0.7694822477247771,
+              "upper": 0.9604204713173936
+            },
+            "balanced_accuracy": 0.8999999999999999,
+            "brier": null,
+            "correct": 36,
+            "ece": null,
+            "latency": {
+              "count": 40,
+              "max_ms": 1123.4947000048123,
+              "mean_ms": 538.6284474967397,
+              "median_ms": 464.24945001490414,
+              "min_ms": 377.2905000078026,
+              "p95_ms": 1067.25248999428
+            },
+            "macro_f1": 0.899749373433584,
+            "nll": null,
+            "records": 40,
+            "resolved": 40,
+            "status_counts": {
+              "ok": 40
+            },
+            "unresolved_rate": 0.0
+          },
+          "cais/mmlu:high_school_biology": {
+            "accuracy": 1.0,
+            "accuracy_95_ci": {
+              "lower": 0.9123783988027135,
+              "upper": 1.0
+            },
+            "balanced_accuracy": 1.0,
+            "brier": null,
+            "correct": 40,
+            "ece": null,
+            "latency": {
+              "count": 40,
+              "max_ms": 1307.9200999927707,
+              "mean_ms": 521.5347374985868,
+              "median_ms": 482.07659999025054,
+              "min_ms": 380.75469998875633,
+              "p95_ms": 769.6903399992151
+            },
+            "macro_f1": 1.0,
+            "nll": null,
+            "records": 40,
+            "resolved": 40,
+            "status_counts": {
+              "ok": 40
+            },
+            "unresolved_rate": 0.0
+          },
+          "cais/mmlu:high_school_world_history": {
+            "accuracy": 0.975,
+            "accuracy_95_ci": {
+              "lower": 0.8711863103652591,
+              "upper": 0.9955731684973186
+            },
+            "balanced_accuracy": 0.975,
+            "brier": null,
+            "correct": 39,
+            "ece": null,
+            "latency": {
+              "count": 40,
+              "max_ms": 1054.44290000014,
+              "mean_ms": 598.3869200012123,
+              "median_ms": 471.0215499944752,
+              "min_ms": 380.1577999838628,
+              "p95_ms": 1037.4576199799776
+            },
+            "macro_f1": 0.9749843652282677,
+            "nll": null,
+            "records": 40,
+            "resolved": 40,
+            "status_counts": {
+              "ok": 40
+            },
+            "unresolved_rate": 0.0
+          },
+          "cais/mmlu:logical_fallacies": {
+            "accuracy": 0.868421052631579,
+            "accuracy_95_ci": {
+              "lower": 0.7267314055770869,
+              "upper": 0.9424613230987987
+            },
+            "balanced_accuracy": 0.8666666666666667,
+            "brier": null,
+            "correct": 33,
+            "ece": null,
+            "latency": {
+              "count": 40,
+              "max_ms": 2563.6612999951467,
+              "mean_ms": 530.694187500194,
+              "median_ms": 442.82579999708105,
+              "min_ms": 369.86419997992925,
+              "p95_ms": 801.3023649997191
+            },
+            "macro_f1": 0.867595818815331,
+            "nll": null,
+            "records": 40,
+            "resolved": 38,
+            "status_counts": {
+              "ok": 38,
+              "parse_error": 2
+            },
+            "unresolved_rate": 0.05
+          },
+          "cais/mmlu:machine_learning": {
+            "accuracy": 0.7948717948717948,
+            "accuracy_95_ci": {
+              "lower": 0.644660319864177,
+              "upper": 0.8922028176928961
+            },
+            "balanced_accuracy": 0.7973684210526315,
+            "brier": null,
+            "correct": 31,
+            "ece": null,
+            "latency": {
+              "count": 40,
+              "max_ms": 1243.194200011203,
+              "mean_ms": 575.8772999986832,
+              "median_ms": 462.5221500027692,
+              "min_ms": 380.390600010287,
+              "p95_ms": 1007.4977849930291
+            },
+            "macro_f1": 0.7936507936507937,
+            "nll": null,
+            "records": 40,
+            "resolved": 39,
+            "status_counts": {
+              "ok": 39,
+              "parse_error": 1
+            },
+            "unresolved_rate": 0.025
+          },
+          "cais/mmlu:professional_law": {
+            "accuracy": 0.8421052631578947,
+            "accuracy_95_ci": {
+              "lower": 0.6958318822077686,
+              "upper": 0.9255613658484106
+            },
+            "balanced_accuracy": 0.8421052631578947,
+            "brier": null,
+            "correct": 32,
+            "ece": null,
+            "latency": {
+              "count": 40,
+              "max_ms": 1189.258600003086,
+              "mean_ms": 534.2566375016759,
+              "median_ms": 451.6219000070123,
+              "min_ms": 377.8384000179358,
+              "p95_ms": 1001.1065950122429
+            },
+            "macro_f1": 0.8416666666666667,
+            "nll": null,
+            "records": 40,
+            "resolved": 38,
+            "status_counts": {
+              "ok": 38,
+              "parse_error": 2
+            },
+            "unresolved_rate": 0.05
+          },
+          "eval-lab-select-v0.1.0": {
+            "accuracy": 0.9916666666666667,
+            "accuracy_95_ci": {
+              "lower": 0.9543037087549505,
+              "upper": 0.998527444266658
+            },
+            "balanced_accuracy": 0.9916666666666667,
+            "brier": null,
+            "correct": 119,
+            "ece": null,
+            "latency": {
+              "count": 120,
+              "max_ms": 1908.1308000022545,
+              "mean_ms": 551.706447499843,
+              "median_ms": 487.4573500128463,
+              "min_ms": 381.5107000118587,
+              "p95_ms": 796.8541749985887
+            },
+            "macro_f1": 0.9916660879227724,
+            "nll": null,
+            "records": 120,
+            "resolved": 120,
+            "status_counts": {
+              "ok": 120
+            },
+            "unresolved_rate": 0.0
+          },
+          "eval-lab-synthetic:arithmetic": {
+            "accuracy": 0.6,
+            "accuracy_95_ci": {
+              "lower": 0.2307242812760128,
+              "upper": 0.882379225767352
+            },
+            "balanced_accuracy": 0.625,
+            "brier": null,
+            "correct": 3,
+            "ece": null,
+            "latency": {
+              "count": 5,
+              "max_ms": 1294.1179999907035,
+              "mean_ms": 606.9308600039221,
+              "median_ms": 448.7935000215657,
+              "min_ms": 386.6227999969851,
+              "p95_ms": 1126.6261999960989
+            },
+            "macro_f1": 0.5,
+            "nll": null,
+            "records": 5,
+            "resolved": 5,
+            "status_counts": {
+              "ok": 5
+            },
+            "unresolved_rate": 0.0
+          },
+          "eval-lab-synthetic:code": {
+            "accuracy": 1.0,
+            "accuracy_95_ci": {
+              "lower": 0.5655175352168251,
+              "upper": 1.0
+            },
+            "balanced_accuracy": 1.0,
+            "brier": null,
+            "correct": 5,
+            "ece": null,
+            "latency": {
+              "count": 5,
+              "max_ms": 454.49219999136403,
+              "mean_ms": 433.6524600046687,
+              "median_ms": 442.59360001888126,
+              "min_ms": 404.30140000535175,
+              "p95_ms": 454.12849999265745
+            },
+            "macro_f1": 1.0,
+            "nll": null,
+            "records": 5,
+            "resolved": 5,
+            "status_counts": {
+              "ok": 5
+            },
+            "unresolved_rate": 0.0
+          },
+          "eval-lab-synthetic:multiple": {
+            "accuracy": 0.25,
+            "accuracy_95_ci": {
+              "lower": 0.04558726080970055,
+              "upper": 0.6993581574175981
+            },
+            "balanced_accuracy": 0.25,
+            "brier": null,
+            "correct": 1,
+            "ece": null,
+            "latency": {
+              "count": 5,
+              "max_ms": 4969.756300008157,
+              "mean_ms": 1423.6469800001942,
+              "median_ms": 534.4607000006363,
+              "min_ms": 451.9615999888629,
+              "p95_ms": 4113.898320007137
+            },
+            "macro_f1": 0.13333333333333333,
+            "nll": null,
+            "records": 5,
+            "resolved": 4,
+            "status_counts": {
+              "ok": 4,
+              "parse_error": 1
+            },
+            "unresolved_rate": 0.2
+          },
+          "eval-lab-synthetic:structured": {
+            "accuracy": 0.2,
+            "accuracy_95_ci": {
+              "lower": 0.03622410863243014,
+              "upper": 0.6244653702374747
+            },
+            "balanced_accuracy": 0.125,
+            "brier": null,
+            "correct": 1,
+            "ece": null,
+            "latency": {
+              "count": 5,
+              "max_ms": 631.8575000041164,
+              "mean_ms": 464.3417800019961,
+              "median_ms": 438.65399999776855,
+              "min_ms": 401.457300002221,
+              "p95_ms": 593.3304200065322
+            },
+            "macro_f1": 0.1,
+            "nll": null,
+            "records": 5,
+            "resolved": 5,
+            "status_counts": {
+              "ok": 5
+            },
+            "unresolved_rate": 0.0
+          },
+          "openai/gsm8k:main": {
+            "accuracy": 0.655,
+            "accuracy_95_ci": {
+              "lower": 0.5867558925905368,
+              "upper": 0.7174020562325106
+            },
+            "balanced_accuracy": 0.655,
+            "brier": null,
+            "correct": 131,
+            "ece": null,
+            "latency": {
+              "count": 200,
+              "max_ms": 1530.2529000036884,
+              "mean_ms": 576.8420015006268,
+              "median_ms": 480.9781999938423,
+              "min_ms": 324.2049999826122,
+              "p95_ms": 1048.748584992427
+            },
+            "macro_f1": 0.6518580186180276,
+            "nll": null,
+            "records": 200,
+            "resolved": 200,
+            "status_counts": {
+              "ok": 200
+            },
+            "unresolved_rate": 0.0
+          }
+        },
+        "correct": 637,
+        "ece": null,
+        "latency": {
+          "count": 760,
+          "max_ms": 4969.756300008157,
+          "mean_ms": 562.0723168420036,
+          "median_ms": 473.46885000297334,
+          "min_ms": 324.2049999826122,
+          "p95_ms": 1031.3186949904773
+        },
+        "macro_f1": 0.7098113951055127,
+        "nll": null,
+        "records": 760,
+        "resolved": 754,
+        "status_counts": {
+          "ok": 754,
+          "parse_error": 6
+        },
+        "unresolved_rate": 0.007894736842105263
+      },
+      "model": "qwen3.8-flash",
+      "partition": "blind_holdout",
+      "probabilities_available": false,
+      "provider": "yolo-auto",
+      "record_count": 760,
+      "source_predictions": "experiments\\EXP-20260921-013-qwen-multidomain-holdout\\qwen-blind-merged-20260921"
+    },
+    "public_selection": {
+      "experiment_id": "EXP-20260921-013-qwen-multidomain-holdout",
+      "gold_not_used_for_provider_request": true,
+      "metrics": {
+        "accuracy": 0.8591549295774648,
+        "accuracy_95_ci": {
+          "lower": 0.8300324604047051,
+          "upper": 0.8839849597567837
+        },
+        "balanced_accuracy": 0.88081698977024,
+        "brier": null,
+        "by_dataset": {
+          "allenai/ai2_arc:ARC-Easy": {
+            "accuracy": 0.9746835443037974,
+            "accuracy_95_ci": {
+              "lower": 0.9367211009939065,
+              "upper": 0.990111869327911
+            },
+            "balanced_accuracy": 0.9751283697047497,
+            "brier": null,
+            "correct": 154,
+            "ece": null,
+            "latency": {
+              "count": 160,
+              "max_ms": 14656.472199974814,
+              "mean_ms": 5257.202990624137,
+              "median_ms": 6009.8886500054505,
+              "min_ms": 398.33090000320226,
+              "p95_ms": 11766.988079997827
+            },
+            "macro_f1": 0.9746673080006414,
+            "nll": null,
+            "records": 160,
+            "resolved": 158,
+            "status_counts": {
+              "ok": 158,
+              "parse_error": 2
+            },
+            "unresolved_rate": 0.0125
+          },
+          "cais/mmlu:abstract_algebra": {
+            "accuracy": 0.9,
+            "accuracy_95_ci": {
+              "lower": 0.6989663547715128,
+              "upper": 0.9721335187862319
+            },
+            "balanced_accuracy": 0.9,
+            "brier": null,
+            "correct": 18,
+            "ece": null,
+            "latency": {
+              "count": 20,
+              "max_ms": 1284.4024999940302,
+              "mean_ms": 731.1918100022012,
+              "median_ms": 630.094950000057,
+              "min_ms": 427.1119000040926,
+              "p95_ms": 1145.5401449944475
+            },
+            "macro_f1": 0.9,
+            "nll": null,
+            "records": 20,
+            "resolved": 20,
+            "status_counts": {
+              "ok": 20
+            },
+            "unresolved_rate": 0.0
+          },
+          "cais/mmlu:computer_security": {
+            "accuracy": 0.9,
+            "accuracy_95_ci": {
+              "lower": 0.6989663547715128,
+              "upper": 0.9721335187862319
+            },
+            "balanced_accuracy": 0.9,
+            "brier": null,
+            "correct": 18,
+            "ece": null,
+            "latency": {
+              "count": 20,
+              "max_ms": 887.341199995717,
+              "mean_ms": 574.5679449973977,
+              "median_ms": 503.51059999957215,
+              "min_ms": 463.78799999365583,
+              "p95_ms": 869.12846500054
+            },
+            "macro_f1": 0.898989898989899,
+            "nll": null,
+            "records": 20,
+            "resolved": 20,
+            "status_counts": {
+              "ok": 20
+            },
+            "unresolved_rate": 0.0
+          },
+          "cais/mmlu:elementary_mathematics": {
+            "accuracy": 0.85,
+            "accuracy_95_ci": {
+              "lower": 0.6395811352592431,
+              "upper": 0.9476312541037835
+            },
+            "balanced_accuracy": 0.8500000000000001,
+            "brier": null,
+            "correct": 17,
+            "ece": null,
+            "latency": {
+              "count": 20,
+              "max_ms": 1100.8089999959338,
+              "mean_ms": 609.0507349988911,
+              "median_ms": 565.3848999936599,
+              "min_ms": 434.80660000932403,
+              "p95_ms": 1005.9583399939585
+            },
+            "macro_f1": 0.849624060150376,
+            "nll": null,
+            "records": 20,
+            "resolved": 20,
+            "status_counts": {
+              "ok": 20
+            },
+            "unresolved_rate": 0.0
+          },
+          "cais/mmlu:high_school_biology": {
+            "accuracy": 0.9,
+            "accuracy_95_ci": {
+              "lower": 0.6989663547715128,
+              "upper": 0.9721335187862319
+            },
+            "balanced_accuracy": 0.9,
+            "brier": null,
+            "correct": 18,
+            "ece": null,
+            "latency": {
+              "count": 20,
+              "max_ms": 814.8387000255752,
+              "mean_ms": 553.9720700006001,
+              "median_ms": 529.9338500044541,
+              "min_ms": 447.3786999878939,
+              "p95_ms": 690.0153500086163
+            },
+            "macro_f1": 0.9,
+            "nll": null,
+            "records": 20,
+            "resolved": 20,
+            "status_counts": {
+              "ok": 20
+            },
+            "unresolved_rate": 0.0
+          },
+          "cais/mmlu:high_school_world_history": {
+            "accuracy": 1.0,
+            "accuracy_95_ci": {
+              "lower": 0.8388748419471806,
+              "upper": 1.0
+            },
+            "balanced_accuracy": 1.0,
+            "brier": null,
+            "correct": 20,
+            "ece": null,
+            "latency": {
+              "count": 20,
+              "max_ms": 1014.7093999839853,
+              "mean_ms": 574.2376099995454,
+              "median_ms": 535.5592999985674,
+              "min_ms": 345.99529998376966,
+              "p95_ms": 762.6555899798407
+            },
+            "macro_f1": 1.0,
+            "nll": null,
+            "records": 20,
+            "resolved": 20,
+            "status_counts": {
+              "ok": 20
+            },
+            "unresolved_rate": 0.0
+          },
+          "cais/mmlu:logical_fallacies": {
+            "accuracy": 1.0,
+            "accuracy_95_ci": {
+              "lower": 0.8388748419471806,
+              "upper": 1.0
+            },
+            "balanced_accuracy": 1.0,
+            "brier": null,
+            "correct": 20,
+            "ece": null,
+            "latency": {
+              "count": 20,
+              "max_ms": 953.3802999940235,
+              "mean_ms": 510.92392499995185,
+              "median_ms": 482.3338499991223,
+              "min_ms": 406.2580000027083,
+              "p95_ms": 721.246659991448
+            },
+            "macro_f1": 1.0,
+            "nll": null,
+            "records": 20,
+            "resolved": 20,
+            "status_counts": {
+              "ok": 20
+            },
+            "unresolved_rate": 0.0
+          },
+          "cais/mmlu:machine_learning": {
+            "accuracy": 0.631578947368421,
+            "accuracy_95_ci": {
+              "lower": 0.41039533164803066,
+              "upper": 0.8085048725486492
+            },
+            "balanced_accuracy": 0.6333333333333333,
+            "brier": null,
+            "correct": 12,
+            "ece": null,
+            "latency": {
+              "count": 20,
+              "max_ms": 1182.8392999887,
+              "mean_ms": 628.8797499975772,
+              "median_ms": 503.60060000093654,
+              "min_ms": 402.728399989428,
+              "p95_ms": 1148.8022249919595
+            },
+            "macro_f1": 0.631578947368421,
+            "nll": null,
+            "records": 20,
+            "resolved": 19,
+            "status_counts": {
+              "ok": 19,
+              "parse_error": 1
+            },
+            "unresolved_rate": 0.05
+          },
+          "cais/mmlu:professional_law": {
+            "accuracy": 0.85,
+            "accuracy_95_ci": {
+              "lower": 0.6395811352592431,
+              "upper": 0.9476312541037835
+            },
+            "balanced_accuracy": 0.8500000000000001,
+            "brier": null,
+            "correct": 17,
+            "ece": null,
+            "latency": {
+              "count": 20,
+              "max_ms": 1312.576900003478,
+              "mean_ms": 793.2816099986667,
+              "median_ms": 855.6248000095366,
+              "min_ms": 402.9279999958817,
+              "p95_ms": 1205.6714050035225
+            },
+            "macro_f1": 0.849624060150376,
+            "nll": null,
+            "records": 20,
+            "resolved": 20,
+            "status_counts": {
+              "ok": 20
+            },
+            "unresolved_rate": 0.0
+          },
+          "eval-lab-select-v0.1.0": {
+            "accuracy": 0.975,
+            "accuracy_95_ci": {
+              "lower": 0.9290699666721339,
+              "upper": 0.9914618252300978
+            },
+            "balanced_accuracy": 0.975,
+            "brier": null,
+            "correct": 117,
+            "ece": null,
+            "latency": {
+              "count": 120,
+              "max_ms": 14708.988300000783,
+              "mean_ms": 6938.839238332973,
+              "median_ms": 6375.773800013121,
+              "min_ms": 4028.5364000010304,
+              "p95_ms": 11536.010499989789
+            },
+            "macro_f1": 0.9749982637683172,
+            "nll": null,
+            "records": 120,
+            "resolved": 120,
+            "status_counts": {
+              "ok": 120
+            },
+            "unresolved_rate": 0.0
+          },
+          "eval-lab-synthetic:arithmetic": {
+            "accuracy": 1.0,
+            "accuracy_95_ci": {
+              "lower": 0.7411670330319684,
+              "upper": 1.0
+            },
+            "balanced_accuracy": 1.0,
+            "brier": null,
+            "correct": 11,
+            "ece": null,
+            "latency": {
+              "count": 12,
+              "max_ms": 772.4505000223871,
+              "mean_ms": 565.5598500040165,
+              "median_ms": 514.8483000084525,
+              "min_ms": 466.3822000147775,
+              "p95_ms": 735.4014000055031
+            },
+            "macro_f1": 1.0,
+            "nll": null,
+            "records": 12,
+            "resolved": 11,
+            "status_counts": {
+              "ok": 11,
+              "parse_error": 1
+            },
+            "unresolved_rate": 0.08333333333333333
+          },
+          "eval-lab-synthetic:code": {
+            "accuracy": 0.8181818181818182,
+            "accuracy_95_ci": {
+              "lower": 0.523019438039156,
+              "upper": 0.9486323102539149
+            },
+            "balanced_accuracy": 0.8666666666666667,
+            "brier": null,
+            "correct": 9,
+            "ece": null,
+            "latency": {
+              "count": 12,
+              "max_ms": 942.7073000115342,
+              "mean_ms": 555.7250000007722,
+              "median_ms": 494.6958999935305,
+              "min_ms": 452.5032000092324,
+              "p95_ms": 819.3497250031213
+            },
+            "macro_f1": 0.7888888888888889,
+            "nll": null,
+            "records": 12,
+            "resolved": 11,
+            "status_counts": {
+              "ok": 11,
+              "parse_error": 1
+            },
+            "unresolved_rate": 0.08333333333333333
+          },
+          "eval-lab-synthetic:multiple": {
+            "accuracy": 0.4166666666666667,
+            "accuracy_95_ci": {
+              "lower": 0.19326031365875665,
+              "upper": 0.6804886874504503
+            },
+            "balanced_accuracy": 0.25,
+            "brier": null,
+            "correct": 5,
+            "ece": null,
+            "latency": {
+              "count": 12,
+              "max_ms": 4656.738200021209,
+              "mean_ms": 958.4096083369028,
+              "median_ms": 472.5730000063777,
+              "min_ms": 409.44580000359565,
+              "p95_ms": 2752.9997150049867
+            },
+            "macro_f1": 0.16666666666666669,
+            "nll": null,
+            "records": 12,
+            "resolved": 12,
+            "status_counts": {
+              "ok": 12
+            },
+            "unresolved_rate": 0.0
+          },
+          "eval-lab-synthetic:structured": {
+            "accuracy": 0.5833333333333334,
+            "accuracy_95_ci": {
+              "lower": 0.31951131254954973,
+              "upper": 0.8067396863412435
+            },
+            "balanced_accuracy": 0.625,
+            "brier": null,
+            "correct": 7,
+            "ece": null,
+            "latency": {
+              "count": 12,
+              "max_ms": 851.1685999983456,
+              "mean_ms": 513.6986583383987,
+              "median_ms": 469.1241500113392,
+              "min_ms": 396.0499999811873,
+              "p95_ms": 748.8689850084482
+            },
+            "macro_f1": 0.49333333333333335,
+            "nll": null,
+            "records": 12,
+            "resolved": 12,
+            "status_counts": {
+              "ok": 12
+            },
+            "unresolved_rate": 0.0
+          },
+          "openai/gsm8k:main": {
+            "accuracy": 0.6794871794871795,
+            "accuracy_95_ci": {
+              "lower": 0.6026987284896592,
+              "upper": 0.7476484243276791
+            },
+            "balanced_accuracy": 0.6794871794871795,
+            "brier": null,
+            "correct": 106,
+            "ece": null,
+            "latency": {
+              "count": 160,
+              "max_ms": 5676.942199992482,
+              "mean_ms": 614.3717256245509,
+              "median_ms": 507.8184999874793,
+              "min_ms": 400.5624999990687,
+              "p95_ms": 1005.8548650136787
+            },
+            "macro_f1": 0.6741310160427807,
+            "nll": null,
+            "records": 160,
+            "resolved": 156,
+            "status_counts": {
+              "ok": 156,
+              "parse_error": 4
+            },
+            "unresolved_rate": 0.025
+          }
+        },
+        "correct": 549,
+        "ece": null,
+        "latency": {
+          "count": 648,
+          "max_ms": 14708.988300000783,
+          "mean_ms": 2936.35106435155,
+          "median_ms": 644.4570500025293,
+          "min_ms": 345.99529998376966,
+          "p95_ms": 9949.77494499762
+        },
+        "macro_f1": 0.7091806596912767,
+        "nll": null,
+        "records": 648,
+        "resolved": 639,
+        "status_counts": {
+          "ok": 639,
+          "parse_error": 9
+        },
+        "unresolved_rate": 0.013888888888888888
+      },
+      "model": "qwen3.8-flash",
+      "partition": "public_selection",
+      "probabilities_available": false,
+      "provider": "yolo-auto",
+      "record_count": 648,
+      "source_predictions": "experiments\\EXP-20260921-013-qwen-multidomain-holdout\\qwen-public-merged-20260921"
+    }
+  },
+  "pool_fingerprint": "b7edd61269f0f7757e734bc7e3f665ac2bcd6d908a1e56f73f0b0291d55b64d8",
+  "probabilities_available": false,
+  "provider": "yolo-auto",
+  "status": "completed"
+}
