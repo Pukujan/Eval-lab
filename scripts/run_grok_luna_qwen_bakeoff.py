@@ -202,6 +202,18 @@ def _prompt(record: JudgeRecord) -> str:
     )
 
 
+def _grok_json_schema(record: JudgeRecord) -> str:
+    return json.dumps(
+        {
+            "type": "object",
+            "properties": {"label": {"type": "string", "enum": sorted(_legal_labels(record))}},
+            "required": ["label"],
+            "additionalProperties": False,
+        },
+        separators=(",", ":"),
+    )
+
+
 def _prediction(
     record: JudgeRecord,
     *,
@@ -366,6 +378,12 @@ def _run_grok_build_one(
         model,
         "--output-format",
         "json",
+        "--json-schema",
+        _grok_json_schema(record),
+        "--max-turns",
+        "1",
+        "--disable-web-search",
+        "--verbatim",
         "--no-subagents",
         "--no-plan",
         "--permission-mode",

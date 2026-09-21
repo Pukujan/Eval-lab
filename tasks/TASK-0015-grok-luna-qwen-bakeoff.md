@@ -170,3 +170,32 @@ permitted for the Grok/Luna/Sol arms. No OpenCode or OpenRouter fallback is allo
 
 Next atomic action: commit this route correction, then run and validate the fresh
 direct-only smoke for Grok, Luna, and Qwen Flash.
+
+### 2026-09-21 — direct-only smoke validated
+
+The first direct Grok smoke reached xAI but ended as a parse error because the Build
+CLI's default agent behavior used multiple workspace-inspection turns. No other Grok
+route was attempted. The direct runner was hardened with the Grok CLI's native JSON
+schema constraint, verbatim prompt mode, disabled web search, and a one-turn cap.
+
+Exact fresh smoke command: `$env:PYTHONPATH='src'; python
+scripts/run_grok_luna_qwen_bakeoff.py --partition public_selection --limit 1
+--models grok,luna,qwen_flash --output
+experiments/EXP-20260921-015-grok-luna-qwen-bakeoff/runs/smoke-direct-tight-20260921
+--timeout 120 --env-file C:\Users\pujan\OneDrive\Desktop\configs\.env`.
+
+Result: Grok direct xAI Build `ok: 1` with surfaced `grok-4.6-build`; direct Codex
+Luna `ok: 1` using requested `gpt-5.6-luna`; and YOLO-Auto Qwen Flash `ok: 1`.
+`validate_grok_luna_qwen_bakeoff.py` passed. The normalized smoke artifact is
+`runs/smoke-direct-tight-20260921/`; the earlier direct parse-error artifact is also
+retained separately for append-only route evidence.
+
+Exact files changed: `scripts/run_grok_luna_qwen_bakeoff.py`,
+`runs/smoke-direct-20260921/`, `runs/smoke-direct-tight-20260921/`, this task log,
+and `checkpoints/CURRENT.md`.
+
+Decision: the direct-only core smoke is valid. Proceed only with direct Grok Build,
+direct Codex Luna/Sol, and YOLO-Auto Qwen Flash; no OpenCode or OpenRouter fallback.
+
+Next atomic action: commit the hardened runner and smoke artifacts, then run the
+matched public partition and preserve separate arm outputs.

@@ -135,6 +135,27 @@ pool manifest, and checksums; TASK-0015; and this checkpoint.
 Next atomic action: run the fresh direct-only smoke, validate it, then commit that
 smoke artifact before attempting the matched public or blind pool.
 
+### 2026-09-21 — direct-only route smoke passed
+
+The first direct-only Grok invocation reached xAI but produced a parse error because
+the Build CLI's default agent behavior used multiple workspace-inspection turns. No
+alternate provider was tried. The runner was tightened using the direct CLI's native
+JSON schema constraint, verbatim prompt mode, web-search disablement, and one-turn cap.
+
+Fresh smoke command: `PYTHONPATH=src python scripts/run_grok_luna_qwen_bakeoff.py
+--partition public_selection --limit 1 --models grok,luna,qwen_flash
+--output experiments/EXP-20260921-015-grok-luna-qwen-bakeoff/runs/smoke-direct-tight-20260921
+--timeout 120 --env-file C:\Users\pujan\OneDrive\Desktop\configs\.env`.
+
+Result: Grok direct xAI Build `ok: 1`, surfaced model `grok-4.6-build`; direct Codex
+Luna `ok: 1`; YOLO-Auto Qwen Flash `ok: 1`. The validator passed and the normalized
+artifact is retained under `runs/smoke-direct-tight-20260921/`. No raw provider
+transcript or credential was written.
+
+Files changed: the direct Grok invocation hardening and the two direct-only smoke
+artifacts. Next atomic action: commit this checkpoint, then decide whether to proceed
+with the public matched pool before the blind holdout.
+
 ## Next atomic action
 
 TASK-0010 is complete at EXP-20260920-012. Leave the next program task unopened until review/triage. Historical checkpoint entries below are retained.
