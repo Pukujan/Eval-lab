@@ -124,7 +124,8 @@ client = OpenAI(
 stream = client.chat.completions.create(
     model="zai/glm-5.3-flash",
     messages=[{"role": "user", "content": "Return exactly {\\\"label\\\":\\\"pass\\\"}."}],
-    max_tokens=32,
+    # Reasoning routes may spend output tokens before the final JSON label.
+    max_tokens=256,
     temperature=0,
     stream=True,
 )
@@ -166,6 +167,8 @@ errors remain explicit unresolved statuses and receive no fallback label.
 The first safe concurrency is four workers per model, with at most eight model
 processes at once. This stays below the documented account request ceiling
 while allowing the independent model arms to make progress concurrently.
+The runner defaults to `--max-tokens 256`; do not lower it to 32 for reasoning
+models because that can truncate the response before the required label.
 
 ## Sources and route boundary
 

@@ -180,6 +180,7 @@ def _evaluate(record: JudgeRecord, args: argparse.Namespace, api_key: str, api_u
         "route": "inferhub_openai_chat_completions",
         "streaming": True,
         "stream_format": "openai-sse",
+        "max_tokens": args.max_tokens,
         "typed_spec_id": "eval-lab-system-one",
         "typed_spec_version": "0.1.0",
     }
@@ -195,7 +196,7 @@ def _evaluate(record: JudgeRecord, args: argparse.Namespace, api_key: str, api_u
     request = {
         "model": args.model,
         "messages": [{"role": "user", "content": build_prompt(record)}],
-        "max_tokens": 32,
+        "max_tokens": args.max_tokens,
         "temperature": 0,
         "stream": True,
     }
@@ -368,12 +369,13 @@ def main() -> None:
     parser.add_argument("--env-file", type=Path)
     parser.add_argument("--api-url")
     parser.add_argument("--timeout", type=float, default=120.0)
+    parser.add_argument("--max-tokens", type=int, default=256)
     parser.add_argument("--workers", type=int, default=4)
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--resume", action="store_true")
     args = parser.parse_args()
-    if args.limit < 0 or args.workers <= 0 or args.timeout <= 0:
-        raise SystemExit("--limit must be non-negative; --workers and --timeout must be positive")
+    if args.limit < 0 or args.workers <= 0 or args.timeout <= 0 or args.max_tokens <= 0:
+        raise SystemExit("--limit must be non-negative; --workers, --timeout, and --max-tokens must be positive")
     print(json.dumps(run(args), sort_keys=True))
 
 
