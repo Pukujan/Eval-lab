@@ -304,6 +304,8 @@ def _run_streaming_process(
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
+        encoding="utf-8",
+        errors="replace",
         bufsize=1,
         env=environment,
         creationflags=getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0),

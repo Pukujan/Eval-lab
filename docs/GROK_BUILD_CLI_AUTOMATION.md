@@ -77,8 +77,11 @@ documented structured-streaming mode, but keep strict schema validation.
 
 For automation, consume stdout and stderr concurrently. A streaming client
 must not read stdout to completion while leaving stderr unread, because either
-pipe can fill and stall the child process. Parse each complete NDJSON line,
-retain only normalized metadata, and wait for both streams to close.
+pipe can fill and stall the child process. The Eval Lab subprocess reader uses
+explicit UTF-8 decoding with replacement for malformed bytes; Windows locale
+decoding must not be allowed to crash a reader thread and strand a child
+process. Parse each complete NDJSON line, retain only normalized metadata, and
+wait for both streams to close.
 
 ## Safe concurrency
 

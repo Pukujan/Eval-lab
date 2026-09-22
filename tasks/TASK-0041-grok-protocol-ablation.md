@@ -77,6 +77,8 @@ is protocol diagnosis.
 - `scripts/freeze_grok_ablation_sample.py`
 - `scripts/run_grok_protocol_ablation.py`
 - `scripts/report_grok_protocol_ablation.py`
+- `scripts/run_grok_luna_qwen_bakeoff.py` (UTF-8-safe subprocess decoding)
+- `docs/GROK_BUILD_CLI_AUTOMATION.md` (encoding failure mode)
 - focused tests for prompt construction, label mapping, and status handling
 - `checkpoints/CURRENT.md`
 
