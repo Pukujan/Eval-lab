@@ -2,7 +2,7 @@
 
 ## Status
 
-Active — recommendation wave running. This task runs a new, append-only provider wave; it must not modify
+Complete — recommendation wave finished. This task ran a new, append-only provider wave; it did not modify
 EXP-014 through EXP-021 or start new Qwen4B inference.
 
 ## Objective
@@ -204,12 +204,24 @@ have 648 duplicate-free rows and are compared offline in
 explicit unresolved statuses; DeepSeek had the highest public parse-error
 rates (`103` and `98`).
 
+The blind holdout is complete for all eight executable arms. Results are in
+`runs/blind-comparison-20260922/` and summarized in `RESULTS.md`: Qwen3.8
+Flash achieved full coverage with resolved accuracy `0.9921`; Qwen 3.8 Max
+achieved `0.9908` at full coverage; DeepSeek V4 Flash reached conditional
+accuracy `0.9984` at `0.8039` coverage; DeepSeek V4.1 Flash reached `0.9871`
+at `0.8171`; GLM 5.2 `0.9917` at `0.9566`; Kimi K2.7 Code `0.9855` at
+`0.9974`; GLM 5.3 Flash `0.9788` at `0.9947`; and MiniMax M3 `0.9798` at
+`0.9789`. MiMo remains a documented HTTP 402 unavailable arm with no fallback.
+
+All eight blind outputs contain exactly 760 duplicate-free records, all runner
+processes have exited, and public/blind comparisons use gold only offline.
+
 ## Next atomic action
 
-Run the same eight canary-passed routes on the frozen 760-record blind holdout
-with per-record checkpoints. Preserve MiMo's failed canaries as unresolved and
-do not substitute a fallback route. Do not resume the old 14-route plan, change
-EXP-023, or treat the recommendation score as benchmark gold.
+No provider execution remains for TASK-0040. Preserve MiMo's failed canaries
+and all partial/failed statuses as historical evidence. Do not resume the old
+14-route plan, change EXP-023, or treat the recommendation score as benchmark
+gold.
 
 ## Decisions and unresolved questions
 

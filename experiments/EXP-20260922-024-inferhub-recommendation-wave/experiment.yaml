@@ -1,5 +1,5 @@
 id: EXP-20260922-024-inferhub-recommendation-wave
-status: preregistered
+status: complete
 hypothesis: Policy-qualified, family-deduplicated cheapest InferHub routes expose a measurable cost-quality frontier with route-specific reliability behavior.
 created_at: 2026-09-22
 code_commit: 097786c

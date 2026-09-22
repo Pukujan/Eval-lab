@@ -26,7 +26,17 @@ comparison is in `runs/public-comparison-20260922/`. Conditional resolved
 accuracy ranges from `0.9687` (MiniMax M3) to `0.9891` (DeepSeek V4 Flash);
 DeepSeek has substantial parse missingness (103 and 98 records), preserved as
 unresolved. Next atomic action: run the same eight routes on the frozen blind
-holdout.
+holdout. The blind holdout is now complete for all eight executable routes:
+Qwen3.8 Flash had 760/760 resolved at 0.9921 accuracy; Qwen 3.8 Max had
+760/760 at 0.9908; DeepSeek V4 Flash had 611/760 at 0.9984; DeepSeek V4.1
+Flash had 621/760 at 0.9871; GLM 5.2 had 727/760 at 0.9917; Kimi K2.7 Code
+had 758/760 at 0.9855; GLM 5.3 Flash had 756/760 at 0.9788; and MiniMax M3
+had 744/760 at 0.9798. MiMo V2.5 remained HTTP 402 on both canaries and was
+not substituted. All blind outputs are duplicate-free, runner processes are
+gone, and final durable results are in `EXP-20260922-024.../RESULTS.md`.
+
+TASK-0040 is complete for the recommendation wave. EXP-022 and the completed
+Bonsai work remain retained separately; EXP-023 remains immutable.
 
 ## 2026-09-22 — TASK-0040 paused during InferHub release-first wave
 
