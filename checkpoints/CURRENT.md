@@ -68,11 +68,13 @@ TASK-0009 and TASK-0010 selective escalation/research release are complete. TASK
 
 ## Next task
 
-TASK-0023 is the next executable task: implement the offline HumanEval
-canonical adapter and sandboxed verifier only after resolving or explicitly
-documenting the isolation backend. It must consume EXP-020's frozen policy,
-produce fixture-only tests and deterministic status handling, and make no live
-provider calls. Do not modify or overwrite EXP-014 through EXP-019.
+TASK-0023 is open at commit `d4faa27` with its exact adapter/verifier file scope
+recorded in the TASK-0022 handoff. No adapter code or candidate execution has
+been added. The task is currently blocked on proving an isolated Linux
+sandbox/resource policy because Docker/Linux is unavailable on this host. Its
+next atomic action is to establish that sandbox or record an approved safe
+alternative, then implement fixture-only adapter/verifier tests before any live
+provider call. Do not modify or overwrite EXP-014 through EXP-019.
 
 ## Queued foundation
 
