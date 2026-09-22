@@ -1,5 +1,16 @@
 # Current Repository Checkpoint
 
+## 2026-09-22 — TASK-0042 objective-domain tracks preregistered
+
+The Grok paper release is complete and the next append-only study extension is
+prepared. TASK-0042 defines GLEIF first, followed by SEC EDGAR/XBRL and
+CourtListener, with source snapshots, deterministic verifiers, entity/case
+disjoint splits, and explicit non-objective boundaries. EXP-026 is preregistered
+for GLEIF but no source data or model calls have been made. Next atomic action:
+freeze a GLEIF snapshot and implement the canonical adapter before any blind
+scoring. Defensive cybersecurity work, if added, is limited to synthetic
+refusal, secret-handling, prompt-injection, and sandbox-boundary tests.
+
 ## 2026-09-22 — TASK-0041 Grok protocol ablation complete
 
 EXP-025 is complete. The public 64-record diagnostic selected the original

@@ -114,3 +114,21 @@ and the experiment summary is in RESULTS.md. The low score persists under the
 selected baseline, while the public ablation found no winning replacement
 contract. The scientifically supported conclusion is protocol-specific
 underperformance, not a universal Grok capability claim.
+
+## Goal
+
+This task's Objective section is the authoritative goal statement.
+
+## Acceptance criteria
+
+This task's Scope and Required files sections are the acceptance criteria.
+
+## Checkpoint log
+
+The Checkpoint section above records the durable public and blind execution
+history.
+
+## Handoff
+
+EXP-025 is complete. Continue with TASK-0042 objective-domain
+preregistration and preserve all prior experiment directories.

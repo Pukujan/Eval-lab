@@ -1,0 +1,53 @@
+id: EXP-20260922-026-gleif-objective-track
+status: preregistered
+hypothesis: >-
+  Lightweight objective judges can reliably extract and resolve frozen GLEIF
+  entity and relationship facts when the task uses a closed label set and
+  source-linked evidence, but coverage and alias ambiguity will differ by
+  route and task family.
+created_at: 2026-09-22
+code_commit: cca02b7
+seed: 260922
+context_limit: 4096
+dataset:
+  name: GLEIF frozen Golden Copy or concatenated-file snapshot
+  version: pending_snapshot_freeze
+  fingerprint: pending_snapshot_freeze
+  split_policy: entity-disjoint public calibration and blind holdout
+judge:
+  provider: selected direct and InferHub routes after public canaries
+  model: qwen_flash; jev_1.13; grok_46; additional eligible routes only if preregistered
+  adapter_version: gleif-objective-v1
+  prompt_version: typed-objective-registry-v1
+rubric:
+  version: gleif-registry-facts-v1
+gold:
+  provenance_policy: frozen GLEIF source record or deterministic transform; expert adjudication only for declared non-objective extensions
+calibration:
+  method: split-safe temperature scaling only for routes with native probability vectors
+  split: public calibration records only; blind holdout untouched
+metrics:
+  - accuracy
+  - balanced_accuracy
+  - macro_f1
+  - coverage
+  - valid_label_rate
+  - evidence_span_validity
+  - relation_direction_accuracy
+  - brier
+  - nll
+  - ece
+  - latency_p95
+  - cost_per_1000
+artifacts:
+  - source-manifest.json
+  - canonical-records.jsonl
+  - split-manifest.json
+  - public and blind normalized predictions
+  - results.json
+  - report.md
+notes: >-
+  The first execution must freeze source revision, retrieval time, license or
+  access terms, file list, and SHA-256 fingerprints. Generated aliases inherit
+  the source entity split. This experiment measures registry fact extraction,
+  not legal-entity truth beyond what GLEIF records.

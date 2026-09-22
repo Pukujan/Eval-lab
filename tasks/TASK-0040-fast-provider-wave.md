@@ -232,3 +232,20 @@ gold.
 - Qwen4B is explicitly excluded from this wave.
 - The existing EXP-015 result remains immutable; any retry or new model is a
   new run and experiment identity.
+
+## Goal
+
+This task's Objective section is the authoritative goal statement.
+
+## Acceptance criteria
+
+This task's Scope and Required files sections are the acceptance criteria.
+
+## Checkpoint log
+
+The task's checkpoint sections record the durable execution history.
+
+## Handoff
+
+EXP-022 and its follow-on results are immutable; use the focused benchmark
+paper and CURRENT checkpoint for the next research action.

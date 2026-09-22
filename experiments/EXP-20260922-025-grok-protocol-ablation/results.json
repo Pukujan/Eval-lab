@@ -1,0 +1,36 @@
+{
+  "experiment_id": "EXP-20260922-025-grok-protocol-ablation",
+  "status": "completed",
+  "selection": {
+    "model": "grok_46",
+    "baseline_variant": "typed_schema",
+    "selected_variant": "typed_schema",
+    "baseline_score": 0.265625,
+    "selected_score": 0.265625,
+    "gate_passed": false,
+    "reason": "no alternative passed the preregistered public gate; rerun baseline"
+  },
+  "public": {
+    "record_count": 64,
+    "variants": {
+      "typed_schema": {"resolved": 64, "coverage": 1.0, "selection_score": 0.265625},
+      "explicit_schema": {"resolved": 63, "coverage": 0.984375, "selection_score": 0.25806451612903225},
+      "semantic_schema": {"resolved": 63, "coverage": 0.984375, "selection_score": 0.2661290322580645},
+      "explicit_no_schema": {"resolved": 0, "coverage": 0.0, "selection_score": null}
+    }
+  },
+  "blind": {
+    "record_count": 760,
+    "resolved": 757,
+    "coverage": 0.9960526315789474,
+    "selection_score": 0.25857656362329257,
+    "single_accuracy": 0.49846153846153846,
+    "single_resolved": 650,
+    "single_record_count": 652,
+    "pairwise_accuracy": 0.018691588785046728,
+    "pairwise_resolved": 107,
+    "pairwise_record_count": 108,
+    "status_counts": {"ok": 757, "provider_error": 3}
+  },
+  "gold_provenance": "frozen EXP-015 answer keys and deterministic verifiers"
+}
