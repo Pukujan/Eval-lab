@@ -2,7 +2,7 @@
 
 ## Status
 
-Paused by user. This task runs a new, append-only provider wave; it must not modify
+Active — recommendation wave running. This task runs a new, append-only provider wave; it must not modify
 EXP-014 through EXP-021 or start new Qwen4B inference.
 
 ## Objective
@@ -179,12 +179,26 @@ checkpoint directories, one-record canaries, then public and blind partitions.
 Routes run in bounded batches with four workers per route; unresolved provider,
 rate-limit, timeout, and parse statuses remain explicit.
 
+Canaries completed in fresh directories under EXP-024. Eight routes passed on
+the retry-stable streaming contract: DeepSeek V4.1 Flash, GLM 5.3 Flash,
+DeepSeek V4 Flash, Qwen3.8 Flash, MiniMax M3, GLM 5.2, Qwen 3.8 Max, and
+Kimi K2.7 Code. The first DeepSeek V4.1 canary had one transient parse error;
+its fresh retry returned `ok`. The selected MiMo V2.5 route returned HTTP 402
+twice and is retained as an explicit unavailable arm; no alternate provider
+route is substituted.
+
+The live catalog check after refresh reported `254` models and `498` remaining
+rate-limit units. The authenticated compare option in
+`scripts/check_inferhub_catalog.py` is incompatible with the current list-form
+catalog snapshot, so the no-compare live check was used and its output was not
+treated as benchmark evidence.
+
 ## Next atomic action
 
-Run one-record canaries for the nine deduplicated routes under the updated
-streaming probe contract, then execute public and blind partitions with
-per-record checkpoints. Do not resume the old 14-route plan, change EXP-023,
-or treat the recommendation score as benchmark gold.
+Execute public and blind partitions for the eight canary-passed routes with
+per-record checkpoints. Preserve MiMo's failed canaries as unresolved and do
+not substitute a fallback route. Do not resume the old 14-route plan, change
+EXP-023, or treat the recommendation score as benchmark gold.
 
 ## Decisions and unresolved questions
 
