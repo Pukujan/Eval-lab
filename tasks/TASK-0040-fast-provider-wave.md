@@ -31,6 +31,7 @@ provider credentials remain on the Windows host.
 - `scripts/run_grok_luna_qwen_bakeoff.py`
 - `scripts/run_fast_jev_arm.py`
 - `tests/test_grok_luna_qwen_bakeoff.py`
+- `docs/GROK_BUILD_CLI_AUTOMATION.md`
 - `experiments/EXP-20260922-022-fast-provider-wave/`
 - this task file and `checkpoints/CURRENT.md`
 
@@ -60,6 +61,11 @@ subagents. The runner now also disables background auto-update checks and
 assigns every request a unique UUID session in addition to its isolated leader
 socket. The installed `grok 1.0.40` accepted `--no-auto-update`; targeted
 tests are now `7 passed` and Ruff is clean.
+
+The durable CLI guide is now in `docs/GROK_BUILD_CLI_AUTOMATION.md`, covering
+authentication, exact model discovery, structured streaming, per-process
+session isolation, bounded concurrency, checkpoint/resume, and the CLI/API
+boundary.
 
 ## Next atomic action
 

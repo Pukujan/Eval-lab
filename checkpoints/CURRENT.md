@@ -25,6 +25,11 @@ and native JSON Schema; it now also passes `--no-auto-update` and a unique
 tests are `7 passed` and Ruff is clean. Apply this hardening to any resumed
 Grok work; do not rewrite existing predictions.
 
+The durable operational guide is `docs/GROK_BUILD_CLI_AUTOMATION.md`. It records
+the official CLI references, subscription authentication boundary, streaming
+JSON/schema invocation, unique session and leader-socket requirements, bounded
+concurrency, and status-preserving checkpoint rules.
+
 ## Authoritative status
 
 TASK-0019 calibrated judge construction and independent head-to-head study is
