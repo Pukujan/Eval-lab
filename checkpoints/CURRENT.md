@@ -1,5 +1,21 @@
 # Current Repository Checkpoint
 
+## 2026-09-22 — TASK-0041 Grok public protocol diagnostic
+
+The new append-only EXP-025 preregistration is committed in the dedicated
+TASK-0041 worktree. Its 64-record public diagnostic tested four Grok 4.6
+provider-facing contracts: current typed schema, explicit task with schema,
+semantic labels with schema, and explicit task without native schema. The
+typed baseline resolved 64/64 at mode-balanced score `0.265625`; explicit
+schema resolved 63/64 at `0.2581`; semantic schema resolved 63/64 at `0.2661`;
+and the repaired no-schema arm resolved 0/64. No alternative passed the
+preregistered +0.10 improvement and 95% coverage gate, so the blind action is
+the typed-schema baseline rerun for Grok 4.6 only. The first no-schema pass
+also exposed a real Windows cp1252 decoding defect in the shared stream
+reader; the reader now uses explicit UTF-8 replacement decoding and resumed
+from a normalized checkpoint. Next atomic action: execute the authorized
+760-record blind Grok 4.6 baseline rerun with four bounded workers.
+
 ## 2026-09-22 — InferHub recommendation policy refresh reviewed
 
 The updated InferHub engine now keeps a top-20 auditable view but selects an

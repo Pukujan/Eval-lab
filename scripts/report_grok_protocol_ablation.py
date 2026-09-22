@@ -82,6 +82,7 @@ def write_report(*, root: Path, output: Path) -> dict[str, Any]:
         "",
         f"Primary model: `grok_46`; baseline: `{BASELINE}`; selected variant: `{selection['selected_variant']}`.",
         f"Gate passed: `{selection['gate_passed']}` — {selection['reason']}.",
+        "The first no-schema pass exposed a Windows locale-decoding failure in the shared stream reader; it was stopped and resumed from its normalized checkpoint after the UTF-8-safe reader repair. Only the repaired arm's final results are used below.",
         "",
         "| Arm | Variant | Resolved | Coverage | Mode-balanced score | Statuses |",
         "|---|---|---:|---:|---:|---|",

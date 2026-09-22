@@ -2,8 +2,8 @@
 
 ## Status
 
-Active — preregistration and runner implementation in progress. Earlier EXP-022
-Grok/Jev/Qwen outputs remain immutable.
+Active — public protocol diagnostic complete; blind baseline rerun authorized.
+Earlier EXP-022 Grok/Jev/Qwen outputs remain immutable.
 
 ## Objective
 
@@ -84,7 +84,23 @@ is protocol diagnosis.
 
 ## Checkpoint
 
-No provider calls are authorized until the experiment manifest, sample IDs,
-variants, selection rule, and tests are committed. After execution, the report
-must state whether the evidence supports a harness/protocol explanation,
-model-specific weakness, or an unresolved mixture of both.
+The preregistration and 64-record public sample were committed before live
+execution. Public results completed for all four Grok 4.6 variants. The
+typed-schema baseline resolved 64/64 with mode-balanced score `0.265625`;
+explicit-schema resolved 63/64 with score `0.2581`; semantic-schema resolved
+63/64 with score `0.2661`; and explicit-no-schema resolved `0/64` after a
+UTF-8-safe reader repair, with 57 parse errors, 6 provider errors, and 1 rate
+limit. No alternative met the preregistered +0.10 improvement and 95% coverage
+gate, so the selected blind protocol is the original `typed_schema` baseline.
+
+Commands run: sample freeze; targeted protocol tests; Grok public diagnostic;
+offline public selection report. The first no-schema attempt was stopped after
+the shared Windows cp1252 reader raised a decode error on a non-ASCII byte; the
+reader was repaired with explicit UTF-8 replacement decoding and the affected
+arm resumed from its normalized checkpoint. No raw provider transcript or gold
+label was written to the experiment output.
+
+Validation: targeted tests `10 passed`; Ruff clean. Next atomic action: run
+Grok 4.6 `typed_schema` over the frozen 760-record blind holdout only. Grok 4.7
+is not authorized by the selection rule because no alternative protocol passed;
+its prior EXP-022 blind result remains the model-version comparator.
