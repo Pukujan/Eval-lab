@@ -1,443 +1,492 @@
-# TASK-0021 — Benchmark expansion roadmap decomposition
-
-## Status
-
-Planned and ready for review. This task is planning-only: it authorizes no
-provider calls, benchmark execution, dataset download, hidden-test access, or
-modification of existing experiment artifacts.
-
-## Objective
-
-Turn `docs/BENCHMARK_EXPANSION_ROADMAP.md` into a dependency-ordered queue of
-implementation tasks that extends Eval Lab with independently auditable
-objective benchmark families. The queue preserves Eval Lab as the canonical
-research and artifact layer while allowing an optional Inspect AI harness
-adapter behind the declared contract.
-
-## Scope and non-negotiable boundaries
-
-- EXP-014, EXP-015, EXP-016, EXP-017, EXP-018, and EXP-019 are immutable. No
-  task below may edit, overwrite, relabel, rerun into, or mix outputs with
-  those experiments.
-- Every changed dataset revision, sample, rubric, prompt, model arm, seed,
-  calibration method, or evaluation protocol receives a new experiment ID and
-  a new preregistration before final evaluation.
-- The benchmark families remain separate. There is no blended leaderboard
-  score across HumanEval, ARC, LegalBench, FinanceBench, SWE-bench/DeepSWE,
-  OSWorld, or Humanity's Last Exam.
-- Eval Lab owns manifests, canonical records, source-family splits,
-  provenance, typed judge packets, calibration, deterministic perturbations,
-  provider metadata, metrics, checksums, and research reports. Inspect AI may
-  supply a task/solver/scorer/sandbox harness only when its outputs are wrapped
-  and verified by the Eval Lab adapter contract.
-- No OpenCode route is permitted.
-- OpenRouter is permitted only for an explicitly scoped Jev arm. It is not a
-  route for Grok, Luna, Sol, Qwen, or any other arm.
-- Grok may run only through the direct authenticated xAI `grok` Build CLI. A
-  route failure is execution metadata, never an answer label or silent
-  fallback.
-- Luna and Sol, if later included by an experiment's explicit preregistration,
-  use the authenticated Codex-subscription route. They are not automatic
-  substitutions for another arm.
-- Local Qwen and Jev remain separate judge/reference resources and are not
-  silently pooled with external-provider labels.
-- No credentials, private benchmark material, downloaded datasets, raw
-  provider transcripts, or model caches may be committed.
-
-## Dependency-ordered task queue
-
-Each numbered item below is a separate task, branch, worktree, review, and
-checkpoint. A task may modify only the files declared in its own task file; if
-scope changes, update that task file before editing additional files.
-
-### Foundation and first track
-
-#### TASK-0022 — HumanEval feasibility, source audit, and preregistration
-
-Depends on: TASK-0019 and this decomposition.
-
-Create the HumanEval feasibility record and freeze the intended source revision,
-license/access terms, sample policy, executable-test policy, sandbox limits,
-typed judge packet, calibration split, metrics, exclusions, stopping rule, and
-report schema. Assign the new experiment identity `EXP-020` without creating
-provider outputs. Confirm that the selected task set and tests can be handled
-without committing benchmark data or hidden material.
-
-Acceptance criteria:
-
-- The preregistration names the exact source revision, source URL, license,
-  task/sample fingerprint procedure, split policy, source-family policy, and
-  gold provenance as executable-test pass/fail.
-- The packet distinguishes generated code, verifier result, provider status,
-  malformed output, timeout, sandbox failure, and abstention.
-- Calibration/development/final partitions and all primary metrics are frozen
-  before any final test execution.
-- Sandbox and security assumptions have a bounded, reproducible setup plan.
-- No provider is invoked and no benchmark data or hidden test material is
-  downloaded or committed.
-
-#### TASK-0023 — HumanEval canonical adapter and deterministic verifier
-
-Depends on: TASK-0022.
-
-Implement the HumanEval source-to-canonical-record adapter, typed code-output
-contract, deterministic split/fingerprint machinery, and isolated executable
-verifier. The adapter must retain each source problem ID and make execution
-failure distinct from an incorrect answer.
-
-Acceptance criteria:
-
-- Adapter tests cover canonical serialization, source IDs, fingerprinting,
-  split isolation, output normalization, timeout, malformed code, verifier
-  failure, and abstention.
-- The verifier runs with explicit resource and filesystem/network policy, and
-  tests demonstrate that the policy is applied.
-- A mocked or fixture-only runner produces normalized records without a
-  provider call.
-- The adapter emits provenance and checksums sufficient to rebuild the
-  canonical pool; no raw benchmark payload is committed unless separately
-  approved by repository policy.
-
-#### TASK-0024 — HumanEval judge packet, route adapters, and audit report
-
-Depends on: TASK-0023.
-
-Add the HumanEval judge packet and provider-neutral execution contract, then
-wire only explicitly authorized routes. Preserve direct route metadata and
-failure states, and produce an EXP-020 report that keeps executable correctness
-separate from calibration and provider reliability.
-
-Acceptance criteria:
-
-- Mock/contract tests cover Jev-only OpenRouter routing, direct xAI Grok Build
-  CLI routing, local Qwen routing, and optional direct Codex Luna/Sol routing
-  without permitting OpenCode or unauthorized OpenRouter use.
-- Any live smoke, if separately authorized after preregistration, records the
-  surfaced model ID, command/version, route, status, latency, and checksum;
-  it never converts a route failure into an answer.
-- Final execution cannot start until the frozen manifest and packet are
-  committed, and final artifacts are written to a new EXP-020 directory.
-- Report tables contain answer metrics, calibration metrics, verifier failure
-  counts, consistency checks, risk/coverage where applicable, and limitations.
-
-### Structured reasoning track
-
-#### TASK-0025 — ARC-AGI feasibility and exact-grid preregistration
-
-Depends on: TASK-0024 adapter/report patterns and TASK-0022's preregistration
-gate.
-
-Freeze the ARC-AGI revision, task subset, grid representation, answer format,
-exact-match policy, metadata, contamination notes, partitions, and typed judge
-packet as `EXP-021`. Decide whether ARC-AGI-1, ARC-AGI-2, or a declared subset is
-in scope before any source retrieval.
-
-Acceptance criteria:
-
-- Exact grid equality and representation normalization are specified with
-  executable examples and no subjective fallback in the deterministic track.
-- Revision, license/access terms, task fingerprint, split/family policy,
-  calibration split, and final metrics are frozen.
-- Any non-exact or adjudicated extension is explicitly out-of-band and cannot
-  enter deterministic accuracy.
-- No provider calls or benchmark downloads occur during planning.
-
-#### TASK-0026 — ARC exact-grid adapter and structured-output judge packet
-
-Depends on: TASK-0025.
-
-Implement canonical grid records, exact-grid scorer, structured-output parser,
-failure taxonomy, and provider-neutral judge packet. Add mocked harness tests
-and an optional Inspect AI adapter only if it passes the Eval Lab wrapper.
-
-Acceptance criteria:
-
-- Tests cover grid shape/value normalization, malformed outputs, exact match,
-  source-family splits, fingerprints, timeouts, and abstentions.
-- The scorer's gold provenance is benchmark answer key or deterministic exact
-  match as declared, never a model judgment.
-- The adapter preserves route/model metadata separately from answer labels and
-  enforces the same no-OpenCode and Jev-only-OpenRouter policy.
-- A new `EXP-021` manifest is required before final execution.
-
-### Audited objective-subset tracks
-
-#### TASK-0027 — LegalBench objective-subset audit and preregistration
-
-Depends on: TASK-0026.
-
-Audit LegalBench tasks and select only tasks with explicit, inspectable gold and
-clear labels. Freeze the task-level inclusion/exclusion table, normalization,
-source-family split, contamination notes, and `EXP-022` preregistration.
-
-Acceptance criteria:
-
-- Every selected task has a documented gold provenance, answer schema, source
-  revision, license/access terms, and deterministic scoring rule.
-- Open-ended explanations or judge-dependent criteria are excluded from the
-  deterministic subset or placed in a separately labeled adjudication plan.
-- The inclusion table, fingerprint method, calibration split, metrics, and
-  stopping/exclusion rules are committed before execution.
-- The task does not download or commit benchmark material during planning.
-
-#### TASK-0028 — LegalBench adapter, gold audit, and report
-
-Depends on: TASK-0027.
-
-Implement the selected LegalBench canonical adapter, task-level scorer, gold
-audit checks, typed packet, and report. Keep each task family separate in
-analysis so a strong task does not mask a weak or ambiguous one.
-
-Acceptance criteria:
-
-- Tests cover every selected task schema, normalization, exact labels, missing
-  or malformed outputs, split isolation, and provenance validation.
-- Report includes per-task and aggregate metrics, with deterministic and any
-  adjudicated results visibly separated.
-- The runner records route failures independently and enforces the approved
-  provider routing policy.
-- All final artifacts use new `EXP-022` paths and checksums.
-
-#### TASK-0029 — FinanceBench numeric/evidence subset audit and preregistration
-
-Depends on: TASK-0028.
-
-Select a numeric/evidence subset with explicit answer keys and reproducible
-normalization. Freeze numeric tolerance, units, evidence/citation checks,
-source revision, partitions, and `EXP-023`. Treat free-form explanations as a
-separate adjudication track only if an adjudication protocol is approved.
-
-Acceptance criteria:
-
-- Numeric parsing, units, rounding, tolerance, missing evidence, and citation
-  requirements are specified with known-value tests.
-- The selected subset has task-level gold provenance and contamination notes.
-- Deterministic numeric/evidence metrics cannot be mixed with free-form
-  explanation outcomes.
-- Preregistration is complete before any final labels or source execution.
-
-#### TASK-0030 — FinanceBench adapter, evidence checker, and report
-
-Depends on: TASK-0029.
-
-Implement canonical numeric/evidence records, answer normalization, evidence
-validation, typed packet, failure taxonomy, and separate report sections for
-numeric correctness and evidence support.
-
-Acceptance criteria:
-
-- Tests cover tolerance boundaries, units, sign/scale errors, citations,
-  malformed answers, abstention, and provider failures.
-- Every result links to source record IDs and gold provenance without exposing
-  private or hidden benchmark material.
-- New `EXP-023` artifacts are checksumed and reproducible; prior experiments
-  are untouched.
-
-### Environment-heavy tracks
-
-#### TASK-0031 — SWE-bench/DeepSWE feasibility, sandbox plan, and preregistration
-
-Depends on: TASK-0030 and confirmed sandbox capacity.
-
-Choose SWE-bench or DeepSWE only after evaluating repository snapshots, patch
-application, test runtime, environment image, licensing, contamination risk,
-and compute budget. Freeze the selected subset and `EXP-024` protocol.
-
-Acceptance criteria:
-
-- The task defines immutable repository/task revisions, patch boundary, test
-  command, network/filesystem policy, timeout, resource limits, and failure
-  categories.
-- Gold is repository-test outcome, not a model or grader judgment.
-- A bounded feasibility estimate exists without running the full benchmark.
-- Final execution is blocked until the adapter, sandbox, and replay plan pass
-  review; no prior experiment is reused as an output directory.
-
-#### TASK-0032 — SWE-bench/DeepSWE patch verifier and execution adapter
-
-Depends on: TASK-0031.
-
-Implement isolated repository checkout, patch application, test execution,
-canonical outcome records, typed repair packet, and audit report scaffolding.
-
-Acceptance criteria:
-
-- Fixture repositories test clean patch, rejected patch, partial test failure,
-  timeout, environment failure, malformed patch, and abstention.
-- Test logs are fingerprinted or summarized under the artifact policy, with
-  secrets and unrelated repository data excluded.
-- Route metadata and failures remain separate from repository-test labels.
-- `EXP-024` cannot be marked complete without replayable environment and
-  checksums.
+# TASK-0021 — Benchmark roadmap decomposition
+
+- Status: complete (planning checkpoint)
+- Branch: `task/TASK-0021-benchmark-roadmap-decomposition`
+- Worktree: `D:\claude\eval-lab\.worktrees\TASK-0021-benchmark-roadmap-decomposition`
+- Scope: planning only; no provider calls, benchmark downloads, hidden-test access, or experiment execution
+- Depends on: TASK-0019 / EXP-019 and TASK-0020
+
+## Goal
+
+Turn `docs/BENCHMARK_EXPANSION_ROADMAP.md` into an executable sequence of
+dependency-ordered tasks. Every implementation task below has its own task
+file, branch, worktree, experiment identity, acceptance gate, and handoff.
+This file is the decomposition only; it does not authorize execution.
+
+## Non-negotiable invariants
+
+- EXP-014 through EXP-019 are immutable. No task may edit, overwrite, merge
+  into, or reuse their result directories as a destination for new output.
+- No OpenCode route is authorized.
+- Grok may run only through the direct authenticated xAI `grok` Build CLI.
+- OpenRouter is allowed only for the Jev arm when Jev is explicitly included;
+  it is not a route for Grok, Luna, Sol, Qwen, or any substitute arm.
+- A provider failure, timeout, malformed response, rate limit, or execution
+  failure is execution metadata, not a benchmark answer.
+- Each changed dataset, revision, prompt, rubric, model arm, seed, calibration
+  method, or evaluation protocol receives a new experiment ID. Completed
+  experiments are never revised in place.
+- Eval Lab remains canonical for manifests, canonical records, source-family
+  splits, gold provenance, typed judge packets, calibration, metrics, reports,
+  checksums, and rebuild instructions. Inspect AI is optional harness
+  infrastructure only; its default model grader is never objective gold.
+- Benchmark families remain separate reports and experiments. No blended
+  leaderboard score may be produced across these tracks.
+- Objective gold must identify its provenance: deterministic verifier,
+  benchmark answer key, human adjudication, or explicitly marked weak/model
+  supervision. A model judgment is never silently promoted to objective gold.
+- Every execution task must preserve separate calibration/development/final
+  partitions, source-family isolation, malformed-output handling, abstention
+  policy, timeout policy, execution-failure policy, surfaced model IDs, route
+  metadata, and raw normalized predictions or a verifiable fingerprint.
+
+## Common task, branch, and worktree contract
+
+For every task below, create exactly one task record and one isolated worktree.
+Use the corresponding branch and worktree names; do not combine two rows in one
+branch or worktree.
+
+```text
+branch:  task/TASK-00NN-short-name
+worktree: D:\claude\eval-lab\.worktrees\TASK-00NN-short-name
+```
+
+Each task file must declare status, dependencies, exact files in scope,
+completed work, commands run, test results, decisions, unresolved questions,
+next atomic action, and handoff evidence. A dependent task starts only after
+its predecessor is accepted and merged (or explicitly recorded as a blocked
+planning checkpoint). The task owner commits one coherent checkpoint using
+`TASK-00NN: concise checkpoint description` and hands off the commit, task log,
+experiment ID/manifest, checksums, and validation results.
+
+No future task may begin final benchmark labels until its adapter gate and
+preregistration gate are accepted. Feasibility tasks may inspect public
+documentation and local capabilities, but they must not download benchmark
+records or run providers unless their own task explicitly reaches an execution
+gate after preregistration.
+
+## Dependency-ordered implementation tasks
+
+### Phase 1 — HumanEval: first end-to-end executable-verifier track
+
+#### TASK-0022 — HumanEval feasibility, source freeze, and adapter preregistration
+
+- Branch/worktree: `task/TASK-0022-humaneval-preregistration` /
+  `D:\claude\eval-lab\.worktrees\TASK-0022-humaneval-preregistration`
+- Depends on: TASK-0020 and TASK-0019
+- Scope: identify the permitted HumanEval source revision, license/access terms,
+  executable-test policy, sandbox limits, record sample, family split, typed
+  judge packet, calibration split, metrics, exclusion rules, and stopping rule.
+  Create the new experiment plan/manifest skeleton without provider labels or
+  benchmark downloads.
+- Acceptance criteria:
+  1. The source URL, revision/commit, license/access terms, source-problem-ID
+     policy, canonical record schema, and planned dataset fingerprint method are
+     explicit.
+  2. The executable verifier policy specifies allowed imports, resource/time
+     limits, isolation, stdout/stderr handling, test discovery, timeout and
+     crash outcomes, and how verifier failures differ from incorrect answers.
+  3. The plan freezes calibration/development/final partitions, source-family
+     isolation, typed output labels, confidence semantics, metrics, and
+     objective-gold provenance before any final run.
+  4. The plan lists model arms and route policy without adding an unauthorized
+     provider or treating a judge as gold.
+  5. Contract checks and plan/schema tests pass; no provider call, benchmark
+     download, or EXP-014–019 modification occurs.
+- Handoff: TASK-0023 receives the accepted source/policy decision and frozen
+  plan commit. If source access, licensing, or sandbox policy is unresolved,
+  record the blocker and do not create a final-label task.
+
+#### TASK-0023 — HumanEval canonical adapter and sandboxed verifier
+
+- Branch/worktree: `task/TASK-0023-humaneval-adapter` /
+  `D:\claude\eval-lab\.worktrees\TASK-0023-humaneval-adapter`
+- Depends on: accepted TASK-0022
+- Scope: implement the canonical JSONL adapter, typed code-generation/judge
+  packet, deterministic executable scorer, normalized status schema, split and
+  fingerprint checks, and mocked/offline runner tests.
+- Acceptance criteria:
+  1. Every canonical record retains its source problem ID, task type, prompt,
+     reference/test metadata, gold provenance, and split assignment.
+  2. The verifier runs under the declared isolation/resource policy and returns
+     deterministic pass/fail plus explicit timeout, crash, malformed-output,
+     and verifier-error statuses.
+  3. Unit tests cover correct, incorrect, malformed, timeout, crash, import,
+     nondeterminism, and verifier-failure cases without using a provider.
+  4. The adapter emits stable fingerprints, checks source-family isolation, and
+     rejects schema drift or split leakage.
+  5. Optional Inspect AI integration, if used, is an adapter around the Eval Lab
+     record/verifier contract and is covered by parity tests; Inspect logs do
+     not replace canonical artifacts.
+- Handoff: TASK-0024 receives the adapter API, scorer test evidence, exact file
+  list, and a mocked end-to-end packet. No live labels are included.
+
+#### TASK-0024 — HumanEval judge packet, execution, and audit report
+
+- Branch/worktree: `task/TASK-0024-humaneval-execution` /
+  `D:\claude\eval-lab\.worktrees\TASK-0024-humaneval-execution`
+- Depends on: accepted TASK-0023
+- Scope: freeze the complete experiment manifest, run only the authorized
+  smoke and frozen partitions, retain route/model/status metadata, then produce
+  the HumanEval report and checksums as a new experiment.
+- Acceptance criteria:
+  1. The pre-registration commit precedes final-partition execution and records
+     hypothesis, primary comparison, prompt/rubric, model arms, seed, split,
+     calibration method, metrics, exclusions, and stopping rule.
+  2. Smoke results are separate from final results; the final output contains
+     normalized predictions, verifier outcomes, provider statuses, surfaced
+     model IDs, latency/cost metadata where available, and checksums.
+  3. Calibration fits only on the declared calibration/development data; final
+     labels are not used for fitting or selection.
+  4. The report separates correctness, calibration, consistency, risk/coverage,
+     and execution failures, and states sandbox, contamination, and coverage
+     limitations.
+  5. The experiment manifest, `results.json`, `report.md`, artifacts, and local
+     contract/test/checksum gates pass without changing EXP-014–019.
+- Handoff: mark the HumanEval experiment complete only after all completion
+  fields in `docs/EXPERIMENT_PROTOCOL.md` are satisfied. TASK-0025 may start
+  only from the accepted HumanEval commit and report.
+
+### Phase 2 — ARC-AGI: exact structured-grid verification
+
+#### TASK-0025 — ARC-AGI feasibility, exact-grid adapter, and preregistration
+
+- Branch/worktree: `task/TASK-0025-arc-adapter` /
+  `D:\claude\eval-lab\.worktrees\TASK-0025-arc-adapter`
+- Depends on: accepted TASK-0024
+- Scope: select the ARC-AGI-1/2 revision and permitted subset, freeze grid
+  representation and exact-match scorer, define task-family splits, typed
+  structured-output packet, calibration partitions, contamination notes, and
+  optional harness boundary.
+- Acceptance criteria:
+  1. Source revision, license/access terms, source task ID, grid encoding,
+     answer representation, and fingerprint procedure are frozen.
+  2. Exact-grid matching has tests for dimensions, values, empty grids,
+     malformed structures, and normalization; no approximate score is used as
+     objective correctness.
+  3. The plan distinguishes answer-key provenance from deterministic exact-grid
+     verification and records any task-level exclusions.
+  4. Split/family isolation, typed packet, calibration method, failure handling,
+     metrics, and report schema are committed before final execution.
+  5. No ARC records, hidden material, provider calls, or prior experiment files
+     are modified during this planning/adapter task.
+- Handoff: provide TASK-0026 the accepted adapter contract, tests, frozen
+  preregistration, and a new experiment ID; do not pool ARC with HumanEval.
+
+#### TASK-0026 — ARC-AGI execution and structured-output audit
+
+- Branch/worktree: `task/TASK-0026-arc-execution` /
+  `D:\claude\eval-lab\.worktrees\TASK-0026-arc-execution`
+- Depends on: accepted TASK-0025
+- Scope: execute the frozen ARC study, compute exact-grid and calibration
+  results, audit structured-output failures, and publish the separate report.
+- Acceptance criteria:
+  1. Execution uses only the frozen revision, packet, partitions, models, and
+     routes; any change creates a new experiment ID.
+  2. Exact-match outcomes, malformed outputs, timeouts, provider failures, and
+     route metadata are separately retained and reported.
+  3. Calibration and consistency analyses are split-safe and reproducible.
+  4. The complete manifest, normalized predictions, results, report, checksums,
+     and rebuild instructions pass local validation.
+- Handoff: hand off the immutable ARC report and checksum set to TASK-0027;
+  future LegalBench work may cite it but may not merge its scores with it.
+
+### Phase 3 — LegalBench: objective rule-application subset
+
+#### TASK-0027 — LegalBench objective-subset adapter and gold audit
+
+- Branch/worktree: `task/TASK-0027-legalbench-adapter` /
+  `D:\claude\eval-lab\.worktrees\TASK-0027-legalbench-adapter`
+- Depends on: accepted TASK-0026
+- Scope: select only LegalBench tasks with explicit answer keys or deterministic
+  normalized labels; audit task-level gold provenance, label semantics, source
+  families, contamination risk, and typed packet before preregistration.
+- Acceptance criteria:
+  1. Each included task has a documented objective-strength tier, answer-key
+     source/revision, label map, normalization rule, and exclusion rationale.
+  2. Open-ended explanations and judge-dependent items are excluded or placed
+     in a separately marked adjudication plan; they cannot enter objective
+     accuracy.
+  3. The adapter tests exact/normalized matching, missing labels, malformed
+     outputs, and source-family split isolation.
+  4. The preregistration freezes the sample, splits, packet, calibration,
+     models/routes, metrics, and report schema before final labels.
+- Handoff: TASK-0028 receives the accepted task inventory, provenance audit,
+  adapter tests, and new experiment ID. Unresolved gold ambiguity blocks
+  execution rather than being resolved by a model vote.
+
+#### TASK-0028 — LegalBench execution and objective-subset report
+
+- Branch/worktree: `task/TASK-0028-legalbench-execution` /
+  `D:\claude\eval-lab\.worktrees\TASK-0028-legalbench-execution`
+- Depends on: accepted TASK-0027
+- Scope: execute and audit only the frozen objective subset; keep any
+  adjudicated/explanatory study separate or unexecuted.
+- Acceptance criteria:
+  1. The report is per task/family and identifies answer-key provenance,
+     normalized-match behavior, unresolved statuses, calibration, and
+     contamination limitations.
+  2. No free-form legal explanation is scored as objective correctness without
+     the separately approved adjudication protocol.
+  3. Experiment artifacts, checksums, rebuild instructions, and local gates
+     pass; no earlier experiment is altered.
+- Handoff: hand off the immutable objective-subset report to TASK-0029 and
+  explicitly list any adjudication work that remains out of scope.
+
+### Phase 4 — FinanceBench: numeric/evidence objective subset
+
+#### TASK-0029 — FinanceBench numeric/evidence adapter and preregistration
+
+- Branch/worktree: `task/TASK-0029-financebench-adapter` /
+  `D:\claude\eval-lab\.worktrees\TASK-0029-financebench-adapter`
+- Depends on: accepted TASK-0028
+- Scope: select numeric and evidence-grounded items with auditable sources;
+  freeze numeric tolerance, normalized answer format, citation/evidence checks,
+  document versions, source IDs, split policy, and a separate plan for free-form
+  explanations if adjudication is available.
+- Acceptance criteria:
+  1. Every item declares answer-key/source provenance, numeric units, tolerance,
+     rounding policy, normalization, and evidence/citation requirements.
+  2. Numeric correctness and evidence correctness are distinct fields; neither
+     is silently inferred from a judge's explanation.
+  3. Tests cover numeric edge cases, units, missing evidence, invalid citations,
+     malformed output, and source-family leakage.
+  4. The preregistration freezes revision, sample, splits, packet, calibration,
+     models/routes, metrics, exclusions, and report schema.
+- Handoff: TASK-0030 receives the accepted finance adapter and an explicit
+  decision on whether the free-form track is deferred. No financial provider
+  execution occurs before this handoff is accepted.
+
+#### TASK-0030 — FinanceBench execution and separate numeric/evidence report
+
+- Branch/worktree: `task/TASK-0030-financebench-execution` /
+  `D:\claude\eval-lab\.worktrees\TASK-0030-financebench-execution`
+- Depends on: accepted TASK-0029
+- Scope: run the frozen objective subset and report numeric, evidence, and
+  execution outcomes separately; do not merge an adjudicated explanation score.
+- Acceptance criteria:
+  1. The report includes tolerance-aware numeric metrics, evidence/citation
+     metrics, calibration, consistency, unresolved statuses, and limitations.
+  2. Free-form explanations are either absent or clearly marked as a separate
+     adjudication track with non-objective provenance.
+  3. The experiment bundle is complete, checksummed, reproducible, and isolated
+     from EXP-014–019 and all other benchmark experiments.
+- Handoff: hand off the accepted report to TASK-0031; any source/licensing or
+  evidence-verification gap is recorded as a blocker, not papered over.
+
+### Phase 5 — SWE-bench/DeepSWE: repository repair after sandbox capacity review
+
+#### TASK-0031 — SWE-bench/DeepSWE sandbox feasibility and adapter design
+
+- Branch/worktree: `task/TASK-0031-swe-sandbox-feasibility` /
+  `D:\claude\eval-lab\.worktrees\TASK-0031-swe-sandbox-feasibility`
+- Depends on: accepted TASK-0030
+- Scope: choose SWE-bench or DeepSWE only after confirming isolated repository
+  execution, patch application, test runtime, resource budget, network policy,
+  dataset access, contamination controls, and reproducible environment/image.
+- Acceptance criteria:
+  1. The selected source revision, task IDs, repository snapshots, license and
+     access terms, environment image/setup, and resource limits are documented.
+  2. Patch application, repository-test pass/fail, timeout, build failure,
+     environment failure, and malformed patch are distinct statuses.
+  3. The adapter design preserves task IDs, repository provenance, split/family
+     isolation, and deterministic test invocation; no model grader is gold.
+  4. A bounded mocked/local verifier test passes without provider labels and
+     does not require downloading benchmark data in this planning checkpoint.
+- Handoff: TASK-0032 receives the capacity decision and accepted sandbox/API
+  design. If capacity or isolation is insufficient, mark this track blocked and
+  do not authorize execution or substitute a different benchmark silently.
+
+#### TASK-0032 — SWE-bench/DeepSWE preregistration, execution, and audit
+
+- Branch/worktree: `task/TASK-0032-swe-execution` /
+  `D:\claude\eval-lab\.worktrees\TASK-0032-swe-execution`
+- Depends on: accepted TASK-0031
+- Scope: freeze the repair benchmark experiment, execute within the approved
+  sandbox, and publish patch/test evidence with environment metadata.
+- Acceptance criteria:
+  1. The pre-registration freezes source revision, repository snapshot policy,
+     task sample, model arms/routes, prompt, seed, calibration split, metrics,
+     timeout/stopping rules, and contamination exclusions.
+  2. Each result preserves the generated patch or fingerprint, patch status,
+     test command/version, test outcome, environment identity, and failure
+     classification.
+  3. No repository test failure is converted into a provider error or ordinary
+     wrong answer; sandbox/environment failures remain separately auditable.
+  4. The final experiment report, checksums, and rebuild instructions pass
+     validation and remain separate from all text-only benchmark scores.
+- Handoff: hand off the immutable SWE report to TASK-0033. Any environment
+  drift requires a new experiment ID rather than an in-place rerun.
+
+### Phase 6 — OSWorld: VM snapshot and state-verifier infrastructure
 
 #### TASK-0033 — OSWorld VM/state-verifier feasibility and preregistration
 
-Depends on: TASK-0032 and availability of isolated VM infrastructure.
+- Branch/worktree: `task/TASK-0033-osworld-infrastructure` /
+  `D:\claude\eval-lab\.worktrees\TASK-0033-osworld-infrastructure`
+- Depends on: accepted TASK-0032
+- Scope: establish isolated VM snapshots, reset/replay procedure, GUI state
+  assertions, task-specific verifier contract, artifact capture, and resource
+  policy before any computer-use benchmark run.
+- Acceptance criteria:
+  1. VM image/version, snapshot identity, reset behavior, network policy,
+     secrets policy, screen/input capture, and resource/time limits are frozen.
+  2. State assertions are deterministic and tested for success, partial state,
+     wrong state, timeout, crash, and verifier/environment failure.
+  3. The adapter preserves task IDs, initial/final state evidence, provenance,
+     split isolation, typed action/output semantics, and checksums.
+  4. The preregistration freezes sample, partitions, packet, model/routes,
+     calibration, metrics, exclusions, and stopping rules before execution.
+- Handoff: TASK-0034 receives a runnable, isolated verifier harness and frozen
+  experiment plan. If snapshot replay or assertion determinism fails, block the
+  track rather than report GUI success from manual inspection.
 
-Freeze the OSWorld task subset, VM image/snapshot, GUI setup, state assertions,
-replay policy, interaction timeout, task-specific assertions, and `EXP-025`.
+#### TASK-0034 — OSWorld execution and grounded-interaction audit
 
-Acceptance criteria:
+- Branch/worktree: `task/TASK-0034-osworld-execution` /
+  `D:\claude\eval-lab\.worktrees\TASK-0034-osworld-execution`
+- Depends on: accepted TASK-0033
+- Scope: execute the frozen OSWorld partitions and publish task/state evidence,
+  interaction reliability, calibration, and environment-failure analysis.
+- Acceptance criteria:
+  1. Each task starts from the declared snapshot and records reset, action,
+     timeout, final-state assertion, and environment status metadata.
+  2. VM failures, GUI/tool failures, provider failures, and incorrect final
+     states are separate outcomes.
+  3. The experiment bundle contains replay/setup instructions, state evidence or
+     fingerprints, normalized predictions/actions, metrics, report, and checksums.
+  4. No score is blended with SWE, ARC, or other tracks; limitations cover VM
+     nondeterminism, task coverage, and contamination.
+- Handoff: hand off the accepted OSWorld report to TASK-0035; preserve every
+  failed or unreplayable task as audit metadata.
 
-- Each task has a deterministic or explicitly versioned state verifier and a
-  resettable snapshot procedure.
-- GUI/environment failures, model abstention, and assertion failures are
-  distinct statuses.
-- Credentials, personal data, host state, and hidden task material are kept
-  out of committed artifacts.
-- No execution proceeds without a reproducible VM image/snapshot reference and
-  audit trail.
+### Phase 7 — Humanity's Last Exam: answer-key/adjudication-controlled track
 
-#### TASK-0034 — OSWorld runner, state assertions, and replay report
+#### TASK-0035 — Humanity's Last Exam gold-policy audit and adapter
 
-Depends on: TASK-0033.
+- Branch/worktree: `task/TASK-0035-hle-gold-policy` /
+  `D:\claude\eval-lab\.worktrees\TASK-0035-hle-gold-policy`
+- Depends on: accepted TASK-0034
+- Scope: audit available answer keys, multimodal inputs, expert metadata,
+  licensing/access, item ambiguity, adjudication requirements, and objective
+  versus adjudicated subsets; implement only the canonical adapter and tests.
+- Acceptance criteria:
+  1. Every proposed item is classified as deterministic, answer-key based,
+     human-adjudicated, or weak/model-supervised, with provenance and audit
+     fields.
+  2. Items without a defensible key are excluded from objective accuracy or
+     assigned to an explicitly separate adjudication experiment.
+  3. Multimodal input/output representation, asset fingerprints, normalization,
+     missing-modality handling, and typed packet are tested and frozen.
+  4. The preregistration freezes the subset, splits, rubric, adjudication
+     protocol if applicable, calibration, metrics, exclusions, model/routes,
+     and report schema before labels.
+- Handoff: TASK-0036 receives the accepted provenance inventory and adapter.
+  Ambiguous or unaudited items remain out of objective gold; no model consensus
+  may promote them.
 
-Implement the isolated VM runner, action/observation packet, state assertions,
-replay checks, and report. Use the same Eval Lab manifest, provenance,
-calibration, and route metadata contract as the text tracks.
+#### TASK-0036 — Humanity's Last Exam execution and separated report
 
-Acceptance criteria:
+- Branch/worktree: `task/TASK-0036-hle-execution` /
+  `D:\claude\eval-lab\.worktrees\TASK-0036-hle-execution`
+- Depends on: accepted TASK-0035
+- Scope: execute only the frozen audited subset and, if separately authorized,
+  the adjudication subset with its own provenance and report.
+- Acceptance criteria:
+  1. Objective answer-key results and adjudicated results are separate tables,
+     metrics, artifacts, and claims.
+  2. Multimodal assets, answer keys, adjudication decisions, model/route
+     metadata, failures, calibration, and checksums are retained or fingerprinted.
+  3. The report states coverage, ambiguity, expert agreement, contamination,
+     multimodal limitations, and what cannot be called objective accuracy.
+  4. The experiment is complete under the protocol and does not modify any
+     prior experiment or create a blended benchmark score.
+- Handoff: hand off the immutable HLE report to TASK-0037. If the answer-key or
+  adjudication audit is incomplete, close only the adapter checkpoint and keep
+  execution blocked.
 
-- Mock VM or fixture tests cover reset, action timeout, assertion pass/fail,
-  environment failure, malformed action, and abstention.
-- Replays are deterministic enough to audit, or nondeterminism is measured and
-  reported rather than hidden.
-- `EXP-025` artifacts are separate from all prior experiments and contain
-  checksums/rebuild instructions.
+### Phase 8 — paper and release integration
 
-### Expert and multimodal stress track
+#### TASK-0037 — Benchmark-track release index and paper integration
 
-#### TASK-0035 — Humanity's Last Exam answer-key/adjudication policy
+- Branch/worktree: `task/TASK-0037-benchmark-paper-integration` /
+  `D:\claude\eval-lab\.worktrees\TASK-0037-benchmark-paper-integration`
+- Depends on: accepted reports from TASK-0024, TASK-0026, TASK-0028, TASK-0030,
+  TASK-0032, TASK-0034, and TASK-0036; any blocked track is explicitly marked
+  blocked rather than silently omitted.
+- Scope: add track-level release/index references and manuscript sections only
+  after each referenced experiment passes its audit gate.
+- Acceptance criteria:
+  1. Every table/figure traces to a single track's report, predictions/results,
+     benchmark/source manifest, model/route metadata, and calibration artifact.
+  2. Deterministic, answer-key, adjudicated, and weak/model-supervised results
+     are visibly separated; no blended cross-track score is claimed.
+  3. Release metadata contains versions, licenses/access terms, checksums,
+     rebuild commands, limitations, and immutable experiment references.
+  4. A failed or incomplete provider/environment run is represented as status
+     metadata and unresolved coverage, never as a fabricated label or score.
+  5. Paper/release validation passes and no experiment directory is rewritten.
+- Handoff: provide the final release index, paper diff, validation output, and
+  exact traceability map for review. Any later benchmark change starts a new
+  task and experiment ID; it does not amend a completed track in place.
 
-Depends on: TASK-0034.
+## Acceptance criteria
 
-Audit available answer keys and classify items into deterministic answer-key,
-human-adjudicated, and unsupported categories. Freeze the eligible subset,
-modality policy, answer normalization, adjudicator protocol, and `EXP-026`
-preregistration only after the gold policy is explicit.
+Before any task is marked complete, its owner must record:
 
-Acceptance criteria:
+- task status and exact branch/worktree;
+- dependencies and accepted predecessor commit(s);
+- exact files changed and confirmation that files outside scope were untouched;
+- commands run and their results, including contract, tests, and `git diff --check`;
+- experiment ID and manifest status, when an experiment exists;
+- dataset revision/license/fingerprint and source-family split evidence;
+- gold provenance and verifier/scorer behavior;
+- provider/model/route metadata with failures separate from labels;
+- calibration split and no-test-leakage evidence;
+- checksums and rebuild instructions for completed experiments;
+- decisions, unresolved questions/blockers, and one next atomic action.
 
-- No item is called objective without a declared answer-key or deterministic
-  provenance; adjudicated items are visibly separate.
-- Multimodal input handling, accessibility, model context limits, and
-  contamination risks are documented.
-- Adjudicator selection, blinding, disagreement handling, and stopping rules
-  are preregistered for the non-deterministic track.
-- The deterministic and adjudicated tracks have separate metrics and reports.
+## Checkpoint log
 
-#### TASK-0036 — Humanity's Last Exam adapter, adjudication harness, and report
+### 2026-09-21 — roadmap decomposition checkpoint
 
-Depends on: TASK-0035.
+Status: complete.
 
-Implement the eligible-item adapter, multimodal packet, answer-key scorer,
-adjudication workflow, confidence/calibration handling, and limitations report.
+Completed work: decomposed the roadmap into dependency-ordered HumanEval,
+ARC-AGI, LegalBench, FinanceBench, SWE-bench/DeepSWE, OSWorld, Humanity's
+Last Exam, and release-integration tasks. Added one-branch/one-worktree rules,
+per-task acceptance criteria, handoff/blocker rules, and cross-task invariants.
 
-Acceptance criteria:
+Exact files changed: `tasks/TASK-0021-benchmark-roadmap-decomposition.md` only.
 
-- Tests cover modality/schema handling, answer normalization, answer-key
-  scoring, adjudicator blinding and disagreement, malformed output, timeout,
-  abstention, and provider failure.
-- Model judgments are never silently promoted to gold.
-- Deterministic and adjudicated outputs are published as distinct `EXP-026`
-  artifacts with provenance and checksums.
+Commands run: read `AGENTS.md`, `PROJECT.md`, `checkpoints/CURRENT.md`,
+`docs/EXPERIMENT_PROTOCOL.md`, `docs/BENCHMARK_EXPANSION_ROADMAP.md`, and
+`tasks/TASK-0020-benchmark-expansion-plan.md`; checked that the target file was
+absent before creation. No provider, benchmark, or experiment command was run.
 
-## Shared definition of done for every implementation task
+Test results: planning-only document review; no provider execution, benchmark
+download, or experiment test run was performed.
 
-Before a task is accepted:
+Decisions made: HumanEval is first; ARC follows its completed audit; LegalBench
+and FinanceBench remain objective subsets; SWE/DeepSWE and OSWorld require
+explicit environment gates; HLE requires an answer-key/adjudication audit; the
+paper gate follows completed track reports. Existing experiments remain
+immutable and routing policy is preserved.
 
-1. Its task file names the exact files it may modify and records status,
-   completed work, commands, test results, decisions, unresolved questions,
-   and next atomic action.
-2. The task uses branch format `task/TASK-NNNN-short-name` and an isolated
-   worktree created from the accepted parent checkpoint. Do not share an active
-   worktree between tasks.
-3. The feasibility/adapter/preregistration/execution/audit gates applicable to
-   the track are complete in order.
-4. Tests cover schema, provenance, split/fingerprint, scorer/verifier,
-   malformed output, timeout, abstention, and provider-failure behavior as
-   applicable.
-5. Final execution, if authorized, writes only to the task's new experiment
-   directory and preserves raw normalized predictions or a documented
-   fingerprint of them.
-6. Metrics include the applicable accuracy/balanced accuracy/macro F1, Brier,
-   NLL, ECE, consistency, risk/coverage, latency, and cost fields; omitted
-   fields are explained rather than silently absent.
-7. The report states gold provenance, limitations, contamination risk,
-   execution status, route/model metadata, and rebuild/checksum instructions.
-8. Local contract checks and focused tests pass; no secrets, caches, private
-   data, or unapproved benchmark material are committed.
-9. The task is committed as one coherent checkpoint with a `TASK-NNNN:` commit
-   message and reviewed before its dependent task starts.
+Unresolved questions: exact source revisions, sample sizes, access terms,
+hardware/environment budgets, final model arms, and execution dates remain for
+the corresponding task's preregistration.
 
-## Explicit dependency graph
+Next atomic action: create TASK-0022 in its own branch/worktree and freeze the
+HumanEval source, executable-test policy, split/fingerprint, typed judge packet,
+calibration split, and report schema before any final benchmark run.
 
-```text
-TASK-0022 -> TASK-0023 -> TASK-0024 -> TASK-0025 -> TASK-0026
-                                      -> TASK-0027 -> TASK-0028
-                                                   -> TASK-0029 -> TASK-0030
-                                                                -> TASK-0031
-                                                                -> TASK-0032
-                                                                             -> TASK-0033
-                                                                             -> TASK-0034
-                                                                                          -> TASK-0035
-                                                                                          -> TASK-0036
-```
+## Handoff
 
-The arrows indicate the recommended review order, not permission to execute
-providers. Environment-heavy branches may be parallelized only after their
-stated prerequisites and shared contract changes are accepted; they still
-retain separate experiment IDs and output directories.
-
-## Files changed by this planning task
-
-- `tasks/TASK-0021-benchmark-roadmap-decomposition.md` (this file)
-
-No other file is in scope for TASK-0021. Existing experiment directories,
-manifests, reports, checkpoints, source code, and benchmark data remain
-unchanged.
-
-## Commands and test results
-
-- Read only the required planning inputs: `PROJECT.md`,
-  `checkpoints/CURRENT.md`, `docs/EXPERIMENT_PROTOCOL.md`,
-  `docs/BENCHMARK_EXPANSION_ROADMAP.md`, and `AGENTS.md`.
-- Inspected repository status before editing; the worktree was clean and on
-  the provided detached checkpoint.
-- No provider, benchmark, or experiment command was run.
-- No test suite was run because this checkpoint changes planning documentation
-  only.
-
-## Decisions
-
-- HumanEval is first because its executable verifier supplies the clearest
-  end-to-end objective adapter pattern.
-- ARC follows HumanEval because exact-grid scoring extends the contract to
-  structured outputs without requiring a full interactive environment.
-- LegalBench and FinanceBench are gated by task-level gold audits so their
-  open-ended or ambiguous portions cannot contaminate deterministic results.
-- SWE-bench/DeepSWE and OSWorld are deferred until sandbox, VM, replay, and
-  runtime capacity are explicitly demonstrated.
-- Humanity's Last Exam is last because its answer-key and adjudication status
-  varies by item and modality.
-- The proposed experiment IDs are `EXP-020` through `EXP-026`, one per roadmap
-  track; they are planning identifiers only and do not create experiment
-  artifacts in TASK-0021.
-
-## Unresolved questions
-
-- Which exact HumanEval, ARC-AGI, LegalBench, FinanceBench, SWE-bench/DeepSWE,
-  OSWorld, and HLE revisions and subsets will pass their future feasibility
-  audits?
-- What sandbox and VM implementation is acceptable for code execution and
-  GUI/state verification on the available host?
-- Which optional Luna/Sol arms, if any, are scientifically necessary after the
-  objective adapters are validated?
-- What answer-key coverage and adjudicator budget are available for HLE?
-
-## Next atomic action
-
-Review and accept TASK-0021, then create TASK-0022 in its own
-`task/TASK-0022-human-eval-feasibility` branch/worktree. TASK-0022 must freeze
-the HumanEval source and executable-test policy before any adapter code,
-provider smoke, benchmark retrieval, or final execution.
+The next agent must start with TASK-0022, not modify TASK-0020, not update
+`checkpoints/CURRENT.md` as part of this task's scope, and not execute a
+provider or download benchmark data while implementing this planning
+checkpoint. Every later agent must use the task-specific worktree, update its
+own task log at each meaningful stopping point, and stop with a written blocker
+when a required dependency, verifier, license decision, sandbox, VM, or gold
+provenance decision is not accepted.
