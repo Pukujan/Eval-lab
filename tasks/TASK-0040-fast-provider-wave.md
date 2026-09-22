@@ -193,11 +193,22 @@ rate-limit units. The authenticated compare option in
 catalog snapshot, so the no-compare live check was used and its output was not
 treated as benchmark evidence.
 
+The eight-arm public selection is complete in
+`experiments/EXP-20260922-024-inferhub-recommendation-wave/runs/`. All arms
+have 648 duplicate-free rows and are compared offline in
+`runs/public-comparison-20260922/`. Resolved accuracy / coverage are: GLM 5.2
+`0.9872 / 0.9660`, Kimi K2.7 Code `0.9753 / 0.9985`, Qwen3.8 Flash
+`0.9846 / 1.0000`, Qwen 3.8 Max `0.9861 / 1.0000`, DeepSeek V4.1 Flash
+`0.9890 / 0.8410`, DeepSeek V4 Flash `0.9891 / 0.8488`, GLM 5.3 Flash
+`0.9799 / 0.9985`, and MiniMax M3 `0.9687 / 0.9861`. Parse errors remain
+explicit unresolved statuses; DeepSeek had the highest public parse-error
+rates (`103` and `98`).
+
 ## Next atomic action
 
-Execute public and blind partitions for the eight canary-passed routes with
-per-record checkpoints. Preserve MiMo's failed canaries as unresolved and do
-not substitute a fallback route. Do not resume the old 14-route plan, change
+Run the same eight canary-passed routes on the frozen 760-record blind holdout
+with per-record checkpoints. Preserve MiMo's failed canaries as unresolved and
+do not substitute a fallback route. Do not resume the old 14-route plan, change
 EXP-023, or treat the recommendation score as benchmark gold.
 
 ## Decisions and unresolved questions

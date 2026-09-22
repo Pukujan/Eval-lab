@@ -20,7 +20,13 @@ resumed execution. The new experiment is preregistered and canaries passed for
 eight routes after one fresh DeepSeek retry; selected MiMo V2.5 returned HTTP
 402 twice and remains an unresolved unavailable arm with no fallback. Next
 atomic action: run public and blind partitions for the eight canary-passed
-routes with bounded concurrency.
+routes with bounded concurrency. The eight-arm public selection is now
+complete: all eight outputs have 648 duplicate-free rows and the offline
+comparison is in `runs/public-comparison-20260922/`. Conditional resolved
+accuracy ranges from `0.9687` (MiniMax M3) to `0.9891` (DeepSeek V4 Flash);
+DeepSeek has substantial parse missingness (103 and 98 records), preserved as
+unresolved. Next atomic action: run the same eight routes on the frozen blind
+holdout.
 
 ## 2026-09-22 — TASK-0040 paused during InferHub release-first wave
 
