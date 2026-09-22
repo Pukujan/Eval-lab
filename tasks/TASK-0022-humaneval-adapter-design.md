@@ -2,7 +2,8 @@
 
 ## Status and authority
 
-**Status:** specified; implementation and experiment preregistration pending.
+**Status:** EXP-020 planning-policy checkpoint complete; executable
+preregistration, adapter implementation, and final evaluation blocked/pending.
 
 This file is the planning checkpoint for the next benchmark track in
 `docs/BENCHMARK_EXPANSION_ROADMAP.md`. The present checkpoint authorizes no data
@@ -201,7 +202,11 @@ updated with exact intended files and a new experiment ID: an adapter under
 bounded scripts under `scripts/`, focused tests under `tests/`, this task file,
 and the new HumanEval experiment directory. If a shared schema or checkpoint
 must change, add its exact path to this task file first. This planning
-checkpoint changes only this task file.
+checkpoint may change only this task file and the new
+`experiments/EXP-20260921-020-humaneval-preregistration/` directory, limited to
+`README.md`, `experiment.yaml`, `plan.md`, `checksums.sha256`, and
+`rebuild.md`. No adapter, verifier, shared schema, existing experiment,
+`checkpoints/CURRENT.md`, result, report, or final-label artifact is in scope.
 
 ## Acceptance criteria
 
@@ -225,6 +230,72 @@ Acceptance requires:
    contract checks, lint, and `git diff --check`; record exact outcomes here.
 
 ## Checkpoint log
+
+### 2026-09-21 — EXP-020 source audit and policy skeleton
+
+- **Status:** planning checkpoint complete in
+  `D:/claude/eval-lab/.worktrees/TASK-0022-preregistration` on
+  `task/TASK-0022-humaneval-preregistration` from `main` `2ee94f7`.
+  EXP-020 is `planning_only_blocked`, not a completed experiment or final-test
+  preregistration. TASK-0021 dependency is present at `7ea5bb6`.
+- **Completed:** read-only official source/revision/license/access audit;
+  executable-test, split, typed packet, gold, failure, sandbox, calibration,
+  provider and reporting policies; machine-readable manifest and checksum/
+  rebuild skeleton. No data retrieval, candidate execution, provider call or
+  final label occurred. EXP-014–019 and `checkpoints/CURRENT.md` untouched.
+- **Exact files changed:** this task file;
+  `experiments/EXP-20260921-020-humaneval-preregistration/README.md`,
+  `experiment.yaml`, `plan.md`, `checksums.sha256`, `rebuild.md`.
+- **Commands run:** named contract/document reads; `git status`, `git log`,
+  `git worktree list/add`, `git ls-remote` official repository; read-only
+  GitHub pinned-tree API, pinned-license GET/hash and archive HEAD; `docker
+  version`, `wsl --status`; `rg` on contract/tests; PowerShell `Get-FileHash`;
+  Python YAML parse/assertions; `python scripts/check_repo_contract.py`;
+  `python -m pytest -q tests/test_repo_contract.py
+  tests/test_program_contract.py tests/test_schema.py` (first without, then
+  with `PYTHONPATH=src`); `ruff check .`; `git diff --check`.
+- **Test results:** repository contract OK; first focused test collection
+  failed (`ModuleNotFoundError: eval_lab`) without `PYTHONPATH`; rerun with
+  `PYTHONPATH=src` passed 20 tests in 1.04s. Ruff clean; YAML parsed with
+  blocked/null gates asserted; four planning checksums matched; diff check
+  clean (Git line-ending conversion warning only). No verifier or candidate
+  smoke was run.
+- **Decisions:** pin upstream commit
+  `6d43fb980f9fee3c892a914eda09951f772ad10d`; root MIT license digest
+  `bcba3de214851cce46ed5af42d6698044616eeace887c3231bc7a20474ab639e`;
+  archive Git blob `998d25196e17af24daf9b6cb3a975fe752528e46`
+  and HEAD 200/44,877 bytes are metadata, **not** an archive SHA-256 or row
+  audit. No redistribution. Sandbox and exact tests are mandatory for gold;
+  provider policy remains no OpenCode, OpenRouter Jev only, Grok direct xAI
+  `grok` CLI only.
+- **Blockers/unresolved:** Docker Desktop Linux engine unavailable (missing
+  named pipe); WSL2 Ubuntu alone is not sandbox proof. Image digest, limits,
+  isolation probes, archive/row fingerprints, actual split membership,
+  candidate source/count, exact arms/models, calibration estimator, retry
+  cap and primary comparison remain unset. Recheck pinned terms at retrieval.
+  No final-label artifact or final test is permitted on this checkpoint.
+- **Next atomic action:** in a separately accepted implementation checkpoint,
+  prove isolated sandbox behavior with hand-written fixtures, then implement
+  adapter/verifier tests and obtain authorized pinned-source fingerprints;
+  fill and commit all remaining manifest gates before any provider/final run.
+
+### 2026-09-21 — EXP-020 planning scope opened
+
+- **Status:** active in `D:/claude/eval-lab/.worktrees/TASK-0022-preregistration`
+  on `task/TASK-0022-humaneval-preregistration`, based on `main` `2ee94f7`.
+- **Completed:** expanded the allowed-file list above before creating EXP-020.
+- **Exact files changed so far:** this task file only.
+- **Commands run:** read the named project/task/protocol/roadmap files;
+  `git status`, `git log`, `git worktree list`, `git worktree add`, read-only
+  official-source `git ls-remote`, GitHub tree metadata query, raw-license
+  hash, archive HEAD request, `docker version`, and `wsl --status`.
+- **Test results:** no benchmark, provider, or candidate tests run; source
+  metadata and environment probes only. Repository checks remain pending.
+- **Decisions:** EXP-020 is a planning-only skeleton; no final-label artifacts.
+- **Unresolved:** Docker Linux engine is unavailable; sandbox proof and exact
+  runtime image/limits remain an execution gate.
+- **Next atomic action:** record the source audit and preregistration policy in
+  the allowed EXP-020 skeleton, then run repository checks.
 
 ### 2026-09-21 — planning specification
 
