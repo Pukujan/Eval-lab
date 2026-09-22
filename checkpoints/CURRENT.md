@@ -24,8 +24,10 @@ TASK-0022 is now integrated at commit `cb5e26f`. EXP-020's preregistration
 skeleton is under `experiments/EXP-20260921-020-humaneval-preregistration/`.
 The official HumanEval source revision and license metadata were audited
 read-only, but the archive was not downloaded and no candidate or provider was
-run. The current blocker is that Docker/Linux isolation is unavailable; no
-untrusted code may execute until the sandbox/resource policy is demonstrated.
+run. TASK-0023's safe offline adapter/status layer is integrated at commits
+`c2a1e64` and `f8bcd39`; no candidate code was executed. The current blocker is
+that Docker/Linux isolation is unavailable, so no untrusted code may execute
+until the sandbox/resource policy is demonstrated.
 
 Luna and Sol are excluded from the primary comparison under the orchestrator's
 vendor-independent policy. The included arms are direct xAI Grok Build, Jev
@@ -68,13 +70,12 @@ TASK-0009 and TASK-0010 selective escalation/research release are complete. TASK
 
 ## Next task
 
-TASK-0023 is open at commit `d4faa27` with its exact adapter/verifier file scope
-recorded in the TASK-0022 handoff. No adapter code or candidate execution has
-been added. The task is currently blocked on proving an isolated Linux
-sandbox/resource policy because Docker/Linux is unavailable on this host. Its
-next atomic action is to establish that sandbox or record an approved safe
-alternative, then implement fixture-only adapter/verifier tests before any live
-provider call. Do not modify or overwrite EXP-014 through EXP-019.
+TASK-0023's pure canonicalization and execution-status layer is complete, with
+122 tests passing. The remaining atomic action is to establish and record an
+isolated Linux sandbox/resource policy, then add only the authorized runner and
+preregistration-completion checkpoint. No live provider call or final label is
+authorized before that gate. Do not modify or overwrite EXP-014 through
+EXP-019.
 
 ## Queued foundation
 
