@@ -1,10 +1,10 @@
-# TASK-0024 — Jev research and integration audit
+# TASK-0038 — Jev research and integration audit
 
 - Status: complete
 - Owner: Codex/local agent
 - Priority: P1
-- Branch: `task/TASK-0024-jev-research`
-- Worktree: `D:/claude/eval-lab/.worktrees/TASK-0024-jev-research`
+- Branch: `task/TASK-0038-jev-research`
+- Worktree: `D:/claude/eval-lab/.worktrees/TASK-0038-jev-research`
 - Depends on: TASK-0019 and the completed EXP-014–EXP-019 artifacts
 
 ## Goal
@@ -47,7 +47,7 @@ finds a concrete mismatch.
 - `src/eval_lab/escalation/spec.py`
 - `src/eval_lab/escalation/providers.py`
 - `tests/test_selective_escalation.py`
-- `tasks/TASK-0024-jev-research.md`
+- `tasks/TASK-0038-jev-research.md`
 - `checkpoints/CURRENT.md`
 
 ## Validation
@@ -100,8 +100,8 @@ pytest -q` -> `123 passed`; `git diff --check` -> clean.
 
 ## Handoff
 
-Worktree: `D:/claude/eval-lab/.worktrees/TASK-0024-jev-research`
-Branch: `task/TASK-0024-jev-research`
+Worktree: `D:/claude/eval-lab/.worktrees/TASK-0038-jev-research`
+Branch: `task/TASK-0038-jev-research`
 Status: complete; ready to integrate as a durable Jev research checkpoint.
 Next task: use the user's Gravebuster host through Tailscale for the TASK-0023
 isolated Linux sandbox/resource-policy gate. Keep EXP-014 through EXP-019

@@ -29,7 +29,7 @@ run. TASK-0023's safe offline adapter/status layer is integrated at commits
 that Docker/Linux isolation is unavailable, so no untrusted code may execute
 until the sandbox/resource policy is demonstrated.
 
-TASK-0024 Jev research and integration audit is complete in the dedicated
+TASK-0038 Jev research and integration audit is complete in the dedicated
 research worktree. `docs/JEV_RESEARCH_AND_USAGE_AUDIT.md` records the official
 typed-decision contract and code-level patterns from multiple OSS integrations;
 `docs/JEV_EVAL_LAB_INTEGRATION_CONTRACT.md` records the current Jev-only
