@@ -32,17 +32,37 @@ SYSTEM_ONE_PROTOCOL = "eval-lab-system-one-v1"
 
 
 def _nested(payload: Mapping[str, Any]) -> list[Mapping[str, Any]]:
-    values = [payload]
-    for key in ("result", "data", "output", "response", "answer", "answers", "message"):
-        value = payload.get(key)
-        if isinstance(value, Mapping):
-            values.append(value)
-    choices = payload.get("choices")
-    if isinstance(choices, Sequence) and choices and isinstance(choices[0], Mapping):
-        values.append(choices[0])
-        message = choices[0].get("message")
-        if isinstance(message, Mapping):
-            values.append(message)
+    """Collect response envelopes and individual typed answers.
+
+    TypeSafe-native responses put the answer under ``answers.<question_id>``;
+    OpenAI-compatible providers may put JSON under ``choices[0].message``.
+    The old shallow traversal found the label in some envelopes but silently
+    dropped nested probability maps. Keep the traversal bounded to known
+    response containers and preserve both shapes.
+    """
+
+    values: list[Mapping[str, Any]] = []
+    queue: list[Mapping[str, Any]] = [payload]
+    seen: set[int] = set()
+    while queue:
+        current = queue.pop(0)
+        identity = id(current)
+        if identity in seen:
+            continue
+        seen.add(identity)
+        values.append(current)
+
+        for key in ("result", "data", "output", "response", "answer", "answers", "message"):
+            value = current.get(key)
+            if isinstance(value, Mapping):
+                queue.append(value)
+                if key in {"answer", "answers"}:
+                    queue.extend(item for item in value.values() if isinstance(item, Mapping))
+
+        choices = current.get("choices")
+        if isinstance(choices, Sequence):
+            queue.extend(item for item in choices if isinstance(item, Mapping))
+
     return values
 
 
@@ -145,6 +165,9 @@ def normalize_typed_response(
     resolved_model = _find(payload, ("model",))
     if resolved_model is not None:
         metadata["resolved_model"] = str(resolved_model)
+    confidence = _find(payload, ("confidence",))
+    if isinstance(confidence, (int, float)) and not isinstance(confidence, bool) and math.isfinite(float(confidence)):
+        metadata["confidence"] = float(confidence)
     return JudgePrediction(
         record_id=record.record_id,
         judge_id=model,

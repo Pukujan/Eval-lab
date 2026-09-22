@@ -29,6 +29,15 @@ run. TASK-0023's safe offline adapter/status layer is integrated at commits
 that Docker/Linux isolation is unavailable, so no untrusted code may execute
 until the sandbox/resource policy is demonstrated.
 
+TASK-0024 Jev research and integration audit is complete in the dedicated
+research worktree. `docs/JEV_RESEARCH_AND_USAGE_AUDIT.md` records the official
+typed-decision contract and code-level patterns from multiple OSS integrations;
+`docs/JEV_EVAL_LAB_INTEGRATION_CONTRACT.md` records the current Jev-only
+OpenRouter policy. The active typed-spec builder is now independent of the
+historical OpenCode adapter, sends descriptive criteria, and preserves nested
+native probabilities/confidence. No completed experiment artifact was changed
+and no live provider call was made.
+
 Luna and Sol are excluded from the primary comparison under the orchestrator's
 vendor-independent policy. The included arms are direct xAI Grok Build, Jev
 through the Jev-only OpenRouter route, YOLO-Auto Qwen Flash, and local Qwen 4B.
@@ -72,10 +81,10 @@ TASK-0009 and TASK-0010 selective escalation/research release are complete. TASK
 
 TASK-0023's pure canonicalization and execution-status layer is complete, with
 122 tests passing. The remaining atomic action is to establish and record an
-isolated Linux sandbox/resource policy, then add only the authorized runner and
-preregistration-completion checkpoint. No live provider call or final label is
-authorized before that gate. Do not modify or overwrite EXP-014 through
-EXP-019.
+isolated Linux sandbox/resource policy through the user's Gravebuster host over
+Tailscale, then add only the authorized runner and preregistration-completion
+checkpoint. No live provider call or final label is authorized before that
+gate. Do not modify or overwrite EXP-014 through EXP-019.
 
 ## Queued foundation
 

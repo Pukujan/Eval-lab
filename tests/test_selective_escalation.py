@@ -75,6 +75,7 @@ def test_typed_spec_matches_provider_wire_contract() -> None:
     assert payload["state"]
     assert payload["questions"]["verdict"]["type"] == "choice"
     assert list(payload["questions"]["verdict"]["criteria"]) == ["pass", "fail"]
+    assert payload["questions"]["verdict"]["criteria"]["pass"] == "The candidate is objectively correct."
     normalized = normalize_typed_response({"label": record.gold.label}, record, provider="mock", model="mock")
     assert normalized.label == record.gold.label
     openrouter = normalize_typed_response(
@@ -91,6 +92,30 @@ def test_typed_spec_matches_provider_wire_contract() -> None:
         model="qwen3.8-flash",
     )
     assert qwen.label == "pass"
+
+
+def test_nested_jev_answer_preserves_native_probabilities_and_confidence() -> None:
+    record = _records()[0]
+    normalized = normalize_typed_response(
+        {
+            "model": "jev-1.13.0",
+            "answers": {
+                "verdict": {
+                    "type": "choice",
+                    "choice": "pass",
+                    "probabilities": {"pass": 0.8, "fail": 0.2},
+                    "confidence": 0.7,
+                }
+            },
+        },
+        record,
+        provider="openrouter",
+        model=OPENROUTER_PINNED_MODEL,
+    )
+    assert normalized.label == "pass"
+    assert normalized.probabilities == {"pass": 0.8, "fail": 0.2}
+    assert normalized.provider_metadata["resolved_model"] == "jev-1.13.0"
+    assert normalized.provider_metadata["confidence"] == 0.7
 
 
 def test_typed_spec_supports_declared_label_order_permutation() -> None:

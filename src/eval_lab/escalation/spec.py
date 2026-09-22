@@ -7,7 +7,6 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from eval_lab.jev import build_direct_request
 from eval_lab.schema import JudgeRecord, JudgmentMode, PairwiseLabel
 
 
@@ -21,6 +20,7 @@ class TypedQuestion(BaseModel):
     instructions: str = Field(min_length=1)
     legal_labels: list[str] = Field(min_length=2)
     score_order: list[str] = Field(min_length=2)
+    criteria: dict[str, str] = Field(default_factory=dict)
     boolean_semantics: dict[str, str] | None = None
 
     def __init__(self, **data: object) -> None:
@@ -29,6 +29,8 @@ class TypedQuestion(BaseModel):
             raise ValueError("legal_labels must be unique")
         if self.score_order != self.legal_labels:
             raise ValueError("score_order must exactly match legal_labels")
+        if self.criteria and set(self.criteria) != set(self.legal_labels):
+            raise ValueError("criteria keys must exactly match legal_labels")
 
 
 class DecisionSpec(BaseModel):
@@ -61,12 +63,37 @@ class DecisionSpec(BaseModel):
                     "type": question.question_type,
                     "instructions": question.instructions,
                     "criteria": {
-                        label: label for label in question.legal_labels
+                        label: question.criteria.get(label, label)
+                        for label in question.legal_labels
                     },
                 }
                 for key, question in self.questions.items()
             },
         }
+
+
+def _state_for_record(record: JudgeRecord) -> str:
+    """Build the benchmark state without importing the historical Jev adapter."""
+
+    state = f"User prompt: {record.prompt}\nCandidate A: {record.candidate_a}"
+    if record.mode is JudgmentMode.PAIRWISE:
+        state += f"\nCandidate B: {record.candidate_b}"
+    return state
+
+
+def _choice_criteria(record: JudgeRecord) -> dict[str, str]:
+    """Describe the closed label space in provider-neutral terms."""
+
+    if record.mode is JudgmentMode.SINGLE:
+        return {
+            "pass": "The candidate is objectively correct.",
+            "fail": "The candidate is objectively incorrect.",
+        }
+    return {
+        PairwiseLabel.A.value: "Candidate A is better or more correct.",
+        PairwiseLabel.B.value: "Candidate B is better or more correct.",
+        PairwiseLabel.TIE.value: "The candidates are objectively equivalent.",
+    }
 
 
 def build_decision_spec(
@@ -78,9 +105,7 @@ def build_decision_spec(
 ) -> DecisionSpec:
     """Compile a canonical record into the single typed semantic contract."""
 
-    request = build_direct_request(record)
-    question_id = next(iter(request["questions"]))
-    question_payload = request["questions"][question_id]
+    question_id = "verdict"
     if record.mode is JudgmentMode.SINGLE:
         labels = ["pass", "fail"]
     else:
@@ -93,15 +118,17 @@ def build_decision_spec(
     question = TypedQuestion(
         question_id=question_id,
         question_type="choice",
-        instructions=instruction_override or str(question_payload["instructions"]),
+        instructions=instruction_override
+        or "Return the single objective verdict for the candidate record.",
         legal_labels=labels,
         score_order=labels,
+        criteria={label: _choice_criteria(record)[label] for label in labels},
     )
     return DecisionSpec(
         spec_id="eval-lab-system-one",
         spec_version="0.1.0",
         record_id=record.record_id,
-        state=str(request["state"]),
+        state=_state_for_record(record),
         questions={question_id: question},
         context_limit=context_limit,
     )
