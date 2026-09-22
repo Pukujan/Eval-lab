@@ -42,11 +42,23 @@ isolated leader sockets. The checkpointed Jev runner is also committed. No
 provider was called by this code change. Targeted tests (`6 passed`), Ruff,
 compile, and diff checks are green.
 
+The one-record canaries completed concurrently in fresh directories:
+
+- Grok 4.6: `ok`, surfaced `grok-4.6-build`, approximately 13.57 seconds.
+- Grok 4.7: `ok`, surfaced `grok-4.7-build`, approximately 12.98 seconds.
+- Qwen Flash: `ok`, surfaced `qwen3.8-flash`, approximately 4.35 seconds.
+- Jev pinned: `ok`, surfaced `typesafe/jev-1.13-20260917`, approximately
+  0.47 seconds.
+
+Canary artifacts are retained under EXP-022 `runs/` and summarized in
+`canary-summary.md`. These results authorize the bounded public-selection wave.
+
 ## Next atomic action
 
-Run offline tests and one-record public-selection canaries for Grok 4.6, Grok
-4.7, Qwen Flash, and Jev in separate output directories. Record exact surfaced
-model IDs and provider status before deciding on bulk execution.
+Launch public-selection execution concurrently as four isolated processes:
+Grok 4.6 with four workers, Grok 4.7 with four workers, Qwen Flash with two
+workers, and pinned Jev with eight workers. Preserve per-record checkpoints
+and stop an arm if provider status indicates a route failure or rate limit.
 
 ## Decisions and unresolved questions
 

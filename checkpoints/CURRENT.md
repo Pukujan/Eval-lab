@@ -11,10 +11,12 @@ checkpointed concurrent Jev Decisions runner uses the pinned
 EXP-021.
 
 Offline gate so far: targeted bakeoff tests `6 passed`, Ruff clean, compile
-clean, and `git diff --check` clean. No provider call has been made for EXP-022.
-Next atomic action: commit the preregistration, then run one-record
-public-selection canaries for Grok 4.6, Grok 4.7, Qwen Flash, and Jev in
-separate directories and preserve exact surfaced model/status metadata.
+clean, and `git diff --check` clean. The four EXP-022 public-selection canaries
+all returned `ok`: Grok 4.6 surfaced `grok-4.6-build`, Grok 4.7 surfaced
+`grok-4.7-build`, Qwen surfaced `qwen3.8-flash`, and pinned Jev surfaced
+`typesafe/jev-1.13-20260917`. Canaries are retained under EXP-022 `runs/`.
+Next atomic action: run the bounded public-selection arms concurrently and
+monitor each arm's checkpoint/status file.
 
 ## Authoritative status
 
