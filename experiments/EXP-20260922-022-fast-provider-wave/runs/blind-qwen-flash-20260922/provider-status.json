@@ -1,0 +1,22 @@
+{
+  "arms": {
+    "qwen_flash": {
+      "error_kinds": {
+        "parse_error": 1
+      },
+      "provider": "yolo-auto",
+      "requested_model": "qwen3.8-flash",
+      "route": "yolo_auto_openai_compatible",
+      "status_counts": {
+        "ok": 759,
+        "parse_error": 1
+      },
+      "surfaced_model_ids": [
+        "qwen3.8-flash"
+      ]
+    }
+  },
+  "experiment_id": "EXP-20260922-022-fast-provider-wave",
+  "partition": "blind_holdout",
+  "run_id": "blind-qwen-flash-20260922"
+}

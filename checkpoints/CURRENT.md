@@ -1,5 +1,25 @@
 # Current Repository Checkpoint
 
+## 2026-09-22 — TASK-0040 paused during InferHub release-first wave
+
+The user explicitly paused execution. All InferHub runner processes were
+stopped and none remain. DeepSeek V4.1 Flash is still selected and was already
+running on both `cb/deepseek-v4.1-flash` and `cbcn/deepseek-v4.1-flash`; the
+partial public checkpoints are preserved under
+`experiments/EXP-20260922-023-inferhub-wave/runs/`. Claude was included only
+for the separate `cc/` rail choices (`cc/claude-haiku-4-5` and
+`cc/claude-fable-5-1`) under the preregistered cheapest-plus-latest-per-rail
+rule. The unavailable `cp/cline-pass/qwen3.8-max` route returned repeat 503s
+and was not bulk-run. The incorrectly named bare-Gemini diagnostic is excluded.
+
+Partial valid public checkpoints have no duplicate record IDs: DeepSeek `cb`
+has `206` rows and `cbcn` has `272`; Claude Haiku has `224` and Fable `195`;
+Gemini High has `90`. EXP-022's blind Grok/Qwen/Jev comparison is complete and
+retained separately. Tests and Ruff were clean before pause. Next atomic action:
+resume the valid InferHub public checkpoints at four workers per arm, finish
+the offline public report, then run the same selected set on the frozen
+760-record blind holdout only after the user asks to continue.
+
 ## 2026-09-22 — TASK-0040 fast provider wave opened
 
 TASK-0040 is active in `D:/claude/eval-lab/.worktrees/TASK-0040-fast-provider-wave`

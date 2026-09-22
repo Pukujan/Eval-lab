@@ -2,7 +2,7 @@
 
 ## Status
 
-Active. This task runs a new, append-only provider wave; it must not modify
+Paused by user. This task runs a new, append-only provider wave; it must not modify
 EXP-014 through EXP-021 or start new Qwen4B inference.
 
 ## Objective
@@ -93,6 +93,48 @@ The 4.6/4.7 same-record agreement was `588/612` (`0.9608`). The public
 comparison uses gold only offline; unresolved provider statuses remain outside
 accuracy. The public arm outputs and comparison are ready for the frozen blind
 holdout pass.
+
+## Pause checkpoint — 2026-09-22
+
+The InferHub follow-on `EXP-20260922-023` was release-researched and
+preregistered against the immutable EXP-015 pool. Live discovery returned `251`
+models. The selected non-ChatGPT routes include both DeepSeek V4.1 Flash arms
+(`cb/deepseek-v4.1-flash` and `cbcn/deepseek-v4.1-flash`), as well as the
+cheapest and newest verified route choices on the other active rails. Claude is
+present only as the `cc/` rail choices: `cc/claude-haiku-4-5` and
+`cc/claude-fable-5-1`.
+
+The runner was corrected to allow reasoning routes up to `1024` output tokens;
+the earlier `32`-token canary parse failures were retained and not promoted.
+Successful retries validated the selected routes except
+`cp/cline-pass/qwen3.8-max`, which returned repeat `503` provider errors and
+is excluded from bulk execution. The user then requested a pause, so all
+InferHub runner processes were stopped cleanly with no remaining runner
+processes.
+
+Partial public checkpoints are preserved in new append-only run directories.
+The valid DeepSeek checkpoints currently contain `206` rows on `cb` (`177 ok`,
+`26 parse_error`, `3 provider_error`) and `272` rows on `cbcn` (`248 ok`, `22
+parse_error`, `2 provider_error`). Claude checkpoints contain `224` Haiku rows
+(`179 ok`, `45 provider_error`) and `195` Fable rows (`162 ok`, `33
+provider_error`). Gemini High has `90 ok` rows; the incorrectly named
+`ag/gemini-3.8-flash` diagnostic run is excluded. No checkpoint has duplicate
+record IDs. The completed EXP-022 blind comparison is retained separately.
+
+Files changed: `docs/INFERHUB_AUTOMATION.md`,
+`scripts/run_inferhub_arm.py`, `tests/test_inferhub_arm.py`,
+`experiments/EXP-20260922-023-inferhub-wave/`,
+`experiments/EXP-20260922-022-fast-provider-wave/`, this task file, and
+`checkpoints/CURRENT.md`. Validation before pause: InferHub tests `3 passed`,
+Ruff clean, live catalog check `251` models with no key leakage, and duplicate
+ID audit clean for all partial public checkpoints.
+
+Decision: DeepSeek V4.1 Flash remains a primary selected arm; it was not
+dropped. Resume from the preserved checkpoints at four workers per arm after
+the user explicitly asks to continue. The next atomic action is to complete the
+valid public arms, report them offline, then run the same selected set over the
+760-record blind holdout. Do not resume the invalid bare-Gemini diagnostic or
+the unavailable Qwen3.8 Max route.
 
 ## Next atomic action
 
