@@ -333,6 +333,21 @@ Acceptance requires:
   audit. No redistribution. Sandbox and exact tests are mandatory for gold;
   provider policy remains no OpenCode, OpenRouter Jev only, Grok direct xAI
   `grok` CLI only.
+
+### 2026-09-21 — sandbox availability recheck
+
+- **Evidence:** the Docker CLI is installed, but `docker info` cannot connect
+  to `dockerDesktopLinuxEngine`; `com.docker.service` is stopped and the
+  `desktop-linux` context has no live engine. WSL2 has Ubuntu running at
+  version 2, but WSL2 alone is not accepted as the HumanEval untrusted-code
+  sandbox because filesystem/network/resource isolation has not been proved.
+- **Safety decision:** no Docker start, WSL candidate execution, or sandbox
+  bypass was attempted in this checkpoint. The pure adapter/status layer and
+  fixture tests remain the complete safe portion.
+- **Next atomic action:** start or otherwise provision an approved isolated
+  Linux sandbox, record its image/resource policy, and run only the planned
+  hand-written sandbox fixtures before any HumanEval retrieval or provider
+  smoke.
 - **Blockers/unresolved:** Docker Desktop Linux engine unavailable (missing
   named pipe); WSL2 Ubuntu alone is not sandbox proof. Image digest, limits,
   isolation probes, archive/row fingerprints, actual split membership,
