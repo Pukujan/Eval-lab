@@ -44,6 +44,11 @@ ARMS = {
         "requested_model": "grok-4.6",
         "route": "direct_grok_build_cli_subscription",
     },
+    "grok_47": {
+        "provider": "xai-grok-build-cli",
+        "requested_model": "grok-4.7",
+        "route": "direct_grok_build_cli_subscription",
+    },
     "luna": {
         "provider": "codex",
         "requested_model": "gpt-5.6-luna",
@@ -1135,7 +1140,7 @@ def _run(args: argparse.Namespace) -> dict[str, Any]:
             if args.resume
             else None
         )
-        if arm_id == "grok":
+        if arm_id in {"grok", "grok_47"}:
             arm_predictions = _run_grok_build_arm(
                 records,
                 arm_id=arm_id,
@@ -1198,6 +1203,7 @@ def _run(args: argparse.Namespace) -> dict[str, Any]:
             "streaming": True,
             "stream_formats": {
                 "grok": "grok-streaming-json",
+                "grok_47": "grok-streaming-json",
                 "luna": "codex-jsonl",
                 "sol": "codex-jsonl",
                 "qwen_flash": "openai-sse",

@@ -1,5 +1,21 @@
 # Current Repository Checkpoint
 
+## 2026-09-22 — TASK-0040 fast provider wave opened
+
+TASK-0040 is active in `D:/claude/eval-lab/.worktrees/TASK-0040-fast-provider-wave`
+on branch `task/TASK-0040-fast-provider-wave`. EXP-022 is preregistered as a
+new append-only wave over the immutable EXP-015 frozen pool. The direct runner
+now has separate `grok` (`grok-4.6`) and `grok_47` (`grok-4.7`) arms; a new
+checkpointed concurrent Jev Decisions runner uses the pinned
+`typesafe/jev-1.13` route. Qwen4B is excluded and Bonsai remains serial under
+EXP-021.
+
+Offline gate so far: targeted bakeoff tests `6 passed`, Ruff clean, compile
+clean, and `git diff --check` clean. No provider call has been made for EXP-022.
+Next atomic action: commit the preregistration, then run one-record
+public-selection canaries for Grok 4.6, Grok 4.7, Qwen Flash, and Jev in
+separate directories and preserve exact surfaced model/status metadata.
+
 ## Authoritative status
 
 TASK-0019 calibrated judge construction and independent head-to-head study is

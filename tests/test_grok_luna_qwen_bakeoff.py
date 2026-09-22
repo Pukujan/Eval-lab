@@ -6,6 +6,7 @@ import httpx
 
 from eval_lab.schema import GoldLabel, GoldProvenance, JudgeRecord, JudgmentMode, Split
 from scripts.run_grok_luna_qwen_bakeoff import (
+    ARMS,
     _differential,
     _grok_json_schema,
     _qwen_stream_response,
@@ -65,6 +66,12 @@ def test_grok_schema_keeps_record_legal_labels() -> None:
     schema = _grok_json_schema(_record())
     assert '"enum":["fail","pass"]' in schema
     assert '"additionalProperties":false' in schema
+
+
+def test_grok_47_is_a_separate_direct_cli_arm() -> None:
+    assert ARMS["grok"]["requested_model"] == "grok-4.6"
+    assert ARMS["grok_47"]["requested_model"] == "grok-4.7"
+    assert ARMS["grok"]["route"] == ARMS["grok_47"]["route"]
 
 
 def test_qwen_sse_stream_reassembles_typed_content() -> None:
