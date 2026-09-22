@@ -2,9 +2,25 @@
 
 ## Authoritative status
 
+TASK-0019 calibrated judge construction and independent head-to-head study is
+complete in `D:/claude/eval-lab/.worktrees/TASK-0019-calibrated-judge-study` on
+branch `task/TASK-0019-calibrated-judge-study`. EXP-019 is the current
+calibration-focused research report and manuscript draft.
+
+Luna and Sol are excluded from the primary comparison under the orchestrator's
+vendor-independent policy. The included arms are direct xAI Grok Build, Jev
+through the Jev-only OpenRouter route, YOLO-Auto Qwen Flash, and local Qwen 4B.
+No OpenCode route is authorized.
+
+The completed EXP-019 report demonstrates split-safe local Qwen calibration and
+compares the independent label judges head-to-head. Provider execution states
+remain audit metadata and are not the research outcome. Existing EXP-014
+through EXP-019 artifacts remain immutable.
+
 TASK-0001 through TASK-0011 are complete in the current release line. TASK-0012 is
-complete in its dedicated independent Jev worktree. TASK-0015 is active in a fresh
-worktree for the matched Grok/Luna/Qwen Flash comparison; EXP-014 remains immutable.
+complete in its dedicated independent Jev worktree. TASK-0015 through TASK-0019
+have completed dedicated experiment worktrees; EXP-014 through EXP-019 remain
+immutable after their recorded checkpoints.
 
 ## Program state
 
@@ -26,17 +42,16 @@ TASK-0009 and TASK-0010 selective escalation/research release are complete. TASK
   - environment variable `YOLO_AUTO_API_KEY`
   - user reports the credential is already configured locally
 - Grok Build is used only through the direct authenticated xAI `grok` CLI.
-- ChatGPT Luna/Sol are used only through the direct authenticated Codex subscription CLI.
-- OpenCode and OpenRouter are excluded from TASK-0015.
+- ChatGPT Luna/Sol are excluded from the primary TASK-0019 comparison for vendor independence.
+- OpenRouter is authorized only for the Jev arm; it is not used for Grok, Qwen, Luna, or Sol.
+- OpenCode is not used for the TASK-0019 study.
 
 ## Next task
 
-TASK-0015 is active in `D:/claude/eval-lab-TASK-0015-bakeoff`. Its new EXP-015
-preregistration uses the exact EXP-014 pool and typed System-One packet. Core arms are
-Grok Build through the direct authenticated xAI `grok` CLI, Luna through the direct
-authenticated Codex/ChatGPT subscription, and YOLO-Auto `qwen3.8-flash`; exact
-surfaced model IDs and provider failures must be recorded separately. Do not modify or
-overwrite EXP-014.
+TASK-0019 is complete in its organized worktree. Its EXP-019 preregistration
+uses the exact EXP-015 pool and typed System-One packet, with calibration as the
+central research method and Luna/Sol excluded for vendor independence. Do not
+modify or overwrite EXP-014 through EXP-019.
 
 ## Queued foundation
 
@@ -247,7 +262,10 @@ and the finalized public artifact from the same organized worktree.
 
 ## Next atomic action
 
-TASK-0010 is complete at EXP-20260920-012. Leave the next program task unopened until review/triage. Historical checkpoint entries below are retained.
+Review and merge TASK-0019. Future confidence-interface work for label-only
+external arms requires a new preregistration and experiment ID; do not modify
+completed EXP-014 through EXP-019 artifacts. Historical checkpoint entries
+below are retained.
 
 ### 2026-09-20 — PR #15 contract validation
 

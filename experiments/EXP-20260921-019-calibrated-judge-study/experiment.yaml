@@ -1,5 +1,5 @@
 id: EXP-20260921-019-calibrated-judge-study
-status: planned
+status: completed
 hypothesis: A frozen rubric and typed protocol plus split-safe probability calibration will produce an auditable calibrated judge, while independent judge routes will show measurable head-to-head differences on the same objective records.
 created_at: 2026-09-21
 code_commit: e41f449
@@ -69,4 +69,6 @@ artifacts:
   - results.json
   - report.md
   - checksums.sha256
-notes: EXP-014 through EXP-017 remain immutable. Luna and Sol are excluded from every primary EXP-019 analysis. Provider execution states are retained as audit metadata and are not a research outcome. No OpenCode route is permitted.
+  - diagnostics/grok-mode-check-record-ids.txt
+  - diagnostics/grok-mode-check-20260921/
+notes: EXP-014 through EXP-017 remain immutable. Luna and Sol are excluded from every primary EXP-019 analysis. Provider execution states are retained as audit metadata and are not a research outcome. No OpenCode route is permitted. EXP-019 results are an offline derived report plus a separate direct Grok streaming diagnostic; the diagnostic does not alter the frozen blind result.

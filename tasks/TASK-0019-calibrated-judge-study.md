@@ -1,6 +1,6 @@
 # TASK-0019 — Calibrated judge construction and independent head-to-head study
 
-- Status: active
+- Status: completed
 - Owner: Codex/research execution agent
 - Priority: P1
 - Branch: task/TASK-0019-calibrated-judge-study
@@ -69,18 +69,18 @@ No OpenCode route is permitted. No provider output is gold.
 
 ## Acceptance criteria
 
-- [ ] New EXP-019 preregistration is committed before any new derived result.
-- [ ] Luna and Sol are explicitly excluded from every primary EXP-019 table and
+- [x] New EXP-019 preregistration is committed before any new derived result.
+- [x] Luna and Sol are explicitly excluded from every primary EXP-019 table and
   comparison.
-- [ ] The report explains the rubric, typed output contract, gold provenance,
+- [x] The report explains the rubric, typed output contract, gold provenance,
   calibration split, temperature method, and probability eligibility rule.
-- [ ] Existing EXP-014 through EXP-017 artifacts remain byte-immutable.
-- [ ] A unified non-Luna report is generated from committed artifacts only.
-- [ ] Grok's anomalous result receives a direct-route/parser sanity analysis
+- [x] Existing EXP-014 through EXP-017 artifacts remain byte-immutable.
+- [x] A unified non-Luna report is generated from committed artifacts only.
+- [x] Grok's anomalous result receives a direct-route/parser sanity analysis
   without changing the frozen blind result.
-- [ ] Per-domain, pairwise agreement, calibration, and uncertainty outputs are
+- [x] Per-domain, pairwise agreement, calibration, and uncertainty outputs are
   included where supported.
-- [ ] Repository contract, Ruff, tests, and diff check pass.
+- [x] Repository contract, Ruff, tests, and diff check pass.
 
 ## Checkpoint log
 
@@ -113,6 +113,44 @@ unchanged either way.
 
 Next atomic action: commit the EXP-019 preregistration and implement the
 offline non-Luna analysis report.
+
+### 2026-09-21 — task completed
+
+Status: completed. EXP-019 is frozen and its derived report is complete.
+
+Completed: generated the non-Luna head-to-head report from immutable EXP-014
+through EXP-017 artifacts; merged the exact Qwen Flash retry labels for the
+derived scored-label summary; retained local Qwen raw/calibrated probability
+metrics; added per-domain/mode diagnostics, same-record agreement, Jev rubric
+robustness, and Wilson intervals; wrote the calibration-focused manuscript
+draft; and ran a separate direct Grok Build streaming diagnostic without
+changing the frozen EXP-015 blind result.
+
+Exact files changed: this task file, `experiments/EXP-20260921-019-calibrated-judge-study/`,
+`scripts/report_calibrated_judge_study.py`,
+`tests/test_calibrated_judge_study.py`, `paper/calibrated_judge_study.md`,
+and `checkpoints/CURRENT.md`.
+
+Commands run: offline EXP-019 report generation; direct Grok Build diagnostic
+with streaming enabled and `grok-streaming-json`; targeted tests; full Ruff;
+full pytest; repository contract check; `git diff --check`; and EXP-019
+checksum verification.
+
+Test results: Ruff clean; `108 passed`; repository contract `OK`; diff check
+clean; EXP-019 checksums valid. The direct Grok diagnostic returned `8/8`
+successful outputs and surfaced `grok-4.6-build`.
+
+Decision: the paper's central claim is calibration and judge construction.
+Luna and Sol are excluded for vendor-independent orchestration. Provider
+execution states remain audit metadata, not a research outcome. External arms
+without validated probabilities are not assigned calibration metrics.
+
+Unresolved questions: a future experiment may add provider-native probability
+interfaces or a validated confidence protocol for Jev, Grok, or Qwen Flash;
+that would require a new experiment ID.
+
+Next atomic action: review and merge TASK-0019; do not modify completed EXP-014
+through EXP-019 artifacts.
 
 ## Handoff
 
