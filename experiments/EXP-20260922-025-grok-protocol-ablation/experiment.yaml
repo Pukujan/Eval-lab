@@ -1,0 +1,49 @@
+id: EXP-20260922-025-grok-protocol-ablation
+status: preregistered
+hypothesis: >-
+  Grok Build's low typed-judge score is caused primarily by a semantic or
+  output-contract mismatch in the provider-facing harness; explicit task
+  wording or semantic labels will improve balanced single/pairwise accuracy
+  without materially reducing execution coverage.
+created_at: 2026-09-22
+code_commit: 8dd483e
+seed: 0
+context_limit: 4096
+dataset:
+  name: EXP-015 immutable typed objective pool
+  version: EXP-015
+  fingerprint: b7edd61269f0f7757e734bc7e3f665ac2bcd6d908a1e56f73f0b0291d55b64d8
+  split_policy: source-problem-disjoint public diagnostic and blind holdout
+judge:
+  provider: xai-grok-build-cli
+  model: grok-4.6; grok-4.7
+  adapter_version: grok-protocol-ablation-v1
+  prompt_version: four preregistered variants in TASK-0041
+rubric:
+  version: eval-lab-system-one-v0.1.0 with declared prompt variants
+gold:
+  provenance_policy: answer_key or deterministic_verifier; model outputs never gold
+calibration:
+  method: none for label-only Grok; calibration is an analysis of prior local-Qwen evidence
+  split: public selection only for protocol choice; blind holdout untouched
+metrics:
+  - accuracy
+  - balanced_accuracy
+  - macro_f1
+  - coverage
+  - valid_label_rate
+  - per_mode_accuracy
+  - status_counts
+  - latency_p95
+  - same_record_agreement
+artifacts:
+  - diagnostic-record-ids.txt
+  - diagnostic-selection.json
+  - public runs under runs/public-*
+  - blind runs under runs/blind-*
+notes: >-
+  The primary selection score is the mean of single and pairwise resolved
+  accuracy. A variant must reach at least 95% public coverage and improve the
+  typed-schema baseline by at least 0.10 to authorize a selected blind run.
+  If no variant passes, typed_schema is rerun on blind and the result is
+  classified as protocol-unresolved.
