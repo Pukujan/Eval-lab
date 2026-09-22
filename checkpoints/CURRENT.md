@@ -20,6 +20,13 @@ HumanEval track, and `tasks/TASK-0023-benchmark-track-acceptance-gates.md`
 defines admission gates for the remaining benchmark families. These are
 planning checkpoints only; no benchmark data or provider outputs were added.
 
+TASK-0022 is now integrated at commit `cb5e26f`. EXP-020's preregistration
+skeleton is under `experiments/EXP-20260921-020-humaneval-preregistration/`.
+The official HumanEval source revision and license metadata were audited
+read-only, but the archive was not downloaded and no candidate or provider was
+run. The current blocker is that Docker/Linux isolation is unavailable; no
+untrusted code may execute until the sandbox/resource policy is demonstrated.
+
 Luna and Sol are excluded from the primary comparison under the orchestrator's
 vendor-independent policy. The included arms are direct xAI Grok Build, Jev
 through the Jev-only OpenRouter route, YOLO-Auto Qwen Flash, and local Qwen 4B.
@@ -61,11 +68,11 @@ TASK-0009 and TASK-0010 selective escalation/research release are complete. TASK
 
 ## Next task
 
-The next executable task is TASK-0022's HumanEval feasibility/source audit and
-preregistration, followed by its adapter/verifier implementation tasks. Freeze
-the dataset revision, executable-test policy, split/fingerprint, typed judge
-packet, calibration split, and report schema before final benchmark runs. Do not
-modify or overwrite EXP-014 through EXP-019.
+TASK-0023 is the next executable task: implement the offline HumanEval
+canonical adapter and sandboxed verifier only after resolving or explicitly
+documenting the isolation backend. It must consume EXP-020's frozen policy,
+produce fixture-only tests and deterministic status handling, and make no live
+provider calls. Do not modify or overwrite EXP-014 through EXP-019.
 
 ## Queued foundation
 
