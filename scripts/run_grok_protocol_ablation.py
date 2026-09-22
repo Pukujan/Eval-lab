@@ -317,6 +317,10 @@ def run_one(
 
 
 def _load_predictions(path: Path) -> dict[str, JudgePrediction]:
+    if not path.is_file() and path.name == "predictions.jsonl":
+        checkpoint = path.with_name("progress.jsonl")
+        if checkpoint.is_file():
+            path = checkpoint
     if not path.is_file():
         return {}
     result: dict[str, JudgePrediction] = {}
