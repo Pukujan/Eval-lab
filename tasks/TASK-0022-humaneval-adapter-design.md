@@ -196,17 +196,22 @@ into a cross-domain leaderboard score.
 
 ## Implementation scope
 
-The future implementation may modify only these paths after this task file is
-updated with exact intended files and a new experiment ID: an adapter under
-`src/eval_lab/datasets/`, a sandbox verifier module under `src/eval_lab/`,
-bounded scripts under `scripts/`, focused tests under `tests/`, this task file,
-and the new HumanEval experiment directory. If a shared schema or checkpoint
-must change, add its exact path to this task file first. This planning
-checkpoint may change only this task file and the new
-`experiments/EXP-20260921-020-humaneval-preregistration/` directory, limited to
-`README.md`, `experiment.yaml`, `plan.md`, `checksums.sha256`, and
-`rebuild.md`. No adapter, verifier, shared schema, existing experiment,
-`checkpoints/CURRENT.md`, result, report, or final-label artifact is in scope.
+TASK-0023 is authorized to modify exactly these paths for the offline
+HumanEval adapter/verifier checkpoint:
+
+- `src/eval_lab/datasets/humaneval.py`
+- `src/eval_lab/datasets/__init__.py`
+- `src/eval_lab/verifiers/humaneval.py`
+- `src/eval_lab/verifiers/__init__.py`
+- `tests/test_humaneval.py`
+- `tasks/TASK-0022-humaneval-adapter-design.md`
+
+No shared schema change, script, checkpoint, experiment artifact, benchmark
+cache, provider output, result/report, or final-label artifact is in scope.
+The implementation must use only hand-written fixtures and mock sandbox
+responses. It must not retrieve HumanEval, execute candidate code, invoke a
+provider, or claim a real sandbox proof. EXP-014 through EXP-019 are
+immutable.
 
 ## Acceptance criteria
 
@@ -230,6 +235,41 @@ Acceptance requires:
    contract checks, lint, and `git diff --check`; record exact outcomes here.
 
 ## Checkpoint log
+
+### 2026-09-21 — TASK-0023 scope and blocker checkpoint
+
+- **Status:** implementation not started; scope checkpoint committed on
+  `task/TASK-0023-humaneval-adapter` in the dedicated worktree
+  `D:/claude/eval-lab-TASK-0023`. No adapter or verifier code is being claimed
+  complete.
+- **Completed:** declared the exact TASK-0023 implementation file scope above;
+  read the required repository/design and EXP-020 planning artifacts; created
+  the isolated worktree. EXP-014 through EXP-019 remain untouched.
+- **Exact files changed:** `tasks/TASK-0022-humaneval-adapter-design.md`
+  only. The authorized but not-yet-created implementation paths are
+  `src/eval_lab/datasets/humaneval.py`, `src/eval_lab/datasets/__init__.py`,
+  `src/eval_lab/verifiers/humaneval.py`,
+  `src/eval_lab/verifiers/__init__.py`, and `tests/test_humaneval.py`.
+- **Commands run:** `git worktree add D:/claude/eval-lab-TASK-0023 -b
+  task/TASK-0023-humaneval-adapter HEAD`; named document and EXP-020 reads;
+  source/test inventory inspection; no provider, network retrieval,
+  benchmark execution, candidate execution, or sandbox invocation.
+- **Test results:** no implementation tests were run because no implementation
+  exists at this checkpoint. `git diff --check` is the only validation for
+  this task-log-only commit.
+- **Decisions:** keep the checkpoint fixture-only and offline; do not modify
+  shared schema, scripts, checkpoints, experiment artifacts, results, reports,
+  or final labels. The adapter will use existing canonical schema types and a
+  mock-only verifier boundary when implementation resumes.
+- **Blocker:** Docker Desktop's Linux engine is unavailable, and WSL2 is not a
+  demonstrated sandbox. The real sandbox proof remains unresolved; no
+  untrusted candidate code may execute. This checkpoint therefore records
+  scope/blocker state only and does not authorize a bypass.
+- **Next atomic action:** implement the declared offline HumanEval adapter and
+  verifier with hand-written fixtures/mocks, including canonical JSONL,
+  stable IDs/fingerprints, split-family isolation, normalization, and explicit
+  malformed/timeout/crash/import/verifier-error plus sandbox-unavailable
+  statuses; then run focused tests and the repository merge gate.
 
 ### 2026-09-21 — EXP-020 source audit and policy skeleton
 
