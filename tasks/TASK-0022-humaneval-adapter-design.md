@@ -271,6 +271,31 @@ Acceptance requires:
   malformed/timeout/crash/import/verifier-error plus sandbox-unavailable
   statuses; then run focused tests and the repository merge gate.
 
+### 2026-09-21 — TASK-0023 safe adapter checkpoint
+
+- **Status:** offline adapter/status layer complete; live sandbox execution
+  remains blocked.
+- **Completed:** added pure HumanEval candidate canonicalization, byte-stable
+  fingerprints, deterministic family-aware splits, judge-packet construction,
+  and typed execution statuses. Infrastructure/provider statuses cannot become
+  deterministic gold. No candidate code was executed.
+- **Exact files changed:** `src/eval_lab/datasets/humaneval.py`,
+  `src/eval_lab/datasets/__init__.py`, `src/eval_lab/verifiers/humaneval.py`,
+  `src/eval_lab/verifiers/__init__.py`, and `tests/test_humaneval.py`.
+- **Commands run:** repository contract check, focused HumanEval tests, full
+  test suite, Ruff, and `git diff --check`.
+- **Test results:** repository contract `OK`; focused tests `14 passed`; full
+  suite `122 passed`; Ruff clean; diff check clean.
+- **Decisions:** the implementation consumes supplied rows or trusted/mock
+  execution metadata only. It does not fetch the benchmark, run Python,
+  infer status from free-form text, or call a provider. `PASS`, `TEST_FAILURE`,
+  and `SYNTAX_ERROR` are the only gold-eligible execution statuses.
+- **Blocker:** Docker Desktop's Linux engine is still unavailable, so a real
+  isolation proof and runtime/resource limits remain unresolved.
+- **Next atomic action:** establish and record a safe Linux sandbox, then add
+  the authorized runner/preregistration completion checkpoint before any live
+  provider smoke or final labels.
+
 ### 2026-09-21 — EXP-020 source audit and policy skeleton
 
 - **Status:** planning checkpoint complete in
