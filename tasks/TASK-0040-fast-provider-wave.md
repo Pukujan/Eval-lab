@@ -36,9 +36,11 @@ provider credentials remain on the Windows host.
 
 ## Checkpoint
 
-Initial implementation is in progress. The runner now recognizes a separate
-`grok_47` arm while preserving the existing direct CLI adapter and isolated
-leader sockets. No provider was called by this code change.
+Initial implementation is committed at `85e79c0`. The runner now recognizes a
+separate `grok_47` arm while preserving the existing direct CLI adapter and
+isolated leader sockets. The checkpointed Jev runner is also committed. No
+provider was called by this code change. Targeted tests (`6 passed`), Ruff,
+compile, and diff checks are green.
 
 ## Next atomic action
 

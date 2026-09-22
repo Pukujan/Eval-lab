@@ -1,7 +1,7 @@
 id: EXP-20260922-022-fast-provider-wave
 status: preregistered
 created_at: 2026-09-22
-code_commit: pending
+code_commit: 85e79c0158b2c506f61592b185b013854c12d526
 seed: null
 context_limit: provider-declared
 dataset:
