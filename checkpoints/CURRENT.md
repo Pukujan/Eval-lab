@@ -18,6 +18,13 @@ all returned `ok`: Grok 4.6 surfaced `grok-4.6-build`, Grok 4.7 surfaced
 Next atomic action: run the bounded public-selection arms concurrently and
 monitor each arm's checkpoint/status file.
 
+The installed Grok Build CLI was checked against the official headless-mode
+documentation. The adapter uses the documented `streaming-json` NDJSON mode
+and native JSON Schema; it now also passes `--no-auto-update` and a unique
+`--session-id` per request, while retaining isolated leader sockets. Targeted
+tests are `7 passed` and Ruff is clean. Apply this hardening to any resumed
+Grok work; do not rewrite existing predictions.
+
 ## Authoritative status
 
 TASK-0019 calibrated judge construction and independent head-to-head study is

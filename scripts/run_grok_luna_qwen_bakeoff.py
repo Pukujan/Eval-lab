@@ -512,8 +512,11 @@ def _run_grok_build_one(
     leader_socket = _isolated_grok_leader_socket()
     command = [
         executable,
+        "--no-auto-update",
         "--model",
         model,
+        "--session-id",
+        str(uuid.uuid4()),
         "--output-format",
         "streaming-json",
         "--json-schema",

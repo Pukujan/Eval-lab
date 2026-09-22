@@ -53,6 +53,14 @@ The one-record canaries completed concurrently in fresh directories:
 Canary artifacts are retained under EXP-022 `runs/` and summarized in
 `canary-summary.md`. These results authorize the bounded public-selection wave.
 
+During the public run, the installed Grok Build CLI was rechecked against the
+official headless-mode guidance. The direct adapter already used NDJSON
+`streaming-json`, native JSON Schema, one turn, no web search, and no
+subagents. The runner now also disables background auto-update checks and
+assigns every request a unique UUID session in addition to its isolated leader
+socket. The installed `grok 1.0.40` accepted `--no-auto-update`; targeted
+tests are now `7 passed` and Ruff is clean.
+
 ## Next atomic action
 
 Launch public-selection execution concurrently as four isolated processes:
