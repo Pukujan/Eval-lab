@@ -129,20 +129,45 @@ Files changed: `docs/INFERHUB_AUTOMATION.md`,
 Ruff clean, live catalog check `251` models with no key leakage, and duplicate
 ID audit clean for all partial public checkpoints.
 
-Decision: DeepSeek V4.1 Flash remains a primary selected arm; it was not
-dropped. Resume from the preserved checkpoints at four workers per arm after
-the user explicitly asks to continue. The next atomic action is to complete the
-valid public arms, report them offline, then run the same selected set over the
-760-record blind holdout. Do not resume the invalid bare-Gemini diagnostic or
-the unavailable Qwen3.8 Max route.
+Decision: DeepSeek V4.1 Flash remains a primary selected family; it was not
+dropped. This pause checkpoint is superseded for future execution by the
+deduplicated recommendation policy below. EXP-023 remains immutable, and its
+partial routes are historical evidence only.
+
+## InferHub recommendation-policy refresh — 2026-09-22
+
+The updated InferHub policy uses `routing_eligible_only`, one model per family,
+at most two models per vendor, minimum tier order `2`, minimum capability score
+`25`, at least two priced providers, at least `55` catalog availability, at
+least `90%` public seven-day availability, and a maximum supply-weighted or
+median cost of `0.5` USDC per million tokens. The top-20 view is explanatory;
+the operational shortlist is the nine-family `daily-shortlist.json` result.
+Runtime reliability is only claimed after `30` observations, and probes must
+stream SSE with a content type and `[DONE]` marker.
+
+For the next append-only experiment, deduplicate each operational family to the
+cheapest currently listed exact route, without including GPT/ChatGPT/Codex:
+
+- DeepSeek V4.1 Flash → `cb/deepseek-v4.1-flash`
+- GLM 5.3 Flash → `cbcn/glm-5.3-flash`
+- DeepSeek V4 Flash → `cbcn/deepseek-v4-flash`
+- Qwen3.8 Flash → `ali/qwen3.8-flash`
+- MiniMax M3 → `cbcn/minimax-m3`
+- GLM 5.2 → `ali/glm-5.2`
+- Qwen 3.8 Max → `ali/qwen3.8-max`
+- Kimi K2.7 Code → `ali/kimi-k2.7-code`
+- MiMo V2.5 → `cp/cline-pass/mimo-v2.5`
+
+This replaces the earlier 14-route bulk proposal for the next wave only. No
+provider calls or EXP-023 mutations were made during this refresh.
 
 ## Next atomic action
 
-Launch the blind-holdout execution concurrently as four isolated processes:
-Grok 4.6 with four workers, Grok 4.7 with four hardened workers, Qwen Flash
-with two workers, and pinned Jev with eight workers. Preserve per-record
-checkpoints and stop an arm if provider status indicates a route failure or
-rate limit.
+After the user explicitly resumes execution, create a new preregistered
+append-only experiment for the nine deduplicated routes, run one-record canaries
+under the updated streaming probe contract, then execute public and blind
+partitions with per-record checkpoints. Do not resume the old 14-route plan,
+change EXP-023, or treat the recommendation score as benchmark gold.
 
 ## Decisions and unresolved questions
 

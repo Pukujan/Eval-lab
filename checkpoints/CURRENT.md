@@ -1,5 +1,24 @@
 # Current Repository Checkpoint
 
+## 2026-09-22 — InferHub recommendation policy refresh reviewed
+
+The updated InferHub engine now keeps a top-20 auditable view but selects an
+operational nine-family shortlist. Its policy requires routing eligibility,
+one model per family, at most two per vendor, tier/capability gates, at least
+two priced providers, catalog availability at least `55`, public seven-day
+availability at least `90%`, and cost at most `0.5` USDC per million tokens.
+Runtime reliability is not claimed before `30` observations; streaming probes
+require SSE content type and `[DONE]`.
+
+The next append-only wave should deduplicate to these cheapest exact routes:
+`cb/deepseek-v4.1-flash`, `cbcn/glm-5.3-flash`,
+`cbcn/deepseek-v4-flash`, `ali/qwen3.8-flash`, `cbcn/minimax-m3`,
+`ali/glm-5.2`, `ali/qwen3.8-max`, `ali/kimi-k2.7-code`, and
+`cp/cline-pass/mimo-v2.5`. This is a new-wave plan only; EXP-023 remains
+immutable and no provider calls were made during this refresh. Next atomic
+action after explicit resume: preregister the new experiment, canary these nine
+routes, then run public and blind partitions.
+
 ## 2026-09-22 — TASK-0040 paused during InferHub release-first wave
 
 The user explicitly paused execution. All InferHub runner processes were

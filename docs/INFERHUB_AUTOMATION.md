@@ -181,3 +181,30 @@ models because that can truncate the response before the required label.
 InferHub is a separate API route from direct Grok Build CLI, direct Codex,
 YOLO-Auto, and OpenRouter Jev. A surfaced InferHub model ID must not be
 reported as evidence about a direct upstream route.
+
+## Recommendation-policy refresh
+
+The 2026-09-22 InferHub recommendation engine keeps the top-20 view for audit,
+but the operational shortlist is family-deduplicated. The policy requires
+routing-eligible models, at most one model per family, at least two priced
+providers, catalog availability of at least 55, public seven-day availability
+of at least 90%, and a weighted cost no higher than 0.5 USDC per million
+tokens. Its probe contract is streaming SSE with a content type and `[DONE]`;
+private runtime reliability is not qualified before 30 observations.
+
+The next experiment should use one cheapest exact route per operational family:
+
+| Family | Exact route |
+| --- | --- |
+| DeepSeek V4.1 Flash | `cb/deepseek-v4.1-flash` |
+| GLM 5.3 Flash | `cbcn/glm-5.3-flash` |
+| DeepSeek V4 Flash | `cbcn/deepseek-v4-flash` |
+| Qwen3.8 Flash | `ali/qwen3.8-flash` |
+| MiniMax M3 | `cbcn/minimax-m3` |
+| GLM 5.2 | `ali/glm-5.2` |
+| Qwen 3.8 Max | `ali/qwen3.8-max` |
+| Kimi K2.7 Code | `ali/kimi-k2.7-code` |
+| MiMo V2.5 | `cp/cline-pass/mimo-v2.5` |
+
+This table is a plan for a new append-only experiment. The prior 14-route
+selection and its partial runs remain immutable historical artifacts.
