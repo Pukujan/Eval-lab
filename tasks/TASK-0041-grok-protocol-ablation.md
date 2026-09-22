@@ -2,7 +2,7 @@
 
 ## Status
 
-Active — public protocol diagnostic complete; blind baseline rerun authorized.
+Completed — public protocol diagnostic and blind typed-baseline rerun complete.
 Earlier EXP-022 Grok/Jev/Qwen outputs remain immutable.
 
 ## Objective
@@ -94,13 +94,23 @@ limit. No alternative met the preregistered +0.10 improvement and 95% coverage
 gate, so the selected blind protocol is the original `typed_schema` baseline.
 
 Commands run: sample freeze; targeted protocol tests; Grok public diagnostic;
-offline public selection report. The first no-schema attempt was stopped after
-the shared Windows cp1252 reader raised a decode error on a non-ASCII byte; the
-reader was repaired with explicit UTF-8 replacement decoding and the affected
-arm resumed from its normalized checkpoint. No raw provider transcript or gold
-label was written to the experiment output.
+offline public selection report; authorized 760-record blind baseline.
+The first no-schema attempt was stopped after the shared Windows cp1252 reader
+raised a decode error on a non-ASCII byte; the reader was repaired with
+explicit UTF-8 replacement decoding and the affected arm resumed from its
+normalized checkpoint. No raw provider transcript or gold label was written to
+the experiment output.
 
-Validation: targeted tests `10 passed`; Ruff clean. Next atomic action: run
-Grok 4.6 `typed_schema` over the frozen 760-record blind holdout only. Grok 4.7
-is not authorized by the selection rule because no alternative protocol passed;
-its prior EXP-022 blind result remains the model-version comparator.
+The blind typed-schema rerun completed with 757/760 resolved (99.605% coverage),
+757 successful labels, and 3 provider errors. Its mode-balanced score was
+0.2585765636; single-mode accuracy was 0.4984615 over 650/652 resolved records
+and pairwise accuracy was 0.0186916 over 107/108 resolved records. No
+alternative protocol passed the public gate, so Grok 4.7 was not rerun; its
+prior EXP-022 blind result remains the model-version comparator.
+
+Validation: targeted tests 10 passed; Ruff clean; git diff --check clean. The
+final report is in experiments/EXP-20260922-025-grok-protocol-ablation/report/
+and the experiment summary is in RESULTS.md. The low score persists under the
+selected baseline, while the public ablation found no winning replacement
+contract. The scientifically supported conclusion is protocol-specific
+underperformance, not a universal Grok capability claim.

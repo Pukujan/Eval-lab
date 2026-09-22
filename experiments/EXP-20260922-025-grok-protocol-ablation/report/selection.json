@@ -1,0 +1,9 @@
+{
+  "baseline_score": 0.265625,
+  "baseline_variant": "typed_schema",
+  "gate_passed": false,
+  "model": "grok_46",
+  "reason": "no alternative passed the preregistered public gate; rerun baseline",
+  "selected_score": 0.265625,
+  "selected_variant": "typed_schema"
+}

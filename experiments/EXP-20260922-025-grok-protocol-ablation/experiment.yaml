@@ -1,5 +1,5 @@
 id: EXP-20260922-025-grok-protocol-ablation
-status: public_diagnostic_complete_blind_authorized
+status: completed
 hypothesis: >-
   Grok Build's low typed-judge score is caused primarily by a semantic or
   output-contract mismatch in the provider-facing harness; explicit task

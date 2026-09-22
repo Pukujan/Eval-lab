@@ -12,7 +12,7 @@ BASELINE = "typed_schema"
 
 def _load_runs(root: Path) -> list[dict[str, Any]]:
     runs = []
-    for result_path in sorted(root.glob("*/results.json")):
+    for result_path in sorted(root.rglob("results.json")):
         runs.append(json.loads(result_path.read_text(encoding="utf-8")))
     if not runs:
         raise ValueError(f"no run results under {root}")

@@ -1,7 +1,7 @@
 # Benchmark performance of typed objective judges: Grok Build, Jev, Qwen, and low-cost routes
 
-**Status:** working paper / pending final Grok protocol-ablation results  
-**Experiment family:** EXP-013, EXP-014, EXP-019, EXP-022, and EXP-024  
+**Status:** working paper / benchmark results through EXP-025 complete; pending owner review
+**Experiment family:** EXP-013, EXP-014, EXP-019, EXP-022, EXP-024, and EXP-025
 **Repository:** Eval Lab
 
 ## Abstract
@@ -15,12 +15,13 @@ direct and InferHub waves, Qwen Flash and Qwen Max are the strongest operational
 routes on this pool, Jev is highly reliable but less accurate, and Grok Build
 returns valid outputs but underperforms sharply under the current typed judge
 protocol. The Grok result is treated as a protocol-specific diagnostic rather
-than evidence of universal model weakness; EXP-025 preregisters a new
-prompt/output ablation to distinguish harness failure from model-specific
-failure. A separate calibration study shows that local Qwen 4B confidence can
-be calibrated split-safely even when its labels remain weak. These results
-support objective, evidence-grounded domain pilots, but do not establish
-general legal or financial reasoning ability.
+than evidence of universal model weakness. EXP-025 completed a preregistered
+prompt/output ablation with no winning protocol replacement: the selected
+typed baseline remained low on the blind holdout and the single/pairwise
+asymmetry persisted. A separate calibration study shows that local Qwen 4B
+confidence can be calibrated split-safely even when its labels remain weak.
+These results support objective, evidence-grounded domain pilots, but do not
+establish general legal or financial reasoning ability.
 
 ## 1. Research question
 
@@ -114,15 +115,23 @@ pairwise decisions. The Build CLI surfaced `grok-4.6-build` and
 `grok-4.7-build`, so the requested and resolved model identities were retained
 separately.
 
-The evidence supports a **protocol/harness hypothesis**, but not yet a proven
-one. The current packet combines opaque short labels, a provider-neutral typed
-schema, and an agent-oriented Build CLI. A semantic-label and explicit-task
-ablation is preregistered in [EXP-025](../experiments/EXP-20260922-025-grok-protocol-ablation/README.md).
-Until that experiment is complete, the scientifically correct statement is:
+The evidence supported a **protocol/harness hypothesis**, but the completed
+ablation did not validate a replacement contract. The public packet combined
+opaque short labels, a provider-neutral typed schema, and an agent-oriented
+Build CLI. EXP-025 tested explicit task wording, semantic labels, native-schema
+removal, and the original typed contract on a balanced public sample. No
+alternative passed the preregistered gate. The selected typed baseline then
+completed the blind rerun at 757/760 coverage and a mode-balanced score of
+0.2586, with 49.85% single accuracy and 1.87% pairwise accuracy among resolved
+labels. The scientifically correct statement is:
 
 > Grok Build underperforms sharply under the current Eval Lab typed-judge
-> harness; the fraction attributable to the harness versus the model remains
-> unresolved.
+> harness. The ablation found a real Windows UTF-8 reader defect in one
+> no-schema route, but fixing that defect and changing task labels/schema did
+> not produce a materially better protocol. The result remains a
+> protocol-specific diagnosis, not evidence of universal Grok weakness.
+
+Source: [EXP-025 final report](../experiments/EXP-20260922-025-grok-protocol-ablation/RESULTS.md).
 
 ## 5. Calibration evidence
 
@@ -151,8 +160,8 @@ The completed evidence establishes:
    ranking; conditional accuracy alone is insufficient.
 3. Qwen Flash is the strongest completed operational route on this pool, while
    Jev is a strong high-coverage independent comparator.
-4. Grok requires a protocol-specific follow-up before its low score can be
-   interpreted as a general capability result.
+4. Grok's low score persists under the selected baseline, but remains a
+   protocol-specific result rather than a universal capability estimate.
 5. Calibration is a separate property from accuracy and requires validated
    probabilities plus a split-safe calibration procedure.
 
@@ -182,8 +191,8 @@ tracks are not included in the current benchmark scores.
 - The newest cross-provider scores are route- and parser-specific.
 - Conditional accuracy excludes unresolved provider and parse statuses, which
   are reported separately.
-- The Grok ablation is not complete, so harness versus model attribution is
-  provisional.
+- The Grok ablation is complete, but harness-versus-model attribution remains
+  bounded to the tested protocol family.
 - The separate Bonsai 2 27B Mac run is retained in its own worktree and is not
   pooled into these cross-provider tables until its immutable artifact is
   transferred into the paper release.
@@ -197,6 +206,6 @@ tracks are not included in the current benchmark scores.
 - [EXP-024 cross-provider wave](../experiments/EXP-20260922-024-inferhub-recommendation-wave/)
 - [EXP-025 Grok protocol ablation](../experiments/EXP-20260922-025-grok-protocol-ablation/)
 
-This paper is a working synthesis. Its status must remain pending until EXP-025
-is analyzed and all headline tables are regenerated or checked against their
+This paper is a working synthesis with EXP-025 analyzed. Its status remains
+pending only for owner review; all headline tables are checked against
 committed result artifacts.

@@ -1,5 +1,22 @@
 # Current Repository Checkpoint
 
+## 2026-09-22 — TASK-0041 Grok protocol ablation complete
+
+EXP-025 is complete. The public 64-record diagnostic selected the original
+typed-schema contract because no alternative passed the preregistered gate.
+The authorized blind Grok 4.6 typed-baseline rerun completed with 757/760
+resolved (99.605% coverage), 3 provider errors, mode-balanced score
+0.2585765636, single accuracy 0.4984615 over 650/652 resolved records, and
+pairwise accuracy 0.0186916 over 107/108 resolved records. The low score and
+single/pairwise asymmetry therefore persist under the selected baseline. A real
+Windows locale-decoding defect was found and repaired in the no-schema arm, but
+the repair and semantic/explicit protocol variants did not yield a winning
+replacement. EXP-025 is now reported as protocol-specific underperformance,
+not a universal Grok capability result. Final artifacts are in
+experiments/EXP-20260922-025-grok-protocol-ablation/RESULTS.md and report/.
+The focused benchmark paper is updated; next action is objective-domain track
+preregistration (GLEIF first), with defensive-only cybersecurity evaluation.
+
 ## 2026-09-22 — TASK-0041 Grok public protocol diagnostic
 
 The new append-only EXP-025 preregistration is committed in the dedicated
