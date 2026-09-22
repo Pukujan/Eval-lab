@@ -30,6 +30,7 @@ provider credentials remain on the Windows host.
 
 - `scripts/run_grok_luna_qwen_bakeoff.py`
 - `scripts/run_fast_jev_arm.py`
+- `scripts/report_fast_provider_wave.py`
 - `tests/test_grok_luna_qwen_bakeoff.py`
 - `docs/GROK_BUILD_CLI_AUTOMATION.md`
 - `experiments/EXP-20260922-022-fast-provider-wave/`
@@ -67,12 +68,30 @@ authentication, exact model discovery, structured streaming, per-process
 session isolation, bounded concurrency, checkpoint/resume, and the CLI/API
 boundary.
 
+Public selection is complete and compared offline in
+`runs/public-comparison-20260922-v2/`:
+
+- Grok 4.6: `643/648 ok`, `3 provider_error`, `2 rate_limited`, resolved
+  accuracy `0.3701`; surfaced `grok-4.6-build`.
+- Grok 4.7: `617/648 ok`, `31 provider_error`, resolved accuracy `0.3679`;
+  surfaced `grok-4.7-build`.
+- Qwen Flash: `645/648 ok`, `3 parse_error`, resolved accuracy `0.9674`;
+  surfaced `qwen3.8-flash`.
+- Jev pinned: `648/648 ok`, resolved accuracy `0.8796`; surfaced
+  `typesafe/jev-1.13-20260917`.
+
+The 4.6/4.7 same-record agreement was `588/612` (`0.9608`). The public
+comparison uses gold only offline; unresolved provider statuses remain outside
+accuracy. The public arm outputs and comparison are ready for the frozen blind
+holdout pass.
+
 ## Next atomic action
 
-Launch public-selection execution concurrently as four isolated processes:
-Grok 4.6 with four workers, Grok 4.7 with four workers, Qwen Flash with two
-workers, and pinned Jev with eight workers. Preserve per-record checkpoints
-and stop an arm if provider status indicates a route failure or rate limit.
+Launch the blind-holdout execution concurrently as four isolated processes:
+Grok 4.6 with four workers, Grok 4.7 with four hardened workers, Qwen Flash
+with two workers, and pinned Jev with eight workers. Preserve per-record
+checkpoints and stop an arm if provider status indicates a route failure or
+rate limit.
 
 ## Decisions and unresolved questions
 

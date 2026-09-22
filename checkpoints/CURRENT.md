@@ -30,6 +30,17 @@ the official CLI references, subscription authentication boundary, streaming
 JSON/schema invocation, unique session and leader-socket requirements, bounded
 concurrency, and status-preserving checkpoint rules.
 
+The public-selection wave is complete. EXP-022 public outputs are
+`runs/public-grok-46-20260922` (`643 ok`, `3 provider_error`, `2 rate_limited`),
+`runs/public-grok-47-20260922` (`617 ok`, `31 provider_error`),
+`runs/public-qwen-flash-20260922` (`645 ok`, `3 parse_error`), and
+`runs/public-jev-20260922` (`648 ok`). The offline comparison is
+`runs/public-comparison-20260922-v2/`: resolved accuracy is Grok 4.6 `0.3701`,
+Grok 4.7 `0.3679`, Qwen Flash `0.9674`, and Jev `0.8796`; Grok 4.6/4.7
+agreement is `0.9608` on `612` comparable records. No provider failure was
+converted into a label. Next atomic action: launch the same bounded arms over
+the frozen blind holdout and retain separate checkpoints.
+
 ## Authoritative status
 
 TASK-0019 calibrated judge construction and independent head-to-head study is
