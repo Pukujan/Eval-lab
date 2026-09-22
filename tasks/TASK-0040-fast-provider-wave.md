@@ -17,9 +17,10 @@ provider credentials remain on the Windows host.
 ## Scope
 
 - New experiment: `experiments/EXP-20260922-022-fast-provider-wave/`.
-- InferHub is an append-only follow-on experiment,
-  `EXP-20260922-023-inferhub-wave`, using the same frozen EXP-015 source pool;
-  it must not alter EXP-022 outputs.
+- InferHub is an append-only follow-on experiment. The historical
+  `EXP-20260922-023-inferhub-wave` remains immutable, and the refreshed
+  recommendation-policy wave is `EXP-20260922-024-inferhub-recommendation-wave`;
+  neither may alter EXP-022 outputs.
 - Frozen source pool: EXP-015 records and typed specification, referenced by
   fingerprint and never edited.
 - Arms: direct Grok 4.6, direct Grok 4.7, YOLO-Auto Qwen3.8 Flash, and
@@ -42,6 +43,7 @@ provider credentials remain on the Windows host.
 - `scripts/run_inferhub_arm.py`
 - `tests/test_inferhub_arm.py`
 - `experiments/EXP-20260922-023-inferhub-wave/`
+- `experiments/EXP-20260922-024-inferhub-recommendation-wave/`
 - `experiments/EXP-20260922-022-fast-provider-wave/`
 - this task file and `checkpoints/CURRENT.md`
 
@@ -161,13 +163,28 @@ cheapest currently listed exact route, without including GPT/ChatGPT/Codex:
 This replaces the earlier 14-route bulk proposal for the next wave only. No
 provider calls or EXP-023 mutations were made during this refresh.
 
+## Recommendation-wave execution checkpoint — 2026-09-22
+
+The user resumed execution after the pause. The new append-only experiment is
+preregistered from InferHub's 2026-09-22 `daily-shortlist.json` and uses one
+cheapest exact route per selected family: `cb/deepseek-v4.1-flash`,
+`cbcn/glm-5.3-flash`, `cbcn/deepseek-v4-flash`, `ali/qwen3.8-flash`,
+`cbcn/minimax-m3`, `ali/glm-5.2`, `ali/qwen3.8-max`,
+`ali/kimi-k2.7-code`, and `cp/cline-pass/mimo-v2.5`. This replaces the old
+14-route proposal for the new experiment only. Qwen4B and ChatGPT/Codex
+models remain excluded.
+
+The new run uses the immutable EXP-015 source pool, streaming SSE, fresh
+checkpoint directories, one-record canaries, then public and blind partitions.
+Routes run in bounded batches with four workers per route; unresolved provider,
+rate-limit, timeout, and parse statuses remain explicit.
+
 ## Next atomic action
 
-After the user explicitly resumes execution, create a new preregistered
-append-only experiment for the nine deduplicated routes, run one-record canaries
-under the updated streaming probe contract, then execute public and blind
-partitions with per-record checkpoints. Do not resume the old 14-route plan,
-change EXP-023, or treat the recommendation score as benchmark gold.
+Run one-record canaries for the nine deduplicated routes under the updated
+streaming probe contract, then execute public and blind partitions with
+per-record checkpoints. Do not resume the old 14-route plan, change EXP-023,
+or treat the recommendation score as benchmark gold.
 
 ## Decisions and unresolved questions
 

@@ -1,0 +1,17 @@
+{
+  "researched_at": "2026-09-22",
+  "method": "Use the InferHub vendor release snapshot for family release dates; do not treat route catalog timestamps as release dates.",
+  "source_snapshot": "D:/claude/inferhub/data/vendor-latest-releases.json",
+  "sources": [
+    {"model_family":"DeepSeek V4.1 Flash","release_date":"2026-09-10","url":"https://api-docs.deepseek.com/updates/"},
+    {"model_family":"DeepSeek V4 Flash","release_date":"2026-08-21","url":"https://api-docs.deepseek.com/updates/"},
+    {"model_family":"GLM 5.3 Flash","release_date":"2026-08-26","url":"https://autoclaw.z.ai/blog/model/glm-5.3-flash/"},
+    {"model_family":"GLM 5.2","release_date":"2026-08-10","url":"https://z.ai/blog/glm-5-2"},
+    {"model_family":"Qwen3.8 Flash","release_date":"2026-08-26","url":"https://qwen.ai/research/"},
+    {"model_family":"Qwen 3.8 Max","release_date":"2026-09-02","url":"https://www.alibabacloud.com/en/press-room/"},
+    {"model_family":"MiniMax M3","release_date":"2026-06-01","url":"https://www.minimax.io/blog/minimax-m3"},
+    {"model_family":"Kimi K2.7 Code","release_date":"2026-06-12","url":"https://www.kimi.com/news/"},
+    {"model_family":"MiMo V2.5","release_date":"2026-04-22","url":"https://mimo.mi.com/docs/en-US/news/latest/v2.5-news"}
+  ],
+  "note": "The engine's public-release research and routable-family mapping are retained in vendor-latest-releases.json and daily-shortlist.json; the selected routes are the dated operational families, not necessarily each vendor's newest public product."
+}

@@ -15,9 +15,10 @@ The next append-only wave should deduplicate to these cheapest exact routes:
 `cbcn/deepseek-v4-flash`, `ali/qwen3.8-flash`, `cbcn/minimax-m3`,
 `ali/glm-5.2`, `ali/qwen3.8-max`, `ali/kimi-k2.7-code`, and
 `cp/cline-pass/mimo-v2.5`. This is a new-wave plan only; EXP-023 remains
-immutable and no provider calls were made during this refresh. Next atomic
-action after explicit resume: preregister the new experiment, canary these nine
-routes, then run public and blind partitions.
+immutable and no provider calls were made during this refresh. The user has
+resumed execution. Next atomic action: preregister
+`EXP-20260922-024-inferhub-recommendation-wave`, canary these nine routes, then
+run public and blind partitions with bounded concurrency.
 
 ## 2026-09-22 — TASK-0040 paused during InferHub release-first wave
 
