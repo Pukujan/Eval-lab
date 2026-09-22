@@ -1,0 +1,19 @@
+{
+  "arms": {
+    "grok": {
+      "error_kinds": {},
+      "provider": "xai-grok-build-cli",
+      "requested_model": "grok-4.6",
+      "route": "direct_grok_build_cli_subscription",
+      "status_counts": {
+        "ok": 8
+      },
+      "surfaced_model_ids": [
+        "grok-4.6-build"
+      ]
+    }
+  },
+  "experiment_id": "EXP-20260921-019-calibrated-judge-study",
+  "partition": "blind_holdout",
+  "run_id": "grok-mode-check-20260921"
+}

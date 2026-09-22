@@ -1,0 +1,13 @@
+@prefix ex: <https://example.org/eval-lab/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:EntityShape a sh:NodeShape ;
+    sh:targetClass prov:Entity ;
+    sh:property [ sh:path dcterms:identifier ; sh:minCount 1 ; sh:datatype xsd:string ] .
+
+ex:BenchmarkShape a sh:NodeShape ;
+    sh:targetNode ex:benchmark ;
+    sh:property [ sh:path ex:fingerprint ; sh:minCount 1 ; sh:datatype xsd:string ; sh:pattern "^[0-9a-f]{64}$" ] .

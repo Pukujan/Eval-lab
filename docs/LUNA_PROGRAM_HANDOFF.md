@@ -100,3 +100,14 @@ After TASK-0009 the repo should contain:
 - verified teacher-generated hard negatives
 - small-judge training ablations
 - calibrated held-out comparison report
+
+## TASK-0010 continuation
+
+TASK-0001 through TASK-0009 are complete.
+
+Next read:
+- `tasks/TASK-0010-selective-escalation.md`
+- `docs/TASK-0010-METAMORPHIC-DIFFERENTIAL.md`
+- `docs/RESEARCH_ARTIFACT_STANDARD.md`
+
+TASK-0010 must preserve the frozen TASK-0009 student for its primary policy experiment and finish with a reproducible benchmark/paper research release.

@@ -1,0 +1,19 @@
+{
+  "arms": {
+    "qwen_flash": {
+      "error_kinds": {},
+      "provider": "yolo-auto",
+      "requested_model": "qwen3.8-flash",
+      "route": "yolo_auto_openai_compatible",
+      "status_counts": {
+        "ok": 1
+      },
+      "surfaced_model_ids": [
+        "qwen3.8-flash"
+      ]
+    }
+  },
+  "experiment_id": "EXP-20260921-016-qwen-rate-limit-retry",
+  "partition": "blind_holdout",
+  "run_id": "smoke-recovery-20260921"
+}

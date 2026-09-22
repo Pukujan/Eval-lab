@@ -1,0 +1,78 @@
+{
+  "accuracy_95_ci": {
+    "lower": 0.20654931437723745,
+    "upper": 1.0
+  },
+  "actual_cost": 1.6128e-05,
+  "blind_record_ids_fingerprint": "409428fc71b447d0114dd7a1929cbed34269a4318ef249c108582b70069d8d61",
+  "correct_count": 1,
+  "created_at_utc": "2026-09-21T06:51:08.816533+00:00",
+  "elapsed_seconds": 0.5815580999769736,
+  "experiment_id": "EXP-20260921-014-independent-jev-benchmark",
+  "gold_not_used_for_provider_request": true,
+  "latency": {
+    "count": 1,
+    "max_ms": 316.8660999799613,
+    "mean_ms": 316.8660999799613,
+    "median_ms": 316.8660999799613,
+    "min_ms": 316.8660999799613,
+    "p95_ms": 316.8660999799613
+  },
+  "metrics": {
+    "aggregate": {
+      "count": 1,
+      "metrics": {
+        "accuracy": 1.0,
+        "balanced_accuracy": 1.0,
+        "brier": null,
+        "ece": null,
+        "macro_f1": 1.0,
+        "nll": null
+      },
+      "probability_metrics_available": false
+    },
+    "by_domain": {
+      "eval-lab-select-v0.1.0": {
+        "count": 1,
+        "metrics": {
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "brier": null,
+          "ece": null,
+          "macro_f1": 1.0,
+          "nll": null
+        },
+        "probability_metrics_available": false
+      }
+    },
+    "failure_count": 0,
+    "latency": {
+      "count": 1,
+      "max_ms": 316.8660999799613,
+      "mean_ms": 316.8660999799613,
+      "median_ms": 316.8660999799613,
+      "min_ms": 316.8660999799613,
+      "p95_ms": 316.8660999799613
+    },
+    "risk_coverage": {
+      "coverage_at_target_error": {},
+      "curve": []
+    },
+    "status_counts": {
+      "ok": 1
+    },
+    "successful_count": 1,
+    "total_count": 1
+  },
+  "model": "~typesafe/jev-latest",
+  "partition": "blind_holdout",
+  "pool_fingerprint": "b7edd61269f0f7757e734bc7e3f665ac2bcd6d908a1e56f73f0b0291d55b64d8",
+  "provider": "openrouter",
+  "record_count": 1,
+  "resolved_count": 1,
+  "status_counts": {
+    "ok": 1
+  },
+  "stop_reason": null,
+  "usage_metadata_available": true
+}

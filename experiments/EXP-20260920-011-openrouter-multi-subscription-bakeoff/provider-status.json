@@ -1,0 +1,15 @@
+{
+  "arms": {
+    "grok": {
+      "ok": 368,
+      "provider_error": 132
+    },
+    "luna": {
+      "provider_error": 500
+    },
+    "sol": {
+      "provider_error": 500
+    }
+  },
+  "endpoint": "https://openrouter.ai/api/v1/chat/completions"
+}

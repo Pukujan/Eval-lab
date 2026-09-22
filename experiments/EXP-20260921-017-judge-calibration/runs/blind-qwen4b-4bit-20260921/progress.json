@@ -1,0 +1,10 @@
+{
+  "completed_count": 760,
+  "last_record_id": "single-synthetic-structured-06-correct",
+  "model_id": "Qwen/Qwen3-4B",
+  "record_count": 760,
+  "status_counts": {
+    "ok": 760
+  },
+  "updated_at_utc": "2026-09-21T23:09:36Z"
+}

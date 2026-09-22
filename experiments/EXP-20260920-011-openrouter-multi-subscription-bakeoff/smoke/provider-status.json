@@ -1,0 +1,14 @@
+{
+  "arms": {
+    "grok": {
+      "ok": 1
+    },
+    "luna": {
+      "ok": 1
+    },
+    "sol": {
+      "ok": 1
+    }
+  },
+  "endpoint": "https://openrouter.ai/api/v1/chat/completions"
+}

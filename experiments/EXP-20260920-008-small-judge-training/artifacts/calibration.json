@@ -1,0 +1,13 @@
+{
+  "class_order": [
+    "pass",
+    "fail"
+  ],
+  "code_version": "task-0009-temperature-v1",
+  "fit_split": "calibration",
+  "input_semantics": "class probabilities; p_calibrated = softmax(log(p) / temperature)",
+  "method": "temperature",
+  "parameters": {
+    "temperature": 0.07059871330083402
+  }
+}

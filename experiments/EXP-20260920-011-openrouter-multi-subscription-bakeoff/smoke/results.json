@@ -1,0 +1,204 @@
+{
+  "arms": {
+    "grok": {
+      "model": "x-ai/grok-4.6",
+      "report": {
+        "aggregate": {
+          "count": 1,
+          "metrics": {
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "brier": null,
+            "ece": null,
+            "macro_f1": 1.0,
+            "nll": null
+          },
+          "probability_metrics_available": false
+        },
+        "by_domain": {
+          "arc_challenge": {
+            "count": 1,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          }
+        },
+        "failure_count": 0,
+        "latency": {
+          "count": 1,
+          "max_ms": 8092.123800015543,
+          "mean_ms": 8092.123800015543,
+          "median_ms": 8092.123800015543,
+          "min_ms": 8092.123800015543,
+          "p95_ms": 8092.123800015543
+        },
+        "probability_metrics": {
+          "available": false,
+          "unavailable_reason": "one or more successful predictions did not provide probabilities"
+        },
+        "risk_coverage": {
+          "coverage_at_target_error": {},
+          "curve": []
+        },
+        "status_counts": {
+          "ok": 1
+        },
+        "successful_count": 1,
+        "total_count": 1
+      },
+      "status_counts": {
+        "ok": 1
+      }
+    },
+    "luna": {
+      "model": "openai/gpt-5.6-luna",
+      "report": {
+        "aggregate": {
+          "count": 1,
+          "metrics": {
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "brier": null,
+            "ece": null,
+            "macro_f1": 1.0,
+            "nll": null
+          },
+          "probability_metrics_available": false
+        },
+        "by_domain": {
+          "arc_challenge": {
+            "count": 1,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          }
+        },
+        "failure_count": 0,
+        "latency": {
+          "count": 1,
+          "max_ms": 1942.1393000229727,
+          "mean_ms": 1942.1393000229727,
+          "median_ms": 1942.1393000229727,
+          "min_ms": 1942.1393000229727,
+          "p95_ms": 1942.1393000229727
+        },
+        "probability_metrics": {
+          "available": false,
+          "unavailable_reason": "one or more successful predictions did not provide probabilities"
+        },
+        "risk_coverage": {
+          "coverage_at_target_error": {},
+          "curve": []
+        },
+        "status_counts": {
+          "ok": 1
+        },
+        "successful_count": 1,
+        "total_count": 1
+      },
+      "status_counts": {
+        "ok": 1
+      }
+    },
+    "sol": {
+      "model": "openai/gpt-5.6-sol",
+      "report": {
+        "aggregate": {
+          "count": 1,
+          "metrics": {
+            "accuracy": 1.0,
+            "balanced_accuracy": 1.0,
+            "brier": null,
+            "ece": null,
+            "macro_f1": 1.0,
+            "nll": null
+          },
+          "probability_metrics_available": false
+        },
+        "by_domain": {
+          "arc_challenge": {
+            "count": 1,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          }
+        },
+        "failure_count": 0,
+        "latency": {
+          "count": 1,
+          "max_ms": 1504.6174000017345,
+          "mean_ms": 1504.6174000017345,
+          "median_ms": 1504.6174000017345,
+          "min_ms": 1504.6174000017345,
+          "p95_ms": 1504.6174000017345
+        },
+        "probability_metrics": {
+          "available": false,
+          "unavailable_reason": "one or more successful predictions did not provide probabilities"
+        },
+        "risk_coverage": {
+          "coverage_at_target_error": {},
+          "curve": []
+        },
+        "status_counts": {
+          "ok": 1
+        },
+        "successful_count": 1,
+        "total_count": 1
+      },
+      "status_counts": {
+        "ok": 1
+      }
+    }
+  },
+  "benchmark_fingerprint": "18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5",
+  "counts": {
+    "arms_attempted": 3,
+    "provider_evaluation": 1,
+    "record_ids_unique": true
+  },
+  "differential": {
+    "arms": [
+      "grok",
+      "luna",
+      "sol"
+    ],
+    "pairs": {
+      "grok__vs__luna": {
+        "agreement_count": 1,
+        "comparable_count": 1
+      },
+      "grok__vs__sol": {
+        "agreement_count": 1,
+        "comparable_count": 1
+      },
+      "luna__vs__sol": {
+        "agreement_count": 1,
+        "comparable_count": 1
+      }
+    }
+  },
+  "endpoint": "https://openrouter.ai/api/v1/chat/completions",
+  "experiment_id": "EXP-20260920-011-openrouter-multi-subscription-bakeoff",
+  "granularity": "one_record_per_request",
+  "status": "completed",
+  "streaming": true
+}

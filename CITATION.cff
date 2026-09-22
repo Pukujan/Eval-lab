@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you use Eval Lab or EvalLab-Select in research, please cite the repository and associated research release."
+title: "Eval Lab"
+type: software
+authors:
+  - name: "Pukujan"
+repository-code: "https://github.com/Pukujan/Eval-lab"
+version: "0.1.0"
+date-released: 2026-09-20
+abstract: "Objective benchmark and reproducible selective-escalation evaluation for lightweight rubric judges."
+keywords:
+  - selective prediction
+  - escalation
+  - judge evaluation
+  - reproducibility

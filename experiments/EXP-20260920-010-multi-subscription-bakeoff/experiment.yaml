@@ -1,0 +1,71 @@
+id: EXP-20260920-010-multi-subscription-bakeoff
+status: planned
+created_at: 2026-09-20
+plan_baseline_commit: f0a64678333f5014a5d82da39cac8753d3923fbb
+seed: 20260920
+context_limit: 4096
+benchmark:
+  name: EvalLab-Select
+  version: 0.1.0
+  fingerprint: 18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5
+  threshold_selection_count: 2863
+  final_evaluation_count: 2356
+  provider_pool_count: 500
+  provider_pool_rule: deterministic first 500 final-evaluation records
+  canonicalization_version: eval-lab-select-single-v1
+  source_revision: 210d026faf9955653af8916fad021475a3f00453
+student:
+  source_task: TASK-0009
+  model_family: tfidf-logistic-regression
+  selected_arm: D
+  retrained: false
+typed_system_one:
+  spec_id: eval-lab-system-one
+  spec_version: 0.1.0
+  legal_single_labels: [pass, fail]
+  legal_pairwise_labels: [A, B, TIE]
+providers:
+  - arm_id: grok
+    provider: opencode
+    model: opencode/grok-4.6
+    access: subscription
+    status: planned
+  - arm_id: luna
+    provider: opencode
+    model: opencode/gpt-5.6-luna
+    access: subscription
+    status: planned
+  - arm_id: sol
+    provider: opencode
+    model: opencode/gpt-5.6-sol
+    access: subscription
+    status: planned
+  - arm_id: qwen_flash
+    provider: yolo-auto
+    model: qwen3.8-flash
+    access: api
+    status: deferred_provider_blocked
+  - arm_id: qwen_local_1_7b
+    provider: local
+    model: Qwen3-1.7B
+    access: local_weights
+    status: deferred_weights_unavailable
+  - arm_id: qwen_local_4b
+    provider: local
+    model: Qwen3-4B
+    access: local_weights
+    status: deferred_weights_unavailable
+evaluation:
+  confidence_definition: inherited descriptive maximum calibrated class probability
+  target_error_rates: [0.01, 0.02, 0.05, 0.10]
+  confidence_level: 0.95
+  missingness_rule: unresolved provider calls are excluded from resolved risk and never receive fallback labels
+  pooling_rule: no pinned/rolling Jev pooling; each subscription arm remains separate
+artifacts:
+  plan: PLAN.md
+  manifest: experiment.yaml
+  predictions: predictions/
+  results: results.json
+  differential: differential.json
+  provider_status: provider-status.json
+  report: report.md

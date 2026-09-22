@@ -1,0 +1,19 @@
+{
+  "arms": {
+    "grok": {
+      "error_kinds": {
+        "runner_exception": 1
+      },
+      "provider": "xai-grok-build-cli",
+      "requested_model": "grok-4.6",
+      "route": "direct_grok_build_cli_subscription",
+      "status_counts": {
+        "provider_error": 1
+      },
+      "surfaced_model_ids": []
+    }
+  },
+  "experiment_id": "EXP-20260921-015-grok-luna-qwen-bakeoff",
+  "partition": "public_selection",
+  "run_id": "smoke-stream-grok-20260921"
+}

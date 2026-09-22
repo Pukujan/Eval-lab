@@ -1,0 +1,108 @@
+{
+  "arms": {
+    "grok": {
+      "model": "opencode/grok-4.6",
+      "report": {
+        "aggregate": {
+          "count": 1,
+          "metrics": {
+            "accuracy": 0.0,
+            "balanced_accuracy": 0.0,
+            "brier": null,
+            "ece": null,
+            "macro_f1": 0.0,
+            "nll": null
+          },
+          "probability_metrics_available": false
+        },
+        "by_domain": {
+          "arc_challenge": {
+            "count": 1,
+            "metrics": {
+              "accuracy": 0.0,
+              "balanced_accuracy": 0.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          }
+        },
+        "failure_count": 0,
+        "latency": {
+          "count": 1,
+          "max_ms": 86768.8358000014,
+          "mean_ms": 86768.8358000014,
+          "median_ms": 86768.8358000014,
+          "min_ms": 86768.8358000014,
+          "p95_ms": 86768.8358000014
+        },
+        "probability_metrics": {
+          "available": false,
+          "unavailable_reason": "one or more successful predictions did not provide probabilities"
+        },
+        "risk_coverage": {
+          "coverage_at_target_error": {},
+          "curve": []
+        },
+        "status_counts": {
+          "ok": 1
+        },
+        "successful_count": 1,
+        "total_count": 1
+      },
+      "status_counts": {
+        "ok": 1
+      }
+    }
+  },
+  "benchmark_fingerprint": "18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5",
+  "counts": {
+    "arms_attempted": 1,
+    "provider_evaluation": 1,
+    "record_ids_unique": true
+  },
+  "deferred_arms": {
+    "qwen_flash": {
+      "model": "qwen3.8-flash",
+      "provider": "yolo-auto",
+      "reason": "TASK-0010 YOLO-Auto provider block",
+      "status": "deferred_provider_blocked"
+    },
+    "qwen_local_1_7b": {
+      "model": "Qwen3-1.7B",
+      "provider": "local",
+      "reason": "no local weights in the standard Hugging Face cache",
+      "status": "deferred_weights_unavailable"
+    },
+    "qwen_local_4b": {
+      "model": "Qwen3-4B",
+      "provider": "local",
+      "reason": "no local weights in the standard Hugging Face cache",
+      "status": "deferred_weights_unavailable"
+    }
+  },
+  "differential": {
+    "arms": [
+      "grok"
+    ],
+    "pairs": {}
+  },
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10"
+  },
+  "experiment_id": "EXP-20260920-010-multi-subscription-bakeoff",
+  "pool_rule": "deterministic first 500 final-evaluation records",
+  "status": "completed",
+  "student": {
+    "retrained": false,
+    "selected_arm": "D",
+    "source_task": "TASK-0009"
+  },
+  "typed_system_one": {
+    "spec_id": "eval-lab-system-one",
+    "spec_version": "0.1.0"
+  }
+}

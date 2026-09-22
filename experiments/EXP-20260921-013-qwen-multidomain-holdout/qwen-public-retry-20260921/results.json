@@ -1,0 +1,176 @@
+{
+  "base_url": "https://yolo-auto.com/v1",
+  "created_at_utc": "2026-09-21T05:08:50.103053+00:00",
+  "elapsed_seconds": 451.7442032000108,
+  "experiment_id": "EXP-20260921-013-qwen-multidomain-holdout",
+  "gold_not_used_for_provider_request": true,
+  "granularity": "one_record_per_request",
+  "holdout_manifest_fingerprint": "409428fc71b447d0114dd7a1929cbed34269a4318ef249c108582b70069d8d61",
+  "latency_ms": {
+    "count": 451,
+    "mean": 1000.8368399108429,
+    "p95": 4529.878400004236
+  },
+  "metrics": {
+    "accuracy": 0.8031674208144797,
+    "by_dataset": {
+      "allenai/ai2_arc:ARC-Easy": {
+        "accuracy": 0.961038961038961,
+        "correct": 74,
+        "records": 79,
+        "resolved": 77,
+        "status_counts": {
+          "ok": 77,
+          "parse_error": 2
+        }
+      },
+      "cais/mmlu:abstract_algebra": {
+        "accuracy": 0.9,
+        "correct": 18,
+        "records": 20,
+        "resolved": 20,
+        "status_counts": {
+          "ok": 20
+        }
+      },
+      "cais/mmlu:computer_security": {
+        "accuracy": 0.9,
+        "correct": 18,
+        "records": 20,
+        "resolved": 20,
+        "status_counts": {
+          "ok": 20
+        }
+      },
+      "cais/mmlu:elementary_mathematics": {
+        "accuracy": 0.85,
+        "correct": 17,
+        "records": 20,
+        "resolved": 20,
+        "status_counts": {
+          "ok": 20
+        }
+      },
+      "cais/mmlu:high_school_biology": {
+        "accuracy": 0.9,
+        "correct": 18,
+        "records": 20,
+        "resolved": 20,
+        "status_counts": {
+          "ok": 20
+        }
+      },
+      "cais/mmlu:high_school_world_history": {
+        "accuracy": 1.0,
+        "correct": 20,
+        "records": 20,
+        "resolved": 20,
+        "status_counts": {
+          "ok": 20
+        }
+      },
+      "cais/mmlu:logical_fallacies": {
+        "accuracy": 1.0,
+        "correct": 20,
+        "records": 20,
+        "resolved": 20,
+        "status_counts": {
+          "ok": 20
+        }
+      },
+      "cais/mmlu:machine_learning": {
+        "accuracy": 0.631578947368421,
+        "correct": 12,
+        "records": 20,
+        "resolved": 19,
+        "status_counts": {
+          "ok": 19,
+          "parse_error": 1
+        }
+      },
+      "cais/mmlu:professional_law": {
+        "accuracy": 0.85,
+        "correct": 17,
+        "records": 20,
+        "resolved": 20,
+        "status_counts": {
+          "ok": 20
+        }
+      },
+      "eval-lab-select-v0.1.0": {
+        "accuracy": 0.75,
+        "correct": 3,
+        "records": 4,
+        "resolved": 4,
+        "status_counts": {
+          "ok": 4
+        }
+      },
+      "eval-lab-synthetic:arithmetic": {
+        "accuracy": 1.0,
+        "correct": 11,
+        "records": 12,
+        "resolved": 11,
+        "status_counts": {
+          "ok": 11,
+          "parse_error": 1
+        }
+      },
+      "eval-lab-synthetic:code": {
+        "accuracy": 0.8181818181818182,
+        "correct": 9,
+        "records": 12,
+        "resolved": 11,
+        "status_counts": {
+          "ok": 11,
+          "parse_error": 1
+        }
+      },
+      "eval-lab-synthetic:multiple": {
+        "accuracy": 0.4166666666666667,
+        "correct": 5,
+        "records": 12,
+        "resolved": 12,
+        "status_counts": {
+          "ok": 12
+        }
+      },
+      "eval-lab-synthetic:structured": {
+        "accuracy": 0.5833333333333334,
+        "correct": 7,
+        "records": 12,
+        "resolved": 12,
+        "status_counts": {
+          "ok": 12
+        }
+      },
+      "openai/gsm8k:main": {
+        "accuracy": 0.6794871794871795,
+        "correct": 106,
+        "records": 160,
+        "resolved": 156,
+        "status_counts": {
+          "ok": 156,
+          "parse_error": 4
+        }
+      }
+    },
+    "correct": 355,
+    "records": 451,
+    "resolved": 442,
+    "status_counts": {
+      "ok": 442,
+      "parse_error": 9
+    }
+  },
+  "model": "qwen3.8-flash",
+  "partition": "public_selection",
+  "pool_fingerprint": "b7edd61269f0f7757e734bc7e3f665ac2bcd6d908a1e56f73f0b0291d55b64d8",
+  "probabilities_available": false,
+  "provider": "yolo-auto",
+  "record_count": 451,
+  "record_ids_file": "experiments\\EXP-20260921-013-qwen-multidomain-holdout\\public-retry-record-ids.txt",
+  "streaming": true,
+  "timeout_seconds": 120.0,
+  "workers": 1
+}

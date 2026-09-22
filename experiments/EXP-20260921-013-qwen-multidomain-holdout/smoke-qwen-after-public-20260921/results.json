@@ -1,0 +1,45 @@
+{
+  "benchmark_fingerprint": "18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5",
+  "created_at_utc": "2026-09-21T04:58:01.800740+00:00",
+  "experiment_id": "EXP-20260920-009-selective-escalation",
+  "granularity": "one_record_per_request",
+  "limit": 1,
+  "model": "qwen3.8-flash",
+  "record_ids_unique": true,
+  "report": {
+    "aggregate": {
+      "count": 0,
+      "metrics": null,
+      "probability_metrics_available": false
+    },
+    "by_domain": {},
+    "failure_count": 1,
+    "latency": {
+      "count": 1,
+      "max_ms": 217.6041999773588,
+      "mean_ms": 217.6041999773588,
+      "median_ms": 217.6041999773588,
+      "min_ms": 217.6041999773588,
+      "p95_ms": 217.6041999773588
+    },
+    "probability_metrics": {
+      "available": false,
+      "unavailable_reason": "one or more successful predictions did not provide probabilities"
+    },
+    "risk_coverage": {
+      "coverage_at_target_error": {},
+      "curve": []
+    },
+    "status_counts": {
+      "rate_limited": 1
+    },
+    "successful_count": 0,
+    "total_count": 1
+  },
+  "retry_id": "smoke-qwen-after-public-20260921",
+  "status_counts": {
+    "rate_limited": 1
+  },
+  "streaming": true,
+  "timeout_seconds": 120.0
+}

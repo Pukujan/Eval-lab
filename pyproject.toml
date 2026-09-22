@@ -26,7 +26,9 @@ local = [
 ]
 dev = [
   "pytest>=8.3",
-  "ruff>=0.6"
+  "ruff>=0.6",
+  "rdflib>=7.0",
+  "pyshacl>=0.26"
 ]
 
 [tool.setuptools.packages.find]

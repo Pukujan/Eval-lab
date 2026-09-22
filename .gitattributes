@@ -1,0 +1,5 @@
+# Benchmark checksums cover exact bytes; keep release files stable across OSes.
+benchmark/eval-lab-select-v0.1.0/* text eol=lf
+experiments/EXP-20260920-010-multi-subscription-bakeoff/* text eol=lf
+experiments/EXP-20260920-011-openrouter-multi-subscription-bakeoff/* text eol=lf
+experiments/EXP-20260920-012-selective-escalation-qwen-streaming/* text eol=lf

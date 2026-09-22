@@ -1,0 +1,67 @@
+{
+  "benchmark_fingerprint": "18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5",
+  "experiment_id": "EXP-20260920-009-selective-escalation",
+  "granularity": "one_record_per_request",
+  "limit": 500,
+  "merge": {
+    "replaced_count": 5,
+    "retry": "qwen-streaming-retry-five-20260920-010",
+    "source": "qwen-streaming-final-20260920-010"
+  },
+  "model": "qwen3.8-flash",
+  "report": {
+    "aggregate": {
+      "count": 500,
+      "metrics": {
+        "accuracy": 0.978,
+        "balanced_accuracy": 0.978,
+        "brier": null,
+        "ece": null,
+        "macro_f1": 0.977999207971487,
+        "nll": null
+      },
+      "probability_metrics_available": false
+    },
+    "by_domain": {
+      "arc_challenge": {
+        "count": 500,
+        "metrics": {
+          "accuracy": 0.978,
+          "balanced_accuracy": 0.978,
+          "brier": null,
+          "ece": null,
+          "macro_f1": 0.977999207971487,
+          "nll": null
+        },
+        "probability_metrics_available": false
+      }
+    },
+    "failure_count": 0,
+    "latency": {
+      "count": 500,
+      "max_ms": 1695.5714000214357,
+      "mean_ms": 632.8224233991932,
+      "median_ms": 567.1407500049099,
+      "min_ms": 413.9226000115741,
+      "p95_ms": 1037.5821899986472
+    },
+    "probability_metrics": {
+      "available": false,
+      "unavailable_reason": "one or more successful predictions did not provide probabilities"
+    },
+    "risk_coverage": {
+      "coverage_at_target_error": {},
+      "curve": []
+    },
+    "status_counts": {
+      "ok": 500
+    },
+    "successful_count": 500,
+    "total_count": 500
+  },
+  "retry_id": "qwen-streaming-final-merged-20260920-010",
+  "status_counts": {
+    "ok": 500
+  },
+  "streaming": true
+}

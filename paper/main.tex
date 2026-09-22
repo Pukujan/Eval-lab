@@ -1,0 +1,59 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{verbatim}
+\title{Calibrated Selective Escalation for Lightweight Rubric Judges}
+\author{Eval Lab}
+\date{2026-09-20}
+\begin{document}
+\maketitle
+\section*{Abstract}
+\begin{abstract}
+We evaluate a frozen TASK-0009 TF-IDF plus logistic-regression student with confidence-based selective escalation on EvalLab-Select v0.1.0. Experiment \texttt{EXP-20260920-012-selective-escalation-qwen-streaming} is the completion replay of the planned EXP-20260920-009 baseline using committed provider artifacts. The benchmark contains 2863 threshold-selection and 2356 final-evaluation records with disjoint source families. Provider-only pinned Jev and Qwen policies are reported over the frozen final pool with unresolved records retained. Provider failures remain explicitly unresolved. The benchmark fingerprint is \texttt{18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5}.
+\end{abstract}
+\section{Introduction}
+Selective escalation asks whether a calibrated lightweight judge can keep high-confidence cases local and send the remainder to a stronger judge. The scientific questions are local coverage at declared error targets, the value of pinned Jev structured decisions, avoided external calls relative to strong-judge-only operation, and whether a typed System-One specification yields a reproducible Jev/Qwen differential. This report is generated from \texttt{EXP-20260920-012-selective-escalation-qwen-streaming/results.json}.
+\section{Related Work}
+Selective classification and risk-coverage analysis study when a predictor should abstain. Confidence calibration, including temperature scaling, is a standard post-hoc reliability tool for probabilistic classifiers. Recent routing work sends uncertain queries to larger models. This study keeps objective gold labels, a frozen student, and explicit provider missingness rather than treating model judgments as gold.
+\section{Benchmark and Objective-Gold Construction}
+EvalLab-Select v0.1.0 combines ARC-Challenge at pinned revision \texttt{210d026faf9955653af8916fad021475a3f00453} with non-training synthetic source families. Each ARC source yields one correct and one deterministic incorrect single-answer record. Gold labels are answer-key or deterministic-verifier provenance. Threshold-selection and final-evaluation partitions are source-family disjoint. Canonicalization, splits, checksums, RO-Crate, PROV-O, and SHACL artifacts are committed with fingerprint \texttt{18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5}.
+\section{Local Judge and Calibration}
+The primary student is the frozen TASK-0009 arm D TF-IDF plus logistic-regression artifact. Calibration uses the committed temperature artifact fit on the TASK-0009 calibration split only. The primary confidence signal is the maximum calibrated class probability; the top-two margin is retained as a secondary diagnostic. The student is not retrained after final-pool inspection.
+\section{Selective Escalation Method}
+Thresholds are selected only on the threshold-selection partition. Final-evaluation labels never influence threshold, confidence definition, provider, typed-question wording, target error, or policy. Local routes always record \texttt{provider\_status=not\_called}. Escalated routes record the provider execution status and remain unresolved on failure. Policies are P0 local-only, P1 pinned Jev only, P2 Qwen3.8 Flash only, P3 calibrated local to pinned Jev, P4 raw-confidence local to pinned Jev, P5 matched-random to pinned Jev, and P6 calibrated local to Qwen. Rolling Jev remains a separate canary and is never pooled with pinned Jev.
+\section{Jev/System-One Differential Method}
+The typed System-One specification is provider-independent and is executed through pinned OpenRouter \texttt{typesafe/jev-1.13} and a YOLO-Auto Qwen3.8 Flash adapter. Objective verifier and answer-key labels remain gold. The frozen final-prefix differential contains 500 comparable record(s) and 486 agreement(s). The separate smoke differential contains 1 comparable record(s) and 1 agreement(s).
+\section{Experiments}
+Experiment \texttt{EXP-20260920-012-selective-escalation-qwen-streaming} replays the frozen student and EvalLab-Select split over a deterministic 500-record provider prefix of the final-evaluation order. Provider artifacts are loaded from committed EXP-009 pinned, rolling, and streaming Qwen files. Offline metrics, including accuracy, balanced accuracy, macro F1, coverage, escalation, unresolved rate, Wilson intervals, latency p95, external calls per 1,000, and provider resource metadata, are computed from those artifacts.
+\section{Results}
+Machine-generated routing results are in \texttt{generated/table\_selective\_results.tex} and Figure~\ref{fig:coverage}, both sourced from \texttt{results.json}. Local-only accuracy is 0.525 with resolved risk 0.475. Provider-only pinned Jev execution coverage is 0.212 with unresolved rate 0.788; Qwen-only execution coverage is 0.212 with unresolved rate 0.788. Collapsed target operating points (identical selected coverage/threshold): calibrated\_local\_to\_jev\_target\_0.01, calibrated\_local\_to\_jev\_target\_0.02, calibrated\_local\_to\_jev\_target\_0.05, calibrated\_local\_to\_jev\_target\_0.10, calibrated\_local\_to\_qwen\_flash\_target\_0.01, calibrated\_local\_to\_qwen\_flash\_target\_0.02, calibrated\_local\_to\_qwen\_flash\_target\_0.05, calibrated\_local\_to\_qwen\_flash\_target\_0.10, random\_matched\_to\_jev\_target\_0.01, random\_matched\_to\_jev\_target\_0.02, random\_matched\_to\_jev\_target\_0.05, random\_matched\_to\_jev\_target\_0.10, raw\_local\_to\_jev\_target\_0.01, raw\_local\_to\_jev\_target\_0.02, raw\_local\_to\_jev\_target\_0.05, raw\_local\_to\_jev\_target\_0.10. Descriptive/underpowered target points, because the Wilson 95\% upper bound exceeds the preregistered target: calibrated\_local\_to\_jev\_target\_0.01, calibrated\_local\_to\_jev\_target\_0.02, calibrated\_local\_to\_jev\_target\_0.05, calibrated\_local\_to\_jev\_target\_0.10, calibrated\_local\_to\_qwen\_flash\_target\_0.01, calibrated\_local\_to\_qwen\_flash\_target\_0.02, calibrated\_local\_to\_qwen\_flash\_target\_0.05, calibrated\_local\_to\_qwen\_flash\_target\_0.10, random\_matched\_to\_jev\_target\_0.01, random\_matched\_to\_jev\_target\_0.02, random\_matched\_to\_jev\_target\_0.05, random\_matched\_to\_jev\_target\_0.10, raw\_local\_to\_jev\_target\_0.01, raw\_local\_to\_jev\_target\_0.02, raw\_local\_to\_jev\_target\_0.05, raw\_local\_to\_jev\_target\_0.10.
+\begin{table}[h]
+\centering
+\resizebox{\textwidth}{!}{\input{generated/table_selective_results.tex}}
+\caption{Machine-generated policy metrics from \texttt{EXP-20260920-012-selective-escalation-qwen-streaming/results.json}. Resolved risk excludes unresolved provider calls.}
+\end{table}
+\begin{table}[h]
+\centering
+\input{generated/figure_execution_coverage.tex}
+\caption{Execution coverage by policy, generated from the same results artifact.}
+\label{fig:coverage}
+\end{table}
+\section{Statistical Uncertainty}
+Every low-error coverage summary includes an exact Wilson 95\% interval on the accepted or resolved set. A nominal empirical risk below a target is treated as descriptive when the interval upper bound exceeds that target. Coverage and support flags are reported at 1\%, 2\%, 5\%, and 10\% without using final labels to choose thresholds.
+\section{Ablations/Controls}
+Raw-confidence routing, calibrated routing, and a matched-random escalation control use the same final record IDs. Provider-only P1/P2 policies isolate judge quality from routing. Rolling Jev is retained as a canary and is excluded from pinned estimates. Probability metrics are reported when class probabilities exist and otherwise carry explicit unavailability metadata.
+\section{Limitations and Threats to Validity}
+This is an objective ARC answer-key benchmark, not evidence of universal human-evaluation quality. The student training corpus is small. Calibration and provider availability are separate sources of uncertainty. Provider errors remain unresolved rather than receiving an implicit local fallback. Collapsed target operating points (identical selected coverage/threshold): calibrated\_local\_to\_jev\_target\_0.01, calibrated\_local\_to\_jev\_target\_0.02, calibrated\_local\_to\_jev\_target\_0.05, calibrated\_local\_to\_jev\_target\_0.10, calibrated\_local\_to\_qwen\_flash\_target\_0.01, calibrated\_local\_to\_qwen\_flash\_target\_0.02, calibrated\_local\_to\_qwen\_flash\_target\_0.05, calibrated\_local\_to\_qwen\_flash\_target\_0.10, random\_matched\_to\_jev\_target\_0.01, random\_matched\_to\_jev\_target\_0.02, random\_matched\_to\_jev\_target\_0.05, random\_matched\_to\_jev\_target\_0.10, raw\_local\_to\_jev\_target\_0.01, raw\_local\_to\_jev\_target\_0.02, raw\_local\_to\_jev\_target\_0.05, raw\_local\_to\_jev\_target\_0.10. Descriptive/underpowered target points, because the Wilson 95\% upper bound exceeds the preregistered target: calibrated\_local\_to\_jev\_target\_0.01, calibrated\_local\_to\_jev\_target\_0.02, calibrated\_local\_to\_jev\_target\_0.05, calibrated\_local\_to\_jev\_target\_0.10, calibrated\_local\_to\_qwen\_flash\_target\_0.01, calibrated\_local\_to\_qwen\_flash\_target\_0.02, calibrated\_local\_to\_qwen\_flash\_target\_0.05, calibrated\_local\_to\_qwen\_flash\_target\_0.10, random\_matched\_to\_jev\_target\_0.01, random\_matched\_to\_jev\_target\_0.02, random\_matched\_to\_jev\_target\_0.05, random\_matched\_to\_jev\_target\_0.10, raw\_local\_to\_jev\_target\_0.01, raw\_local\_to\_jev\_target\_0.02, raw\_local\_to\_jev\_target\_0.05, raw\_local\_to\_jev\_target\_0.10. Project Continuity Modules (PCM) was inspected at `Pukujan/project-continuity-modules@3a34b4a73842c824de5359f06e04568e8ce4aaa4`. Eval Lab maps PROJECT.md to PCM PROJECT, checkpoints/CURRENT.md to CURRENT, TASK files to TASK, and checkpoint logs to CHECKPOINT. PCM currently exposes minimal and software templates; its planned research profile is not implemented, so this release treats PCM as a continuity compatibility reference and keeps RO-Crate 1.3 plus PROV-O as the scientific provenance standard.
+\section{Reproducibility and Artifact Availability}
+Run the commands in \texttt{reproducibility.md}. The release includes RO-Crate 1.3 metadata, PROV-O provenance, SHACL shapes, a valid CFF citation file, checksums, generated tables and figures, and experiment \texttt{EXP-20260920-012-selective-escalation-qwen-streaming}. Project Continuity Modules (PCM) was inspected at `Pukujan/project-continuity-modules@3a34b4a73842c824de5359f06e04568e8ce4aaa4`. Eval Lab maps PROJECT.md to PCM PROJECT, checkpoints/CURRENT.md to CURRENT, TASK files to TASK, and checkpoint logs to CHECKPOINT. PCM currently exposes minimal and software templates; its planned research profile is not implemented, so this release treats PCM as a continuity compatibility reference and keeps RO-Crate 1.3 plus PROV-O as the scientific provenance standard.
+\section{Conclusion}
+The committed replay records local-only, provider-only, selective, matched-random, and Jev/Qwen differential outcomes with explicit unresolved states. Low-error reliability statements remain descriptive wherever Wilson upper bounds miss the preregistered targets.
+\appendix
+\section{Appendices}
+Exact reproduction commands, PCM compatibility, and the machine-readable metric bundle follow. Headline numbers in the tables are regenerated from \texttt{results.json} and are not copied by hand.
+\verbatiminput{reproducibility.md}
+\bibliographystyle{plain}
+\bibliography{references}
+\end{document}

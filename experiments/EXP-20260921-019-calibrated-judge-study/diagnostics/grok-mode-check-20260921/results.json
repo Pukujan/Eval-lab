@@ -1,0 +1,123 @@
+{
+  "arms": {
+    "grok": {
+      "accuracy": 0.25,
+      "accuracy_wilson_95": {
+        "lower": 0.071479212752109,
+        "upper": 0.5907245696898311
+      },
+      "correct_count": 2,
+      "error_kinds": {},
+      "metrics": {
+        "aggregate": {
+          "count": 8,
+          "metrics": {
+            "accuracy": 0.25,
+            "balanced_accuracy": 0.3333333333333333,
+            "brier": null,
+            "ece": null,
+            "macro_f1": 0.16666666666666666,
+            "nll": null
+          },
+          "probability_metrics_available": false
+        },
+        "by_domain": {
+          "allenai/ai2_arc:ARC-Easy": {
+            "count": 4,
+            "metrics": {
+              "accuracy": 0.0,
+              "balanced_accuracy": 0.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-select-v0.1.0": {
+            "count": 4,
+            "metrics": {
+              "accuracy": 0.5,
+              "balanced_accuracy": 0.5,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.3333333333333333,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          }
+        },
+        "failure_count": 0,
+        "latency": {
+          "count": 8,
+          "max_ms": 11484.339699964039,
+          "mean_ms": 8538.069612499385,
+          "median_ms": 8887.210800021421,
+          "min_ms": 5965.088299999479,
+          "p95_ms": 11066.633599967463
+        },
+        "probability_metrics": {
+          "available": false,
+          "unavailable_reason": "one or more successful predictions did not provide probabilities"
+        },
+        "risk_coverage": {
+          "coverage_at_target_error": {},
+          "curve": []
+        },
+        "status_counts": {
+          "ok": 8
+        },
+        "successful_count": 8,
+        "total_count": 8
+      },
+      "native_probability_count": 0,
+      "provider": "xai-grok-build-cli",
+      "record_count": 8,
+      "requested_model": "grok-4.6",
+      "resolved_count": 8,
+      "resolved_coverage": 1.0,
+      "route": "direct_grok_build_cli_subscription",
+      "status_counts": {
+        "ok": 8
+      },
+      "surfaced_model_ids": [
+        "grok-4.6-build"
+      ],
+      "unresolved_rate": 0.0,
+      "usage_metadata_count": 0
+    }
+  },
+  "created_at_utc": "2026-09-22T00:15:45.598461+00:00",
+  "differential": {
+    "arms": [
+      "grok"
+    ],
+    "pairs": {}
+  },
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10"
+  },
+  "execution": {
+    "stream_formats": {
+      "grok": "grok-streaming-json",
+      "luna": "codex-jsonl",
+      "qwen_flash": "openai-sse",
+      "sol": "codex-jsonl"
+    },
+    "streaming": true,
+    "workers": 2
+  },
+  "experiment_id": "EXP-20260921-019-calibrated-judge-study",
+  "partition": "blind_holdout",
+  "provider_pool_order_sha256": "6ca098444eaaa08f3af9856998fc69085b7f0f423b69bea4b1992150781771e8",
+  "record_count": 8,
+  "record_ids_unique": true,
+  "run_id": "grok-mode-check-20260921",
+  "source_pool": {
+    "blind_record_ids_fingerprint": "409428fc71b447d0114dd7a1929cbed34269a4318ef249c108582b70069d8d61",
+    "records_fingerprint": "b7edd61269f0f7757e734bc7e3f665ac2bcd6d908a1e56f73f0b0291d55b64d8",
+    "typed_question_spec_fingerprint": "0d07bd8b8b60bd7f0b5b7a5f5819b7d329ea121f686b240e465695b6f6eca1e4"
+  },
+  "status": "completed_with_provider_statuses"
+}
