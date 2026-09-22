@@ -17,6 +17,9 @@ provider credentials remain on the Windows host.
 ## Scope
 
 - New experiment: `experiments/EXP-20260922-022-fast-provider-wave/`.
+- InferHub is an append-only follow-on experiment,
+  `EXP-20260922-023-inferhub-wave`, using the same frozen EXP-015 source pool;
+  it must not alter EXP-022 outputs.
 - Frozen source pool: EXP-015 records and typed specification, referenced by
   fingerprint and never edited.
 - Arms: direct Grok 4.6, direct Grok 4.7, YOLO-Auto Qwen3.8 Flash, and
@@ -25,6 +28,8 @@ provider credentials remain on the Windows host.
   Flash two workers, Jev eight workers, Bonsai one request at a time.
 - Public-selection canary precedes any blind-holdout run. Provider errors,
   rate limits, skips, and parse failures remain unresolved statuses.
+- InferHub model IDs are provider-qualified and captured exactly; aliases and
+  ChatGPT/Codex model IDs are excluded from the new arm set.
 
 ## Required files
 
@@ -33,6 +38,10 @@ provider credentials remain on the Windows host.
 - `scripts/report_fast_provider_wave.py`
 - `tests/test_grok_luna_qwen_bakeoff.py`
 - `docs/GROK_BUILD_CLI_AUTOMATION.md`
+- `docs/INFERHUB_AUTOMATION.md`
+- `scripts/run_inferhub_arm.py`
+- `tests/test_inferhub_arm.py`
+- `experiments/EXP-20260922-023-inferhub-wave/`
 - `experiments/EXP-20260922-022-fast-provider-wave/`
 - this task file and `checkpoints/CURRENT.md`
 

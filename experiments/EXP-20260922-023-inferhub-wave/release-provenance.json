@@ -1,0 +1,13 @@
+{
+  "sources": [
+    {"model_family": "Gemini 3.8 Flash", "release_date": "2026-09-02", "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/3-8-flash-and-3-8-flash-cyber/"},
+    {"model_family": "Claude Fable 5.1", "release_date": "2026-09-01", "url": "https://www.anthropic.com/news"},
+    {"model_family": "DeepSeek V4.1 Flash", "release_date": "2026-09-10", "url": "https://api-docs.deepseek.com/updates/"},
+    {"model_family": "Qwen3.8 Omni Flash", "release_date": "2026-09-20", "url": "https://www.alibabacloud.com/blog/qwen3-8-omni-flash-omni-senses--agentic-delivery-_603580"},
+    {"model_family": "GLM-5.3-Flash", "release_date": "2026-09-22", "url": "https://autoclaw.z.ai/blog/model/glm-5.3-flash/"},
+    {"model_family": "Hy4 Preview", "release_date": "2026-08-28", "url": "https://www.tencent.com/tencent-releases-and-open-sources-tencent-hy4-preview/"},
+    {"model_family": "Muse Spark 1.3", "release_date": "2026-09-02", "url": "https://research.meta.ai/blog/introducing-muse-spark-1-3"},
+    {"model_family": "Qwen3.8 Max", "release_date": "2026-08-03", "url": "https://www.alibabacloud.com/en/press-room/alibaba-unveils-qwen3-8-max?_p_lc=1"}
+  ],
+  "method": "Official upstream release sources were checked before route selection; InferHub catalog timestamps were not treated as release dates."
+}

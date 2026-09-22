@@ -1,0 +1,32 @@
+{
+  "live_check_date": "2026-09-22",
+  "authenticated_model_count": 251,
+  "local_snapshot_model_count": 247,
+  "new_ids_vs_local_snapshot": [
+    "cp/cline-pass/deepseek-v4-pro",
+    "cp/cline-pass/kimi-k3",
+    "cp/cline-pass/mimo-v2.5-pro",
+    "cp/cline-pass/qwen3.7-plus"
+  ],
+  "excluded": {
+    "chatgpt_or_codex": true,
+    "zero_active_provider_rail": "mimo",
+    "local_qwen4b": true
+  },
+  "arms": [
+    {"arm_id": "ag_gemini38", "model": "ag/gemini-3.8-flash-high", "minimum_input_ask": 0.00075, "minimum_output_ask": 0.00375, "selection": "cheapest_and_latest"},
+    {"arm_id": "cc_haiku45", "model": "cc/claude-haiku-4-5", "minimum_input_ask": 0.1, "minimum_output_ask": 0.5, "selection": "cheapest"},
+    {"arm_id": "cc_fable51", "model": "cc/claude-fable-5-1", "minimum_input_ask": 0.97, "minimum_output_ask": 4.85, "selection": "latest_verified"},
+    {"arm_id": "cp_glm53_flash", "model": "cp/zai/glm-5.3-flash", "minimum_input_ask": 0.0072, "minimum_output_ask": 0.024, "selection": "cheapest"},
+    {"arm_id": "cp_qwen38_max", "model": "cp/cline-pass/qwen3.8-max", "minimum_input_ask": 0.28, "minimum_output_ask": 0.84, "selection": "latest_available_verified"},
+    {"arm_id": "cb_deepseek_v41_flash", "model": "cb/deepseek-v4.1-flash", "minimum_input_ask": 0.00015, "minimum_output_ask": 0.0006, "selection": "cheapest"},
+    {"arm_id": "cb_hy4", "model": "cb/hy4-preview", "minimum_input_ask": 0.02085, "minimum_output_ask": 0.062525, "selection": "latest_verified"},
+    {"arm_id": "cbcn_deepseek_v41_flash", "model": "cbcn/deepseek-v4.1-flash", "minimum_input_ask": 0.00225, "minimum_output_ask": 0.009, "selection": "cheapest"},
+    {"arm_id": "cbcn_hy4", "model": "cbcn/hy4-preview", "minimum_input_ask": 0.01668, "minimum_output_ask": 0.05002, "selection": "latest_verified"},
+    {"arm_id": "cmc_muse13_contributor", "model": "cmc/meta/muse-spark-1.3-contributor", "minimum_input_ask": 0.0047, "minimum_output_ask": 0.0094, "selection": "cheapest_and_latest"},
+    {"arm_id": "ocg_mimo25", "model": "ocg/mimo-v2.5", "minimum_input_ask": 0.07, "minimum_output_ask": 0.14, "selection": "cheapest"},
+    {"arm_id": "ocg_qwen38_max", "model": "ocg/qwen3.8-max", "minimum_input_ask": 1.0, "minimum_output_ask": 3.0, "selection": "latest_available_verified"},
+    {"arm_id": "ali_qwen38_omni_flash", "model": "ali/qwen3.8-omni-flash", "minimum_input_ask": 0.00015, "minimum_output_ask": 0.00047, "selection": "cheapest_and_latest"},
+    {"arm_id": "zai_glm53_flash", "model": "zai/glm-5.3-flash", "minimum_input_ask": 0.00015, "minimum_output_ask": 0.0005, "selection": "cheapest_and_latest"}
+  ]
+}

@@ -1,0 +1,45 @@
+id: EXP-20260922-023-inferhub-wave
+status: preregistered
+hypothesis: Cheapest and latest verified releases on each active non-ChatGPT InferHub rail form a measurable cost-quality frontier with route-specific reliability behavior.
+created_at: 2026-09-22
+code_commit: pending-code-freeze
+seed: 20260922
+context_limit: 4096
+dataset:
+  name: independent Eval Lab objective pool copied from EXP-015
+  version: EXP-20260921-015 exact source freeze
+  fingerprint: b7edd61269f0f7757e734bc7e3f665ac2bcd6d908a1e56f73f0b0291d55b64d8
+  blind_record_ids_fingerprint: 409428fc71b447d0114dd7a1929cbed34269a4318ef249c108582b70069d8d61
+  count: 1408
+  split_policy: source-problem disjoint public selection and blind holdout; blind is primary
+judge:
+  provider: inferhub
+  model: provider-qualified route per arm
+  adapter_version: inferhub-openai-sse-v1
+  prompt_version: eval-lab-system-one-v1
+rubric:
+  version: eval-lab-system-one-0.1.0
+gold:
+  provenance_policy: answer_key or deterministic_verifier from frozen source pool; gold is used offline only
+calibration:
+  method: none
+  split: none
+metrics:
+  - accuracy
+  - balanced_accuracy
+  - macro_f1
+  - wilson_95_accuracy_interval
+  - resolved_coverage
+  - unresolved_rate
+  - latency_p50
+  - latency_p95
+  - native_probability_availability
+  - provider_status_counts
+artifacts:
+  - README.md
+  - PLAN.md
+  - experiment.yaml
+  - live-catalog-selection.json
+  - release-provenance.json
+  - runs/
+notes: EXP-014 through EXP-022 remain immutable. The Xiaomi MiMo rail is documented but excluded from execution because active provider count was zero. ChatGPT/Codex model IDs are excluded by preregistration.
