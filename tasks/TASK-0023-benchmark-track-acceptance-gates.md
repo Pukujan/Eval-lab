@@ -5,6 +5,11 @@
 Planning checkpoint. No provider calls, benchmark downloads, benchmark
 executions, or experiment mutations are authorized by this task.
 
+## Goal
+
+Define and freeze the acceptance gates required before any of the six proposed
+benchmark tracks can proceed to adapter implementation or final execution.
+
 ## Objective
 
 Define acceptance criteria for six independent benchmark tracks so that each
@@ -287,6 +292,24 @@ provenance tier. Publish checksums and preprocessing/rebuild instructions.
 Report expert adjudication, open-ended explanations, and judge-dependent
 scores in a visibly separate table with their uncertainty and limitations.
 
+## Acceptance criteria
+
+- Each track has separate feasibility, adapter, preregistration, execution,
+  and audit gates.
+- Each gate records gold provenance, verifier strength, environment
+  requirements, and reproducibility obligations.
+- Deterministic, answer-key, adjudicated, and weak/model-supervised outcomes
+  remain visibly separate.
+- This planning task changes only this task file and authorizes no provider,
+  benchmark, or experiment execution.
+
+## Handoff
+
+The next implementation task must choose one track, pass its feasibility gate,
+and create its adapter and preregistration artifacts as a new experiment. It
+must resolve exact revisions, access terms, samples, environment, verifier,
+split, and failure policy before final labels are collected.
+
 ## Planned deliverables and boundaries
 
 This planning task changes only this task file. Future implementation tasks
@@ -299,7 +322,7 @@ experiment manifest, smoke/execution outputs, a verifier audit, a report, and
 checksums/rebuild instructions. Track status is not complete until all five
 track-specific gates are satisfied.
 
-## Validation and checkpoint record
+## Checkpoint log
 
 ### Completed work
 

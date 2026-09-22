@@ -13,6 +13,13 @@ roadmap is `docs/BENCHMARK_EXPANSION_ROADMAP.md`; its task record is
 canonical research/artifact layer and treats Inspect AI as an optional harness
 adapter. No provider calls or benchmark executions were performed for TASK-0020.
 
+TASK-0021 through TASK-0023 now record the durable implementation queue:
+`tasks/TASK-0021-benchmark-roadmap-decomposition.md` defines the dependency
+graph, `tasks/TASK-0022-humaneval-adapter-design.md` specifies the first
+HumanEval track, and `tasks/TASK-0023-benchmark-track-acceptance-gates.md`
+defines admission gates for the remaining benchmark families. These are
+planning checkpoints only; no benchmark data or provider outputs were added.
+
 Luna and Sol are excluded from the primary comparison under the orchestrator's
 vendor-independent policy. The included arms are direct xAI Grok Build, Jev
 through the Jev-only OpenRouter route, YOLO-Auto Qwen Flash, and local Qwen 4B.
@@ -54,10 +61,11 @@ TASK-0009 and TASK-0010 selective escalation/research release are complete. TASK
 
 ## Next task
 
-Create a new task for the HumanEval adapter and preregistration. Freeze the
-dataset revision, executable-test policy, split/fingerprint, typed judge packet,
-calibration split, and report schema before final benchmark runs. Do not modify
-or overwrite EXP-014 through EXP-019.
+The next executable task is TASK-0022's HumanEval feasibility/source audit and
+preregistration, followed by its adapter/verifier implementation tasks. Freeze
+the dataset revision, executable-test policy, split/fingerprint, typed judge
+packet, calibration split, and report schema before final benchmark runs. Do not
+modify or overwrite EXP-014 through EXP-019.
 
 ## Queued foundation
 
