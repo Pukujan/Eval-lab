@@ -29,10 +29,31 @@ instructions. No folders or environments were deleted or moved. See
 
 Validation: Eval Lab's contract, Ruff, workspace-policy guard, and pytest gates
 pass (136 tests).
+The initial policy checkpoint PR #37 passed both required Python checks and
+merged as `6dd2674` before this follow-up.
 
-Next atomic action: commit/push this checkpoint in the existing checkout; open
-the required PR, wait for CI, and merge. Continue owner-led reconciliation
-after the policy checkpoint is merged.
+### Follow-up after PR #37 — 2026-09-23
+
+PR #37 passed both required Python checks and merged as `6dd2674`; the
+canonical Eval Lab checkout is clean on `main`. The upstream PCM worktree
+opt-in is now removed by PRs #22 and #23. The 74 HOS run-local empty
+`node_modules` shells and its matching empty root shell were removed after
+verifying their contents and lack of run references; all run records and
+results remain. No populated install was removed.
+
+The broader physical cleanup remains incomplete. Project Assurance's two
+populated installs serve different packages and need one-manager/root-lock
+consolidation plus runtime verification. Stupidly Simple Cortex's Python 3.11
+and 3.12 environments have different manifests/packages and its checkout is
+extensively dirty; no changes were made there. HOS's local AGENTS still allows
+a D: worktree; HOS and Hades owners were asked to checkpoint before local
+policy/path reconciliation. The root scan still has an explicit 6,000-folder
+dependency cap and cannot certify a complete inventory.
+
+Next atomic action: update this TASK-0050 record with the exact follow-up,
+commit/push the checkpoint from the existing canonical checkout, open its PR,
+wait for both required Python CI checks, and merge. Continue only with owner
+checkpointed and technically verified consolidations.
 
 ## 2026-09-23 — TASK-0049 single-workspace policy and CI enforcement
 
