@@ -46,8 +46,9 @@ calls.
 
 ## Commands and evidence
 
-- Eval Lab `main` fast-forwarded to `b5c0ee7`, the merge of PR #33, which
-  includes the PR #32 figure-release base.
+- Eval Lab `main` was synchronized through PR #33, with the later PR #34
+  documentation correction merged afterward. The stable release identifiers
+  are the PR lineage, not a transient `HEAD` hash.
 - Design Bakery `main` fast-forwarded to `62dda38`, the merge of PR #39.
 - Eval Lab PR #32 passed both Python 3.11 and 3.12 CI jobs.
 - Design Bakery production page

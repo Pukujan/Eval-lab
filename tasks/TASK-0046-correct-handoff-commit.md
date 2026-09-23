@@ -2,17 +2,21 @@
 
 ## Status
 
-Complete. The handoff checkpoint now names the actual merged Eval Lab `main`
-commit after the audit PR was merged.
+Complete. The handoff checkpoint was corrected after the audit PR merged; its
+historical commit detail is retained as evidence, while the current handoff
+now uses stable PR lineage.
 
 ## Objective
 
-Remove the stale pre-merge commit reference from the durable handoff records.
+Prevent the durable handoff from becoming stale every time its documentation
+PR itself advances `main`.
 
 ## Scope
 
-- correct the Eval Lab commit reference in `checkpoints/CURRENT.md`;
-- correct the matching evidence line in TASK-0045.
+- replace the transient Eval Lab commit reference in `checkpoints/CURRENT.md`
+  with stable merged PR identifiers;
+- clarify the historical evidence line in TASK-0045;
+- clarify the historical nature of this task's commit evidence.
 
 ## Files expected to change
 
@@ -26,14 +30,15 @@ Ensure a new session sees the exact current `main` commit without ambiguity.
 
 ## Acceptance criteria
 
-- The checkpoint names `b5c0ee7` as the current Eval Lab `main` commit.
-- TASK-0045 identifies PR #33 as the merge containing the audit checkpoint.
+- The checkpoint names the merged PR lineage and does not claim a historical
+  hash is still the current `main` tip.
+- TASK-0045 identifies PR #33 and the subsequent correction PRs.
 - No experiment artifacts or provider state are changed.
 
 ## Commands and evidence
 
-- `git log -1 --oneline --decorate` on the normal checkout reports
-  `b5c0ee7` for both local `main` and `origin/main`.
+- The normal checkout and `origin/main` were synchronized when this correction
+  was made; subsequent commits are expected and do not invalidate the handoff.
 - The preceding handoff PR #33 passed all Python 3.11 and 3.12 CI jobs.
 
 ## Unresolved questions
@@ -42,8 +47,8 @@ Ensure a new session sees the exact current `main` commit without ambiguity.
 
 ## Checkpoint log
 
-Corrected the commit reference after PR #33 merged; no scientific or runtime
-state changed.
+Corrected the transient commit reference after PR #33 merged; no scientific
+or runtime state changed.
 
 ## Handoff
 
