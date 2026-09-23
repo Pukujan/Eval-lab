@@ -1,5 +1,60 @@
 # Current Repository Checkpoint
 
+## 2026-09-23 — TASK-0050 temporary-worktree lifecycle correction
+
+The user clarified that temporary Git linked worktrees are allowed when an
+active task needs real isolation or parallel work, but only beneath the
+repository's canonical root at `.worktrees\<task-id>`. They are temporary task
+state, not additional canonical project folders. After the checkpoint is pushed
+and the required PR/CI/merge gate passes, inspect and preserve unique or ignored
+state, then remove the clean completed worktree with a normal Git operation.
+No sibling clones, copied checkouts, worktree-local `.venv`, or
+`node_modules` installs are allowed. The earlier blanket worktree ban is
+superseded.
+
+Eval Lab is working in its sole canonical folder on branch
+`task/TASK-0050-temporary-worktree-lifecycle`. Its repository instructions now
+allow only direct children of `D:\claude\eval-lab\.worktrees`; the workspace
+guard and tests reject outside, nested, duplicate, missing, or wrongly named
+worktree paths and continue enforcing one canonical dependency environment.
+The D: root policy and registry were updated consistently. SQLFluff's nested
+gitlink is registered as a distinct repo for environment accounting; its parent lacks a
+`.gitmodules` mapping and remains owner-blocked.
+
+Initial validation passed: PowerShell parser, Ruff, repo contract, Eval Lab
+workspace guard, and pytest (139 passed). A later independent review found that
+the guard did not validate the task-ID segment in worktree paths. That is fixed;
+targeted Ruff/tests (12 tests) and the canonical-root guard pass. Full gates now
+pass: repo contract, `ruff check .`, full pytest (142 passed), canonical-root
+guard, and `git diff --check`. The read-only D: scan inspected 5,121
+repository-scan folders and found 48 Git roots against 33 registry paths. Its
+dependency scan inspected 31,168 folders (below the 50,000 limit, depth 24),
+finding the Eval Lab `.venv`, Cortex `venv`, SQLFluff `.venv`, and `node_modules`
+in Inference Recommendation Engine, InferHub, Design Bakery, and two Project
+Assurance Modules paths. No dependency installation was removed. The overall
+guard reported 65 violations, including outside-root worktrees, unregistered
+roots, repository-scan depth limits, two access-denied paths, and Project
+Assurance's two installs. This is not a clean or complete D: inventory.
+
+Commit `7cd02fa` is pushed on `task/TASK-0050-temporary-worktree-lifecycle`,
+and PR #39 is open. The initial Python 3.11/3.12 CI runs both failed at the
+changed-file formatter check due to two long test assertions; lint and policy
+checks passed, while later steps were skipped. Those assertions are now
+formatted locally; both changed Python files now pass Ruff formatting and lint,
+and the focused workspace suite passes (12 tests). The formatting correction
+must be pushed and both full CI jobs must pass before merge.
+
+HOS and HADES owners have been asked to checkpoint active work and align their
+project instructions with the temporary-worktree lifecycle. HOS still has
+uncommitted Issue 23/user state. HADES has a large staged checkpoint and two
+in-root worktrees; all remain preserved. Project Assurance and Cortex/SQLFluff
+environment or metadata changes await their owners' checkpoint and runtime
+requirements.
+
+Next atomic action: finish this Eval Lab policy/guard checkpoint through its
+required PR/CI/merge gate, then continue the owner-led reconciliations and rerun
+the D: inventory after resolving depth and access findings.
+
 ## 2026-09-23 — TASK-0050 D:\claude single-workspace follow-up
 
 TASK-0049's single-checkout implementation and required CI checks merged as PR
