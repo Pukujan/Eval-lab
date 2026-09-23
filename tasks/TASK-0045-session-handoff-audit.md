@@ -46,7 +46,8 @@ calls.
 
 ## Commands and evidence
 
-- Eval Lab `main` fast-forwarded to `146750d`, the merge of PR #32.
+- Eval Lab `main` fast-forwarded to `b5c0ee7`, the merge of PR #33, which
+  includes the PR #32 figure-release base.
 - Design Bakery `main` fast-forwarded to `62dda38`, the merge of PR #39.
 - Eval Lab PR #32 passed both Python 3.11 and 3.12 CI jobs.
 - Design Bakery production page
