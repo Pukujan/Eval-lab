@@ -8,7 +8,8 @@ environment per project. `D:\claude\PROJECT_ROOTS.md` and the read-only
 `D:\claude\check-canonical-workspaces.ps1` guard are updated. Physical
 consolidation is not complete: current same-project paths still contain active,
 unique, ignored, inaccessible, or malformed state. TASK-0049 merged as PR #36
-at `c80207b`; this task preserves TASK-0048 and TASK-0049 history.
+at `c80207b`; this task's root-policy record merged as PR #37 at `6dd2674`.
+This follow-up preserves TASK-0048 and TASK-0049 history.
 
 ## Goal
 
@@ -140,9 +141,37 @@ Update this list before editing any additional file.
   headings: `python scripts/check_repo_contract.py`, `ruff check .`, and
   `python -m pytest -q` (136 passed). The Eval Lab workspace guard also passes
   for `D:\claude\eval-lab`.
+- 2026-09-23: PR #37 passed both required Python 3.11/3.12 checks, merged at
+  `6dd26748613e619b71084c72d1ed308aecb8ce44`, and the existing canonical
+  checkout fast-forwarded to clean `main`.
+- 2026-09-23: Verified and removed 74 empty HOS controller-run
+  `node_modules` placeholders plus the matching root placeholder (75 total).
+  Each contained only a generated lock stub and five empty folders; no run
+  references were found. Controller-run records, results, and parent manifests
+  remain untouched. No populated dependency install was removed.
+- 2026-09-23: PCM-0013 removed the upstream worktree opt-in. PR #22 merged at
+  `368273a`; its append-only checkpoint PR #23 merged at `057f3d4`. New
+  projects have no workspace-mode choice; legacy opt-in configs are rejected
+  without automatic edits. Required PCM tests and CI passed.
+- 2026-09-23: Project Assurance Modules still has two populated installs with
+  different packages (Playwright 1.61.1 at root, OpenCode plugin 1.18.15 under
+  `.opencode`) and inconsistent pnpm/npm lock metadata. It is unsafe to remove
+  either before a one-manager, one-root-lock migration and OpenCode runtime
+  verification.
+- 2026-09-23: Stupidly Simple Cortex still has separate Python 3.11 and 3.12
+  environments with distinct packages and manifests. Its canonical checkout
+  contains extensive pre-existing dirty and untracked user state; no files or
+  environments were changed. A single-root uv migration requires a declared
+  SQLFluff workflow and Python target before it is safe.
+- 2026-09-23: HOS still has a project-level D:-worktree exception; its current
+  Issue 23 edits were preserved and the owner task was asked to checkpoint
+  before updating `AGENTS.md`. Hades' existing task was likewise asked to
+  checkpoint before releasing its active paths. No acknowledgement or safe
+  release is recorded yet.
 
 ## Handoff
 
-Commit and push this checkpoint from the existing canonical checkout; open the
-required PR, wait for CI, and merge. Then continue the owner-led reconciliation
-of active paths and finish auditing the HOS controller-run dependency folders.
+Commit and push this follow-up from the existing canonical checkout; open the
+required PR, wait for CI, and merge. Then continue owner-led cleanup of Hades,
+HOS, and other active paths, and resolve Project Assurance/SQLFluff into one
+declared environment only after their owners' runtime requirements are known.
