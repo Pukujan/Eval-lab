@@ -1,0 +1,29 @@
+{
+  "schema_version": "content-generation.brand-language.v1",
+  "name": "Eval Lab",
+  "personality": ["clear", "careful", "human", "evidence-led", "quietly practical"],
+  "audience_feeling": "The reader should feel that a difficult evaluation problem has become understandable and inspectable, not that they are being sold a miracle.",
+  "promise": "Make routine judgments cheaper, make uncertainty visible, and keep a trace of why a decision was made.",
+  "preferred_terms": {
+    "trust": "what the evidence supports",
+    "uncertainty": "the cases that should move onward",
+    "reproducibility": "another agent can rerun or inspect the result",
+    "technical_detail": "explain it after the reader understands why it matters"
+  },
+  "avoid": [
+    "AI-powered solution",
+    "robust and scalable platform",
+    "seamlessly enables",
+    "cutting-edge",
+    "guarantees reliable judgments",
+    "large language models understand quality"
+  ],
+  "good_examples": [
+    "A polished answer can still contain one wrong assumption. Eval Lab makes that failure measurable.",
+    "Easy cases can stay local; ambiguous cases can move to Jev, a stronger judge, or a human."
+  ],
+  "bad_examples": [
+    "Eval Lab is a robust, cutting-edge platform that seamlessly enables trustworthy AI evaluation.",
+    "Our revolutionary system guarantees accurate and reliable decisions."
+  ]
+}

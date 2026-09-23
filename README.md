@@ -285,6 +285,10 @@ Keep credentials in local environment variables or ignored `.env` files. **Never
 
 Because a judge that **knows when it is likely to be wrong** can be more useful operationally than a judge with a similar average accuracy but no reliable sense of uncertainty.
 
+## Content and visual contract
+
+This README follows the pinned [`content-generation-modules` v0.1.2](https://github.com/Pukujan/content-generation-modules/releases/tag/v0.1.2) adapter in [`.content-system/`](.content-system/). **Narrative raster images carry a short title and subtitle** so each visual can introduce one idea without replacing the explanation; SVG research icons remain text-free. The responsive review and prompt record are in [`docs/content-system-preview.md`](docs/content-system-preview.md) and [`docs/content-system-preview.html`](docs/content-system-preview.html).
+
 ## Contributing
 
 Please read [`AGENTS.md`](AGENTS.md) and [`docs/HANDOFF_PROTOCOL.md`](docs/HANDOFF_PROTOCOL.md) before starting work. Use **one task file, one branch, and one worktree**. Record the exact files changed, commands run, validation results, decisions, unresolved questions, and next atomic action before handing work off.

@@ -14,6 +14,7 @@ Before doing work, read only:
    - system design: `docs/SDD.md`
    - testing: `docs/TDD.md`
    - experiment rules: `docs/EXPERIMENT_PROTOCOL.md`
+5. for README, marketing, UX writing, image-generation, or HTML-demo work, read the relevant `.content-system/` adapter files and the pinned helper version before producing output.
 
 Do not scan unrelated historical files or experiments unless the task explicitly requires them.
 
