@@ -123,7 +123,9 @@ class QwenJudge:
         resolved_revision = getattr(getattr(model, "config", None), "_commit_hash", None)
         self.runtime_revision = str(resolved_revision or config.revision)
         self.device = str(getattr(model, "device", config.device or "cpu"))
-        self.dtype = str(getattr(getattr(model, "config", None), "torch_dtype", config.dtype or "float32"))
+        self.dtype = str(
+            getattr(getattr(model, "config", None), "torch_dtype", config.dtype or "float32")
+        )
 
     @staticmethod
     def _load_torch() -> Any:
@@ -147,7 +149,9 @@ class QwenJudge:
         dtype = getattr(torch, dtype_name)
         if device.startswith("cuda") and config.gpu_memory_fraction is not None:
             memory_device = device if ":" in device else f"{device}:0"
-            torch.cuda.set_per_process_memory_fraction(config.gpu_memory_fraction, device=memory_device)
+            torch.cuda.set_per_process_memory_fraction(
+                config.gpu_memory_fraction, device=memory_device
+            )
         tokenizer = AutoTokenizer.from_pretrained(config.model_id, revision=config.revision)
         load_kwargs: dict[str, Any] = {
             "revision": config.revision,
@@ -196,7 +200,10 @@ class QwenJudge:
 
         prefix_text = prompt + "\nVerdict:"
         prefix_ids = _token_ids(self.tokenizer, prefix_text)
-        sequences = [prefix_ids + _token_ids(self.tokenizer, " " + label, add_special_tokens=False) for label in labels]
+        sequences = [
+            prefix_ids + _token_ids(self.tokenizer, " " + label, add_special_tokens=False)
+            for label in labels
+        ]
         if any(len(sequence) > self.config.context_cap for sequence in sequences):
             raise ContextLimitError(
                 f"record requires {max(len(sequence) for sequence in sequences)} tokens, "
@@ -216,7 +223,9 @@ class QwenJudge:
         return {
             label: sum(
                 float(log_probabilities[row, position - 1, token_id].item())
-                for position, token_id in enumerate(sequence[continuation_start:], start=continuation_start)
+                for position, token_id in enumerate(
+                    sequence[continuation_start:], start=continuation_start
+                )
             )
             for row, (label, sequence) in enumerate(zip(labels, sequences, strict=True))
         }
@@ -233,7 +242,7 @@ class QwenJudge:
         labels = legal_labels(record, self.config)
         scores = self._score_labels(prompt, labels)
         probabilities = softmax_scores(scores)
-        label = max(probabilities, key=probabilities.get)
+        label = max(probabilities, key=lambda candidate: probabilities[candidate])
         latency_ms = (time.perf_counter() - started) * 1000.0
         return JudgePrediction(
             record_id=record.record_id,
@@ -257,7 +266,9 @@ class QwenJudge:
             },
         )
 
-    def predict(self, records: list[JudgeRecord] | tuple[JudgeRecord, ...]) -> list[JudgePrediction]:
+    def predict(
+        self, records: list[JudgeRecord] | tuple[JudgeRecord, ...]
+    ) -> list[JudgePrediction]:
         """Predict in input order, preserving record IDs and explicit runtime errors."""
 
         return [self.predict_one(record) for record in records]

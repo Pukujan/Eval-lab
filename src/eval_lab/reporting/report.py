@@ -19,10 +19,14 @@ def build_report(
     """Build a JSON-serializable report while preserving provider failures."""
 
     report = evaluate_prediction_set(records, predictions, domain_by_record_id=domain_by_record_id)
+    aggregate = report.get("aggregate")
+    if not isinstance(aggregate, Mapping):
+        raise TypeError("prediction report is missing aggregate metrics")
+    probability_metrics_available = bool(aggregate.get("probability_metrics_available"))
     report["probability_metrics"] = {
-        "available": bool(report["aggregate"]["probability_metrics_available"]),
+        "available": probability_metrics_available,
         "unavailable_reason": None
-        if report["aggregate"]["probability_metrics_available"]
+        if probability_metrics_available
         else "one or more successful predictions did not provide probabilities",
     }
     return report
@@ -48,7 +52,9 @@ def render_report_markdown(report: dict[str, object]) -> str:
         lines.extend(f"| {name} | {value} |" for name, value in metrics.items())
     probability = report.get("probability_metrics", {})
     if isinstance(probability, dict) and not probability.get("available", False):
-        lines.extend(["", f"Probability metrics unavailable: {probability.get('unavailable_reason')}."])
+        lines.extend(
+            ["", f"Probability metrics unavailable: {probability.get('unavailable_reason')}."]
+        )
     return "\n".join(lines) + "\n"
 
 
@@ -60,7 +66,9 @@ def write_report(report: dict[str, object], path: str | Path) -> Path:
     if destination.suffix.lower() in {".md", ".markdown"}:
         destination.write_text(render_report_markdown(report), encoding="utf-8")
     else:
-        destination.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        destination.write_text(
+            json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
     return destination
 
 

@@ -19,6 +19,7 @@ def _number(value: Any) -> Decimal:
 def verify_arithmetic(candidate: str, expected: Any) -> VerifierResult:
     """Verify a numeric candidate against an answer-key value."""
 
+    expected_number: Decimal | str
     try:
         candidate_number = _number(candidate)
         expected_number = _number(expected)

@@ -27,6 +27,7 @@ local = [
 dev = [
   "pytest>=8.3",
   "ruff>=0.6",
+  "mypy>=1.15",
   "rdflib>=7.0",
   "pyshacl>=0.26"
 ]
@@ -36,3 +37,11 @@ where = ["src"]
 
 [tool.ruff]
 line-length = 100
+
+[tool.mypy]
+python_version = "3.12"
+files = ["src/eval_lab"]
+check_untyped_defs = true
+ignore_missing_imports = true
+follow_imports = "skip"
+warn_return_any = true

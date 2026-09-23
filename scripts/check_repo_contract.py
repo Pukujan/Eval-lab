@@ -4,6 +4,11 @@ import re
 import sys
 from pathlib import Path
 
+try:
+    from .check_workspace_policy import workspace_violations
+except ImportError:  # Running this file directly from the scripts directory.
+    from check_workspace_policy import workspace_violations
+
 ROOT = Path(__file__).resolve().parents[1]
 
 REQUIRED_FILES = [
@@ -20,7 +25,9 @@ REQUIRED_FILES = [
     "docs/VALIDATION_MATRIX.md",
     "docs/LUNA_PROGRAM_HANDOFF.md",
     "docs/ACCESS_MODEL_MATRIX.md",
+    "docs/WORKSPACE_POLICY.md",
     "checkpoints/CURRENT.md",
+    "uv.lock",
     "tasks/README.md",
     "tasks/TASK-0001-bootstrap-lab.md",
     "tasks/TASK-0002-canonical-schema-fixtures.md",
@@ -115,7 +122,9 @@ def check_program_checkpoint(failures: list[str]) -> None:
         return
     text = current.read_text(encoding="utf-8")
     if "TASK-0010" not in text:
-        error("CURRENT checkpoint must identify TASK-0010 as the active/next research gate", failures)
+        error(
+            "CURRENT checkpoint must identify TASK-0010 as the active/next research gate", failures
+        )
 
     program = ROOT / "docs" / "PROGRAM_PLAN.md"
     if program.is_file():
@@ -133,6 +142,11 @@ def check_program_checkpoint(failures: list[str]) -> None:
         ):
             if task_id not in program_text:
                 error(f"PROGRAM_PLAN missing {task_id}", failures)
+
+
+def check_workspace(failures: list[str]) -> None:
+    for violation in workspace_violations(ROOT, canonical_root=ROOT):
+        error(violation, failures)
 
 
 def check_experiments(failures: list[str]) -> None:
@@ -169,6 +183,7 @@ def main() -> int:
     check_tasks(failures)
     check_program_checkpoint(failures)
     check_experiments(failures)
+    check_workspace(failures)
 
     if failures:
         print("Repository contract FAILED:")

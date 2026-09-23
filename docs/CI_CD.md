@@ -1,4 +1,4 @@
-# CI/CD and Change Discipline
+# CI/CD and Checkpoint Discipline
 
 ## Philosophy
 
@@ -6,14 +6,19 @@ This repository is a research system. CI exists to prevent invalid experiments a
 
 ## Every push
 
-GitHub Actions should run:
+The `CI` workflow runs on pushes to `main` and `task/**`, pull requests into
+`main`, and manual dispatch. It uses the committed `uv.lock` with locked
+installs and tests Python 3.11 and 3.12. Each Python job runs:
 
-1. repository contract validation
-2. Ruff lint
-3. unit tests
-4. experiment-manifest checks
+- repository and single-workspace policy checks
+- Ruff lint across the repository
+- Ruff format validation for Python files changed by the checkpoint/PR
+- mypy over `src/eval_lab`
+- the unit-test suite
+- a package build
 
-No paid API calls run automatically on ordinary pushes.
+No paid API calls run automatically on ordinary pushes. CI actions are pinned
+to immutable commit SHAs, and the workflow has read-only repository permissions.
 
 ## Every pull request
 
@@ -32,17 +37,25 @@ A PR modifying evaluation logic must add or update tests.
 
 A PR modifying an experiment after completion is prohibited; create a new experiment.
 
-## Main branch requirements
+## Required checkpoint merge gate
 
-Desired repository settings:
+Every coherent, validated checkpoint must be committed and pushed to its task
+branch, opened or added to a pull request into `main`, and merged only after
+all required CI jobs pass. A task is not complete, and the canonical checkout
+must not switch to another task, while its completed checkpoint remains only
+local or its required PR is unmerged. Pushes make intermediate work durable;
+merges promote reviewed checkpoints to the canonical branch.
 
-- default branch: `main`
-- merge by PR
-- CI required before merge
-- no direct force-pushes to `main`
-- stale task branches may be deleted after merge
+GitHub branch protection on `main` enforces pull requests, the Python 3.11 and
+3.12 CI status checks, and up-to-date branches. Direct pushes, force-pushes,
+branch deletion, and administrator bypass are disabled. A solo-maintainer
+approval count of zero is intentional: the PR and required CI remain mandatory
+without creating an impossible self-review requirement. Use squash merge for
+one coherent commit per checkpoint; delete remote task branches only after
+their useful review/handoff history is preserved.
 
-If branch protection is not configured yet, agents still follow these rules manually.
+Configure/verify the protection rule as part of repository setup; documenting a
+merge requirement is not an adequate substitute for an enforced GitHub rule.
 
 ## CI secrets
 

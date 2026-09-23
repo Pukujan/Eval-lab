@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import hashlib
 import json
-from collections.abc import Mapping, Sequence
-from typing import Any
+from collections.abc import Callable, Mapping, Sequence
+from typing import Any, cast
 
 from pydantic import BaseModel, ConfigDict, model_validator
 
@@ -20,6 +20,7 @@ from eval_lab.schema import (
     Split,
     swap_pairwise_record,
 )
+from eval_lab.verifiers import VerifierResult
 from eval_lab.verifiers.arithmetic import verify_arithmetic
 from eval_lab.verifiers.code_output import verify_code_output
 from eval_lab.verifiers.multiple_choice import verify_multiple_choice
@@ -131,13 +132,15 @@ def _source_specs() -> list[dict[str, Any]]:
         ("mixed", "What is 4 * 5 + 3?", 23, "23", "24", "0"),
         ("decimal", "What is 2.5 + 1.25?", 3.75, "3.75", "3.65", "0"),
     ]
-    for index, (name, prompt, expected, correct, subtle, obvious) in enumerate(arithmetic, 1):
+    for index, (name, prompt, expected_answer, correct, subtle, obvious) in enumerate(
+        arithmetic, 1
+    ):
         specs.append(
             {
                 "domain": "arithmetic",
                 "source_problem_id": f"synthetic-arithmetic-{index:02d}",
                 "prompt": prompt,
-                "reference_answer": expected,
+                "reference_answer": expected_answer,
                 "source_metadata": {"operation": name, "verifier": "arithmetic-v1"},
                 "correct": correct,
                 "subtle": subtle,
@@ -147,12 +150,32 @@ def _source_specs() -> list[dict[str, Any]]:
         )
 
     multiple_choice = [
-        ("capital", "Which city is the capital of France?", "B", ["A) Rome", "B) Paris", "C) Madrid", "D) Berlin"]),
-        ("planet", "Which planet is known for its rings?", "C", ["A) Mars", "B) Venus", "C) Saturn", "D) Mercury"]),
+        (
+            "capital",
+            "Which city is the capital of France?",
+            "B",
+            ["A) Rome", "B) Paris", "C) Madrid", "D) Berlin"],
+        ),
+        (
+            "planet",
+            "Which planet is known for its rings?",
+            "C",
+            ["A) Mars", "B) Venus", "C) Saturn", "D) Mercury"],
+        ),
         ("square", "Which number is a perfect square?", "A", ["A) 49", "B) 50", "C) 51", "D) 52"]),
         ("unit", "How many bits are in one byte?", "D", ["A) 2", "B) 4", "C) 6", "D) 8"]),
-        ("water", "At standard pressure, water freezes at what temperature in Celsius?", "A", ["A) 0", "B) 10", "C) 32", "D) 100"]),
-        ("logic", "Which value is greater than 0.5?", "B", ["A) 0.05", "B) 0.75", "C) 0.5", "D) 0.25"]),
+        (
+            "water",
+            "At standard pressure, water freezes at what temperature in Celsius?",
+            "A",
+            ["A) 0", "B) 10", "C) 32", "D) 100"],
+        ),
+        (
+            "logic",
+            "Which value is greater than 0.5?",
+            "B",
+            ["A) 0.05", "B) 0.75", "C) 0.5", "D) 0.25"],
+        ),
     ]
     for index, (name, prompt, answer, options) in enumerate(multiple_choice, 1):
         wrong = next(letter for letter in "ABCD" if letter != answer)
@@ -172,20 +195,45 @@ def _source_specs() -> list[dict[str, Any]]:
         )
 
     structured = [
-        ("status", {"status": "ready", "count": 3}, '{"status":"ready","count":3}', '{"status":"ready","count":4}'),
-        ("priority", {"priority": "high", "owner": "lab"}, '{"priority":"high","owner":"lab"}', '{"priority":"medium","owner":"lab"}'),
+        (
+            "status",
+            {"status": "ready", "count": 3},
+            '{"status":"ready","count":3}',
+            '{"status":"ready","count":4}',
+        ),
+        (
+            "priority",
+            {"priority": "high", "owner": "lab"},
+            '{"priority":"high","owner":"lab"}',
+            '{"priority":"medium","owner":"lab"}',
+        ),
         ("coordinates", {"x": 2, "y": 5}, '{"x":2,"y":5}', '{"x":2,"y":6}'),
-        ("flags", {"enabled": True, "mode": "safe"}, '{"enabled":true,"mode":"safe"}', '{"enabled":false,"mode":"safe"}'),
-        ("items", {"items": ["a", "b"], "total": 2}, '{"items":["a","b"],"total":2}', '{"items":["a","b"],"total":3}'),
-        ("version", {"version": 2, "stable": True}, '{"version":2,"stable":true}', '{"version":3,"stable":true}'),
+        (
+            "flags",
+            {"enabled": True, "mode": "safe"},
+            '{"enabled":true,"mode":"safe"}',
+            '{"enabled":false,"mode":"safe"}',
+        ),
+        (
+            "items",
+            {"items": ["a", "b"], "total": 2},
+            '{"items":["a","b"],"total":2}',
+            '{"items":["a","b"],"total":3}',
+        ),
+        (
+            "version",
+            {"version": 2, "stable": True},
+            '{"version":2,"stable":true}',
+            '{"version":3,"stable":true}',
+        ),
     ]
-    for index, (name, expected, correct, subtle) in enumerate(structured, 1):
+    for index, (name, expected_payload, correct, subtle) in enumerate(structured, 1):
         specs.append(
             {
                 "domain": "structured",
                 "source_problem_id": f"synthetic-structured-{index:02d}",
                 "prompt": f"Return the requested {name} object as JSON.",
-                "reference_answer": expected,
+                "reference_answer": expected_payload,
                 "source_metadata": {"shape": name, "verifier": "structured-output-v1"},
                 "correct": correct,
                 "subtle": subtle,
@@ -220,14 +268,15 @@ def _source_specs() -> list[dict[str, Any]]:
 
 
 def _gold_for_single(spec: Mapping[str, Any], candidate: str) -> GoldLabel:
-    verifier = spec["verify"]
+    verifier = cast(Callable[[str, Any], VerifierResult], spec["verify"])
     result = verifier(candidate, spec["reference_answer"])
     return result.to_gold_label()
 
 
 def _pairwise_gold(spec: Mapping[str, Any], preferred: str, rejected: str) -> GoldLabel:
-    preferred_result = spec["verify"](preferred, spec["reference_answer"])
-    rejected_result = spec["verify"](rejected, spec["reference_answer"])
+    verifier = cast(Callable[[str, Any], VerifierResult], spec["verify"])
+    preferred_result = verifier(preferred, spec["reference_answer"])
+    rejected_result = verifier(rejected, spec["reference_answer"])
     return GoldLabel(
         label=PairwiseLabel.A.value if preferred == "A" else PairwiseLabel.B.value,
         provenance=GoldProvenance.DETERMINISTIC_VERIFIER,
