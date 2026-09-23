@@ -2,10 +2,11 @@
 
 ## Status
 
-Active — single-checkout policy, workspace guard, locked CI pipeline, and
-full-package mypy gate are implemented. All 37 extra Eval Lab worktree folders
-have been removed after preservation checks. GitHub CI, main-branch
-enforcement, and merge remain.
+Completed — single-checkout policy, workspace guard, locked CI pipeline, and
+full-package mypy gate merged in PR #36 (`c80207b`). Required GitHub CI and
+main-branch enforcement are active. All 37 extra Eval Lab worktree folders
+were removed after preservation checks. Cross-project D-drive reconciliation
+continues in TASK-0050.
 
 ## Incident log
 
@@ -232,8 +233,7 @@ branches, and pushed Git checkpoints.
 
 ## Handoff
 
-This task remains active until required CI passes, `main` protection is
-configured, and the checkpoint is merged. Then finish the requested
-`D:\claude` duplicate consolidation without deleting unique uncommitted state.
-Do not delete or overwrite the TASK-0048 handoff branch or its preserved local
+This task's implementation and CI/branch-protection requirements are complete
+and merged. The outstanding cross-project cleanup is tracked in TASK-0050; do
+not delete or overwrite the TASK-0048 handoff branch or its preserved local
 artifacts.
