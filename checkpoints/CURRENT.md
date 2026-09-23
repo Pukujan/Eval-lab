@@ -36,6 +36,14 @@ guard reported 65 violations, including outside-root worktrees, unregistered
 roots, repository-scan depth limits, two access-denied paths, and Project
 Assurance's two installs. This is not a clean or complete D: inventory.
 
+Commit `7cd02fa` is pushed on `task/TASK-0050-temporary-worktree-lifecycle`,
+and PR #39 is open. The initial Python 3.11/3.12 CI runs both failed at the
+changed-file formatter check due to two long test assertions; lint and policy
+checks passed, while later steps were skipped. Those assertions are now
+formatted locally; both changed Python files now pass Ruff formatting and lint,
+and the focused workspace suite passes (12 tests). The formatting correction
+must be pushed and both full CI jobs must pass before merge.
+
 HOS and HADES owners have been asked to checkpoint active work and align their
 project instructions with the temporary-worktree lifecycle. HOS still has
 uncommitted Issue 23/user state. HADES has a large staged checkpoint and two

@@ -257,6 +257,13 @@ Update this list before editing any additional file.
   and `git diff --check`. No dependency synchronization was needed because
   manifests and lockfiles were unchanged. The D: root scan remains non-clean;
   its violations are documented in the cleanup log.
+- 2026-09-23: Commit `7cd02fa` was pushed and PR #39 opened. The first remote CI
+  run failed both Python-version jobs at `ruff format --check` on two long test
+  assertions; repository contract, workspace policy, and Ruff lint passed.
+  Applied Ruff formatting to both changed Python files; formatter check, lint,
+  and the focused 12-test suite now pass locally. Next atomic action: commit/
+  push the formatting correction, then rerun and require both full CI jobs
+  before merging PR #39.
 
 ## Handoff
 

@@ -38,7 +38,9 @@ def test_worktree_outside_canonical_worktrees_is_rejected(tmp_path: Path) -> Non
         worktrees=[root, extra],
     )
 
-    assert any("direct children of the canonical .worktrees directory" in item for item in violations)
+    assert any(
+        "direct children of the canonical .worktrees directory" in item for item in violations
+    )
 
 
 def test_active_in_root_temporary_worktree_is_allowed(tmp_path: Path) -> None:
@@ -79,7 +81,9 @@ def test_nested_temporary_worktree_location_is_rejected(tmp_path: Path) -> None:
         worktrees=[root, nested],
     )
 
-    assert any("direct children of the canonical .worktrees directory" in item for item in violations)
+    assert any(
+        "direct children of the canonical .worktrees directory" in item for item in violations
+    )
 
 
 def test_missing_registered_worktree_path_is_rejected(tmp_path: Path) -> None:
