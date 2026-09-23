@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import math
 from collections.abc import Mapping, Sequence
-from typing import Any
+from typing import Any, cast
 
 from eval_lab.calibration.artifact import CalibrationArtifact
 from eval_lab.schema import ExecutionStatus, JudgePrediction, JudgeRecord, Split
@@ -27,9 +27,11 @@ def _as_probability_rows(
     first = inputs[0]
     if isinstance(first, JudgeRecord):
         if second is None or not all(isinstance(item, JudgePrediction) for item in second):
-            raise TypeError("canonical calibration requires JudgeRecord and JudgePrediction sequences")
-        records = list(inputs)
-        predictions = list(second)
+            raise TypeError(
+                "canonical calibration requires JudgeRecord and JudgePrediction sequences"
+            )
+        records = list(cast(Sequence[JudgeRecord], inputs))
+        predictions = list(cast(Sequence[JudgePrediction], second))
         if len(records) != len(predictions):
             raise ValueError("records and predictions must have equal lengths")
         by_id = {record.record_id: record for record in records}
@@ -84,7 +86,12 @@ def _validate_rows(
     return list(labels), normalized, classes
 
 
-def _temperature_nll(labels: Sequence[str], rows: Sequence[ProbabilityRow], classes: Sequence[str], temperature: float) -> float:
+def _temperature_nll(
+    labels: Sequence[str],
+    rows: Sequence[ProbabilityRow],
+    classes: Sequence[str],
+    temperature: float,
+) -> float:
     total = 0.0
     for label, row in zip(labels, rows, strict=True):
         logits = [math.log(max(float(row[item]), 1e-15)) / temperature for item in classes]
@@ -94,7 +101,9 @@ def _temperature_nll(labels: Sequence[str], rows: Sequence[ProbabilityRow], clas
     return total / len(labels)
 
 
-def _fit_positive_temperature(labels: Sequence[str], rows: Sequence[ProbabilityRow], classes: Sequence[str]) -> float:
+def _fit_positive_temperature(
+    labels: Sequence[str], rows: Sequence[ProbabilityRow], classes: Sequence[str]
+) -> float:
     """Minimize NLL in log-temperature space with a deterministic golden search."""
 
     lower, upper = -6.0, 6.0
@@ -102,7 +111,9 @@ def _fit_positive_temperature(labels: Sequence[str], rows: Sequence[ProbabilityR
     left = upper - golden * (upper - lower)
     right = lower + golden * (upper - lower)
     for _ in range(80):
-        if _temperature_nll(labels, rows, classes, math.exp(left)) <= _temperature_nll(labels, rows, classes, math.exp(right)):
+        if _temperature_nll(labels, rows, classes, math.exp(left)) <= _temperature_nll(
+            labels, rows, classes, math.exp(right)
+        ):
             upper, right = right, left
             left = upper - golden * (upper - lower)
         else:
@@ -123,7 +134,9 @@ def fit_temperature_scaling(
 ) -> CalibrationArtifact:
     """Fit scalar multiclass temperature using calibration labels only."""
 
-    labels, rows, classes = _as_probability_rows(inputs, second, fit_split=fit_split, class_order=class_order)
+    labels, rows, classes = _as_probability_rows(
+        inputs, second, fit_split=fit_split, class_order=class_order
+    )
     temperature = _fit_positive_temperature(labels, rows, classes)
     return CalibrationArtifact(
         method="temperature",
@@ -146,11 +159,15 @@ def _apply_rows(
     output: list[dict[str, float]] = []
     for row in probabilities:
         artifact.validate_classes(row)
-        logits = [math.log(max(float(row[label]), 1e-15)) / temperature for label in artifact.class_order]
+        logits = [
+            math.log(max(float(row[label]), 1e-15)) / temperature for label in artifact.class_order
+        ]
         maximum = max(logits)
         values = [math.exp(value - maximum) for value in logits]
         normalizer = sum(values)
-        output.append(dict(zip(artifact.class_order, (value / normalizer for value in values), strict=True)))
+        output.append(
+            dict(zip(artifact.class_order, (value / normalizer for value in values), strict=True))
+        )
     return output
 
 
@@ -181,8 +198,8 @@ def _binary_rows(
     scores: list[float] = []
     labels: list[int] = []
     if isinstance(inputs[0], JudgeRecord):
-        records = list(inputs)
-        predictions = list(second)
+        records = list(cast(Sequence[JudgeRecord], inputs))
+        predictions = list(cast(Sequence[JudgePrediction], second))
         by_id = {record.record_id: record for record in records}
         for prediction in predictions:
             if not isinstance(prediction, JudgePrediction):
@@ -192,13 +209,18 @@ def _binary_rows(
                 raise ValueError("calibration fitting rejects test split labels")
             if record.split is not Split.CALIBRATION:
                 raise ValueError("calibration fitting requires split=calibration records")
-            if prediction.execution_status is not ExecutionStatus.OK or prediction.probabilities is None:
+            if (
+                prediction.execution_status is not ExecutionStatus.OK
+                or prediction.probabilities is None
+            ):
                 raise ValueError("binary calibration requires successful probabilities")
             probability = float(prediction.probabilities.get(classes[1], 0.0))
             scores.append(math.log(max(probability, 1e-15) / max(1.0 - probability, 1e-15)))
             labels.append(int(record.gold.label == classes[1]))
     else:
-        for score, label in zip(inputs, second, strict=True):
+        scores_input = cast(Sequence[float], inputs)
+        labels_input = cast(Sequence[str], second)
+        for score, label in zip(scores_input, labels_input, strict=True):
             scores.append(float(score))
             labels.append(int(str(label) == classes[1]))
     if not all(math.isfinite(score) for score in scores):
@@ -223,14 +245,30 @@ def fit_platt_scaling(
 ) -> CalibrationArtifact:
     """Fit binary logistic (Platt) scaling on calibration scores."""
 
-    scores, labels, classes = _binary_rows(inputs, second, fit_split=fit_split, class_order=class_order)
+    scores, labels, classes = _binary_rows(
+        inputs, second, fit_split=fit_split, class_order=class_order
+    )
     slope, intercept = 1.0, 0.0
     for _ in range(100):
         probabilities = [_sigmoid(slope * score + intercept) for score in scores]
-        gradient_slope = sum((probability - label) * score for probability, label, score in zip(probabilities, labels, scores, strict=True))
-        gradient_intercept = sum(probability - label for probability, label in zip(probabilities, labels, strict=True))
-        h11 = sum(probability * (1.0 - probability) * score * score for probability, score in zip(probabilities, scores, strict=True)) + 1e-8
-        h12 = sum(probability * (1.0 - probability) * score for probability, score in zip(probabilities, scores, strict=True))
+        gradient_slope = sum(
+            (probability - label) * score
+            for probability, label, score in zip(probabilities, labels, scores, strict=True)
+        )
+        gradient_intercept = sum(
+            probability - label for probability, label in zip(probabilities, labels, strict=True)
+        )
+        h11 = (
+            sum(
+                probability * (1.0 - probability) * score * score
+                for probability, score in zip(probabilities, scores, strict=True)
+            )
+            + 1e-8
+        )
+        h12 = sum(
+            probability * (1.0 - probability) * score
+            for probability, score in zip(probabilities, scores, strict=True)
+        )
         h22 = sum(probability * (1.0 - probability) for probability in probabilities) + 1e-8
         determinant = h11 * h22 - h12 * h12
         if determinant <= 0:
@@ -260,7 +298,9 @@ def apply_platt_scaling(
         raise ValueError("artifact is not a binary Platt calibrator")
     slope = float(artifact.parameters.get("slope", 0.0))
     intercept = float(artifact.parameters.get("intercept", 0.0))
-    values = [float(scores)] if isinstance(scores, (int, float)) else [float(score) for score in scores]
+    values = (
+        [float(scores)] if isinstance(scores, (int, float)) else [float(score) for score in scores]
+    )
     result = []
     for score in values:
         positive = _sigmoid(slope * score + intercept)
@@ -268,9 +308,7 @@ def apply_platt_scaling(
     return result[0] if isinstance(scores, (int, float)) else result
 
 
-def apply_calibration(
-    values: Any, artifact: CalibrationArtifact
-) -> Any:
+def apply_calibration(values: Any, artifact: CalibrationArtifact) -> Any:
     """Dispatch application by artifact method."""
 
     if artifact.method == "temperature":

@@ -11,11 +11,15 @@ from eval_lab.metrics.risk import confidence_from_probabilities, risk_coverage_c
 from eval_lab.schema import ExecutionStatus, JudgePrediction, JudgeRecord
 
 
-def _metric_rows(records: Sequence[JudgeRecord], predictions: Sequence[JudgePrediction]) -> tuple[list[JudgeRecord], list[JudgePrediction]]:
+def _metric_rows(
+    records: Sequence[JudgeRecord], predictions: Sequence[JudgePrediction]
+) -> tuple[list[JudgeRecord], list[JudgePrediction]]:
     if len(records) != len(predictions):
         raise ValueError("records and predictions must have equal lengths")
     by_id = {record.record_id: record for record in records}
-    if len(by_id) != len(records) or any(prediction.record_id not in by_id for prediction in predictions):
+    if len(by_id) != len(records) or any(
+        prediction.record_id not in by_id for prediction in predictions
+    ):
         raise ValueError("prediction record IDs must match unique record IDs")
     successful = [
         (by_id[prediction.record_id], prediction)
@@ -25,11 +29,17 @@ def _metric_rows(records: Sequence[JudgeRecord], predictions: Sequence[JudgePred
     return [record for record, _ in successful], [prediction for _, prediction in successful]
 
 
-def _one_domain(records: Sequence[JudgeRecord], predictions: Sequence[JudgePrediction]) -> dict[str, object]:
+def _one_domain(
+    records: Sequence[JudgeRecord], predictions: Sequence[JudgePrediction]
+) -> dict[str, object]:
     if not records:
         return {"count": 0, "metrics": None, "probability_metrics_available": False}
     labels = [record.gold.label for record in records]
-    guesses = [prediction.label for prediction in predictions]
+    guesses: list[str] = []
+    for prediction in predictions:
+        if prediction.label is None:
+            raise ValueError("resolved predictions must have labels")
+        guesses.append(prediction.label)
     probabilities = [prediction.probabilities for prediction in predictions]
     classes = list(dict.fromkeys(labels + guesses))
     for row in probabilities:
@@ -64,7 +74,12 @@ def evaluate_prediction_set(
         pairs = [
             (record, prediction)
             for record, prediction in zip(successful_records, successful_predictions, strict=True)
-            if (domain_by_record_id.get(record.record_id, "unknown") if domain_by_record_id else "unknown") == domain
+            if (
+                domain_by_record_id.get(record.record_id, "unknown")
+                if domain_by_record_id
+                else "unknown"
+            )
+            == domain
         ]
         by_domain[domain] = _one_domain([item[0] for item in pairs], [item[1] for item in pairs])
 
@@ -83,7 +98,9 @@ def evaluate_prediction_set(
             for target in target_errors
         }
 
-    latencies = [prediction.latency_ms for prediction in predictions if prediction.latency_ms is not None]
+    latencies = [
+        prediction.latency_ms for prediction in predictions if prediction.latency_ms is not None
+    ]
     return {
         "total_count": len(predictions),
         "successful_count": len(successful_predictions),

@@ -1,5 +1,39 @@
 # Current Repository Checkpoint
 
+## 2026-09-23 — TASK-0049 single-workspace policy and CI enforcement
+
+TASK-0049 is active on a branch in the existing canonical checkout
+`D:\claude\eval-lab`; no second Eval Lab clone/worktree was created. The old
+AGENTS.md recipe recommending sibling task worktrees was identified as the
+direct cause of Eval Lab folder proliferation. The replacement policy uses one
+checkout, one root uv lock/environment, serialized task branches, checkpoint
+pushes, and required PR/CI merges.
+
+The new CI pipeline now declares locked dependency validation, Python 3.11 and
+3.12 test jobs, Ruff lint, formatting checks on changed Python files, mypy over
+all 34 package source files, repository/workspace contract checks, tests, and a
+distribution build. Mypy's 30 pre-existing package errors were corrected. CI
+has not yet run on GitHub, and `main` had no branch-protection rule at the
+start of this checkpoint; exact required checks and PR enforcement remain to
+be configured after the workflow reports its check names.
+
+The 37 extra Eval Lab worktree directories have been removed after preflighting
+their contents (28 under `.worktrees`, nine sibling directories). Forty unique untracked/ignored files
+(28,591,904 bytes), including task `.env` files and private experiment data,
+were copied with SHA-256 verification to the local ignored archive
+`outputs/retained-worktree-state/`. Three untracked run/temp directories were
+removed only after the verified copies existed. The TASK-0048 branch and
+handoff remain intact. The user expanded the audit to all of `D:\claude`; a
+read-only review found five Hades project folders at the same commit. Three
+duplicates share the same 1,822 staged deletions; conflicting untracked files
+and other linked worktrees are being preserved before consolidation.
+
+Local checks now pass, including 136 tests using the same `python -m pytest`
+entry point as CI, Ruff, mypy, build, and the workspace/repository contracts;
+exactly one Eval Lab worktree remains. Next:
+push TASK-0049, open its PR, require the two actual CI contexts on `main`, merge
+after they pass, then finish the requested `D:\claude` duplicate cleanup.
+
 ## 2026-09-22 — TASK-0045 session handoff audit
 
 The normal checkouts are synchronized with their merged remote `main` branches.

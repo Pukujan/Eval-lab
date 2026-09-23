@@ -1,5 +1,10 @@
 review-output/
-.venv/
+/.venv/
+/.worktrees/
+/node_modules/
+/src/*.egg-info/
+/build/
+/dist/
 outputs/
 __pycache__/
 *.py[cod]

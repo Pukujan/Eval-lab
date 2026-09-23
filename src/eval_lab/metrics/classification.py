@@ -15,7 +15,9 @@ def _require_equal_lengths(*values: Sequence[Any]) -> None:
         raise ValueError("metric inputs must be non-empty and have equal lengths")
 
 
-def _classes(y_true: Sequence[str], y_pred: Sequence[str], class_order: Sequence[str] | None) -> list[str]:
+def _classes(
+    y_true: Sequence[str], y_pred: Sequence[str], class_order: Sequence[str] | None
+) -> list[str]:
     if class_order is not None:
         classes = list(class_order)
         if not classes or len(set(classes)) != len(classes):
@@ -51,13 +53,15 @@ def _probability_classes(
         return _classes(y_true, [], class_order)
     for row in probabilities:
         if row is not None:
-            return _classes(y_true, [], row.keys())
+            return _classes(y_true, [], list(row))
     return _classes(y_true, [], [])
 
 
 def accuracy(y_true: Sequence[str], y_pred: Sequence[str]) -> float:
     _require_equal_lengths(y_true, y_pred)
-    return sum(actual == predicted for actual, predicted in zip(y_true, y_pred, strict=True)) / len(y_true)
+    return sum(actual == predicted for actual, predicted in zip(y_true, y_pred, strict=True)) / len(
+        y_true
+    )
 
 
 def balanced_accuracy(
@@ -86,9 +90,18 @@ def macro_f1(
     classes = _classes(y_true, y_pred, class_order)
     scores = []
     for label in classes:
-        true_positive = sum(actual == label and predicted == label for actual, predicted in zip(y_true, y_pred, strict=True))
-        false_positive = sum(actual != label and predicted == label for actual, predicted in zip(y_true, y_pred, strict=True))
-        false_negative = sum(actual == label and predicted != label for actual, predicted in zip(y_true, y_pred, strict=True))
+        true_positive = sum(
+            actual == label and predicted == label
+            for actual, predicted in zip(y_true, y_pred, strict=True)
+        )
+        false_positive = sum(
+            actual != label and predicted == label
+            for actual, predicted in zip(y_true, y_pred, strict=True)
+        )
+        false_negative = sum(
+            actual == label and predicted != label
+            for actual, predicted in zip(y_true, y_pred, strict=True)
+        )
         denominator = 2 * true_positive + false_positive + false_negative
         scores.append(2 * true_positive / denominator if denominator else 0.0)
     return sum(scores) / len(scores) if scores else 0.0
@@ -106,7 +119,10 @@ def multiclass_brier(
     if rows is None:
         return None
     return sum(
-        sum((probability - float(label == actual)) ** 2 for probability, label in zip(row, classes, strict=True))
+        sum(
+            (probability - float(label == actual)) ** 2
+            for probability, label in zip(row, classes, strict=True)
+        )
         for actual, row in zip(y_true, rows, strict=True)
     ) / len(rows)
 
@@ -126,7 +142,10 @@ def negative_log_likelihood(
     if any(label not in index for label in y_true):
         raise ValueError("y_true contains a label outside class_order")
     epsilon = 1e-15
-    return sum(-math.log(max(epsilon, row[index[actual]])) for actual, row in zip(y_true, rows, strict=True)) / len(rows)
+    return sum(
+        -math.log(max(epsilon, row[index[actual]]))
+        for actual, row in zip(y_true, rows, strict=True)
+    ) / len(rows)
 
 
 def expected_calibration_error(
@@ -150,7 +169,9 @@ def expected_calibration_error(
         members = []
         for actual, row in zip(y_true, rows, strict=True):
             confidence = max(row)
-            in_bin = lower <= confidence < upper or (bin_index == n_bins - 1 and confidence == upper)
+            in_bin = lower <= confidence < upper or (
+                bin_index == n_bins - 1 and confidence == upper
+            )
             if in_bin:
                 prediction = classes[row.index(confidence)]
                 members.append((actual, prediction, confidence))

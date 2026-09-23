@@ -80,7 +80,9 @@ def _classification_or_empty(
     )
 
 
-def _probability_bundle(metrics: Mapping[str, float | None], *, available: bool, reason: str | None) -> dict[str, Any]:
+def _probability_bundle(
+    metrics: Mapping[str, float | None], *, available: bool, reason: str | None
+) -> dict[str, Any]:
     return {
         "available": available,
         "brier": metrics.get("brier"),
@@ -99,7 +101,7 @@ def _target_coverage(
     output: dict[str, Any] = {}
     for target in target_errors:
         errors = 0
-        best = {
+        best: dict[str, float | int] = {
             "coverage": 0.0,
             "risk": 0.0,
             "accepted_count": 0,
@@ -117,7 +119,7 @@ def _target_coverage(
                     "error_count": errors,
                     "threshold": float(score),
                 }
-        interval = wilson_interval(best["error_count"], best["accepted_count"])
+        interval = wilson_interval(int(best["error_count"]), int(best["accepted_count"]))
         supported = bool(best["accepted_count"] and interval["upper"] <= target)
         output[f"{target:.2f}"] = {
             **best,
@@ -222,7 +224,7 @@ def summarize_policy_metrics(
         probability_reason = "no resolved predictions"
     elif not probability_available:
         probability_reason = "one or more resolved predictions did not provide probabilities"
-    latency = dict(latency_summary(latencies))
+    latency: dict[str, Any] = dict(latency_summary(latencies))
     latency["available"] = bool(latencies)
     latency["unavailable_reason"] = None if latencies else "no latency observations for this policy"
     external_calls = sum(
@@ -250,10 +252,13 @@ def summarize_policy_metrics(
         and ranking_confidence is not None
         and len(ranking_correct) == len(ranking_confidence) > 0
     )
+    risk_coverage: dict[str, Any]
     if ranking_available:
         assert ranking_correct is not None
         assert ranking_confidence is not None
-        curve = [point.as_dict() for point in risk_coverage_curve(ranking_correct, ranking_confidence)]
+        curve = [
+            point.as_dict() for point in risk_coverage_curve(ranking_correct, ranking_confidence)
+        ]
         coverage_flags = _target_coverage(ranking_correct, ranking_confidence, target_errors)
         risk_coverage = {
             "available": True,

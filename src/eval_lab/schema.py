@@ -5,7 +5,7 @@ from __future__ import annotations
 import math
 from collections.abc import Mapping
 from enum import Enum
-from typing import Any, Self
+from typing import Any, Self, cast
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
@@ -241,7 +241,7 @@ def swap_pairwise_record(record: JudgeRecord) -> JudgeRecord:
         "kind": "ab_swap",
         "source_record_id": record.record_id,
     }
-    return JudgeRecord.model_validate(payload)
+    return cast(JudgeRecord, JudgeRecord.model_validate(payload))
 
 
 __all__ = [

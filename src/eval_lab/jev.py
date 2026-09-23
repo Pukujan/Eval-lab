@@ -110,9 +110,13 @@ async def evaluate_jev(
     try:
         payload = response.json()
     except ValueError as exc:
-        raise JevParseError("Jev provider returned invalid JSON", status_code=response.status_code) from exc
+        raise JevParseError(
+            "Jev provider returned invalid JSON", status_code=response.status_code
+        ) from exc
     if not isinstance(payload, dict):
-        raise JevParseError("Jev provider JSON payload must be an object", status_code=response.status_code)
+        raise JevParseError(
+            "Jev provider JSON payload must be an object", status_code=response.status_code
+        )
     return payload
 
 
@@ -227,7 +231,9 @@ def _normalize_probability_map(value: Any, mode: JudgmentMode) -> dict[str, floa
 
 
 def _extract_direct_label(payload: Mapping[str, Any], mode: JudgmentMode) -> str:
-    value = _find_first(payload, ("label", "verdict", "prediction", "choice", "class", "is_correct"))
+    value = _find_first(
+        payload, ("label", "verdict", "prediction", "choice", "class", "is_correct")
+    )
     if value is None:
         raise JevParseError("Jev direct response has no label")
     if isinstance(value, Mapping):
@@ -235,7 +241,9 @@ def _extract_direct_label(payload: Mapping[str, Any], mode: JudgmentMode) -> str
     return _normalize_label(value, mode)
 
 
-def _extract_direct_probabilities(payload: Mapping[str, Any], mode: JudgmentMode) -> dict[str, float] | None:
+def _extract_direct_probabilities(
+    payload: Mapping[str, Any], mode: JudgmentMode
+) -> dict[str, float] | None:
     value = _find_first(payload, ("probabilities", "probability_map", "probs"))
     return _normalize_probability_map(value, mode)
 
@@ -279,7 +287,9 @@ def _criterion_payloads(response: Mapping[str, Any]) -> Mapping[str, Any]:
 
 def _criterion_result(value: Any, mode: JudgmentMode) -> tuple[str, dict[str, float] | None]:
     if isinstance(value, Mapping):
-        label_value = _find_first(value, ("label", "verdict", "prediction", "choice", "value", "is_correct"))
+        label_value = _find_first(
+            value, ("label", "verdict", "prediction", "choice", "value", "is_correct")
+        )
         probabilities = _normalize_probability_map(
             _find_first(value, ("probabilities", "probability_map", "probs")), mode
         )
@@ -301,14 +311,16 @@ def _aggregate_atomic(
     for criterion in record.rubric:
         if criterion.criterion_id not in payloads:
             raise JevParseError(f"missing atomic criterion {criterion.criterion_id}")
-        label, probabilities = _criterion_result(payloads[criterion.criterion_id], record.mode)
+        label, criterion_probabilities = _criterion_result(
+            payloads[criterion.criterion_id], record.mode
+        )
         labels[criterion.criterion_id] = label
-        if probabilities is not None:
-            probability_maps.append(probabilities)
+        if criterion_probabilities is not None:
+            probability_maps.append(criterion_probabilities)
 
     if record.mode is JudgmentMode.SINGLE:
         label = "pass" if all(value == "pass" for value in labels.values()) else "fail"
-        classes = ("pass", "fail")
+        classes: tuple[str, ...] = ("pass", "fail")
     else:
         unique = set(labels.values())
         label = unique.pop() if len(unique) == 1 else PairwiseLabel.TIE.value
@@ -387,7 +399,11 @@ async def run_jev(
 
     if protocol_version not in {DIRECT_PROTOCOL, ATOMIC_PROTOCOL}:
         raise ValueError(f"unsupported Jev protocol: {protocol_version}")
-    normalizer = normalize_direct_response if protocol_version == DIRECT_PROTOCOL else normalize_atomic_response
+    normalizer = (
+        normalize_direct_response
+        if protocol_version == DIRECT_PROTOCOL
+        else normalize_atomic_response
+    )
     builder = build_direct_request if protocol_version == DIRECT_PROTOCOL else build_atomic_request
     predictions: list[JudgePrediction] = []
     for record in records:
