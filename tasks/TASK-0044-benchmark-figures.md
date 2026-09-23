@@ -47,6 +47,24 @@ committed result artifacts and must not invent or pool incomparable metrics.
 The Design Bakery worktree will receive corresponding public assets and paper
 content changes in its own commit/branch.
 
+## Goal
+
+Publish reproducible, data-first benchmark figures from committed result
+artifacts and make the figures available in the consolidated paper and public
+research page without pooling incomparable experiments or inventing metrics.
+
+## Acceptance criteria
+
+- Four PNG/SVG figure pairs are generated from EXP-022, EXP-024, EXP-025, and
+  EXP-019 artifacts.
+- The figure manifest records source paths and SHA-256 fingerprints.
+- The consolidated paper embeds the figures with captions explaining the
+  evidence and limitations.
+- The Design Bakery research page serves the corresponding assets with alt text
+  and responsive styling.
+- Ruff, syntax compilation, and repository checks are run; unresolved build
+  limitations are recorded rather than hidden.
+
 ## Commands and evidence
 
 - `D:\\claude\\eval-lab\\.venv\\Scripts\\python.exe scripts\\generate_benchmark_figures.py`
@@ -67,6 +85,20 @@ content changes in its own commit/branch.
 - The Design Bakery full frontend build was not completed because the local
   pnpm workspace dependency bootstrap was still copying packages after more
   than four minutes; the install was stopped. Static asset/path checks passed.
+
+## Checkpoint log
+
+TASK-0044 generated and visually inspected the four figures, embedded them in
+the paper, and published the Eval Lab and Design Bakery changes. The first
+merged PR exposed only a task-contract omission: this file lacked the required
+headings checked by `scripts/check_repo_contract.py`; this follow-up adds those
+headings without changing any experiment or figure content.
+
+## Handoff
+
+The benchmark figure release is complete. If the site build or deployment
+fails, debug only the Design Bakery asset/rendering path; do not regenerate
+figures from hand-entered values or alter completed experiment artifacts.
 
 ## Next atomic action
 
