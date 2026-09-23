@@ -120,3 +120,11 @@ Report every successfully exercised system on frozen objective records, includin
 - resource/cost metadata where available
 
 Unavailable/blocked values are marked explicitly, never guessed.
+
+## TASK-0010 — Selective escalation and research release
+
+TASK-0010 is the active research phase after completed TASK-0009.
+
+It evaluates the frozen local student's confidence as a routing signal, compares pinned OpenRouter Jev and YOLO-Auto Qwen3.8 Flash, adds matched-random controls and System-One differential testing, and publishes the result as EvalLab-Select v0.1.0 plus an arXiv-ready research report.
+
+Scientific provenance follows `docs/RESEARCH_ARTIFACT_STANDARD.md`.

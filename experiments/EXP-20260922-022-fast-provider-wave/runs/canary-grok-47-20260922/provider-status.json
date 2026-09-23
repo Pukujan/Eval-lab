@@ -1,0 +1,19 @@
+{
+  "arms": {
+    "grok_47": {
+      "error_kinds": {},
+      "provider": "xai-grok-build-cli",
+      "requested_model": "grok-4.7",
+      "route": "direct_grok_build_cli_subscription",
+      "status_counts": {
+        "ok": 1
+      },
+      "surfaced_model_ids": [
+        "grok-4.7-build"
+      ]
+    }
+  },
+  "experiment_id": "EXP-20260922-022-fast-provider-wave",
+  "partition": "public_selection",
+  "run_id": "canary-grok-47-20260922"
+}

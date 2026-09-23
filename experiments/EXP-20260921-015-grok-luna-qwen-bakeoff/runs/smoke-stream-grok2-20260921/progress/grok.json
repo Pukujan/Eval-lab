@@ -1,0 +1,15 @@
+{
+  "arm_id": "grok",
+  "completed_count": 1,
+  "last_record_id": "arc-single:Mercury_SC_400156:correct",
+  "provider": "xai-grok-build-cli",
+  "record_count": 1,
+  "requested_model": "grok-4.6",
+  "route": "direct_grok_build_cli_subscription",
+  "status_counts": {
+    "ok": 1
+  },
+  "streaming": true,
+  "updated_at_utc": "2026-09-21T16:58:22.889663+00:00",
+  "workers": 4
+}

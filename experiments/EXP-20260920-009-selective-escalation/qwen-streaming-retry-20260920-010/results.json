@@ -1,0 +1,65 @@
+{
+  "benchmark_fingerprint": "18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5",
+  "created_at_utc": "2026-09-20T23:47:00.153340+00:00",
+  "experiment_id": "EXP-20260920-009-selective-escalation",
+  "granularity": "one_record_per_request",
+  "limit": 10,
+  "model": "qwen3.8-flash",
+  "record_ids_unique": true,
+  "report": {
+    "aggregate": {
+      "count": 10,
+      "metrics": {
+        "accuracy": 1.0,
+        "balanced_accuracy": 1.0,
+        "brier": null,
+        "ece": null,
+        "macro_f1": 1.0,
+        "nll": null
+      },
+      "probability_metrics_available": false
+    },
+    "by_domain": {
+      "arc_challenge": {
+        "count": 10,
+        "metrics": {
+          "accuracy": 1.0,
+          "balanced_accuracy": 1.0,
+          "brier": null,
+          "ece": null,
+          "macro_f1": 1.0,
+          "nll": null
+        },
+        "probability_metrics_available": false
+      }
+    },
+    "failure_count": 0,
+    "latency": {
+      "count": 10,
+      "max_ms": 1539.9500999774318,
+      "mean_ms": 876.0758100019302,
+      "median_ms": 850.950100008049,
+      "min_ms": 486.3490000134334,
+      "p95_ms": 1348.537829991255
+    },
+    "probability_metrics": {
+      "available": false,
+      "unavailable_reason": "one or more successful predictions did not provide probabilities"
+    },
+    "risk_coverage": {
+      "coverage_at_target_error": {},
+      "curve": []
+    },
+    "status_counts": {
+      "ok": 10
+    },
+    "successful_count": 10,
+    "total_count": 10
+  },
+  "retry_id": "qwen-streaming-retry-20260920-010",
+  "status_counts": {
+    "ok": 10
+  },
+  "streaming": true,
+  "timeout_seconds": 120.0
+}

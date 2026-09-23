@@ -1,0 +1,113 @@
+{
+  "experiment_id": "EXP-20260921-014-independent-jev-benchmark",
+  "model": "typesafe/jev-1.13",
+  "option_order_agreement_rate": 1.0,
+  "option_order_resolved": 12,
+  "primary_arm_separate": true,
+  "repeatability": {
+    "arc-pair:Mercury_SC_400041": {
+      "labels": [
+        "A",
+        "A",
+        "A"
+      ],
+      "stable": true
+    },
+    "arc-single:ACTAAP_2014_7_13:correct": {
+      "labels": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "stable": true
+    },
+    "arc-single:VASoL_2008_5_10:wrong": {
+      "labels": [
+        "fail",
+        "fail",
+        "fail"
+      ],
+      "stable": true
+    },
+    "gsm8k:gsm8k-main:test-00055:wrong": {
+      "labels": [
+        "fail",
+        "fail",
+        "fail"
+      ],
+      "stable": true
+    },
+    "gsm8k:gsm8k-main:test-00343:correct": {
+      "labels": [
+        "fail",
+        "fail",
+        "fail"
+      ],
+      "stable": true
+    },
+    "gsm8k:gsm8k-main:test-00742:correct": {
+      "labels": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "stable": true
+    },
+    "gsm8k:gsm8k-main:test-00797:correct": {
+      "labels": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "stable": true
+    },
+    "gsm8k:gsm8k-main:test-01021:correct": {
+      "labels": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "stable": true
+    },
+    "mmlu:abstract_algebra:test:0011:correct": {
+      "labels": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "stable": true
+    },
+    "mmlu:computer_security:test:0081:correct": {
+      "labels": [
+        "pass",
+        "pass",
+        "pass"
+      ],
+      "stable": true
+    },
+    "mmlu:computer_security:test:0090:wrong": {
+      "labels": [
+        "fail",
+        "fail",
+        "fail"
+      ],
+      "stable": true
+    },
+    "mmlu:machine_learning:test:0022:wrong": {
+      "labels": [
+        "fail",
+        "fail",
+        "fail"
+      ],
+      "stable": true
+    }
+  },
+  "repeatability_rate": 1.0,
+  "rubric_paraphrase_agreement_rate": 0.9166666666666666,
+  "rubric_paraphrase_resolved": 12,
+  "schedule_fingerprint": "47108ecb7c4de3e49974a289f985c8f03a03178fea2e05ca7b594558984687ce",
+  "status_counts": {
+    "ok": 60
+  },
+  "stop_reason": null
+}

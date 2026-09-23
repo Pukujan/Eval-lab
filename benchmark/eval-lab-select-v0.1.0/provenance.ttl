@@ -1,0 +1,30 @@
+@prefix ex: <https://example.org/eval-lab/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:agent a prov:Agent, prov:SoftwareAgent ;
+    dcterms:identifier "eval-lab" ;
+    dcterms:title "Eval Lab reproducibility runner" .
+
+ex:source a prov:Entity ;
+    dcterms:identifier "allenai/ai2_arc@210d026faf9955653af8916fad021475a3f00453" .
+
+ex:benchmark a prov:Entity ;
+    dcterms:identifier "EvalLab-Select v0.1.0" ;
+    ex:fingerprint "18a440b4f0a82e09a9ab234815ed0f095c7fbe64a82879fd8a31206eb83ed7e5" .
+
+ex:build a prov:Activity ;
+    prov:used ex:source ;
+    prov:generated ex:benchmark ;
+    prov:wasAssociatedWith ex:agent .
+
+ex:experiment a prov:Activity ;
+    prov:used ex:benchmark ;
+    prov:generated ex:results ;
+    prov:wasAssociatedWith ex:agent ;
+    ex:status "completed" .
+
+ex:results a prov:Entity ;
+    dcterms:identifier "EXP-20260920-012-selective-escalation-qwen-streaming/results.json" ;
+    ex:providerEvaluationCount "500"^^xsd:integer .

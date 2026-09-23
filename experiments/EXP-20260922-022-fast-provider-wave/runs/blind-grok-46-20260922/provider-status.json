@@ -1,0 +1,24 @@
+{
+  "arms": {
+    "grok": {
+      "error_kinds": {
+        "process_exit": 1,
+        "rate_limited": 2
+      },
+      "provider": "xai-grok-build-cli",
+      "requested_model": "grok-4.6",
+      "route": "direct_grok_build_cli_subscription",
+      "status_counts": {
+        "ok": 757,
+        "provider_error": 1,
+        "rate_limited": 2
+      },
+      "surfaced_model_ids": [
+        "grok-4.6-build"
+      ]
+    }
+  },
+  "experiment_id": "EXP-20260922-022-fast-provider-wave",
+  "partition": "blind_holdout",
+  "run_id": "blind-grok-46-20260922"
+}

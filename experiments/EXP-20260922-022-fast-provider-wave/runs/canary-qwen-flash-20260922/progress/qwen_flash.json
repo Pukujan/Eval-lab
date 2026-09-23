@@ -1,0 +1,15 @@
+{
+  "arm_id": "qwen_flash",
+  "completed_count": 1,
+  "last_record_id": "arc-single:Mercury_SC_400156:correct",
+  "provider": "yolo-auto",
+  "record_count": 1,
+  "requested_model": "qwen3.8-flash",
+  "route": "yolo_auto_openai_compatible",
+  "status_counts": {
+    "ok": 1
+  },
+  "streaming": true,
+  "updated_at_utc": "2026-09-22T11:37:00.739248+00:00",
+  "workers": 2
+}

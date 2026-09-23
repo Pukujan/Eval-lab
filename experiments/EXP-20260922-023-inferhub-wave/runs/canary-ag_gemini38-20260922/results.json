@@ -1,0 +1,23 @@
+{
+  "created_at_utc": "2026-09-22T12:55:20.672124+00:00",
+  "elapsed_seconds": 18.16989660001127,
+  "experiment_id": "EXP-20260922-023-inferhub-wave",
+  "gold_not_used_for_provider_request": true,
+  "partition": "public_selection",
+  "provider": "inferhub",
+  "record_count": 1,
+  "requested_model": "ag/gemini-3.8-flash-high",
+  "resolved_count": 1,
+  "run_id": "canary-ag_gemini38-20260922",
+  "source_pool": {
+    "blind_record_ids_fingerprint": "409428fc71b447d0114dd7a1929cbed34269a4318ef249c108582b70069d8d61",
+    "records_fingerprint": "b7edd61269f0f7757e734bc7e3f665ac2bcd6d908a1e56f73f0b0291d55b64d8",
+    "typed_question_spec_fingerprint": "0d07bd8b8b60bd7f0b5b7a5f5819b7d329ea121f686b240e465695b6f6eca1e4"
+  },
+  "status_counts": {
+    "ok": 1
+  },
+  "stream_format": "openai-sse",
+  "streaming": true,
+  "workers": 1
+}

@@ -10,6 +10,7 @@ from eval_lab.metrics.classification import (
     negative_log_likelihood,
 )
 from eval_lab.metrics.latency import latency_summary
+from eval_lab.metrics.policy import REQUIRED_POLICY_METRIC_KEYS, summarize_policy_metrics
 from eval_lab.metrics.risk import (
     RiskCoveragePoint,
     confidence_from_probabilities,
@@ -20,6 +21,7 @@ from eval_lab.metrics.risk import (
 from eval_lab.metrics.summary import evaluate_prediction_set
 
 __all__ = [
+    "REQUIRED_POLICY_METRIC_KEYS",
     "RiskCoveragePoint",
     "accuracy",
     "balanced_accuracy",
@@ -33,5 +35,6 @@ __all__ = [
     "multiclass_brier",
     "negative_log_likelihood",
     "risk_coverage_curve",
+    "summarize_policy_metrics",
     "swap_consistency",
 ]

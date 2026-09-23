@@ -1,0 +1,7 @@
+{
+  "base_url": "https://yolo-auto.com/v1",
+  "model": "qwen3.8-flash",
+  "status_counts": {
+    "rate_limited": 1
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "arms": [
+    "grok",
+    "luna",
+    "qwen_flash"
+  ],
+  "pairs": {
+    "grok__vs__luna": {
+      "agreement_count": 0,
+      "agreement_rate": null,
+      "comparable_count": 0
+    },
+    "grok__vs__qwen_flash": {
+      "agreement_count": 0,
+      "agreement_rate": null,
+      "comparable_count": 0
+    },
+    "luna__vs__qwen_flash": {
+      "agreement_count": 1,
+      "agreement_rate": 1.0,
+      "comparable_count": 1
+    }
+  }
+}

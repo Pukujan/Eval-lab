@@ -1,0 +1,466 @@
+{
+  "base_url": "https://yolo-auto.com/v1",
+  "created_at_utc": "2026-09-21T06:25:31.333887+00:00",
+  "elapsed_seconds": 182.86339569999836,
+  "experiment_id": "EXP-20260921-013-qwen-multidomain-holdout",
+  "gold_not_used_for_provider_request": true,
+  "granularity": "one_record_per_request",
+  "holdout_manifest_fingerprint": "409428fc71b447d0114dd7a1929cbed34269a4318ef249c108582b70069d8d61",
+  "latency_ms": {
+    "count": 322,
+    "max_ms": 4969.756300008157,
+    "mean_ms": 566.7065717384758,
+    "median_ms": 462.3839000123553,
+    "min_ms": 369.86419997992925,
+    "p95_ms": 1028.1497149800998
+  },
+  "metrics": {
+    "accuracy": 0.8639240506329114,
+    "accuracy_95_ci": {
+      "lower": 0.8217238924719558,
+      "upper": 0.8973823823932424
+    },
+    "balanced_accuracy": 0.7187689369345972,
+    "brier": null,
+    "by_dataset": {
+      "allenai/ai2_arc:ARC-Easy": {
+        "accuracy": 1.0,
+        "accuracy_95_ci": {
+          "lower": 0.5101091635454027,
+          "upper": 1.0
+        },
+        "balanced_accuracy": 1.0,
+        "brier": null,
+        "correct": 4,
+        "ece": null,
+        "latency": {
+          "count": 4,
+          "max_ms": 1049.8328999965452,
+          "mean_ms": 814.1456749945064,
+          "median_ms": 882.0546999922954,
+          "min_ms": 442.64039999688976,
+          "p95_ms": 1046.1837449969607
+        },
+        "macro_f1": 1.0,
+        "nll": null,
+        "records": 4,
+        "resolved": 4,
+        "status_counts": {
+          "ok": 4
+        },
+        "unresolved_rate": 0.0
+      },
+      "cais/mmlu:abstract_algebra": {
+        "accuracy": 0.8,
+        "accuracy_95_ci": {
+          "lower": 0.5481455128483065,
+          "upper": 0.9295245065301844
+        },
+        "balanced_accuracy": 0.8035714285714286,
+        "brier": null,
+        "correct": 12,
+        "ece": null,
+        "latency": {
+          "count": 15,
+          "max_ms": 658.3759000059217,
+          "mean_ms": 491.80654000180465,
+          "median_ms": 460.44950000941753,
+          "min_ms": 411.9359999895096,
+          "p95_ms": 624.8706800077343
+        },
+        "macro_f1": 0.8,
+        "nll": null,
+        "records": 15,
+        "resolved": 15,
+        "status_counts": {
+          "ok": 15
+        },
+        "unresolved_rate": 0.0
+      },
+      "cais/mmlu:computer_security": {
+        "accuracy": 0.825,
+        "accuracy_95_ci": {
+          "lower": 0.6805000966821229,
+          "upper": 0.9125458625396408
+        },
+        "balanced_accuracy": 0.825,
+        "brier": null,
+        "correct": 33,
+        "ece": null,
+        "latency": {
+          "count": 40,
+          "max_ms": 1209.771699999692,
+          "mean_ms": 586.0898649967567,
+          "median_ms": 489.13815000560135,
+          "min_ms": 379.8563999880571,
+          "p95_ms": 999.2818999802693
+        },
+        "macro_f1": 0.8240100565681961,
+        "nll": null,
+        "records": 40,
+        "resolved": 40,
+        "status_counts": {
+          "ok": 40
+        },
+        "unresolved_rate": 0.0
+      },
+      "cais/mmlu:elementary_mathematics": {
+        "accuracy": 0.9,
+        "accuracy_95_ci": {
+          "lower": 0.7694822477247771,
+          "upper": 0.9604204713173936
+        },
+        "balanced_accuracy": 0.8999999999999999,
+        "brier": null,
+        "correct": 36,
+        "ece": null,
+        "latency": {
+          "count": 40,
+          "max_ms": 1123.4947000048123,
+          "mean_ms": 538.6284474967397,
+          "median_ms": 464.24945001490414,
+          "min_ms": 377.2905000078026,
+          "p95_ms": 1067.25248999428
+        },
+        "macro_f1": 0.899749373433584,
+        "nll": null,
+        "records": 40,
+        "resolved": 40,
+        "status_counts": {
+          "ok": 40
+        },
+        "unresolved_rate": 0.0
+      },
+      "cais/mmlu:high_school_biology": {
+        "accuracy": 1.0,
+        "accuracy_95_ci": {
+          "lower": 0.9123783988027135,
+          "upper": 1.0
+        },
+        "balanced_accuracy": 1.0,
+        "brier": null,
+        "correct": 40,
+        "ece": null,
+        "latency": {
+          "count": 40,
+          "max_ms": 1307.9200999927707,
+          "mean_ms": 521.5347374985868,
+          "median_ms": 482.07659999025054,
+          "min_ms": 380.75469998875633,
+          "p95_ms": 769.6903399992151
+        },
+        "macro_f1": 1.0,
+        "nll": null,
+        "records": 40,
+        "resolved": 40,
+        "status_counts": {
+          "ok": 40
+        },
+        "unresolved_rate": 0.0
+      },
+      "cais/mmlu:high_school_world_history": {
+        "accuracy": 0.975,
+        "accuracy_95_ci": {
+          "lower": 0.8711863103652591,
+          "upper": 0.9955731684973186
+        },
+        "balanced_accuracy": 0.975,
+        "brier": null,
+        "correct": 39,
+        "ece": null,
+        "latency": {
+          "count": 40,
+          "max_ms": 1054.44290000014,
+          "mean_ms": 598.3869200012123,
+          "median_ms": 471.0215499944752,
+          "min_ms": 380.1577999838628,
+          "p95_ms": 1037.4576199799776
+        },
+        "macro_f1": 0.9749843652282677,
+        "nll": null,
+        "records": 40,
+        "resolved": 40,
+        "status_counts": {
+          "ok": 40
+        },
+        "unresolved_rate": 0.0
+      },
+      "cais/mmlu:logical_fallacies": {
+        "accuracy": 0.868421052631579,
+        "accuracy_95_ci": {
+          "lower": 0.7267314055770869,
+          "upper": 0.9424613230987987
+        },
+        "balanced_accuracy": 0.8666666666666667,
+        "brier": null,
+        "correct": 33,
+        "ece": null,
+        "latency": {
+          "count": 40,
+          "max_ms": 2563.6612999951467,
+          "mean_ms": 530.694187500194,
+          "median_ms": 442.82579999708105,
+          "min_ms": 369.86419997992925,
+          "p95_ms": 801.3023649997191
+        },
+        "macro_f1": 0.867595818815331,
+        "nll": null,
+        "records": 40,
+        "resolved": 38,
+        "status_counts": {
+          "ok": 38,
+          "parse_error": 2
+        },
+        "unresolved_rate": 0.05
+      },
+      "cais/mmlu:machine_learning": {
+        "accuracy": 0.7948717948717948,
+        "accuracy_95_ci": {
+          "lower": 0.644660319864177,
+          "upper": 0.8922028176928961
+        },
+        "balanced_accuracy": 0.7973684210526315,
+        "brier": null,
+        "correct": 31,
+        "ece": null,
+        "latency": {
+          "count": 40,
+          "max_ms": 1243.194200011203,
+          "mean_ms": 575.8772999986832,
+          "median_ms": 462.5221500027692,
+          "min_ms": 380.390600010287,
+          "p95_ms": 1007.4977849930291
+        },
+        "macro_f1": 0.7936507936507937,
+        "nll": null,
+        "records": 40,
+        "resolved": 39,
+        "status_counts": {
+          "ok": 39,
+          "parse_error": 1
+        },
+        "unresolved_rate": 0.025
+      },
+      "cais/mmlu:professional_law": {
+        "accuracy": 0.8421052631578947,
+        "accuracy_95_ci": {
+          "lower": 0.6958318822077686,
+          "upper": 0.9255613658484106
+        },
+        "balanced_accuracy": 0.8421052631578947,
+        "brier": null,
+        "correct": 32,
+        "ece": null,
+        "latency": {
+          "count": 40,
+          "max_ms": 1189.258600003086,
+          "mean_ms": 534.2566375016759,
+          "median_ms": 451.6219000070123,
+          "min_ms": 377.8384000179358,
+          "p95_ms": 1001.1065950122429
+        },
+        "macro_f1": 0.8416666666666667,
+        "nll": null,
+        "records": 40,
+        "resolved": 38,
+        "status_counts": {
+          "ok": 38,
+          "parse_error": 2
+        },
+        "unresolved_rate": 0.05
+      },
+      "eval-lab-select-v0.1.0": {
+        "accuracy": 1.0,
+        "accuracy_95_ci": {
+          "lower": 0.20654931437723745,
+          "upper": 1.0
+        },
+        "balanced_accuracy": 1.0,
+        "brier": null,
+        "correct": 1,
+        "ece": null,
+        "latency": {
+          "count": 1,
+          "max_ms": 596.1935999803245,
+          "mean_ms": 596.1935999803245,
+          "median_ms": 596.1935999803245,
+          "min_ms": 596.1935999803245,
+          "p95_ms": 596.1935999803245
+        },
+        "macro_f1": 1.0,
+        "nll": null,
+        "records": 1,
+        "resolved": 1,
+        "status_counts": {
+          "ok": 1
+        },
+        "unresolved_rate": 0.0
+      },
+      "eval-lab-synthetic:arithmetic": {
+        "accuracy": 0.6,
+        "accuracy_95_ci": {
+          "lower": 0.2307242812760128,
+          "upper": 0.882379225767352
+        },
+        "balanced_accuracy": 0.625,
+        "brier": null,
+        "correct": 3,
+        "ece": null,
+        "latency": {
+          "count": 5,
+          "max_ms": 1294.1179999907035,
+          "mean_ms": 606.9308600039221,
+          "median_ms": 448.7935000215657,
+          "min_ms": 386.6227999969851,
+          "p95_ms": 1126.6261999960989
+        },
+        "macro_f1": 0.5,
+        "nll": null,
+        "records": 5,
+        "resolved": 5,
+        "status_counts": {
+          "ok": 5
+        },
+        "unresolved_rate": 0.0
+      },
+      "eval-lab-synthetic:code": {
+        "accuracy": 1.0,
+        "accuracy_95_ci": {
+          "lower": 0.5655175352168251,
+          "upper": 1.0
+        },
+        "balanced_accuracy": 1.0,
+        "brier": null,
+        "correct": 5,
+        "ece": null,
+        "latency": {
+          "count": 5,
+          "max_ms": 454.49219999136403,
+          "mean_ms": 433.6524600046687,
+          "median_ms": 442.59360001888126,
+          "min_ms": 404.30140000535175,
+          "p95_ms": 454.12849999265745
+        },
+        "macro_f1": 1.0,
+        "nll": null,
+        "records": 5,
+        "resolved": 5,
+        "status_counts": {
+          "ok": 5
+        },
+        "unresolved_rate": 0.0
+      },
+      "eval-lab-synthetic:multiple": {
+        "accuracy": 0.25,
+        "accuracy_95_ci": {
+          "lower": 0.04558726080970055,
+          "upper": 0.6993581574175981
+        },
+        "balanced_accuracy": 0.25,
+        "brier": null,
+        "correct": 1,
+        "ece": null,
+        "latency": {
+          "count": 5,
+          "max_ms": 4969.756300008157,
+          "mean_ms": 1423.6469800001942,
+          "median_ms": 534.4607000006363,
+          "min_ms": 451.9615999888629,
+          "p95_ms": 4113.898320007137
+        },
+        "macro_f1": 0.13333333333333333,
+        "nll": null,
+        "records": 5,
+        "resolved": 4,
+        "status_counts": {
+          "ok": 4,
+          "parse_error": 1
+        },
+        "unresolved_rate": 0.2
+      },
+      "eval-lab-synthetic:structured": {
+        "accuracy": 0.2,
+        "accuracy_95_ci": {
+          "lower": 0.03622410863243014,
+          "upper": 0.6244653702374747
+        },
+        "balanced_accuracy": 0.125,
+        "brier": null,
+        "correct": 1,
+        "ece": null,
+        "latency": {
+          "count": 5,
+          "max_ms": 631.8575000041164,
+          "mean_ms": 464.3417800019961,
+          "median_ms": 438.65399999776855,
+          "min_ms": 401.457300002221,
+          "p95_ms": 593.3304200065322
+        },
+        "macro_f1": 0.1,
+        "nll": null,
+        "records": 5,
+        "resolved": 5,
+        "status_counts": {
+          "ok": 5
+        },
+        "unresolved_rate": 0.0
+      },
+      "openai/gsm8k:main": {
+        "accuracy": 1.0,
+        "accuracy_95_ci": {
+          "lower": 0.34238022750665303,
+          "upper": 1.0
+        },
+        "balanced_accuracy": 1.0,
+        "brier": null,
+        "correct": 2,
+        "ece": null,
+        "latency": {
+          "count": 2,
+          "max_ms": 671.7027999984566,
+          "mean_ms": 594.0287499979604,
+          "median_ms": 594.0287499979604,
+          "min_ms": 516.3546999974642,
+          "p95_ms": 663.935394998407
+        },
+        "macro_f1": 1.0,
+        "nll": null,
+        "records": 2,
+        "resolved": 2,
+        "status_counts": {
+          "ok": 2
+        },
+        "unresolved_rate": 0.0
+      }
+    },
+    "correct": 273,
+    "ece": null,
+    "latency": {
+      "count": 322,
+      "max_ms": 4969.756300008157,
+      "mean_ms": 566.7065717384758,
+      "median_ms": 462.3839000123553,
+      "min_ms": 369.86419997992925,
+      "p95_ms": 1028.1497149800998
+    },
+    "macro_f1": 0.6071428571428571,
+    "nll": null,
+    "records": 322,
+    "resolved": 316,
+    "status_counts": {
+      "ok": 316,
+      "parse_error": 6
+    },
+    "unresolved_rate": 0.018633540372670808
+  },
+  "model": "qwen3.8-flash",
+  "partition": "blind_holdout",
+  "pool_fingerprint": "b7edd61269f0f7757e734bc7e3f665ac2bcd6d908a1e56f73f0b0291d55b64d8",
+  "probabilities_available": false,
+  "provider": "yolo-auto",
+  "record_count": 322,
+  "record_ids_file": "experiments\\EXP-20260921-013-qwen-multidomain-holdout\\blind-retry-record-ids.txt",
+  "streaming": true,
+  "timeout_seconds": 120.0,
+  "workers": 1
+}

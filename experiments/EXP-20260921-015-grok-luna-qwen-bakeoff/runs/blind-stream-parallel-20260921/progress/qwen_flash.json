@@ -1,0 +1,17 @@
+{
+  "arm_id": "qwen_flash",
+  "completed_count": 760,
+  "last_record_id": "single-synthetic-structured-06-obvious",
+  "provider": "yolo-auto",
+  "record_count": 760,
+  "requested_model": "qwen3.8-flash",
+  "route": "yolo_auto_openai_compatible",
+  "status_counts": {
+    "ok": 442,
+    "provider_error": 1,
+    "rate_limited": 317
+  },
+  "streaming": true,
+  "updated_at_utc": "2026-09-21T18:56:49.616795+00:00",
+  "workers": 4
+}

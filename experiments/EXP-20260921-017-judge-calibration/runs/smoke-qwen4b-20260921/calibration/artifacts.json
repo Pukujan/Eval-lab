@@ -1,0 +1,31 @@
+{
+  "experiment_id": "EXP-20260921-017-judge-calibration",
+  "modes": {
+    "pairwise": {
+      "fit_record_count": 0,
+      "fit_record_ids": [],
+      "reason": "no successful predictions with probabilities",
+      "status": "unavailable"
+    },
+    "single": {
+      "artifact": {
+        "class_order": [
+          "pass",
+          "fail"
+        ],
+        "code_version": "task-0017-temperature-v1",
+        "fit_split": "calibration",
+        "input_semantics": "class probabilities; p_calibrated = softmax(log(p) / temperature)",
+        "method": "temperature",
+        "parameters": {
+          "temperature": 0.0024787521766663585
+        }
+      },
+      "fit_record_count": 1,
+      "fit_record_ids": [
+        "arc-single:Mercury_SC_400156:correct"
+      ],
+      "status": "completed"
+    }
+  }
+}

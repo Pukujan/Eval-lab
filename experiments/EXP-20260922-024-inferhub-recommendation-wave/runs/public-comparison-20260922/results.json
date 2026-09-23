@@ -1,0 +1,2036 @@
+{
+  "arms": {
+    "ali_glm52": {
+      "accuracy": 0.987220447284345,
+      "correct_count": 618,
+      "metrics": {
+        "aggregate": {
+          "count": 626,
+          "metrics": {
+            "accuracy": 0.987220447284345,
+            "balanced_accuracy": 0.9858862045882506,
+            "brier": null,
+            "ece": null,
+            "macro_f1": 0.7909757252706905,
+            "nll": null
+          },
+          "probability_metrics_available": false
+        },
+        "by_domain": {
+          "allenai/ai2_arc:ARC-Easy": {
+            "count": 158,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:abstract_algebra": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:computer_security": {
+            "count": 18,
+            "metrics": {
+              "accuracy": 0.9444444444444444,
+              "balanced_accuracy": 0.9375,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.9428571428571428,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:elementary_mathematics": {
+            "count": 19,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:high_school_biology": {
+            "count": 18,
+            "metrics": {
+              "accuracy": 0.9444444444444444,
+              "balanced_accuracy": 0.9444444444444444,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.9442724458204335,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:high_school_world_history": {
+            "count": 19,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:logical_fallacies": {
+            "count": 19,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:machine_learning": {
+            "count": 17,
+            "metrics": {
+              "accuracy": 0.9411764705882353,
+              "balanced_accuracy": 0.9444444444444444,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.9411764705882353,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:professional_law": {
+            "count": 19,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-select-v0.1.0": {
+            "count": 120,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:arithmetic": {
+            "count": 10,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:code": {
+            "count": 10,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:multiple": {
+            "count": 12,
+            "metrics": {
+              "accuracy": 0.6666666666666666,
+              "balanced_accuracy": 0.5833333333333334,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.5151515151515151,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:structured": {
+            "count": 9,
+            "metrics": {
+              "accuracy": 0.8888888888888888,
+              "balanced_accuracy": 0.9375,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.8809523809523809,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "openai/gsm8k:main": {
+            "count": 158,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          }
+        },
+        "failure_count": 22,
+        "latency": {
+          "count": 648,
+          "max_ms": 18490.957900008652,
+          "mean_ms": 5850.3904813258505,
+          "median_ms": 5010.0742999929935,
+          "min_ms": 1502.9697999707423,
+          "p95_ms": 11892.412805015918
+        },
+        "probability_metrics": {
+          "available": false,
+          "unavailable_reason": "one or more successful predictions did not provide probabilities"
+        },
+        "risk_coverage": {
+          "coverage_at_target_error": {},
+          "curve": []
+        },
+        "status_counts": {
+          "ok": 626,
+          "parse_error": 22
+        },
+        "successful_count": 626,
+        "total_count": 648
+      },
+      "native_probability_count": 0,
+      "provider": "inferhub",
+      "record_count": 648,
+      "requested_model": "ali/glm-5.2",
+      "resolved_count": 626,
+      "resolved_coverage": 0.9660493827160493,
+      "status_counts": {
+        "ok": 626,
+        "parse_error": 22
+      },
+      "surfaced_model_ids": [
+        "ali/glm-5.2"
+      ]
+    },
+    "ali_kimi_k27_code": {
+      "accuracy": 0.9752704791344667,
+      "correct_count": 631,
+      "metrics": {
+        "aggregate": {
+          "count": 647,
+          "metrics": {
+            "accuracy": 0.9752704791344667,
+            "balanced_accuracy": 0.9755756623028771,
+            "brier": null,
+            "ece": null,
+            "macro_f1": 0.782874447053307,
+            "nll": null
+          },
+          "probability_metrics_available": false
+        },
+        "by_domain": {
+          "allenai/ai2_arc:ARC-Easy": {
+            "count": 160,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:abstract_algebra": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:computer_security": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:elementary_mathematics": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 0.95,
+              "balanced_accuracy": 0.95,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.949874686716792,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:high_school_biology": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:high_school_world_history": {
+            "count": 19,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:logical_fallacies": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:machine_learning": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 0.95,
+              "balanced_accuracy": 0.95,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.949874686716792,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:professional_law": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 0.95,
+              "balanced_accuracy": 0.95,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.949874686716792,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-select-v0.1.0": {
+            "count": 120,
+            "metrics": {
+              "accuracy": 0.9833333333333333,
+              "balanced_accuracy": 0.9833333333333334,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.9833287024173382,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:arithmetic": {
+            "count": 12,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:code": {
+            "count": 12,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:multiple": {
+            "count": 12,
+            "metrics": {
+              "accuracy": 0.6666666666666666,
+              "balanced_accuracy": 0.625,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.44848484848484843,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:structured": {
+            "count": 12,
+            "metrics": {
+              "accuracy": 0.5833333333333334,
+              "balanced_accuracy": 0.7083333333333334,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.5,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "openai/gsm8k:main": {
+            "count": 160,
+            "metrics": {
+              "accuracy": 0.9875,
+              "balanced_accuracy": 0.9875,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.9874980465697765,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          }
+        },
+        "failure_count": 1,
+        "latency": {
+          "count": 648,
+          "max_ms": 287264.8785999627,
+          "mean_ms": 9044.413452161629,
+          "median_ms": 7742.866349988617,
+          "min_ms": 2327.232300012838,
+          "p95_ms": 14990.693415005808
+        },
+        "probability_metrics": {
+          "available": false,
+          "unavailable_reason": "one or more successful predictions did not provide probabilities"
+        },
+        "risk_coverage": {
+          "coverage_at_target_error": {},
+          "curve": []
+        },
+        "status_counts": {
+          "ok": 647,
+          "parse_error": 1
+        },
+        "successful_count": 647,
+        "total_count": 648
+      },
+      "native_probability_count": 0,
+      "provider": "inferhub",
+      "record_count": 648,
+      "requested_model": "ali/kimi-k2.7-code",
+      "resolved_count": 647,
+      "resolved_coverage": 0.9984567901234568,
+      "status_counts": {
+        "ok": 647,
+        "parse_error": 1
+      },
+      "surfaced_model_ids": [
+        "ali/kimi-k2.7-code"
+      ]
+    },
+    "ali_qwen38_flash": {
+      "accuracy": 0.9845679012345679,
+      "correct_count": 638,
+      "metrics": {
+        "aggregate": {
+          "count": 648,
+          "metrics": {
+            "accuracy": 0.9845679012345679,
+            "balanced_accuracy": 0.9839834047940117,
+            "brier": null,
+            "ece": null,
+            "macro_f1": 0.7884750516564638,
+            "nll": null
+          },
+          "probability_metrics_available": false
+        },
+        "by_domain": {
+          "allenai/ai2_arc:ARC-Easy": {
+            "count": 160,
+            "metrics": {
+              "accuracy": 0.99375,
+              "balanced_accuracy": 0.9935064935064934,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.993738014167743,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:abstract_algebra": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:computer_security": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:elementary_mathematics": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 0.95,
+              "balanced_accuracy": 0.95,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.949874686716792,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:high_school_biology": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:high_school_world_history": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 0.95,
+              "balanced_accuracy": 0.95,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.949874686716792,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:logical_fallacies": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:machine_learning": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:professional_law": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 0.95,
+              "balanced_accuracy": 0.95,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.949874686716792,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-select-v0.1.0": {
+            "count": 120,
+            "metrics": {
+              "accuracy": 0.9916666666666667,
+              "balanced_accuracy": 0.9916666666666667,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.9916660879227724,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:arithmetic": {
+            "count": 12,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:code": {
+            "count": 12,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:multiple": {
+            "count": 12,
+            "metrics": {
+              "accuracy": 0.75,
+              "balanced_accuracy": 0.6666666666666666,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.5751515151515152,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:structured": {
+            "count": 12,
+            "metrics": {
+              "accuracy": 0.8333333333333334,
+              "balanced_accuracy": 0.9166666666666666,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.825,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "openai/gsm8k:main": {
+            "count": 160,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          }
+        },
+        "failure_count": 0,
+        "latency": {
+          "count": 648,
+          "max_ms": 151107.6299000415,
+          "mean_ms": 7231.767150309791,
+          "median_ms": 5051.944550010376,
+          "min_ms": 2224.041000008583,
+          "p95_ms": 12503.433524980206
+        },
+        "probability_metrics": {
+          "available": false,
+          "unavailable_reason": "one or more successful predictions did not provide probabilities"
+        },
+        "risk_coverage": {
+          "coverage_at_target_error": {},
+          "curve": []
+        },
+        "status_counts": {
+          "ok": 648
+        },
+        "successful_count": 648,
+        "total_count": 648
+      },
+      "native_probability_count": 0,
+      "provider": "inferhub",
+      "record_count": 648,
+      "requested_model": "ali/qwen3.8-flash",
+      "resolved_count": 648,
+      "resolved_coverage": 1.0,
+      "status_counts": {
+        "ok": 648
+      },
+      "surfaced_model_ids": [
+        "ali/qwen3.8-flash"
+      ]
+    },
+    "ali_qwen38_max": {
+      "accuracy": 0.9861111111111112,
+      "correct_count": 639,
+      "metrics": {
+        "aggregate": {
+          "count": 648,
+          "metrics": {
+            "accuracy": 0.9861111111111112,
+            "balanced_accuracy": 0.9902800372895608,
+            "brier": null,
+            "ece": null,
+            "macro_f1": 0.9903719112167692,
+            "nll": null
+          },
+          "probability_metrics_available": false
+        },
+        "by_domain": {
+          "allenai/ai2_arc:ARC-Easy": {
+            "count": 160,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:abstract_algebra": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:computer_security": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:elementary_mathematics": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 0.95,
+              "balanced_accuracy": 0.95,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.949874686716792,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:high_school_biology": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:high_school_world_history": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 0.95,
+              "balanced_accuracy": 0.95,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.949874686716792,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:logical_fallacies": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:machine_learning": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 0.95,
+              "balanced_accuracy": 0.95,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.949874686716792,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:professional_law": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 0.95,
+              "balanced_accuracy": 0.95,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.949874686716792,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-select-v0.1.0": {
+            "count": 120,
+            "metrics": {
+              "accuracy": 0.9916666666666667,
+              "balanced_accuracy": 0.9916666666666667,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.9916660879227724,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:arithmetic": {
+            "count": 12,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:code": {
+            "count": 12,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:multiple": {
+            "count": 12,
+            "metrics": {
+              "accuracy": 0.9166666666666666,
+              "balanced_accuracy": 0.875,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.8939393939393939,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:structured": {
+            "count": 12,
+            "metrics": {
+              "accuracy": 0.8333333333333334,
+              "balanced_accuracy": 0.9166666666666666,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.825,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "openai/gsm8k:main": {
+            "count": 160,
+            "metrics": {
+              "accuracy": 0.99375,
+              "balanced_accuracy": 0.99375,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.9937497558498378,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          }
+        },
+        "failure_count": 0,
+        "latency": {
+          "count": 648,
+          "max_ms": 323380.00489998376,
+          "mean_ms": 8591.97334768486,
+          "median_ms": 5859.350899991114,
+          "min_ms": 3250.5183999892324,
+          "p95_ms": 16571.262739977097
+        },
+        "probability_metrics": {
+          "available": false,
+          "unavailable_reason": "one or more successful predictions did not provide probabilities"
+        },
+        "risk_coverage": {
+          "coverage_at_target_error": {},
+          "curve": []
+        },
+        "status_counts": {
+          "ok": 648
+        },
+        "successful_count": 648,
+        "total_count": 648
+      },
+      "native_probability_count": 0,
+      "provider": "inferhub",
+      "record_count": 648,
+      "requested_model": "ali/qwen3.8-max",
+      "resolved_count": 648,
+      "resolved_coverage": 1.0,
+      "status_counts": {
+        "ok": 648
+      },
+      "surfaced_model_ids": [
+        "ali/qwen3.8-max"
+      ]
+    },
+    "cb_deepseek_v41_flash": {
+      "accuracy": 0.9889908256880734,
+      "correct_count": 539,
+      "metrics": {
+        "aggregate": {
+          "count": 545,
+          "metrics": {
+            "accuracy": 0.9889908256880734,
+            "balanced_accuracy": 0.9920102666004306,
+            "brier": null,
+            "ece": null,
+            "macro_f1": 0.9921102766580153,
+            "nll": null
+          },
+          "probability_metrics_available": false
+        },
+        "by_domain": {
+          "allenai/ai2_arc:ARC-Easy": {
+            "count": 148,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:abstract_algebra": {
+            "count": 17,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:computer_security": {
+            "count": 16,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:elementary_mathematics": {
+            "count": 16,
+            "metrics": {
+              "accuracy": 0.9375,
+              "balanced_accuracy": 0.9444444444444444,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.9372549019607843,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:high_school_biology": {
+            "count": 18,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:high_school_world_history": {
+            "count": 14,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:logical_fallacies": {
+            "count": 15,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:machine_learning": {
+            "count": 14,
+            "metrics": {
+              "accuracy": 0.8571428571428571,
+              "balanced_accuracy": 0.875,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.8571428571428571,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:professional_law": {
+            "count": 9,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-select-v0.1.0": {
+            "count": 106,
+            "metrics": {
+              "accuracy": 0.9905660377358491,
+              "balanced_accuracy": 0.9905660377358491,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.9905651980418335,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:arithmetic": {
+            "count": 11,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:code": {
+            "count": 11,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:multiple": {
+            "count": 8,
+            "metrics": {
+              "accuracy": 0.875,
+              "balanced_accuracy": 0.875,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.8888888888888888,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:structured": {
+            "count": 6,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "openai/gsm8k:main": {
+            "count": 136,
+            "metrics": {
+              "accuracy": 0.9926470588235294,
+              "balanced_accuracy": 0.9926470588235294,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.9926466612598,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          }
+        },
+        "failure_count": 103,
+        "latency": {
+          "count": 648,
+          "max_ms": 15837.35310001066,
+          "mean_ms": 4609.046793518908,
+          "median_ms": 4176.349150016904,
+          "min_ms": 2013.416200003121,
+          "p95_ms": 7799.868545003119
+        },
+        "probability_metrics": {
+          "available": false,
+          "unavailable_reason": "one or more successful predictions did not provide probabilities"
+        },
+        "risk_coverage": {
+          "coverage_at_target_error": {},
+          "curve": []
+        },
+        "status_counts": {
+          "ok": 545,
+          "parse_error": 103
+        },
+        "successful_count": 545,
+        "total_count": 648
+      },
+      "native_probability_count": 0,
+      "provider": "inferhub",
+      "record_count": 648,
+      "requested_model": "cb/deepseek-v4.1-flash",
+      "resolved_count": 545,
+      "resolved_coverage": 0.8410493827160493,
+      "status_counts": {
+        "ok": 545,
+        "parse_error": 103
+      },
+      "surfaced_model_ids": [
+        "cb/deepseek-v4.1-flash"
+      ]
+    },
+    "cbcn_deepseek_v4_flash": {
+      "accuracy": 0.9890909090909091,
+      "correct_count": 544,
+      "metrics": {
+        "aggregate": {
+          "count": 550,
+          "metrics": {
+            "accuracy": 0.9890909090909091,
+            "balanced_accuracy": 0.9922009235395189,
+            "brier": null,
+            "ece": null,
+            "macro_f1": 0.9922261009667025,
+            "nll": null
+          },
+          "probability_metrics_available": false
+        },
+        "by_domain": {
+          "allenai/ai2_arc:ARC-Easy": {
+            "count": 150,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:abstract_algebra": {
+            "count": 19,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:computer_security": {
+            "count": 12,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:elementary_mathematics": {
+            "count": 19,
+            "metrics": {
+              "accuracy": 0.9473684210526315,
+              "balanced_accuracy": 0.95,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.9473684210526315,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:high_school_biology": {
+            "count": 17,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:high_school_world_history": {
+            "count": 17,
+            "metrics": {
+              "accuracy": 0.9411764705882353,
+              "balanced_accuracy": 0.9375,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.9403508771929825,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:logical_fallacies": {
+            "count": 15,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:machine_learning": {
+            "count": 14,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:professional_law": {
+            "count": 12,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-select-v0.1.0": {
+            "count": 101,
+            "metrics": {
+              "accuracy": 0.9900990099009901,
+              "balanced_accuracy": 0.9901960784313726,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.9900990099009901,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:arithmetic": {
+            "count": 10,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:code": {
+            "count": 12,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:multiple": {
+            "count": 7,
+            "metrics": {
+              "accuracy": 0.8571428571428571,
+              "balanced_accuracy": 0.8333333333333334,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.8518518518518517,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:structured": {
+            "count": 8,
+            "metrics": {
+              "accuracy": 0.875,
+              "balanced_accuracy": 0.9375,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.8809523809523809,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "openai/gsm8k:main": {
+            "count": 137,
+            "metrics": {
+              "accuracy": 0.9927007299270073,
+              "balanced_accuracy": 0.9926470588235294,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.992699173994138,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          }
+        },
+        "failure_count": 98,
+        "latency": {
+          "count": 648,
+          "max_ms": 30975.88540002471,
+          "mean_ms": 4673.918092130474,
+          "median_ms": 4161.850700009381,
+          "min_ms": 1911.1810000031255,
+          "p95_ms": 7660.606419984832
+        },
+        "probability_metrics": {
+          "available": false,
+          "unavailable_reason": "one or more successful predictions did not provide probabilities"
+        },
+        "risk_coverage": {
+          "coverage_at_target_error": {},
+          "curve": []
+        },
+        "status_counts": {
+          "ok": 550,
+          "parse_error": 98
+        },
+        "successful_count": 550,
+        "total_count": 648
+      },
+      "native_probability_count": 0,
+      "provider": "inferhub",
+      "record_count": 648,
+      "requested_model": "cbcn/deepseek-v4-flash",
+      "resolved_count": 550,
+      "resolved_coverage": 0.8487654320987654,
+      "status_counts": {
+        "ok": 550,
+        "parse_error": 98
+      },
+      "surfaced_model_ids": [
+        "cbcn/deepseek-v4-flash"
+      ]
+    },
+    "cbcn_glm53_flash": {
+      "accuracy": 0.9799072642967542,
+      "correct_count": 634,
+      "metrics": {
+        "aggregate": {
+          "count": 647,
+          "metrics": {
+            "accuracy": 0.9799072642967542,
+            "balanced_accuracy": 0.982360133137999,
+            "brier": null,
+            "ece": null,
+            "macro_f1": 0.9826386240913818,
+            "nll": null
+          },
+          "probability_metrics_available": false
+        },
+        "by_domain": {
+          "allenai/ai2_arc:ARC-Easy": {
+            "count": 160,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:abstract_algebra": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:computer_security": {
+            "count": 19,
+            "metrics": {
+              "accuracy": 0.9473684210526315,
+              "balanced_accuracy": 0.9444444444444444,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.9467787114845938,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:elementary_mathematics": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 0.95,
+              "balanced_accuracy": 0.95,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.949874686716792,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:high_school_biology": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:high_school_world_history": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 0.95,
+              "balanced_accuracy": 0.95,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.949874686716792,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:logical_fallacies": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:machine_learning": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:professional_law": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 0.95,
+              "balanced_accuracy": 0.95,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.949874686716792,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-select-v0.1.0": {
+            "count": 120,
+            "metrics": {
+              "accuracy": 0.9916666666666667,
+              "balanced_accuracy": 0.9916666666666667,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.9916660879227724,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:arithmetic": {
+            "count": 12,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:code": {
+            "count": 12,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:multiple": {
+            "count": 12,
+            "metrics": {
+              "accuracy": 0.75,
+              "balanced_accuracy": 0.7833333333333333,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.7138888888888889,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:structured": {
+            "count": 12,
+            "metrics": {
+              "accuracy": 0.75,
+              "balanced_accuracy": 0.875,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.7666666666666666,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "openai/gsm8k:main": {
+            "count": 160,
+            "metrics": {
+              "accuracy": 0.9875,
+              "balanced_accuracy": 0.9875,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.9874980465697765,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          }
+        },
+        "failure_count": 1,
+        "latency": {
+          "count": 648,
+          "max_ms": 44208.141100010835,
+          "mean_ms": 4272.809350462382,
+          "median_ms": 3841.319900006056,
+          "min_ms": 1851.7214999883436,
+          "p95_ms": 7181.878475015401
+        },
+        "probability_metrics": {
+          "available": false,
+          "unavailable_reason": "one or more successful predictions did not provide probabilities"
+        },
+        "risk_coverage": {
+          "coverage_at_target_error": {},
+          "curve": []
+        },
+        "status_counts": {
+          "ok": 647,
+          "parse_error": 1
+        },
+        "successful_count": 647,
+        "total_count": 648
+      },
+      "native_probability_count": 0,
+      "provider": "inferhub",
+      "record_count": 648,
+      "requested_model": "cbcn/glm-5.3-flash",
+      "resolved_count": 647,
+      "resolved_coverage": 0.9984567901234568,
+      "status_counts": {
+        "ok": 647,
+        "parse_error": 1
+      },
+      "surfaced_model_ids": [
+        "cbcn/glm-5.3-flash"
+      ]
+    },
+    "cbcn_minimax_m3": {
+      "accuracy": 0.9687010954616588,
+      "correct_count": 619,
+      "metrics": {
+        "aggregate": {
+          "count": 639,
+          "metrics": {
+            "accuracy": 0.9687010954616588,
+            "balanced_accuracy": 0.9711452725513756,
+            "brier": null,
+            "ece": null,
+            "macro_f1": 0.7803874187438596,
+            "nll": null
+          },
+          "probability_metrics_available": false
+        },
+        "by_domain": {
+          "allenai/ai2_arc:ARC-Easy": {
+            "count": 159,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:abstract_algebra": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:computer_security": {
+            "count": 19,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:elementary_mathematics": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 0.95,
+              "balanced_accuracy": 0.95,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.949874686716792,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:high_school_biology": {
+            "count": 18,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:high_school_world_history": {
+            "count": 19,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:logical_fallacies": {
+            "count": 20,
+            "metrics": {
+              "accuracy": 0.95,
+              "balanced_accuracy": 0.95,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.949874686716792,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:machine_learning": {
+            "count": 18,
+            "metrics": {
+              "accuracy": 0.9444444444444444,
+              "balanced_accuracy": 0.9444444444444444,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.9442724458204335,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "cais/mmlu:professional_law": {
+            "count": 18,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-select-v0.1.0": {
+            "count": 120,
+            "metrics": {
+              "accuracy": 0.975,
+              "balanced_accuracy": 0.975,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.9749982637683172,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:arithmetic": {
+            "count": 12,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:code": {
+            "count": 12,
+            "metrics": {
+              "accuracy": 1.0,
+              "balanced_accuracy": 1.0,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 1.0,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:multiple": {
+            "count": 12,
+            "metrics": {
+              "accuracy": 0.5,
+              "balanced_accuracy": 0.4083333333333333,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.34545454545454546,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "eval-lab-synthetic:structured": {
+            "count": 12,
+            "metrics": {
+              "accuracy": 0.6666666666666666,
+              "balanced_accuracy": 0.75,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.5466666666666666,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          },
+          "openai/gsm8k:main": {
+            "count": 160,
+            "metrics": {
+              "accuracy": 0.975,
+              "balanced_accuracy": 0.975,
+              "brier": null,
+              "ece": null,
+              "macro_f1": 0.9749843652282677,
+              "nll": null
+            },
+            "probability_metrics_available": false
+          }
+        },
+        "failure_count": 9,
+        "latency": {
+          "count": 648,
+          "max_ms": 59294.37299998244,
+          "mean_ms": 3732.426910957948,
+          "median_ms": 3260.603999980958,
+          "min_ms": 1913.67589996662,
+          "p95_ms": 6039.588140021078
+        },
+        "probability_metrics": {
+          "available": false,
+          "unavailable_reason": "one or more successful predictions did not provide probabilities"
+        },
+        "risk_coverage": {
+          "coverage_at_target_error": {},
+          "curve": []
+        },
+        "status_counts": {
+          "ok": 639,
+          "parse_error": 9
+        },
+        "successful_count": 639,
+        "total_count": 648
+      },
+      "native_probability_count": 0,
+      "provider": "inferhub",
+      "record_count": 648,
+      "requested_model": "cbcn/minimax-m3",
+      "resolved_count": 639,
+      "resolved_coverage": 0.9861111111111112,
+      "status_counts": {
+        "ok": 639,
+        "parse_error": 9
+      },
+      "surfaced_model_ids": [
+        "cbcn/minimax-m3"
+      ]
+    }
+  },
+  "differential": {
+    "pairs": {
+      "ali_glm52__vs__ali_kimi_k27_code": {
+        "agreement_count": 616,
+        "agreement_rate": 0.9840255591054313,
+        "comparable_count": 626
+      },
+      "ali_glm52__vs__ali_qwen38_flash": {
+        "agreement_count": 617,
+        "agreement_rate": 0.9856230031948882,
+        "comparable_count": 626
+      },
+      "ali_glm52__vs__ali_qwen38_max": {
+        "agreement_count": 618,
+        "agreement_rate": 0.987220447284345,
+        "comparable_count": 626
+      },
+      "ali_glm52__vs__cb_deepseek_v41_flash": {
+        "agreement_count": 526,
+        "agreement_rate": 0.9887218045112782,
+        "comparable_count": 532
+      },
+      "ali_glm52__vs__cbcn_deepseek_v4_flash": {
+        "agreement_count": 534,
+        "agreement_rate": 0.994413407821229,
+        "comparable_count": 537
+      },
+      "ali_glm52__vs__cbcn_glm53_flash": {
+        "agreement_count": 611,
+        "agreement_rate": 0.9776,
+        "comparable_count": 625
+      },
+      "ali_glm52__vs__cbcn_minimax_m3": {
+        "agreement_count": 607,
+        "agreement_rate": 0.9758842443729904,
+        "comparable_count": 622
+      },
+      "ali_kimi_k27_code__vs__ali_qwen38_flash": {
+        "agreement_count": 636,
+        "agreement_rate": 0.9829984544049459,
+        "comparable_count": 647
+      },
+      "ali_kimi_k27_code__vs__ali_qwen38_max": {
+        "agreement_count": 639,
+        "agreement_rate": 0.9876352395672334,
+        "comparable_count": 647
+      },
+      "ali_kimi_k27_code__vs__cb_deepseek_v41_flash": {
+        "agreement_count": 540,
+        "agreement_rate": 0.9908256880733946,
+        "comparable_count": 545
+      },
+      "ali_kimi_k27_code__vs__cbcn_deepseek_v4_flash": {
+        "agreement_count": 546,
+        "agreement_rate": 0.994535519125683,
+        "comparable_count": 549
+      },
+      "ali_kimi_k27_code__vs__cbcn_glm53_flash": {
+        "agreement_count": 634,
+        "agreement_rate": 0.9814241486068112,
+        "comparable_count": 646
+      },
+      "ali_kimi_k27_code__vs__cbcn_minimax_m3": {
+        "agreement_count": 624,
+        "agreement_rate": 0.9765258215962441,
+        "comparable_count": 639
+      },
+      "ali_qwen38_flash__vs__ali_qwen38_max": {
+        "agreement_count": 643,
+        "agreement_rate": 0.9922839506172839,
+        "comparable_count": 648
+      },
+      "ali_qwen38_flash__vs__cb_deepseek_v41_flash": {
+        "agreement_count": 540,
+        "agreement_rate": 0.9908256880733946,
+        "comparable_count": 545
+      },
+      "ali_qwen38_flash__vs__cbcn_deepseek_v4_flash": {
+        "agreement_count": 548,
+        "agreement_rate": 0.9963636363636363,
+        "comparable_count": 550
+      },
+      "ali_qwen38_flash__vs__cbcn_glm53_flash": {
+        "agreement_count": 638,
+        "agreement_rate": 0.9860896445131375,
+        "comparable_count": 647
+      },
+      "ali_qwen38_flash__vs__cbcn_minimax_m3": {
+        "agreement_count": 622,
+        "agreement_rate": 0.97339593114241,
+        "comparable_count": 639
+      },
+      "ali_qwen38_max__vs__cb_deepseek_v41_flash": {
+        "agreement_count": 544,
+        "agreement_rate": 0.998165137614679,
+        "comparable_count": 545
+      },
+      "ali_qwen38_max__vs__cbcn_deepseek_v4_flash": {
+        "agreement_count": 550,
+        "agreement_rate": 1.0,
+        "comparable_count": 550
+      },
+      "ali_qwen38_max__vs__cbcn_glm53_flash": {
+        "agreement_count": 637,
+        "agreement_rate": 0.9845440494590417,
+        "comparable_count": 647
+      },
+      "ali_qwen38_max__vs__cbcn_minimax_m3": {
+        "agreement_count": 622,
+        "agreement_rate": 0.97339593114241,
+        "comparable_count": 639
+      },
+      "cb_deepseek_v41_flash__vs__cbcn_deepseek_v4_flash": {
+        "agreement_count": 478,
+        "agreement_rate": 1.0,
+        "comparable_count": 478
+      },
+      "cb_deepseek_v41_flash__vs__cbcn_glm53_flash": {
+        "agreement_count": 539,
+        "agreement_rate": 0.9889908256880734,
+        "comparable_count": 545
+      },
+      "cb_deepseek_v41_flash__vs__cbcn_minimax_m3": {
+        "agreement_count": 528,
+        "agreement_rate": 0.9777777777777777,
+        "comparable_count": 540
+      },
+      "cbcn_deepseek_v4_flash__vs__cbcn_glm53_flash": {
+        "agreement_count": 545,
+        "agreement_rate": 0.990909090909091,
+        "comparable_count": 550
+      },
+      "cbcn_deepseek_v4_flash__vs__cbcn_minimax_m3": {
+        "agreement_count": 538,
+        "agreement_rate": 0.9853479853479854,
+        "comparable_count": 546
+      },
+      "cbcn_glm53_flash__vs__cbcn_minimax_m3": {
+        "agreement_count": 620,
+        "agreement_rate": 0.9717868338557993,
+        "comparable_count": 638
+      }
+    }
+  },
+  "gold_used_offline_only": true,
+  "partition": "public_selection",
+  "record_count": 648,
+  "source_pool": "experiments\\EXP-20260921-015-grok-luna-qwen-bakeoff"
+}

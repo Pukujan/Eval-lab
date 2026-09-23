@@ -1,0 +1,41 @@
+{
+  "selection_date": "2026-09-22",
+  "source_artifact": "D:/claude/inferhub/data/daily-shortlist.json",
+  "source_artifact_sha256": "830F6D0789BED32313E92AAB49EBCF1E789B5AD485DDEB7EC48F7DD41F586E93",
+  "policy_artifact": "D:/claude/inferhub/data/recommendation-policy.json",
+  "policy_artifact_sha256": "61BF0CEABC8174F8C9E29B79995D33BAD6B3714BD7C621237A61210FCF381A6B",
+  "pricing_artifact": "D:/claude/inferhub/data/pricing.csv",
+  "pricing_artifact_sha256": "B4E58032950EC311F5E30A62FED30BBF9B45164BF3BE179679631CBD696416DB",
+  "engine_generated_at_utc": "2026-09-22T17:10:44.385Z",
+  "engine_shortlist_count": 9,
+  "authenticated_model_count_at_refresh": 251,
+  "deduplication": "one cheapest exact route per selected model family",
+  "exclusions": ["GPT, ChatGPT, and Codex model IDs", "aliases", "Qwen4B", "historical EXP-023 routes and outputs"],
+  "policy_snapshot": {
+    "routing_eligible_only": true,
+    "minimum_tier_order": 2,
+    "minimum_capability_score_100": 25,
+    "maximum_release_age_days": 180,
+    "unknown_release_dates_allowed": false,
+    "minimum_priced_provider_count": 2,
+    "minimum_catalog_availability_score_100": 55,
+    "minimum_public_availability_7d_pct": 90,
+    "maximum_supply_weighted_cost_usdc_per_1m": 0.5,
+    "maximum_median_weighted_cost_usdc_per_1m": 0.5,
+    "maximum_models_per_vendor": 2,
+    "maximum_models_per_family": 1,
+    "runtime_reliability_observation_threshold": 30,
+    "streaming_probe_contract": ["SSE content type", "[DONE] marker"]
+  },
+  "arms": [
+    {"arm_id":"cb_deepseek_v41_flash","model":"cb/deepseek-v4.1-flash","family":"DeepSeek V4.1 Flash","vendor":"DeepSeek","shortlist_rank":1,"shortlist_score_100":87.6945,"release_date":"2026-09-10","public_availability_7d_pct":99.44,"priced_provider_count":5,"supply_weighted_median_cost_usdc_per_1m":0.022108,"minimum_input_ask_usdc_per_1m":0.00015,"minimum_output_ask_usdc_per_1m":0.0006,"selection":"cheapest exact route"},
+    {"arm_id":"cbcn_glm53_flash","model":"cbcn/glm-5.3-flash","family":"GLM 5.3 Flash","vendor":"Z.ai","shortlist_rank":2,"shortlist_score_100":85.6501,"release_date":"2026-08-26","public_availability_7d_pct":95.52,"priced_provider_count":5,"supply_weighted_median_cost_usdc_per_1m":0.032924,"minimum_input_ask_usdc_per_1m":0.00285,"minimum_output_ask_usdc_per_1m":0.0095,"selection":"cheapest exact route"},
+    {"arm_id":"cbcn_deepseek_v4_flash","model":"cbcn/deepseek-v4-flash","family":"DeepSeek V4 Flash","vendor":"DeepSeek","shortlist_rank":3,"shortlist_score_100":83.447,"release_date":"2026-08-21","public_availability_7d_pct":96.705,"priced_provider_count":4,"supply_weighted_median_cost_usdc_per_1m":0.046688,"minimum_input_ask_usdc_per_1m":0.00418,"minimum_output_ask_usdc_per_1m":0.01254,"selection":"cheapest exact route"},
+    {"arm_id":"ali_qwen38_flash","model":"ali/qwen3.8-flash","family":"Qwen3.8 Flash","vendor":"Alibaba/Qwen","shortlist_rank":4,"shortlist_score_100":81.4595,"release_date":"2026-08-26","public_availability_7d_pct":97.655,"priced_provider_count":2,"supply_weighted_median_cost_usdc_per_1m":0.008056,"minimum_input_ask_usdc_per_1m":0.00135,"minimum_output_ask_usdc_per_1m":0.00423,"selection":"cheapest exact route"},
+    {"arm_id":"cbcn_minimax_m3","model":"cbcn/minimax-m3","family":"MiniMax M3","vendor":"MiniMax","shortlist_rank":5,"shortlist_score_100":78.5176,"release_date":"2026-06-01","public_availability_7d_pct":98.665,"priced_provider_count":4,"supply_weighted_median_cost_usdc_per_1m":0.052142,"minimum_input_ask_usdc_per_1m":0.0057,"minimum_output_ask_usdc_per_1m":0.0228,"selection":"cheapest exact route"},
+    {"arm_id":"ali_glm52","model":"ali/glm-5.2","family":"GLM 5.2","vendor":"Z.ai","shortlist_rank":6,"shortlist_score_100":70.7869,"release_date":"2026-08-10","public_availability_7d_pct":99.44,"priced_provider_count":5,"supply_weighted_median_cost_usdc_per_1m":0.180507,"minimum_input_ask_usdc_per_1m":0.0056,"minimum_output_ask_usdc_per_1m":0.0176,"selection":"cheapest exact route"},
+    {"arm_id":"ali_qwen38_max","model":"ali/qwen3.8-max","family":"Qwen 3.8 Max","vendor":"Alibaba/Qwen","shortlist_rank":7,"shortlist_score_100":68.2153,"release_date":"2026-09-02","public_availability_7d_pct":97.89,"priced_provider_count":3,"supply_weighted_median_cost_usdc_per_1m":0.169559,"minimum_input_ask_usdc_per_1m":0.012,"minimum_output_ask_usdc_per_1m":0.036,"selection":"cheapest exact route; avoids historical repeat-503 ClinePass route"},
+    {"arm_id":"ali_kimi_k27_code","model":"ali/kimi-k2.7-code","family":"Kimi K2.7 Code","vendor":"Moonshot","shortlist_rank":8,"shortlist_score_100":65.7761,"release_date":"2026-06-12","public_availability_7d_pct":97.89,"priced_provider_count":5,"supply_weighted_median_cost_usdc_per_1m":0.155677,"minimum_input_ask_usdc_per_1m":0.00095,"minimum_output_ask_usdc_per_1m":0.004,"selection":"cheapest exact route"},
+    {"arm_id":"cp_mimo_v25","model":"cp/cline-pass/mimo-v2.5","family":"MiMo V2.5","vendor":"Xiaomi","shortlist_rank":9,"shortlist_score_100":34.6945,"release_date":"2026-04-22","public_availability_7d_pct":96.705,"priced_provider_count":2,"supply_weighted_median_cost_usdc_per_1m":0.092838,"minimum_input_ask_usdc_per_1m":0.0525,"minimum_output_ask_usdc_per_1m":0.105,"selection":"cheapest exact route; policy-eligible despite sparse provider price points"}
+  ]
+}

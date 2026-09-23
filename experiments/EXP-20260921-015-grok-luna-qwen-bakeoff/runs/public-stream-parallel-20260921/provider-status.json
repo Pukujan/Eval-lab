@@ -1,0 +1,48 @@
+{
+  "arms": {
+    "grok": {
+      "error_kinds": {
+        "process_exit": 3,
+        "timeout": 2
+      },
+      "provider": "xai-grok-build-cli",
+      "requested_model": "grok-4.6",
+      "route": "direct_grok_build_cli_subscription",
+      "status_counts": {
+        "ok": 643,
+        "provider_error": 5
+      },
+      "surfaced_model_ids": [
+        "grok-4.6-build"
+      ]
+    },
+    "luna": {
+      "error_kinds": {},
+      "provider": "codex",
+      "requested_model": "gpt-5.6-luna",
+      "route": "direct_codex_chatgpt_subscription",
+      "status_counts": {
+        "ok": 648
+      },
+      "surfaced_model_ids": []
+    },
+    "qwen_flash": {
+      "error_kinds": {
+        "parse_error": 1
+      },
+      "provider": "yolo-auto",
+      "requested_model": "qwen3.8-flash",
+      "route": "yolo_auto_openai_compatible",
+      "status_counts": {
+        "ok": 647,
+        "parse_error": 1
+      },
+      "surfaced_model_ids": [
+        "qwen3.8-flash"
+      ]
+    }
+  },
+  "experiment_id": "EXP-20260921-015-grok-luna-qwen-bakeoff",
+  "partition": "public_selection",
+  "run_id": "public-stream-parallel-20260921"
+}

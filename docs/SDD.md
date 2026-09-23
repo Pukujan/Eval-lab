@@ -306,3 +306,53 @@ Each task:
 - updates only declared files unless task scope is checkpointed first
 - records local validation before handoff
 - merges before the dependent task starts
+
+## 14. TASK-0010 selective escalation and research-object architecture
+
+Routing architecture:
+
+~~~text
+frozen TASK-0009 student
+        |
+        v
+raw + calibrated confidence
+        |
+        +-- accept locally
+        |
+        +-- escalate --> pinned Jev or Qwen3.8 Flash
+                            |
+                            v
+                     final/unresolved result
+~~~
+
+Routing policy code is provider-independent. Provider adapters return normalized typed outcomes/statuses.
+
+Repository-owned typed questions are the semantic source of truth. Adapters compile the same specification to OpenRouter Decisions / pinned `typesafe/jev-1.13` and an LLM-backed System-One adapter using YOLO-Auto `qwen3.8-flash`.
+
+Research release pipeline:
+
+~~~text
+source revisions
+ -> canonical benchmark build
+ -> benchmark fingerprint/checksums
+ -> frozen student/calibration
+ -> thresholds
+ -> provider predictions/routing
+ -> results.json
+ -> generated tables/figures
+ -> paper/main.tex
+~~~
+
+Metadata layers:
+- RO-Crate 1.3: outer research-object/package description.
+- PROV-O: lineage between entities/activities/agents.
+- SHACL 2017 Recommendation: executable RDF constraints.
+- CFF 1.2.0: repository/software citation.
+- DataCite 4.6-compatible fields: DOI/deposit readiness.
+- OWL 2: optional vocabulary semantics only; not the validation layer.
+
+Benchmark release lives at `benchmark/eval-lab-select-v0.1.0/`.
+
+Paper claims are downstream of machine-readable result artifacts; generated table/figure code must consume committed results rather than use hand-copied metrics.
+
+PCM manages project resumability. RO-Crate/PROV-O manage scientific provenance. Eval Lab maps PROJECT/CURRENT/TASK/CHECKPOINT to PCM concepts but does not depend on the not-yet-implemented PCM research template.

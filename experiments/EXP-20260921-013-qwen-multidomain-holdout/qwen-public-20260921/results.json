@@ -1,0 +1,174 @@
+{
+  "base_url": "https://yolo-auto.com/v1",
+  "created_at_utc": "2026-09-21T04:57:12.152383+00:00",
+  "elapsed_seconds": 397.6481976000068,
+  "experiment_id": "EXP-20260921-013-qwen-multidomain-holdout",
+  "gold_not_used_for_provider_request": true,
+  "granularity": "one_record_per_request",
+  "holdout_manifest_fingerprint": "409428fc71b447d0114dd7a1929cbed34269a4318ef249c108582b70069d8d61",
+  "latency_ms": {
+    "count": 648,
+    "mean": 2451.4734666670756,
+    "p95": 9502.176200010581
+  },
+  "metrics": {
+    "accuracy": 0.9847715736040609,
+    "by_dataset": {
+      "allenai/ai2_arc:ARC-Easy": {
+        "accuracy": 0.9876543209876543,
+        "correct": 80,
+        "records": 160,
+        "resolved": 81,
+        "status_counts": {
+          "ok": 81,
+          "parse_error": 1,
+          "rate_limited": 78
+        }
+      },
+      "cais/mmlu:abstract_algebra": {
+        "accuracy": null,
+        "correct": 0,
+        "records": 20,
+        "resolved": 0,
+        "status_counts": {
+          "rate_limited": 20
+        }
+      },
+      "cais/mmlu:computer_security": {
+        "accuracy": null,
+        "correct": 0,
+        "records": 20,
+        "resolved": 0,
+        "status_counts": {
+          "rate_limited": 20
+        }
+      },
+      "cais/mmlu:elementary_mathematics": {
+        "accuracy": null,
+        "correct": 0,
+        "records": 20,
+        "resolved": 0,
+        "status_counts": {
+          "rate_limited": 20
+        }
+      },
+      "cais/mmlu:high_school_biology": {
+        "accuracy": null,
+        "correct": 0,
+        "records": 20,
+        "resolved": 0,
+        "status_counts": {
+          "rate_limited": 20
+        }
+      },
+      "cais/mmlu:high_school_world_history": {
+        "accuracy": null,
+        "correct": 0,
+        "records": 20,
+        "resolved": 0,
+        "status_counts": {
+          "rate_limited": 20
+        }
+      },
+      "cais/mmlu:logical_fallacies": {
+        "accuracy": null,
+        "correct": 0,
+        "records": 20,
+        "resolved": 0,
+        "status_counts": {
+          "rate_limited": 20
+        }
+      },
+      "cais/mmlu:machine_learning": {
+        "accuracy": null,
+        "correct": 0,
+        "records": 20,
+        "resolved": 0,
+        "status_counts": {
+          "rate_limited": 20
+        }
+      },
+      "cais/mmlu:professional_law": {
+        "accuracy": null,
+        "correct": 0,
+        "records": 20,
+        "resolved": 0,
+        "status_counts": {
+          "rate_limited": 20
+        }
+      },
+      "eval-lab-select-v0.1.0": {
+        "accuracy": 0.9827586206896551,
+        "correct": 114,
+        "records": 120,
+        "resolved": 116,
+        "status_counts": {
+          "ok": 116,
+          "parse_error": 4
+        }
+      },
+      "eval-lab-synthetic:arithmetic": {
+        "accuracy": null,
+        "correct": 0,
+        "records": 12,
+        "resolved": 0,
+        "status_counts": {
+          "rate_limited": 12
+        }
+      },
+      "eval-lab-synthetic:code": {
+        "accuracy": null,
+        "correct": 0,
+        "records": 12,
+        "resolved": 0,
+        "status_counts": {
+          "rate_limited": 12
+        }
+      },
+      "eval-lab-synthetic:multiple": {
+        "accuracy": null,
+        "correct": 0,
+        "records": 12,
+        "resolved": 0,
+        "status_counts": {
+          "rate_limited": 12
+        }
+      },
+      "eval-lab-synthetic:structured": {
+        "accuracy": null,
+        "correct": 0,
+        "records": 12,
+        "resolved": 0,
+        "status_counts": {
+          "rate_limited": 12
+        }
+      },
+      "openai/gsm8k:main": {
+        "accuracy": null,
+        "correct": 0,
+        "records": 160,
+        "resolved": 0,
+        "status_counts": {
+          "rate_limited": 160
+        }
+      }
+    },
+    "correct": 194,
+    "records": 648,
+    "resolved": 197,
+    "status_counts": {
+      "ok": 197,
+      "parse_error": 5,
+      "rate_limited": 446
+    }
+  },
+  "model": "qwen3.8-flash",
+  "partition": "public_selection",
+  "pool_fingerprint": "b7edd61269f0f7757e734bc7e3f665ac2bcd6d908a1e56f73f0b0291d55b64d8",
+  "probabilities_available": false,
+  "provider": "yolo-auto",
+  "record_count": 648,
+  "streaming": true,
+  "timeout_seconds": 120.0,
+  "workers": 4
+}

@@ -1,0 +1,21 @@
+{
+  "confidence_definition": "native normalized provider probabilities only; label-only responses have no confidence metric",
+  "context_limit": 4096,
+  "pairwise_legal_labels": [
+    "A",
+    "B",
+    "TIE"
+  ],
+  "question_type": "choice",
+  "single_legal_labels": [
+    "pass",
+    "fail"
+  ],
+  "spec_id": "eval-lab-system-one",
+  "spec_version": "0.1.0",
+  "target_error_rates": [
+    0.01,
+    0.02,
+    0.05
+  ]
+}

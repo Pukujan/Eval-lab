@@ -1,0 +1,8 @@
+arc-single:Mercury_7017973:correct
+arc-single:Mercury_7017973:wrong
+arc-single:Mercury_SC_401116:correct
+arc-single:Mercury_SC_401116:wrong
+arc-pair:MCAS_1999_8_33
+arc-pair:Mercury_SC_408039
+arc-pair:AKDE&ED_2012_8_1
+arc-pair:Mercury_7222758

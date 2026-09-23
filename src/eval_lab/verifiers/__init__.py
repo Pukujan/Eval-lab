@@ -48,14 +48,28 @@ def result(
 
 from eval_lab.verifiers.arithmetic import verify_arithmetic
 from eval_lab.verifiers.code_output import verify_code_output
+from eval_lab.verifiers.humaneval import (
+    HUMANEVAL_VERIFIER_ID,
+    HumanEvalExecutionResult,
+    HumanEvalStatus,
+    build_humaneval_execution_result,
+    normalize_humaneval_status,
+    verify_humaneval_execution,
+)
 from eval_lab.verifiers.multiple_choice import verify_multiple_choice
 from eval_lab.verifiers.structured import verify_structured_output
 
 __all__ = [
+    "HUMANEVAL_VERIFIER_ID",
+    "HumanEvalExecutionResult",
+    "HumanEvalStatus",
     "VerifierResult",
+    "build_humaneval_execution_result",
+    "normalize_humaneval_status",
     "result",
     "verify_arithmetic",
     "verify_code_output",
+    "verify_humaneval_execution",
     "verify_multiple_choice",
     "verify_structured_output",
 ]

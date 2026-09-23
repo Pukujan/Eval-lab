@@ -1,0 +1,53 @@
+id: EXP-20260921-020-humaneval-preregistration
+status: planning_only_blocked
+hypothesis: "A calibrated lightweight judge can predict isolated executable-test correctness of exact HumanEval candidate completions at useful selective coverage."
+created_at: "2026-09-21"
+code_commit: null  # Planning commit is recorded in the TASK-0022 handoff; execution code does not exist.
+seed: null  # No candidate generator or provider seed has been frozen.
+context_limit: 4096
+dataset:
+  name: openai/human-eval
+  version: 6d43fb980f9fee3c892a914eda09951f772ad10d
+  source_url: https://github.com/openai/human-eval
+  archive_path: data/HumanEval.jsonl.gz
+  archive_git_blob_sha1: 998d25196e17af24daf9b6cb3a975fe752528e46
+  archive_sha256: null
+  canonical_rows_sha256: null
+  row_count: null  # Assert 164 after a separately authorized retrieval.
+  license: MIT
+  license_sha256: bcba3de214851cce46ed5af42d6698044616eeace887c3231bc7a20474ab639e
+  fingerprint: null
+  split_policy: "SHA-256('humaneval-v1|20260921|' + task_id), task_id tie-break; first floor(20%) dev, next floor(20%) calibration, remainder test; group by source task"
+judge:
+  provider: null  # Arms not selected; no provider calls authorized.
+  model: null
+  adapter_version: humaneval-v1-proposed
+  prompt_version: packet-v1-proposed
+  routes: "No OpenCode; OpenRouter Jev only; Grok direct authenticated xAI grok CLI only; all other arms require separate explicit route pin."
+rubric:
+  version: binary-pass-fail-v1-proposed
+gold:
+  provenance_policy: "executable_test only after pinned tests in a proven isolated sandbox; infrastructure failure is indeterminate"
+  verifier_version: null
+  runtime_image_digest: null
+calibration:
+  method: null  # Must be prespecified before final test and fitted on calibration IDs only.
+  split: calibration
+metrics:
+  - accuracy
+  - balanced_accuracy
+  - macro_f1
+  - brier
+  - nll
+  - ece
+  - selective_risk_coverage
+  - coverage_at_frozen_error_target
+  - latency
+  - cost_per_1000_attempted_decisions
+primary_comparison: null
+candidate_source: null
+candidate_count_per_task: null
+exclusion_rules: "Invalid candidate and indeterminate verifier outcomes have no gold; provider errors are coverage/status, not wrong answers."
+stopping_rule: "No execution until all gates in plan.md are frozen in a new accepted checkpoint; no optional stopping on test labels."
+artifacts: []
+notes: "Policy skeleton only; not a complete preregistration for final test. Fill nulls and commit before any final-label or provider execution; changed protocol after execution requires a new experiment ID."

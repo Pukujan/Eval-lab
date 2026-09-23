@@ -1,0 +1,33 @@
+{
+  "arm_id": "grok_46",
+  "experiment_id": "EXP-20260922-025-grok-protocol-ablation",
+  "model": "grok-4.6",
+  "partition": "public_selection",
+  "run_id": "grok_46-typed_schema",
+  "streaming": true,
+  "summary": {
+    "coverage": 1.0,
+    "latency_p95_ms": 25685.655600042082,
+    "mode_metrics": {
+      "pairwise": {
+        "accuracy": 0.03125,
+        "coverage": 1.0,
+        "record_count": 32,
+        "resolved_count": 32
+      },
+      "single": {
+        "accuracy": 0.5,
+        "coverage": 1.0,
+        "record_count": 32,
+        "resolved_count": 32
+      }
+    },
+    "record_count": 64,
+    "resolved_count": 64,
+    "selection_score": 0.265625,
+    "status_counts": {
+      "ok": 64
+    }
+  },
+  "variant": "typed_schema"
+}

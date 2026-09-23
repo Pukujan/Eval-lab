@@ -181,3 +181,39 @@ After TASK-0006, one command or documented command sequence must reproduce:
 - metrics
 - calibration artifact where supported
 - final comparison report
+
+## 11. TASK-0010 selective escalation and publication validation
+
+Core unit tests:
+- threshold boundaries and monotonic coverage
+- deterministic record routing
+- explicit unresolved provider failures
+- matched random escalation count
+- binomial confidence-bound calculations
+- pinned/canary Jev model identity separation
+- typed-question schema normalization
+
+The normative metamorphic/differential list is `docs/TASK-0010-METAMORPHIC-DIFFERENTIAL.md`; all offline invariants are merge-blocking.
+
+Leakage tests:
+- final-evaluation labels cannot enter threshold selection
+- provider/spec choice cannot depend on final labels
+- source families cannot cross threshold-selection/final partitions
+- paper-generation code may read final results only after preregistration freeze
+
+Statistical validation reports local accepted N, observed errors, empirical risk, and 95% interval/upper bound at each low-error operating point.
+
+Research artifact validation:
+- deterministic benchmark rebuild preserves IDs/checksums
+- source manifest references pinned upstream revisions
+- RO-Crate parses as required JSON-LD structure
+- PROV graph parses as RDF
+- SHACL positive fixture conforms
+- negative fixtures missing required identity/provenance fail
+- benchmark checksums match files
+- paper tables match results.json within declared formatting tolerance
+- CFF 1.2.0 validates once final citation metadata is written
+
+Offline reproduction must regenerate routing summaries, risk-coverage data, result tables, paper tables/figures, and benchmark checksums without provider credentials.
+
+If a LaTeX compiler is available, `paper/main.tex` must compile; a missing local TeX installation is recorded separately from source validation.

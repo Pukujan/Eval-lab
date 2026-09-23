@@ -1,0 +1,74 @@
+id: EXP-20260921-019-calibrated-judge-study
+status: completed
+hypothesis: A frozen rubric and typed protocol plus split-safe probability calibration will produce an auditable calibrated judge, while independent judge routes will show measurable head-to-head differences on the same objective records.
+created_at: 2026-09-21
+code_commit: e41f449
+seed: 20260921
+context_limit: 2048
+dataset:
+  name: exact EXP-015 matched pool inherited from EXP-014
+  version: EXP-019 read-only source freeze
+  fingerprint: b7edd61269f0f7757e734bc7e3f665ac2bcd6d908a1e56f73f0b0291d55b64d8
+  blind_record_ids_fingerprint: 409428fc71b447d0114dd7a1929cbed34269a4318ef249c108582b70069d8d61
+  count: 1408
+  split_policy: source-problem-disjoint public calibration and blind comparison; blind labels are never used to fit calibration
+typed_protocol:
+  spec_id: eval-lab-system-one
+  spec_version: 0.1.0
+  fingerprint: 0d07bd8b8b60bd7f0b5b7a5f5819b7d329ea121f686b240e465695b6f6eca1e4
+  legal_single_labels: [pass, fail]
+  legal_pairwise_labels: [A, B, TIE]
+judges:
+  - arm_id: grok
+    provider: xai-grok-build-cli
+    model: grok-4.6
+    route: direct_grok_build_cli_subscription
+    role: label_only_external_judge
+  - arm_id: jev
+    provider: openrouter
+    model: typesafe/jev-1.13
+    route: openrouter_jev_only
+    role: label_only_external_judge
+  - arm_id: qwen_flash
+    provider: yolo-auto
+    model: qwen3.8-flash
+    route: yolo_auto_openai_compatible
+    role: label_only_external_judge
+  - arm_id: local_qwen4b
+    provider: local
+    model: Qwen/Qwen3-4B
+    route: local_cuda_4bit_forced_choice
+    role: probability_bearing_calibrated_judge
+excluded_judges:
+  - arm_id: luna
+    reason: vendor-independent orchestrator comparison policy
+  - arm_id: sol
+    reason: vendor-independent orchestrator comparison policy
+calibration:
+  method: scalar temperature scaling
+  fit_split: public_selection_only
+  modes: [single, pairwise]
+  blind_labels_used_for_fit: false
+  probability_eligibility: validated_native_or_local_probability_map_only
+metrics:
+  - accuracy
+  - balanced_accuracy
+  - macro_f1
+  - same_record_agreement
+  - brier_raw_and_calibrated_when_probabilities_exist
+  - nll_raw_and_calibrated_when_probabilities_exist
+  - ece_raw_and_calibrated_when_probabilities_exist
+  - risk_coverage_when_probabilities_exist
+  - position_swap_consistency_when_available
+  - rubric_paraphrase_consistency_when_available
+  - latency_as_descriptive_metadata
+artifacts:
+  - PLAN.md
+  - README.md
+  - experiment.yaml
+  - results.json
+  - report.md
+  - checksums.sha256
+  - diagnostics/grok-mode-check-record-ids.txt
+  - diagnostics/grok-mode-check-20260921/
+notes: EXP-014 through EXP-017 remain immutable. Luna and Sol are excluded from every primary EXP-019 analysis. Provider execution states are retained as audit metadata and are not a research outcome. No OpenCode route is permitted. EXP-019 results are an offline derived report plus a separate direct Grok streaming diagnostic; the diagnostic does not alter the frozen blind result.

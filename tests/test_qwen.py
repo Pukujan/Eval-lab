@@ -3,6 +3,7 @@ import pytest
 from eval_lab.judges.qwen import (
     QwenRuntimeConfig,
     format_judge_prompt,
+    format_system_one_judge_prompt,
     legal_labels,
     softmax_scores,
 )
@@ -39,6 +40,22 @@ def test_legal_labels_and_prompt_are_canonical() -> None:
     assert "Verdict:" in prompt
 
 
+def test_system_one_prompt_is_typed_and_declared() -> None:
+    prompt = format_judge_prompt(
+        _record(JudgmentMode.SINGLE),
+        prompt_version="eval-lab-system-one-local-v1",
+    )
+    assert '"state"' in prompt
+    assert '"questions"' in prompt
+    assert "Verdict:" in prompt
+
+
+def test_system_one_prompt_builder_matches_direct_payload_shape() -> None:
+    prompt = format_system_one_judge_prompt(_record(JudgmentMode.PAIRWISE))
+    assert '"criteria"' in prompt
+    assert "A, B, TIE" in prompt
+
+
 def test_softmax_preserves_order_and_normalizes() -> None:
     probabilities = softmax_scores({"A": -1.0, "B": -2.0, "TIE": -3.0})
 
@@ -49,4 +66,21 @@ def test_softmax_preserves_order_and_normalizes() -> None:
 def test_runtime_config_requires_positive_context_cap() -> None:
     with pytest.raises(ValueError, match="context_cap"):
         QwenRuntimeConfig(context_cap=0)
+
+
+def test_runtime_config_records_prompt_version() -> None:
+    config = QwenRuntimeConfig(prompt_version="eval-lab-system-one-local-v1")
+    assert config.prompt_version == "eval-lab-system-one-local-v1"
+
+
+def test_runtime_config_accepts_memory_safe_quantization_modes() -> None:
+    assert QwenRuntimeConfig(quantization="4bit").quantization == "4bit"
+    with pytest.raises(ValueError, match="quantization"):
+        QwenRuntimeConfig(quantization="unsupported")
+
+
+def test_runtime_config_validates_gpu_memory_fraction() -> None:
+    assert QwenRuntimeConfig(gpu_memory_fraction=0.8).gpu_memory_fraction == 0.8
+    with pytest.raises(ValueError, match="gpu_memory_fraction"):
+        QwenRuntimeConfig(gpu_memory_fraction=1.1)
 

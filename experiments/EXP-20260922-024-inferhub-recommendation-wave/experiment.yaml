@@ -1,0 +1,56 @@
+id: EXP-20260922-024-inferhub-recommendation-wave
+status: complete
+hypothesis: Policy-qualified, family-deduplicated cheapest InferHub routes expose a measurable cost-quality frontier with route-specific reliability behavior.
+created_at: 2026-09-22
+code_commit: 097786c
+seed: 20260922
+context_limit: 4096
+generation:
+  adapter: inferhub-openai-sse-v1
+  streaming_required: true
+  temperature: 0
+  max_tokens: 1024
+  canary_records: 1
+  route_workers: 4
+  max_concurrent_routes: 8
+dataset:
+  name: independent Eval Lab objective pool copied from EXP-015
+  version: EXP-20260921-015 exact source freeze
+  fingerprint: b7edd61269f0f7757e734bc7e3f665ac2bcd6d908a1e56f73f0b0291d55b64d8
+  blind_record_ids_fingerprint: 409428fc71b447d0114dd7a1929cbed34269a4318ef249c108582b70069d8d61
+  typed_specification_fingerprint: 0d07bd8b8b60bd7f0b5b7a5f5819b7d329ea121f686b240e465695b6f6eca1e4
+  count: 1408
+  public_count: 648
+  blind_count: 760
+  split_policy: source-problem disjoint public selection and blind holdout; blind is primary
+judge:
+  provider: inferhub
+  model: provider-qualified route per arm
+  adapter_version: inferhub-openai-sse-v1
+  prompt_version: eval-lab-system-one-v1
+rubric:
+  version: eval-lab-system-one-0.1.0
+gold:
+  provenance_policy: answer_key or deterministic_verifier from frozen source pool; gold is used offline only
+calibration:
+  method: none
+  split: none
+metrics:
+  - accuracy
+  - balanced_accuracy
+  - macro_f1
+  - wilson_95_accuracy_interval
+  - resolved_coverage
+  - unresolved_rate
+  - latency_p50
+  - latency_p95
+  - native_probability_availability
+  - provider_status_counts
+artifacts:
+  - README.md
+  - PLAN.md
+  - experiment.yaml
+  - live-catalog-selection.json
+  - release-provenance.json
+  - runs/
+notes: EXP-014 through EXP-023 remain immutable. Recommendation scores are selection metadata only. GPT/ChatGPT/Codex, aliases, and Qwen4B are excluded.

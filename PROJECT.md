@@ -90,3 +90,17 @@ v0 is successful when another agent can clone the repo and:
 5. run at least one local Qwen baseline on the same slice;
 6. regenerate a comparison report from committed configuration and documented external credentials;
 7. resume work from `checkpoints/CURRENT.md` and the active task file without relying on chat history.
+
+## TASK-0010 research-release phase
+
+After TASK-0009, Eval Lab moves from baseline construction to selective escalation and publication-quality reproducibility.
+
+TASK-0010 must produce:
+- a frozen selective-escalation experiment;
+- a compact versioned benchmark release;
+- machine-readable provenance and validation metadata;
+- an arXiv-ready independent research paper source.
+
+The research release uses RO-Crate 1.3, PROV-O, stable SHACL, CFF 1.2.0, DataCite-compatible metadata, semantic versioning, and SHA-256 checksums.
+
+A headline result is not publication-ready unless it can be traced from paper table/figure -> results artifact -> routing/prediction artifacts -> benchmark/model/calibration/source provenance.

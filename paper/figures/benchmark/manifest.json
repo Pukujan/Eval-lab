@@ -1,0 +1,43 @@
+{
+  "generator": "scripts/generate_benchmark_figures.py",
+  "figure_policy": {
+    "accuracy": "conditional on resolved labels",
+    "coverage": "resolved fraction of the declared 760-record blind pool",
+    "probability_metrics": "rendered only for validated native/local probability maps",
+    "pooling": "direct and InferHub waves remain separate"
+  },
+  "sources": {
+    "direct": {
+      "path": "experiments\\EXP-20260922-022-fast-provider-wave\\runs\\blind-comparison-20260922\\results.json",
+      "sha256": "c5ec3dd37114ce19a8f5358c07e3890bccd52bee20678f7113ce92fb195624a9"
+    },
+    "inferhub": {
+      "path": "experiments\\EXP-20260922-024-inferhub-recommendation-wave\\runs\\blind-comparison-20260922\\results.json",
+      "sha256": "8977c17c8d54691336811452ceacccf90e70bb97e2e641bd07a8fe78c1b58be6"
+    },
+    "grok": {
+      "path": "experiments\\EXP-20260922-025-grok-protocol-ablation\\results.json",
+      "sha256": "a26b9c0572cc5570ce084c281403505fe1be80dfa5710ec0a4db7242a33cc9b3"
+    },
+    "calibration": {
+      "path": "experiments\\EXP-20260921-019-calibrated-judge-study\\results.json",
+      "sha256": "1532fd2433cd406fdd6e2bbcf891dd2b1b088df91f561264442fc238b5613d45"
+    }
+  },
+  "outputs": [
+    "paper\\figures\\benchmark\\direct_wave_accuracy_coverage.png",
+    "paper\\figures\\benchmark\\direct_wave_accuracy_coverage.svg",
+    "paper\\figures\\benchmark\\inferhub_wave_accuracy_coverage.png",
+    "paper\\figures\\benchmark\\inferhub_wave_accuracy_coverage.svg",
+    "paper\\figures\\benchmark\\grok_protocol_ablation.png",
+    "paper\\figures\\benchmark\\grok_protocol_ablation.svg",
+    "paper\\figures\\benchmark\\local_qwen_calibration.png",
+    "paper\\figures\\benchmark\\local_qwen_calibration.svg"
+  ],
+  "figures": [
+    "direct_wave_accuracy_coverage",
+    "inferhub_wave_accuracy_coverage",
+    "grok_protocol_ablation",
+    "local_qwen_calibration"
+  ]
+}

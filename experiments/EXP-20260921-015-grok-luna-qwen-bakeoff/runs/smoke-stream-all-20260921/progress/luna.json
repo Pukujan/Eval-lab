@@ -1,0 +1,15 @@
+{
+  "arm_id": "luna",
+  "completed_count": 1,
+  "last_record_id": "arc-single:Mercury_SC_400156:correct",
+  "provider": "codex",
+  "record_count": 1,
+  "requested_model": "gpt-5.6-luna",
+  "route": "direct_codex_chatgpt_subscription",
+  "status_counts": {
+    "ok": 1
+  },
+  "streaming": true,
+  "updated_at_utc": "2026-09-21T16:59:10.101995+00:00",
+  "workers": 4
+}
