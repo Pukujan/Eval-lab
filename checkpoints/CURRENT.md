@@ -1,5 +1,15 @@
 # Current Repository Checkpoint
 
+## 2026-09-22 — TASK-0043 study framing corrected
+
+The consolidated paper was incorrectly titled and described as an inexpensive
+or low-cost-model comparison. The original Eval Lab question is broader:
+whether a judge can achieve useful multi-domain accuracy and calibrated
+confidence on objectively labeled tasks, and whether selective escalation can
+make the system operationally reliable. Cost and latency are secondary
+operational metrics, not the scientific selection criterion. The focused paper
+was corrected accordingly; no experiment artifacts or results were changed.
+
 ## 2026-09-22 — TASK-0042 objective-domain tracks preregistered
 
 The Grok paper release is complete and the next append-only study extension is

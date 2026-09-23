@@ -1,4 +1,4 @@
-# Benchmark performance of typed objective judges: Grok Build, Jev, Qwen, and low-cost routes
+# Objective and calibrated judgment under frozen rubrics: Grok Build, Jev, Qwen, and selective escalation
 
 **Status:** working paper / benchmark results through EXP-025 complete; pending owner review
 **Experiment family:** EXP-013, EXP-014, EXP-019, EXP-022, EXP-024, and EXP-025
@@ -7,7 +7,9 @@
 ## Abstract
 
 We evaluate model judges on a frozen, typed objective-decision pool with
-answer-key and deterministic-verifier gold labels. The primary comparison holds
+answer-key and deterministic-verifier gold labels. The central question is
+whether a judge can be accurate, calibrated, auditable, and safely routed under
+explicit rubrics—not which provider is cheapest. The primary comparison holds
 the records, rubric, legal labels, and blind split fixed while changing the
 model route. We report correctness separately from execution coverage and keep
 provider, rate-limit, and parse failures unresolved. Across the completed
@@ -27,9 +29,14 @@ establish general legal or financial reasoning ability.
 
 The focused question is:
 
-> How accurately and reliably do inexpensive and independently routed model
-> judges solve the same typed objective decisions, and what can the completed
-> evidence tell us about Grok Build, Jev, Qwen, and calibration?
+> Can a judge system achieve useful multi-domain accuracy and calibrated
+> confidence on objectively labeled tasks, and can selective escalation make
+> it operationally reliable?
+
+The completed provider waves compare independently routed judges as a
+measurement study. Model price is a secondary operational metric alongside
+latency, coverage, and provider availability; it is not the scientific
+selection criterion.
 
 This paper is a benchmark-comparison study. Inference-provider recommendation
 policy, catalog ranking, and general production routing are supporting
@@ -48,6 +55,10 @@ packet is sent to each direct comparison arm. Accuracy is conditional on a
 resolved label; coverage is the resolved fraction of all records. Parse and
 provider failures remain explicit statuses rather than being silently counted
 as wrong or right.
+
+Cost and latency are recorded for operational analysis, but the primary
+scientific criteria are correctness, calibration, consistency, coverage, and
+evidence provenance.
 
 ## 3. Completed benchmark results
 
@@ -159,7 +170,8 @@ The completed evidence establishes:
 2. Coverage and parser/provider status materially change the operational
    ranking; conditional accuracy alone is insufficient.
 3. Qwen Flash is the strongest completed operational route on this pool, while
-   Jev is a strong high-coverage independent comparator.
+   Jev is a strong high-coverage independent comparator; this is a measurement
+   result, not a price ranking.
 4. Grok's low score persists under the selected baseline, but remains a
    protocol-specific result rather than a universal capability estimate.
 5. Calibration is a separate property from accuracy and requires validated
