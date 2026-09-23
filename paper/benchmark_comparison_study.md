@@ -86,6 +86,12 @@ highest full-coverage accuracy with no unresolved blind records.
 
 Source: [EXP-024 results](../experiments/EXP-20260922-024-inferhub-recommendation-wave/RESULTS.md).
 
+![InferHub blind-wave accuracy and execution coverage](figures/benchmark/inferhub_wave_accuracy_coverage.png)
+
+*Figure 1. InferHub routes are separated into conditional correctness and
+execution coverage. DeepSeek V4 Flash has the highest conditional accuracy in
+this wave, but Qwen3.8 Flash is the full-coverage operational default.*
+
 ### 3.2 Direct Grok, Jev, and Qwen wave
 
 The direct comparison was run independently over the same typed pool. The
@@ -104,6 +110,11 @@ each other on approximately 95.3% of comparable records, but 4.7 does not
 improve accuracy and has worse coverage.
 
 Source: [EXP-022 blind comparison](../experiments/EXP-20260922-022-fast-provider-wave/runs/blind-comparison-20260922/report.md).
+
+![Direct blind-wave accuracy and execution coverage](figures/benchmark/direct_wave_accuracy_coverage.png)
+
+*Figure 2. The direct wave keeps Grok, Jev, and Qwen on the same axes while
+showing why a resolved-label score must be read together with coverage.*
 
 ### 3.3 Multidomain caution
 
@@ -144,6 +155,12 @@ labels. The scientifically correct statement is:
 
 Source: [EXP-025 final report](../experiments/EXP-20260922-025-grok-protocol-ablation/RESULTS.md).
 
+![Grok protocol ablation](figures/benchmark/grok_protocol_ablation.png)
+
+*Figure 3. No tested Grok protocol variant passed the preregistered public
+gate; the blind typed baseline retained high coverage but the same severe
+single/pairwise asymmetry.*
+
 ## 5. Calibration evidence
 
 No label-only external provider in the completed comparison exposes a validated
@@ -160,6 +177,11 @@ the weak judge became more accurate, nor that the external label-only models
 are calibrated.
 
 Source: [EXP-019 calibration study](../experiments/EXP-20260921-019-calibrated-judge-study/report.md).
+
+![Local Qwen 4B calibration](figures/benchmark/local_qwen_calibration.png)
+
+*Figure 4. Split-safe temperature scaling improves the local Qwen 4B
+confidence interface while leaving selected labels and accuracy unchanged.*
 
 ## 6. What this establishes
 

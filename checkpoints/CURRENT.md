@@ -1,5 +1,17 @@
 # Current Repository Checkpoint
 
+## 2026-09-22 — TASK-0044 benchmark figures generated
+
+Four reproducible, data-first PNG/SVG figures were generated from committed
+EXP-022, EXP-024, EXP-025, and EXP-019 result artifacts: direct-wave
+accuracy/coverage, InferHub accuracy/coverage, Grok protocol ablation, and
+local-Qwen calibration. The consolidated paper now embeds the figures with
+captions. The corresponding Design Bakery research page is being updated with
+responsive figures and alt text; static asset/path checks passed, while the
+full frontend build remains unverified because pnpm dependency bootstrap was
+stopped after prolonged package copying.
+
+
 ## 2026-09-22 — TASK-0043 study framing corrected
 
 The consolidated paper was incorrectly titled and described as an inexpensive
