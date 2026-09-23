@@ -2,8 +2,8 @@
 
 ## Status
 
-Complete for the Eval Lab figure release; Design Bakery site branch is ready
-for commit and deployment.
+Complete. The Eval Lab figure release and Design Bakery research-page release
+are merged; the hosted page and all four public PNG assets were verified.
 
 ## Objective
 
@@ -84,15 +84,19 @@ research page without pooling incomparable experiments or inventing metrics.
 
 - The Design Bakery full frontend build was not completed because the local
   pnpm workspace dependency bootstrap was still copying packages after more
-  than four minutes; the install was stopped. Static asset/path checks passed.
+  than four minutes; the install was stopped. Static asset/path checks passed,
+  and the hosted Vercel preview/deployment build plus production rendering
+  were verified.
 
 ## Checkpoint log
 
 TASK-0044 generated and visually inspected the four figures, embedded them in
 the paper, and published the Eval Lab and Design Bakery changes. The first
 merged PR exposed only a task-contract omission: this file lacked the required
-headings checked by `scripts/check_repo_contract.py`; this follow-up adds those
-headings without changing any experiment or figure content.
+headings checked by `scripts/check_repo_contract.py`; PR #32 added those
+headings without changing any experiment or figure content. Design Bakery PR
+#39 then merged the public assets/content; the hosted page serves all four
+figures.
 
 ## Handoff
 
@@ -102,5 +106,5 @@ figures from hand-entered values or alter completed experiment artifacts.
 
 ## Next atomic action
 
-Commit/push the Eval Lab figure release and the Design Bakery research-page
-asset/content update, then verify the hosted deployment serves all four PNGs.
+Resume the preregistered objective-domain track in TASK-0042: freeze the GLEIF
+snapshot and implement its canonical adapter before blind scoring.
