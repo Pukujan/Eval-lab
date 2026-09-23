@@ -3,7 +3,8 @@
 ## 2026-09-22 — TASK-0045 session handoff audit
 
 The normal checkouts are synchronized with their merged remote `main` branches:
-Eval Lab is at `146750d` (PR #32) and Design Bakery is at `62dda38` (PR #39).
+Eval Lab is at `b5c0ee7` (PR #33, including PR #32) and Design Bakery is at
+`62dda38` (PR #39).
 The benchmark figure release is complete. Eval Lab PR #32 passed all Python
 3.11 and 3.12 CI jobs. The hosted paper page
 `https://design-bakery.vercel.app/research/papers/db-r-2026-010` was verified
