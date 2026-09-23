@@ -1,5 +1,23 @@
 # Current Repository Checkpoint
 
+## 2026-09-22 — TASK-0045 session handoff audit
+
+The normal checkouts are synchronized with their merged remote `main` branches:
+Eval Lab is at `146750d` (PR #32) and Design Bakery is at `62dda38` (PR #39).
+The benchmark figure release is complete. Eval Lab PR #32 passed all Python
+3.11 and 3.12 CI jobs. The hosted paper page
+`https://design-bakery.vercel.app/research/papers/db-r-2026-010` was verified
+to serve four benchmark PNGs with HTTP 200 and four visible figure elements.
+
+The local Design Bakery dependency bootstrap was stopped after prolonged
+copying, but the Vercel preview/deployment build passed; this is only a local
+build limitation. Generated `.venv/` and `outputs/` directories are now
+explicitly gitignored. The unpromoted `outputs/jev-controller-smoke-20260921*`
+files remain on disk and were not deleted; they are bounded Jev smoke reports,
+not canonical benchmark results. No source or provider calls were made for
+EXP-026. Next atomic action: freeze the GLEIF source snapshot and implement the
+canonical adapter before any blind scoring.
+
 ## 2026-09-22 — TASK-0044 benchmark figures generated
 
 Four reproducible, data-first PNG/SVG figures were generated from committed
