@@ -1,5 +1,39 @@
 # Current Repository Checkpoint
 
+## 2026-09-23 — TASK-0050 D:\claude single-workspace follow-up
+
+TASK-0049's single-checkout implementation and required CI checks merged as PR
+#36 at `c80207b`; `main` requires PRs and the `quality (Python 3.11)` and
+`quality (Python 3.12)` checks. This follow-up preserves the TASK-0048 GLEIF
+handoff and TASK-0049 incident history. No second Eval Lab checkout or
+worktree was created.
+
+The local `D:\claude\AGENTS.md` now requires one canonical checkout per
+repository, serial task branches, no clones or worktrees anywhere, and one
+root dependency environment per project. `PROJECT_ROOTS.md` is the path
+registry; `check-canonical-workspaces.ps1` is a read-only validator. Its
+2026-09-23 run inspected 4,509 folders and found 48 Git roots vs 32 registered
+paths, reporting 180 findings. The bounded dependency pass reached its
+6,000-folder limit after identifying three Python environments and six
+`node_modules` directories; it explicitly reported the inventory incomplete.
+An independent shallow inventory reported 83 dependency folders, including 74
+under HOS `.controller-runs`, which still need full content/reference review.
+
+Two read-only Luna audits found no existing same-project path safe to release
+now; active edits, unique or ignored files, unresolved references, malformed
+Git metadata, or access restrictions remain. Existing Hades and HOS tasks were
+asked to checkpoint their current work before reconciling their paths and
+instructions. No folders or environments were deleted or moved. See
+`tasks/TASK-0050-d-claude-single-workspace.md` and the appended
+`D:\claude\archive\workspace-consolidation\CLEANUP_LOG.md` entry.
+
+Validation: Eval Lab's contract, Ruff, workspace-policy guard, and pytest gates
+pass (136 tests).
+
+Next atomic action: commit/push this checkpoint in the existing checkout; open
+the required PR, wait for CI, and merge. Continue owner-led reconciliation
+after the policy checkpoint is merged.
+
 ## 2026-09-23 — TASK-0049 single-workspace policy and CI enforcement
 
 TASK-0049 is active on a branch in the existing canonical checkout
