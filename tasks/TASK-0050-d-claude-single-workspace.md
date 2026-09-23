@@ -2,36 +2,48 @@
 
 ## Status
 
-Active — the cross-project `D:\claude\AGENTS.md` now prohibits task clones,
-copies, and Git worktrees and requires one canonical root dependency
-environment per project. `D:\claude\PROJECT_ROOTS.md` and the read-only
-`D:\claude\check-canonical-workspaces.ps1` guard are updated. Physical
-consolidation is not complete: current same-project paths still contain active,
-unique, ignored, inaccessible, or malformed state. TASK-0049 merged as PR #36
-at `c80207b`; this task's root-policy record merged as PR #37 at `6dd2674`.
-This follow-up preserves TASK-0048 and TASK-0049 history.
+Active — one canonical checkout per repository remains the rule, with temporary
+linked worktrees allowed only inside that checkout's `.worktrees\<task-id>`
+when parallel isolation is genuinely needed. Completed, clean worktrees must be
+removed after the checkpoint is pushed and the required PR/CI/merge gate is
+complete. No sibling clones or persistent copies are allowed. Each repository
+uses one canonical dependency environment; declared nested repositories own
+their own environment. Physical consolidation is incomplete: some duplicate
+paths still contain active, unique, ignored, inaccessible, or malformed state.
+TASK-0049 merged as PR #36 at `c80207b`; the earlier TASK-0050 policy records
+merged as PRs #37 and #38. This follow-up preserves TASK-0048 and TASK-0049
+history.
 
 ## Goal
 
-Make one registered canonical folder per repository identity the only local
-working checkout anywhere under `D:\claude`. Prohibit task clones and all Git
-worktrees, require serial work in canonical folders, and add a read-only local
-guard that detects unregistered repository copies and registered worktrees.
-Reconcile existing copies only after unique commits, tracked changes,
-untracked/ignored files, runtime references, and task ownership are accounted
-for. Preserve distinct repositories, declared submodules, and named data
-stores.
+Make one registered canonical folder per repository identity the durable local
+project root anywhere under `D:\claude`. Prohibit task clones, sibling copies,
+and persistent duplicate checkouts. Permit temporary Git linked worktrees only
+under that project's `.worktrees\<task-id>` directory when needed for
+parallelism or isolation, and remove them after durable checkpoint/PR/CI/merge
+and preservation of any user state. Add a read-only guard that detects
+unregistered roots, out-of-root or missing worktrees, duplicate dependency
+installs per repository, and incomplete scans. Reconcile existing
+copies only after unique commits, tracked changes, untracked/ignored files,
+runtime references, and task ownership are accounted for. Preserve distinct
+repositories, declared submodules, and named data stores.
 
 ## Decisions
 
-- `D:\claude\eval-lab` is the only Eval Lab checkout; use a task branch in that
-  existing directory and do not create another worktree.
+- `D:\claude\eval-lab` is the only durable Eval Lab checkout. A temporary
+  linked worktree may be used only when parallel isolation is genuinely needed
+  and must be placed under `D:\claude\eval-lab\.worktrees\<task-id>`.
 - One canonical folder per remote does not mean sharing mutable dependencies
   between different repositories. Each project follows its own manifest and
   lockfile in its canonical folder.
-- No task worktrees are allowed, including under `.worktrees` or legacy
-  `D:\claude\worktrees`. Existing active worktrees remain protected until
-  their owners checkpoint and release them.
+- Do not create task clones or worktrees outside a registered canonical
+  checkout. Temporary worktrees under that checkout's `.worktrees\<task-id>`
+  are allowed for active isolated/parallel tasks. Reuse the canonical
+  dependency environment; do not create per-worktree `.venv` or `node_modules`.
+  After checkpoint push and required PR/CI/merge, preserve any unique or ignored
+  state and remove a clean completed worktree through normal Git operations.
+  Existing active worktrees remain protected until their owners checkpoint and
+  release them.
 - A duplicate path is not disposable merely because it shares a remote or
   commit. Do not remove, move, or overwrite any path with unique, inaccessible,
   dirty, ignored, referenced, or unverified state.
@@ -53,22 +65,26 @@ stores.
 - `checkpoints/CURRENT.md` (add this follow-up without deleting prior handoffs)
 - `D:\claude\AGENTS.md`
 - `D:\claude\PROJECT_ROOTS.md`
-- `D:\claude\check-canonical-workspaces.ps1` (new, read-only)
+- `D:\claude\check-canonical-workspaces.ps1` (read-only)
+- `AGENTS.md` (Eval Lab task/worktree/environment contract)
+- `scripts/check_workspace_policy.py`
+- `tests/test_workspace_policy.py`
 - `D:\claude\archive\workspace-consolidation\CLEANUP_LOG.md`
 
 Update this list before editing any additional file.
 
 ## Required work
 
-1. Replace cross-project permission for task worktrees with a clear serial,
-   canonical-folder-only policy. Document how to work on multiple tasks by
-   checkpointing, pushing, switching branches in place, and returning to the
-   canonical main branch.
+1. Replace the blanket worktree ban with a clear one-canonical-root policy:
+   temporary worktrees may be used for active parallel/isolation tasks only
+   under `<canonical-root>\.worktrees\<task-id>`. Document checkpoint,
+   push, required PR/CI/merge, clean removal, and canonical-main return steps.
 2. Implement a local read-only guard using `PROJECT_ROOTS.md`. Verify each
    registered canonical path and origin remote, detect repeated normalized
    remotes, report any additional Git roots beneath the managed tree, and fail
-   when any canonical repository registers a linked worktree. Preserve
-   explicitly registered nested dependency repositories.
+   on worktrees outside a registered root's `.worktrees` or missing registered
+   paths. Preserve explicitly registered nested dependency repositories and
+   do not count their environments against the parent repository.
 3. Re-audit known same-project paths from the cleanup log using current Git and
    filesystem state. Separate verified-safe stale copies from active or
    protected state, and request owner checkpoint/release through the existing
@@ -82,12 +98,13 @@ Update this list before editing any additional file.
 
 ## Acceptance criteria
 
-- `D:\claude\AGENTS.md` and `PROJECT_ROOTS.md` unambiguously prohibit clones,
-  copies, and Git worktrees for task isolation; task branches run in the single
-  canonical folder.
+- `D:\claude\AGENTS.md`, `PROJECT_ROOTS.md`, and Eval Lab `AGENTS.md` prohibit
+  clones and sibling copies, allow only temporary worktrees under the
+  canonical checkout's `.worktrees\<task-id>`, and require post-merge cleanup.
 - The root guard validates registered remotes and canonical paths, detects
-  unregistered repository roots and any linked worktree, exits nonzero on
-  violations, and does not mutate data.
+  unregistered roots and out-of-root/missing worktrees, permits active in-root
+  task worktrees, exits nonzero on violations or incomplete scans, and does not
+  mutate data.
 - Distinct projects, the declared Fossil Core submodule, and named data stores
   are not misclassified as duplicates.
 - Every known duplicate has a current disposition: safely released after full
@@ -98,6 +115,56 @@ Update this list before editing any additional file.
 - The checkpoint is pushed and merged only after all required CI checks pass.
 
 ## Checkpoint log
+
+- 2026-09-23: User clarified the intended worktree lifecycle: temporary linked
+  worktrees are allowed for real isolation/parallelism, but only inside the
+  canonical repository's `.worktrees\<task-id>`; after durable checkpoint,
+  required PR/CI/merge, and preservation of unique state, remove the clean
+  worktree. The previous blanket ban is superseded. Four prior subagents were
+  confirmed completed but still occupied the concurrency limit until closed;
+  they were closed before three read-only audits were run.
+- 2026-09-23: Updated the cross-project D: policy and Eval Lab contract to allow
+  temporary in-root linked worktrees while prohibiting sibling clones and
+  worktree-local dependency installs. Eval Lab's workspace guard and tests now
+  accept only direct children of the canonical .worktrees directory and reject
+  outside, nested, duplicate, or missing worktree paths. The D: guard now
+  exposes environment scan bounds, supports active in-root worktrees, and
+  attributes environments to the deepest registered repository so declared
+  nested repositories do not count against the parent.
+- 2026-09-23: Read-only D: scan command:
+  `& D:\claude\check-canonical-workspaces.ps1 -MaximumDepth 12 -MaximumEnvironmentDirectories 50000 -MaximumEnvironmentDepth 24`.
+  PowerShell parsing passed. It inspected 5,121 repository-scan directories
+  (48 Git roots, 33 registry paths) and 31,168 dependency-scan directories
+  (below the 50,000 bound; no dependency-depth or directory-cap truncation).
+  The environment inventory found 3 Python environments and 5 node_modules
+  directories. The overall run still failed with 65 findings, including
+  out-of-root linked worktrees, unregistered Git roots, root-scan depth limits,
+  two access-denied paths, and Project Assurance's two populated installs.
+  This is not a clean or complete repository-root inventory.
+- 2026-09-23: Registered Cortex's SQLFluff gitlink as a nested repository for
+  environment accounting: parent external/sqlfluff is index mode 160000,
+  pinned at 2a9e943, with origin sqlfluff/sqlfluff. The audited parent lacks a
+  .gitmodules mapping and both parent and submodule are dirty; the registry
+  entry preserves their separate repository identity but does not fix that
+  owner-controlled integration defect. No environment or project state was
+  deleted.
+- 2026-09-23: Eval Lab validation passed: PowerShell parser; Ruff on the
+  workspace-policy implementation/tests; repository contract; workspace
+  policy guard; and full pytest (139 passed). Changed Eval Lab files:
+  AGENTS.md, scripts/check_workspace_policy.py, tests/test_workspace_policy.py,
+  this task file, and checkpoints/CURRENT.md. Cross-project local files changed:
+  D:\claude\AGENTS.md, D:\claude\PROJECT_ROOTS.md,
+  D:\claude\check-canonical-workspaces.ps1, and the workspace-consolidation
+  cleanup log.
+- 2026-09-23: Remaining owners/blockers: HOS canonical checkout still has
+  uncommitted Issue 23/user state and its project instructions need the revised
+  lifecycle; HADES has a large staged checkpoint and two active in-root
+  worktrees, all preserved for its owner. Project Assurance's populated
+  installs need owner-led manifest/runtime reconciliation. Stupidly Simple
+  Cortex and its SQLFluff gitlink both remain dirty and need parent/submodule
+  metadata repair. The root repository scan has depth/ACL gaps and 65 findings.
+  Next atomic action: complete this Eval Lab PR/CI/merge checkpoint, then
+  continue owner-checkpointed consolidation and a fresh full scan.
 
 - 2026-09-23: Confirmed PR #36 is merged at `c80207b`; GitHub `main` and the
   canonical local checkout match. Main requires PRs and the exact Python 3.11
@@ -168,6 +235,28 @@ Update this list before editing any additional file.
   before updating `AGENTS.md`. Hades' existing task was likewise asked to
   checkpoint before releasing its active paths. No acknowledgement or safe
   release is recorded yet.
+- 2026-09-23: Fresh scan enumerated all eight dependency locations: Eval Lab's
+  canonical `.venv`; Cortex `venv` and the separately declared SQLFluff
+  `.venv`; `node_modules` in Inference Recommendation Engine, InferHub,
+  Design Bakery, and two Project Assurance Modules locations. No install was
+  removed. Design Bakery's sibling TASK-0048 checkout remains inaccessible at
+  its nested content Git metadata and is preserved pending owner access. The
+  full scan found 65 policy violations and remains incomplete due repository
+  scan depth/ACL findings.
+- 2026-09-23: Luna read-only review caught that the Eval Lab guard accepted
+  arbitrary direct-child directory names under `.worktrees`. It now requires
+  `TASK-####[-short-name]`; new tests cover invalid task names, absent
+  canonical registration, and duplicate registration. Targeted Ruff and
+  workspace tests pass (12 tests), and the canonical-root policy guard passes.
+  The review agent was closed after completion; a subsequent successful spawn
+  confirmed the concurrency pool had reopened, and that reviewer was also
+  closed immediately.
+- 2026-09-23: Final local gates pass after the review-driven refinement:
+  `scripts/check_repo_contract.py`, `ruff check .`, full pytest (142 passed),
+  `scripts/check_workspace_policy.py --canonical-root D:\claude\eval-lab`,
+  and `git diff --check`. No dependency synchronization was needed because
+  manifests and lockfiles were unchanged. The D: root scan remains non-clean;
+  its violations are documented in the cleanup log.
 
 ## Handoff
 

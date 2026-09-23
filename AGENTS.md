@@ -18,12 +18,15 @@ Before doing work, read only:
 
 Do not scan unrelated historical files or experiments unless the task explicitly requires them.
 
-## One canonical checkout; no clones or worktrees
+## One canonical checkout; temporary in-root task worktrees
 
-The sole local Eval Lab checkout is `D:\claude\eval-lab`. Work on every task
-inside that directory. Do not create another clone, linked worktree, task
-directory, or sibling checkout. Tasks run sequentially in this one working
-directory; a task branch is allowed, but it must reuse this checkout.
+The sole durable local Eval Lab checkout is `D:\claude\eval-lab`. Do not
+create another clone, copied project directory, or task-named sibling
+checkout. Work in the canonical folder by default. A temporary linked
+worktree is allowed when a task genuinely needs isolation or parallel work;
+create it only at `D:\claude\eval-lab\.worktrees\<task-id>`. Keep worktrees
+limited to active tasks and remove them after their work is durably checkpointed
+and complete.
 
 Branch format:
 
@@ -31,30 +34,47 @@ Branch format:
 task/TASK-0001-short-name
 ```
 
-Before switching task branches, finish a coherent checkpoint, commit it, push
-it to GitHub, and confirm the working tree is clean. Do not stash work to make
-parallel tasks appear safe. When idle on `main`, fetch and fast-forward this
-checkout to `origin/main`; do not create a second directory to preserve an old
-branch.
+Before switching task branches in the canonical checkout, finish a coherent
+checkpoint, commit it, push it to GitHub, and confirm the working tree is clean.
+Use a separate in-root worktree when parallel tasks need independent working
+trees; do not stash work to make parallel tasks appear safe. Each task branch
+uses the `task/TASK-0001-short-name` format. When idle on `main`, fetch and
+fast-forward the canonical checkout to `origin/main`; do not create a second
+directory to preserve an old branch.
 
-Never run `git worktree add` or `git clone` for Eval Lab. If GitHub or the
-current checkout is unavailable, stop and report the blocker rather than
-creating another local copy.
+Never run `git clone` for Eval Lab. Never create a linked worktree outside
+`D:\claude\eval-lab\.worktrees`. If GitHub or the current checkout is
+unavailable, stop and report the blocker rather than creating another local
+copy.
+
+When a worktree task is complete, verify its branch and all tracked,
+untracked, and ignored state. Push the checkpoint and open/update its PR; wait
+for required CI and merge the PR before closing the task. Preserve any unique
+state that is not in Git. Remove the clean worktree with a normal, non-forced
+`git worktree remove`, then confirm it is absent from `git worktree list` and
+the canonical checkout is synchronized with `origin/main`. Do not remove an
+active task worktree merely because its branch has been pushed.
 
 A task may modify only the files declared in its task file unless the task file is updated first.
 
 ## One canonical dependency environment
 
-Use the one repository-root `.venv`, managed by the single `uv` executable
-available on `PATH`. Resolve and synchronize from the root `pyproject.toml` and
-`uv.lock` with `uv sync --extra dev`; run Python tools through
-`.venv\Scripts\python.exe` on Windows. Do not make task-specific virtual
-environments, install dependencies into a worktree, or copy `.venv`.
+Use the one canonical repository-root `.venv`, managed by the single `uv`
+executable available on `PATH`. Resolve and synchronize from the root
+`pyproject.toml` and `uv.lock` with `uv sync --extra dev`; run Python tools
+through `.venv\Scripts\python.exe` on Windows. A task worktree must reuse this
+environment; do not make task-specific virtual environments or copy `.venv`.
+Verify that tools import the worktree's source, not the canonical checkout's
+source. If that cannot be done without another install, serialize the task in
+the canonical checkout instead.
 
 This project is Python-only. Do not create `node_modules` here. If a future,
 approved change adds a Node package, its single `node_modules` must live at the
-repository root and be managed from the root lockfile; never install per task.
-Use package-manager caches for download reuse, not duplicate project installs.
+repository root and be managed from the root lockfile. A worktree may resolve
+that root install, but must never install dependencies locally. If the task
+changes dependency requirements incompatibly, serialize and synchronize the
+canonical environment in place. Use package-manager caches for download reuse,
+not duplicate project installs.
 
 Tasks are serialized because `.venv` is mutable. If a branch changes dependency
 requirements, update the single lockfile and synchronize the same `.venv`
@@ -63,7 +83,8 @@ the change cannot be handled safely in the canonical environment, stop and ask.
 
 Run `python scripts/check_workspace_policy.py --canonical-root D:\claude\eval-lab`
 before task work and after cleanup. The repository contract check also enforces
-the one-worktree and one-environment rules.
+the canonical path, in-root temporary-worktree placement, and one-environment
+rules.
 
 ## GitHub checkpoint policy
 

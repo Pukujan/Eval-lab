@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import subprocess
 import sys
 from collections.abc import Iterable
@@ -10,6 +11,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 ENVIRONMENT_DIRS = {".venv", "node_modules"}
 NODE_LOCKFILES = ("pnpm-lock.yaml", "package-lock.json", "yarn.lock", "bun.lock", "bun.lockb")
+TASK_WORKTREE_NAME = re.compile(r"TASK-\d{4}(?:-[a-z0-9]+(?:-[a-z0-9]+)*)?\Z", re.IGNORECASE)
 
 
 def _normalized(path: Path) -> str:
@@ -46,12 +48,35 @@ def _check_worktrees(
         )
 
     worktree_keys = [_normalized(path) for path in paths]
-    if len(worktree_keys) != 1 or worktree_keys[0] != root_key:
-        rendered = ", ".join(str(path.resolve()) for path in paths) or "none"
+    if root_key not in worktree_keys:
         violations.append(
-            "Eval Lab must have exactly one registered worktree at the canonical root; "
-            f"found {len(paths)}: {rendered}"
+            f"canonical checkout is missing from its Git worktree list: {root.resolve()}"
         )
+
+    worktrees_root = (root / ".worktrees").resolve()
+    seen: set[str] = set()
+    for path in paths:
+        path_key = _normalized(path)
+        if path_key in seen:
+            violations.append(f"duplicate Git worktree registration: {path.resolve()}")
+            continue
+        seen.add(path_key)
+        if path_key == root_key:
+            continue
+
+        resolved = path.resolve()
+        if resolved.parent != worktrees_root:
+            violations.append(
+                "temporary worktrees must be direct children of the canonical "
+                f".worktrees directory: {resolved}"
+            )
+        if not TASK_WORKTREE_NAME.fullmatch(resolved.name):
+            violations.append(
+                "temporary worktree directory must use the repository task ID "
+                f"format TASK-####[-short-name]: {resolved}"
+            )
+        if not resolved.is_dir():
+            violations.append(f"registered temporary worktree path is missing: {resolved}")
     return violations
 
 
@@ -116,7 +141,9 @@ def workspace_violations(
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Check Eval Lab's single-workspace policy.")
+    parser = argparse.ArgumentParser(
+        description="Check Eval Lab's canonical checkout, temporary worktree, and environment policy."
+    )
     parser.add_argument(
         "--canonical-root",
         type=Path,
@@ -132,7 +159,10 @@ def main() -> int:
             print(f"- {failure}")
         return 1
 
-    print("Workspace policy OK: one canonical checkout and no duplicate dependency directories")
+    print(
+        "Workspace policy OK: canonical checkout, in-root temporary worktrees, "
+        "and one dependency environment"
+    )
     return 0
 
 

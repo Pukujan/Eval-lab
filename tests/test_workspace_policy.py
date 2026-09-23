@@ -26,7 +26,7 @@ def test_single_canonical_checkout_and_root_environment_pass(tmp_path: Path) -> 
     )
 
 
-def test_additional_registered_worktree_is_rejected(tmp_path: Path) -> None:
+def test_worktree_outside_canonical_worktrees_is_rejected(tmp_path: Path) -> None:
     root = tmp_path / "eval-lab"
     extra = tmp_path / "eval-lab-task"
     root.mkdir()
@@ -38,7 +38,87 @@ def test_additional_registered_worktree_is_rejected(tmp_path: Path) -> None:
         worktrees=[root, extra],
     )
 
-    assert any("exactly one registered worktree" in item for item in violations)
+    assert any("direct children of the canonical .worktrees directory" in item for item in violations)
+
+
+def test_active_in_root_temporary_worktree_is_allowed(tmp_path: Path) -> None:
+    root = tmp_path / "eval-lab"
+    temporary = root / ".worktrees" / "TASK-0050-temporary-worktree-lifecycle"
+    temporary.mkdir(parents=True)
+
+    assert (
+        workspace_violations(
+            root,
+            canonical_root=root,
+            worktrees=[root, temporary],
+        )
+        == []
+    )
+
+
+def test_temporary_worktree_name_must_contain_task_id(tmp_path: Path) -> None:
+    root = tmp_path / "eval-lab"
+    temporary = root / ".worktrees" / "scratch"
+    temporary.mkdir(parents=True)
+
+    violations = workspace_violations(
+        root,
+        worktrees=[root, temporary],
+    )
+
+    assert any("repository task ID format" in item for item in violations)
+
+
+def test_nested_temporary_worktree_location_is_rejected(tmp_path: Path) -> None:
+    root = tmp_path / "eval-lab"
+    nested = root / ".worktrees" / "TASK-0050" / "nested"
+    nested.mkdir(parents=True)
+
+    violations = workspace_violations(
+        root,
+        worktrees=[root, nested],
+    )
+
+    assert any("direct children of the canonical .worktrees directory" in item for item in violations)
+
+
+def test_missing_registered_worktree_path_is_rejected(tmp_path: Path) -> None:
+    root = tmp_path / "eval-lab"
+    root.mkdir()
+    missing = root / ".worktrees" / "TASK-0050"
+
+    violations = workspace_violations(
+        root,
+        worktrees=[root, missing],
+    )
+
+    assert any("registered temporary worktree path is missing" in item for item in violations)
+
+
+def test_missing_canonical_checkout_registration_is_rejected(tmp_path: Path) -> None:
+    root = tmp_path / "eval-lab"
+    root.mkdir()
+    another = root / ".worktrees" / "TASK-0050"
+    another.mkdir(parents=True)
+
+    violations = workspace_violations(
+        root,
+        worktrees=[another],
+    )
+
+    assert any("canonical checkout is missing" in item for item in violations)
+
+
+def test_duplicate_worktree_registration_is_rejected(tmp_path: Path) -> None:
+    root = tmp_path / "eval-lab"
+    root.mkdir()
+
+    violations = workspace_violations(
+        root,
+        worktrees=[root, root],
+    )
+
+    assert any("duplicate Git worktree registration" in item for item in violations)
 
 
 def test_noncanonical_checkout_path_is_rejected(tmp_path: Path) -> None:
