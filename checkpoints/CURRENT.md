@@ -10,7 +10,8 @@ MacBookPro17,1 with Apple M1, 16 GiB unified memory, macOS 26.4.1, and had
 21 GiB free disk after the runner-tool installation. Hugging Face model and
 upstream code revisions are pinned in the EXP-027 `model-revisions.json` and
 `tasks/TASK-0053-local-decision-models.md`. The resumable adapters are merged
-in PR #49 (`824dfdc`); no model calls have started. A narrow exception now
+in PR #49 (`824dfdc`); Kev's pinned runtime is installed outside the checkout.
+No model calls have started. A narrow exception now
 allows model-specific environments outside the Eval Lab checkout, without
 cloning or copying the repository. Nimble-9B's unquantized weights exceed this
 host's physical memory; Laya and Verdict have 512-token limits. Homebrew
@@ -21,10 +22,10 @@ checkpointed in PR #46 and merged; the canonical checkout is now on
 `main`. Resume its adapter work after this model-evaluation task is
 checkpointed or when it becomes the repository-wide next action.
 
-Next atomic action: install the pinned Kev runtime in the approved external
-Mac environment and run a one-record Kev-0.8B feasibility smoke using the
-merged runner. LegalBench Hearsay source and canonical records are ready. Do
-not put a repository copy on the Mac.
+Next atomic action: merge the state serialization correction and runtime lock,
+then run a one-record Kev-0.8B feasibility smoke using the merged runner.
+LegalBench Hearsay source and canonical records are ready. Do not put a
+repository copy on the Mac.
 
 ## 2026-09-24 — TASK-0042 EXP-026 GLEIF track started
 

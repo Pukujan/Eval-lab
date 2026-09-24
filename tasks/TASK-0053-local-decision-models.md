@@ -6,10 +6,10 @@ Active — tracked by GitHub issue #47. EXP-027 and EXP-028 are preregistered
 and committed. The MacBook Pro is reachable over Tailscale SSH; no model calls
 or benchmark scoring have started. Hardware is a 2020 MacBook Pro (MacBookPro17,1),
 Apple M1, 16 GiB unified memory, macOS 26.4.1, with 21 GiB free disk after
-installing the runner tools. Model and upstream code revisions are pinned in
-the checkpoint notes. Fixed-choice adapters and a resumable sequential runner
-are implemented locally with focused tests passing; no inference runtime is
-installed and model-feasibility probes remain.
+installing the runner tools. Fixed-choice adapters and a resumable sequential
+runner are merged; a state serialization correction is pushed for review. The
+pinned Kev runtime is installed externally and passes package and server
+checks; no weights have been downloaded and no model has run.
 
 ## Objective
 
@@ -297,8 +297,41 @@ before any model call.
 Unresolved: pinned Kev runtime install and Kev-0.8B smoke; per-model hardware
 feasibility; full sequential scoring and metrics.
 
-Next atomic action: install the pinned Kev runtime outside the repository on
-the Mac and smoke one record from EXP-027 public-selection records.
+Next atomic action: publish the state serialization correction and runtime
+pins; after required CI passes, smoke one EXP-027 public-selection record.
+
+### 2026-09-24 — state protocol correction and Kev runtime prepared
+
+Status: state serialization correction and runtime details are pushed on
+`task/TASK-0053-local-model-state-protocol`; pull request pending. No model
+weights or benchmark predictions exist.
+
+Completed work: converted EXP-027's structured judgment state into canonical
+JSON text so all backends receive the Jev-style string state. Focused tests
+pass (`11 passed`). Installed the pinned Kev source revision
+`badd506d71399f536a09bba7ad5dd663adb104d2` in a separate Mac Python 3.12
+environment with the upstream `serve` extra and Apple Silicon backend.
+`uv pip check` and `python -m kev.serve --help` passed. Captured resolved
+packages in `kev-runtime-freeze.txt`. No model weights were downloaded and no
+inference was performed.
+
+Files changed: `checkpoints/CURRENT.md`, this task file, EXP-027
+`experiment.yaml`, `hardware-and-runtime.json`, `model-revisions.json`,
+`kev-runtime-freeze.txt`, `src/eval_lab/judges/local_decision_models.py`, and
+`tests/test_local_decision_models.py`.
+
+Commands run: Tailscale SSH; pinned `uv pip install`; `uv pip check`; Kev
+server help; runtime package freeze; Ruff and focused tests. All passed.
+
+Decisions: serialize typed context to JSON text at the shared adapter boundary;
+keep the Mac runtime outside all project checkouts; pin the full Kev package
+set before loading weights.
+
+Unresolved: merge the correction and runtime record; confirm Kev-0.8B can load
+and return a valid one-record choice; determine feasibility of remaining arms.
+
+Next atomic action: publish the protocol correction and runtime pins; after
+required CI passes, run one Kev-0.8B public-selection smoke record.
 
 ## Handoff
 
