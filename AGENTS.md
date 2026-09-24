@@ -81,6 +81,17 @@ requirements, update the single lockfile and synchronize the same `.venv`
 before running the task. Never create another environment as a workaround; if
 the change cannot be handled safely in the canonical environment, stop and ask.
 
+### TASK-0053 remote model-runtime exception
+
+For TASK-0053 only, an upstream model runtime that requires incompatible
+dependencies may use an isolated runtime environment on the user's Apple
+Silicon Mac. Keep that environment and downloaded weights outside every Eval
+Lab checkout; do not clone or copy the repository to the Mac. Pin the runtime
+and model revisions in the experiment artifacts, run one model at a time, and
+retain or remove runtime state only as documented in the task checkpoint. This
+exception is for model inference only and does not create another project
+dependency environment.
+
 Run `python scripts/check_workspace_policy.py --canonical-root D:\claude\eval-lab`
 before task work and after cleanup. The repository contract check also enforces
 the canonical path, in-root temporary-worktree placement, and one-environment

@@ -5,9 +5,17 @@ hypothesis: >-
   on the frozen Eval Lab typed-choice benchmark, with accuracy, coverage,
   calibration, and latency varying across model architecture and size.
 created_at: 2026-09-24
-code_commit: pending_task_checkpoint
+code_commit: pending_runner_checkpoint
 seed: 20260924
 context_limit: 4096
+runner_host:
+  machine: MacBookPro17,1
+  chip: Apple M1
+  unified_memory_gib: 16
+  os: macOS 26.4.1 (25E253)
+  python: 3.12.14
+  uv: 0.12.18
+  free_disk_gib_after_runner_install: 21
 dataset:
   name: independent Eval Lab objective pool copied from EXP-014
   version: EXP-20260921-015 exact source freeze
@@ -25,36 +33,86 @@ arms:
   - arm_id: semif-qwen35-4b
     model: Qwen/Qwen3.5-4B
     system: SemIf
-    backend: pending_hardware_and_runtime_probe
+    model_revision: 851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a
+    upstream_code: https://github.com/TheoLeeCJ/SemIf-OpenJev
+    upstream_code_revision: 23cf1f39fc9534fe81437200959b6dfc7106e45a
+    backend: MLX / MLX-LM native direct scoring
+    runtime: MLX 0.32.2; MLX-LM a63e24c389382619eb6d9af656e3b46024be217a
+    precision: source BF16 with some FP32 parameters; no quantization
+    context_limit: 4096
   - arm_id: nimble-9b
     model: bespokelabs/Bespoke-Nimble-9B
     system: Bespoke Nimble
-    backend: pending_hardware_and_runtime_probe
+    model_revision: bd792f44ec8e265be861bfcdf4e05967ffe0e858
+    upstream_code: https://github.com/bespokelabsai/nimble
+    upstream_code_revision: 62076b4f2d365b5879dafcf7f6dd072a1fe76df7
+    backend: MLX
+    precision: unquantized; upstream MLX runner does not support quantized weights
+    context_limit: 2048
+    feasibility: blocked_on_16_gib_host_memory; upstream reports about 18 GB weights
   - arm_id: kev-9b
     model: jaredpalmer/kev-9b
     system: Kev
-    backend: pending_hardware_and_runtime_probe
+    model_revision: 2629c06a5aeb0feb3b9783bafed17ed8f39ecf5c
+    upstream_code: https://github.com/jaredpalmer/kev
+    upstream_code_revision: badd506d71399f536a09bba7ad5dd663adb104d2
+    backend: MLX
+    precision: BF16
+    context_limit: 1024
+    feasibility: expected_incompatible_with_16_gib_host; upstream sizing specifies 32 GB Mac
   - arm_id: kev-4b
     model: jaredpalmer/kev-4b
     system: Kev
-    backend: pending_hardware_and_runtime_probe
+    model_revision: 1da696f7938f77c4cdf5471e92fd342baff41778
+    upstream_code: https://github.com/jaredpalmer/kev
+    upstream_code_revision: badd506d71399f536a09bba7ad5dd663adb104d2
+    backend: MLX
+    precision: BF16
+    context_limit: 1024
+    feasibility: uncertain_on_16_gib_host; only bounded memory smoke before scaling
   - arm_id: kev-0.8b
     model: jaredpalmer/kev-0.8b
     system: Kev
-    backend: pending_hardware_and_runtime_probe
+    model_revision: 54f4f8777356cd5bbbb6c6919c657f26e6f2f6d8
+    upstream_code: https://github.com/jaredpalmer/kev
+    upstream_code_revision: badd506d71399f536a09bba7ad5dd663adb104d2
+    backend: MLX
+    precision: BF16
+    context_limit: 1024
+    feasibility: expected_to_fit_16_gib_host
   - arm_id: laya-421m
     model: convaiinnovations/laya
     system: Laya
-    backend: pending_hardware_and_runtime_probe
+    model_revision: 55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851
+    upstream_code: https://github.com/NandhaKishorM/laya
+    upstream_code_revision: 23a17522aa4942da6cce53a995a275760320b691
+    backend: PyTorch MPS
+    precision: upstream default
+    context_limit: 512
+    feasibility: expected_to_fit_16_gib_host
   - arm_id: verdict-1.4
     model: heman10x/rlcd-modernbert-151m
     system: OpenJev Verdict 1.4
-    backend: pending_hardware_and_runtime_probe
+    model_revision: 8af2496eb63c7fa66d7d234e1f62629380030eb4
+    upstream_code: https://github.com/Heman10x-NGU/Verdict-open-jev
+    upstream_code_revision: 30f15564821626ca5c1ad5b2638c4eb7078787dd
+    backend: ONNX Runtime CPU
+    precision: upstream ONNX/F32
+    context_limit: 512
+    feasibility: expected_to_fit_16_gib_host
   - arm_id: verdict-original
     model: heman10x/rlcd-modernbert-151m
     system: Verdict original configuration
-    backend: pending_hardware_and_runtime_probe
-    note: Shared weights with Verdict 1.4; distinguish engine/readout configuration, not model checkpoint.
+    model_revision: 8af2496eb63c7fa66d7d234e1f62629380030eb4
+    upstream_code: https://github.com/Heman10x-NGU/Verdict-open-jev
+    upstream_code_revision: 643fa478834c8df5bd3afe302dbbf8513664f8ef
+    backend: ONNX Runtime CPU
+    precision: upstream ONNX/F32
+    context_limit: 1024
+    feasibility: expected_to_fit_16_gib_host
+    note: >-
+      Original inference code immediately before v1.4; same weights as v1.4,
+      before NLI hypothesis templating, auto-loaded calibration, and 512-token cap.
 evaluation:
   primary_partition: blind_holdout
   public_partition_role: descriptive_and_optional_calibration_fit
@@ -86,7 +144,10 @@ artifacts:
   - report.md
 notes: >-
   EXP-014, EXP-015, and EXP-025 are complete and immutable. The local Mac
-  runner is currently inaccessible. Model versions, quantization, and
-  probability availability must be frozen before the first run. Jev 1.13 on
+  runner is reachable. Model and upstream code revisions are frozen in
+  model-revisions.json. Run one bounded smoke before full scoring. Laya and
+  Verdict have shorter per-arm context caps than the 4096-token comparison
+  ceiling; over-limit examples remain explicit unresolved statuses. Nimble's
+  upstream unquantized weights exceed the Mac's unified memory. Jev 1.13 on
   the same blind records is a cached reference if protocol compatibility is
   confirmed.

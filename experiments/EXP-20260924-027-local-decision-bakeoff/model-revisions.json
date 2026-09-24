@@ -1,0 +1,98 @@
+{
+  "schema_version": "local-decision-model-revisions-v1",
+  "resolved_at": "2026-09-24",
+  "host": "MacBookPro17,1 / Apple M1 / 16 GiB / macOS 26.4.1",
+  "models": [
+    {
+      "arm_id": "semif-qwen35-4b",
+      "model_id": "Qwen/Qwen3.5-4B",
+      "model_revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+      "runtime_repository": "https://github.com/TheoLeeCJ/SemIf-OpenJev",
+      "runtime_revision": "23cf1f39fc9534fe81437200959b6dfc7106e45a",
+      "backend": "MLX / MLX-LM native direct scoring",
+      "precision": "BF16 with some FP32 parameters; unquantized",
+      "max_context_tokens": 4096,
+      "source": "https://github.com/TheoLeeCJ/SemIf-OpenJev/blob/master/docs/MLX.md"
+    },
+    {
+      "arm_id": "nimble-9b",
+      "model_id": "bespokelabs/Bespoke-Nimble-9B",
+      "model_revision": "bd792f44ec8e265be861bfcdf4e05967ffe0e858",
+      "runtime_repository": "https://github.com/bespokelabsai/nimble",
+      "runtime_revision": "62076b4f2d365b5879dafcf7f6dd072a1fe76df7",
+      "backend": "MLX, unquantized; upstream does not support quantized weights",
+      "max_context_tokens": 2048,
+      "feasibility": "blocked_by_16_GiB_unified_memory; upstream says weights alone are about 18 GB",
+      "source": "https://github.com/bespokelabsai/nimble"
+    },
+    {
+      "arm_id": "kev-9b",
+      "model_id": "jaredpalmer/kev-9b",
+      "model_revision": "2629c06a5aeb0feb3b9783bafed17ed8f39ecf5c",
+      "runtime_repository": "https://github.com/jaredpalmer/kev",
+      "runtime_revision": "badd506d71399f536a09bba7ad5dd663adb104d2",
+      "backend": "MLX / Apple Silicon",
+      "precision": "BF16",
+      "max_context_tokens": 1024,
+      "feasibility": "not scheduled for load on this host; upstream lists 32 GB Mac sizing",
+      "source": "https://github.com/jaredpalmer/kev"
+    },
+    {
+      "arm_id": "kev-4b",
+      "model_id": "jaredpalmer/kev-4b",
+      "model_revision": "1da696f7938f77c4cdf5471e92fd342baff41778",
+      "runtime_repository": "https://github.com/jaredpalmer/kev",
+      "runtime_revision": "badd506d71399f536a09bba7ad5dd663adb104d2",
+      "backend": "MLX / Apple Silicon",
+      "precision": "BF16",
+      "max_context_tokens": 1024,
+      "feasibility": "uncertain on 16 GiB; bounded load smoke required",
+      "source": "https://github.com/jaredpalmer/kev"
+    },
+    {
+      "arm_id": "kev-0.8b",
+      "model_id": "jaredpalmer/kev-0.8b",
+      "model_revision": "54f4f8777356cd5bbbb6c6919c657f26e6f2f6d8",
+      "runtime_repository": "https://github.com/jaredpalmer/kev",
+      "runtime_revision": "badd506d71399f536a09bba7ad5dd663adb104d2",
+      "backend": "MLX / Apple Silicon",
+      "precision": "BF16",
+      "max_context_tokens": 1024,
+      "source": "https://github.com/jaredpalmer/kev"
+    },
+    {
+      "arm_id": "laya-421m",
+      "model_id": "convaiinnovations/laya",
+      "model_revision": "55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851",
+      "runtime_repository": "https://github.com/NandhaKishorM/laya",
+      "runtime_revision": "23a17522aa4942da6cce53a995a275760320b691",
+      "backend": "PyTorch MPS",
+      "precision": "upstream default",
+      "max_context_tokens": 512,
+      "source": "https://github.com/NandhaKishorM/laya"
+    },
+    {
+      "arm_id": "verdict-1.4",
+      "model_id": "heman10x/rlcd-modernbert-151m",
+      "model_revision": "8af2496eb63c7fa66d7d234e1f62629380030eb4",
+      "runtime_repository": "https://github.com/Heman10x-NGU/Verdict-open-jev",
+      "runtime_revision": "30f15564821626ca5c1ad5b2638c4eb7078787dd",
+      "backend": "ONNX Runtime CPU",
+      "precision": "upstream ONNX/F32",
+      "max_context_tokens": 512,
+      "source": "https://github.com/Heman10x-NGU/Verdict-open-jev"
+    },
+    {
+      "arm_id": "verdict-original",
+      "model_id": "heman10x/rlcd-modernbert-151m",
+      "model_revision": "8af2496eb63c7fa66d7d234e1f62629380030eb4",
+      "runtime_repository": "https://github.com/Heman10x-NGU/Verdict-open-jev",
+      "runtime_revision": "643fa478834c8df5bd3afe302dbbf8513664f8ef",
+      "backend": "ONNX Runtime CPU",
+      "precision": "upstream ONNX/F32",
+      "max_context_tokens": 1024,
+      "notes": "Pre-v1.4 inference commit; same weights, before the v1.4 context, calibration-loading, and hypothesis-templating fixes",
+      "source": "https://github.com/Heman10x-NGU/Verdict-open-jev/commit/643fa478834c8df5bd3afe302dbbf8513664f8ef"
+    }
+  ]
+}
