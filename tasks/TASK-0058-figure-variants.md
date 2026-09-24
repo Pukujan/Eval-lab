@@ -2,7 +2,8 @@
 
 ## Status
 
-Complete pending PR/CI/merge — tracked by GitHub issue #67.
+Figure variants merged in PR #68 (`0b996a5`). Follow-up (two-layer paper)
+pending PR/CI/merge — issue #67 reopened for it.
 
 ## Objective
 
@@ -62,6 +63,26 @@ Commands run (authoring clone, Linux):
 - `uv lock --check`, `check_repo_contract.py`, `check_workspace_policy.py`,
   `ruff check .`, `ruff format --check` on changed Python files,
   `mypy src/eval_lab`, `python -m pytest -q`, `uv build`
+
+### 2026-09-24 — two-layer paper (follow-up)
+
+Owner request: the paper must work as a two-minute quick read and a deep
+dive. Changes in `paper/paper.md`:
+
+- claim title and a one-sentence subtitle (`<p class="paper-subtitle">`);
+- "The short version" box: five plain-language bullets, at most two numbers
+  each, followed by one summary chart (the skipped-questions chart, now
+  Figure 1; the accuracy chart is Figure 2);
+- each finding: a question heading, a bold one-line takeaway, a short
+  paragraph, at most one chart, then `<details class="deep-dive">` ("Details
+  for deep divers") with method nuances, tables and statistics; Setup and
+  What happened follow the same pattern;
+- jargon (AI judge, rate limit, blind set, API/local, coverage, harness,
+  Wilson interval, McNemar, Holm correction, preregistered, tokens, thinking,
+  always-same-answer baseline) defined on first use;
+- `paper/README.md` documents the two layers.
+
+No numbers changed; the drift and prose-number tests pass.
 
 ## Handoff
 

@@ -22,16 +22,25 @@ reporting hide?
 
 ## Structure
 
-`paper.md` is written for a smart non-specialist: an **At a glance** box, then
-The problem → Setup → What happened → What we found (one headline, a short
-paragraph and at most one chart per finding) → What it means → Limitations →
-Future work. Body tables are small (≤ ~8 rows); full tables and paired tests
-are in collapsed `<details>` blocks in the appendices.
+`paper.md` has two layers.
+
+- **Quick read (about two minutes):** a claim title, a one-sentence
+  subtitle (`<p class="paper-subtitle">`), a plain-language **short version**
+  (3–5 bullets, no jargon, at most two numbers each) and one summary chart.
+  A reader can stop there.
+- **Full read:** The problem → Setup → What happened → What we found → What it
+  means → Limitations → Future work. Each finding has a question as its
+  heading, then a one-line bold takeaway, a short paragraph and at most one
+  chart. Method nuances, per-experiment tables and statistics sit in
+  `<details class="deep-dive">` blocks whose summary starts with "Details for
+  deep divers". Full tables and paired tests are in collapsed appendices.
+
+Jargon is defined on first use. Body tables are small (≤ ~8 rows).
 
 Markdown conventions (render on GitHub and are mirrored on the Design Bakery
 site):
 
-- Callouts use GitHub alert syntax: `> [!IMPORTANT]` for the At a glance box,
+- Callouts use GitHub alert syntax: `> [!IMPORTANT]` for the short-version box,
   `> [!NOTE]` for side notes.
 - Every figure has four SVG variants from one script run:
   `NAME.{light,dark}.{wide,tall}.svg` (wide for desktop, tall for screens
@@ -40,7 +49,8 @@ site):
   `<figure data-figure="NAME"><picture>` with `<source>` elements for
   dark/tall (`prefers-color-scheme`, `max-width: 700px`) and an
   `<img src="figures/benchmark/NAME.light.wide.svg">` fallback, followed by a
-  `<figcaption>` whose first sentence is the takeaway. Chart titles state the
+  `<figcaption>` whose first sentence (after the figure label) is the
+  takeaway. Chart titles state the
   finding.
 - Figure A1 (`judges_ranked`) uses shared ranks: a judge shares the rank of the
   top judge of its group when the Holm-corrected McNemar p-value over all 760
