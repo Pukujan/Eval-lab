@@ -1,0 +1,11 @@
+{
+  "arm_id": "laya-421m",
+  "selected_count": 760,
+  "completed_count": 760,
+  "status_counts": {
+    "ok": 748,
+    "skipped": 12
+  },
+  "last_record_id": "single-synthetic-structured-06-correct",
+  "updated_at_utc": "2026-09-24T07:31:41Z"
+}

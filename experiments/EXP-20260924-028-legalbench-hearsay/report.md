@@ -5,12 +5,18 @@
 | Arm | Resolved | Coverage | Accuracy | 95% Wilson interval | Calibration by mode | p50 ms | p95 ms | Status counts |
 | --- | ---: | ---: | ---: | --- | --- | ---: | ---: | --- |
 | `kev-0.8b` | 94/94 | 1.0000 | 0.5425531914893617 | `[0.44215447666238733, 0.6396104530149279]` | `all: 0.5008392885106383/0.6928847656932487/0.09382765957446812` | 282.76960399671225 | 317.94871240199427 | `{'ok': 94}` |
+| `laya-421m` | 94/94 | 1.0000 | 0.6170212765957447 | `[0.5159955881639535, 0.7088579684486636]` | `all: 0.48820023808510643/0.6875063454523375/0.14961170212765956` | 218.4038534978754 | 259.5422642574704 | `{'ok': 94}` |
 
 ### Class and calibration metrics by fixed label space
 
 | Arm | Mode | N | Accuracy | Balanced accuracy | Macro F1 | Brier | NLL | ECE |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | `kev-0.8b` | all | 94 | 0.5426 | 0.5695 | 0.5336 | 0.5008392885106383 | 0.6928847656932487 | 0.09382765957446812 |
+| `laya-421m` | all | 94 | 0.6170 | 0.5693 | 0.5215 | 0.48820023808510643 | 0.6875063454523375 | 0.14961170212765956 |
 
 Calibration metrics are reported within each fixed label space in `results.json`; single-answer and pairwise records are not pooled for Brier, NLL, or ECE.
 Unresolved model failures remain statuses and are excluded from resolved accuracy. Public-selection results are descriptive and the blind holdout is the primary comparison.
+
+## Model-specific interpretation notes
+
+- `laya-421m`: Upstream warned this checkpoint contains invalid temperatures; it uses a 0.5 fallback for choice:11+ and says affected confidence entries are uncalibrated.

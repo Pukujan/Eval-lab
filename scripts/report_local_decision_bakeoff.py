@@ -166,7 +166,11 @@ def _load_runs(
     return arms
 
 
-def _markdown(experiment_id: str, partitions: dict[str, dict[str, Any]]) -> str:
+def _markdown(
+    experiment_id: str,
+    partitions: dict[str, dict[str, Any]],
+    arm_notes: dict[str, str] | None = None,
+) -> str:
     lines = [f"# {experiment_id} — local decision-model results", ""]
     for partition, arms in partitions.items():
         lines.extend(
@@ -221,6 +225,12 @@ def _markdown(experiment_id: str, partitions: dict[str, dict[str, Any]]) -> str:
             "",
         ]
     )
+    notes = arm_notes or {}
+    if notes:
+        lines.extend(["## Model-specific interpretation notes", ""])
+        for arm_id, note in sorted(notes.items()):
+            lines.append(f"- `{arm_id}`: {note}")
+        lines.append("")
     return "\n".join(lines)
 
 
@@ -229,6 +239,10 @@ def report(experiment_root: Path, legalbench_root: Path) -> dict[str, Any]:
     pool_fingerprint = json.loads(
         (experiment_root / "source-pool-fingerprint.json").read_text(encoding="utf-8")
     )
+    model_revisions = json.loads(
+        (experiment_root / "model-revisions.json").read_text(encoding="utf-8")
+    )
+    model_arms = {item["arm_id"]: item for item in model_revisions["models"]}
     partitions: dict[str, dict[str, Any]] = {}
     for partition in ("public", "blind"):
         pool_partition = "public_selection" if partition == "public" else "blind_holdout"
@@ -245,13 +259,23 @@ def report(experiment_root: Path, legalbench_root: Path) -> dict[str, Any]:
         "dataset_fingerprint": pool_fingerprint["canonical_pool_fingerprint"],
         "primary_partition": "blind",
         "partitions": partitions,
+        "model_arms": model_arms,
         "calibration_policy": "native confidence only; metrics computed separately within each judgment mode",
     }
     (experiment_root / "results.json").write_text(
         json.dumps(results_027, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
     (experiment_root / "report.md").write_text(
-        _markdown(experiment_root.name, partitions), encoding="utf-8"
+        _markdown(
+            experiment_root.name,
+            partitions,
+            {
+                arm_id: str(model_arms[arm_id]["probability_calibration_note"])
+                for arm_id in model_arms
+                if model_arms[arm_id].get("probability_calibration_note")
+            },
+        ),
+        encoding="utf-8",
     )
 
     legal_records = _jsonl(legalbench_root / "canonical-records.jsonl")
@@ -268,19 +292,32 @@ def report(experiment_root: Path, legalbench_root: Path) -> dict[str, Any]:
     source_manifest = json.loads(
         (legalbench_root / "source-manifest.json").read_text(encoding="utf-8")
     )
+    legal_model_metadata = {
+        arm_id: model_arms[arm_id] for arm_id in legal_predictions if arm_id in model_arms
+    }
     results_028 = {
         "experiment_id": legalbench_root.name,
         "dataset_source": source_manifest,
         "split": "test",
         "gold_provenance": "benchmark answer key",
         "arms": legal_predictions,
+        "model_arms": legal_model_metadata,
         "interpretation_limit": "one fixed-label hearsay classification task; not general legal reasoning",
     }
     (legalbench_root / "results.json").write_text(
         json.dumps(results_028, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
     (legalbench_root / "report.md").write_text(
-        _markdown(legalbench_root.name, {"test": legal_predictions}), encoding="utf-8"
+        _markdown(
+            legalbench_root.name,
+            {"test": legal_predictions},
+            {
+                arm_id: str(model["probability_calibration_note"])
+                for arm_id, model in legal_model_metadata.items()
+                if model.get("probability_calibration_note")
+            },
+        ),
+        encoding="utf-8",
     )
     return {"EXP-027": results_027, "EXP-028": results_028}
 

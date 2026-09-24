@@ -50,7 +50,8 @@
       "max_context_tokens": 1024,
       "runtime_environment": "Mac external environment ~/.cache/eval-lab/TASK-0053/kev-runtime",
       "runtime_package_freeze": "kev-runtime-freeze.txt",
-      "feasibility": "uncertain on 16 GiB; bounded load smoke required",
+      "feasibility": "smoke_failed_on_current_host_session; pinned server exited during model load before a prediction; smoke output preserved",
+      "smoke_artifact": "smokes/kev-4b-exp027-one-record/",
       "source": "https://github.com/jaredpalmer/kev"
     },
     {
@@ -75,6 +76,9 @@
       "backend": "PyTorch MPS",
       "precision": "upstream default",
       "max_context_tokens": 512,
+      "runtime_environment": "Mac external environment ~/.cache/eval-lab/TASK-0053/laya-runtime",
+      "runtime_package_freeze": "laya-runtime-freeze.txt",
+      "probability_calibration_note": "Upstream warned this checkpoint contains invalid temperatures; it uses a 0.5 fallback for choice:11+ and says affected confidence entries are uncalibrated.",
       "source": "https://github.com/NandhaKishorM/laya"
     },
     {

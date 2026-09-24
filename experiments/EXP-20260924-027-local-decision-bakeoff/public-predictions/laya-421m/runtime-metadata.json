@@ -1,0 +1,11 @@
+{
+  "model_runtime": {
+    "device": "mps",
+    "snapshot": "/Users/teresaguajardo/.cache/huggingface/hub/models--convaiinnovations--laya/snapshots/55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851"
+  },
+  "package_versions": {
+    "laya": "0.3.20",
+    "torch": "2.14.0",
+    "transformers": "5.17.0"
+  }
+}

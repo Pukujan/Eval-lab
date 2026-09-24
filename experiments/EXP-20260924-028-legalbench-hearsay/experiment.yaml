@@ -50,4 +50,6 @@ notes: >-
   machine-readable revision, source files contain 5 train and 94 test rows;
   use the frozen rows exactly, document the one-row discrepancy, and do not
   invent a record. The task page declares CC BY 4.0. Report this one task
-  separately; it is not a general legal-reasoning score.
+  separately; it is not a general legal-reasoning score. Laya's emitted
+  confidence has an upstream invalid-temperature warning and is not fully
+  calibrated.
