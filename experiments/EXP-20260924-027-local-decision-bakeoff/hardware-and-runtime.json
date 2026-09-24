@@ -27,6 +27,19 @@
       "freeze_file": "kev-runtime-freeze.txt",
       "uv_pip_check": "passed",
       "server_help": "passed; no model loaded"
+    },
+    {
+      "family": "Laya",
+      "upstream_revision": "23a17522aa4942da6cce53a995a275760320b691",
+      "external_environment": "/Users/teresaguajardo/.cache/eval-lab/TASK-0053/laya-runtime",
+      "python": "3.12.14",
+      "laya": "0.3.20",
+      "torch": "2.14.0",
+      "transformers": "5.17.0",
+      "freeze_file": "laya-runtime-freeze.txt",
+      "uv_pip_check": "passed",
+      "mps_available": true,
+      "smoke": "passed; upstream emitted invalid-temperature calibration warning"
     }
   ],
   "inference_libraries_before_model_runtime_install": {

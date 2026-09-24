@@ -3,9 +3,10 @@
 ## Status
 
 Active — tracked by GitHub issue #47. EXP-027 and EXP-028 are in progress.
-The MacBook Pro is reachable over Tailscale SSH. Kev-0.8B has
-finished EXP-027 public and blind partitions and EXP-028 Hearsay with all
-selected records resolved. Other model arms remain. Hardware is a 2020 MacBook
+The MacBook Pro is reachable over Tailscale SSH. Kev-0.8B and Laya-421M have
+finished EXP-027 public and blind partitions and EXP-028 Hearsay. Laya has
+explicit 512-token skips and an upstream calibration warning. Kev-4B failed
+its load smoke before inference. Other model arms remain. Hardware is a 2020 MacBook
 Pro (MacBookPro17,1), Apple M1, 16 GiB unified memory, macOS 26.4.1. The
 fixed-choice adapters and resumable sequential runner are merged; the
 string-state correction merged in PR #51. The pinned Kev runtime is installed
@@ -377,6 +378,53 @@ then regenerate aggregate reports and finalize both experiments.
 
 Next atomic action: publish the Kev-0.8B raw predictions and validated reports;
 after the checkpoint merges, begin the next feasible model arm sequentially.
+
+### 2026-09-24 — Laya runs and Kev-4B load smoke
+
+Status: Laya-421M completed all three benchmark partitions; Kev-4B smoke failed
+during model load before returning a choice. Raw outputs are preserved. EXP-027
+and EXP-028 remain in progress.
+
+Completed work: installed Laya runtime commit
+`23a17522aa4942da6cce53a995a275760320b691` in a separate external Python 3.12
+environment, captured its package freeze, and confirmed MPS availability. Ran
+EXP-027 public (648 selected, 638 `ok`, 10 context skips), blind (760 selected,
+748 `ok`, 12 context skips), and LegalBench Hearsay (94/94 `ok`). Exact frozen
+IDs were validated. Blind accuracy is 0.4853 at 98.42% resolved coverage;
+Hearsay accuracy is 0.6170 at 100% coverage. The Laya runtime warned that an
+invalid temperature uses a 0.5 fallback for `choice:11+`; affected confidence
+is uncalibrated, so its Brier/NLL/ECE results are diagnostic. The pinned Kev-4B
+base weights downloaded, but its server exited during model load without a
+prediction; that failure output is preserved. The Mac had an active ComfyUI
+process with about 10.8 GiB RSS during the load attempt, so no cause beyond
+the server exit is claimed.
+
+Files changed: EXP-027 `experiment.yaml`, `model-revisions.json`,
+`hardware-and-runtime.json`, `laya-runtime-freeze.txt`,
+`public-predictions/laya-421m/`, `blind-predictions/laya-421m/`,
+`smokes/laya-421m-exp027-one-record/`, `smokes/kev-4b-exp027-one-record/`,
+`results.json`, and `report.md`; EXP-028 `experiment.yaml`,
+`predictions/laya-421m/`, `results.json`, and `report.md`; report script and
+tests; this task file and `checkpoints/CURRENT.md`.
+
+Commands run: pinned Laya source installation and package check; MPS
+availability probe; one-record Laya and Kev-4B smokes; Laya public, blind, and
+Hearsay runs; exact-ID/status verification; report generation; Ruff and focused
+tests. All eligible Laya records were either `ok` or explicitly skipped by
+the registered 512-token limit. Kev-4B recorded a model-load provider error.
+
+Decisions: preserve Laya's runtime warning in model metadata and treat its
+calibration metrics as diagnostic; retain 512-token context skips as unresolved
+instead of truncating. Do not infer the reason for Kev-4B server exit from the
+available log.
+
+Unresolved: finish Verdict 1.4 and original configurations; determine whether
+SemIf-4B and Kev-4B can be safely loaded with available Mac memory and disk;
+record Nimble-9B and Kev-9B as blocked by the 16 GiB host sizing unless a
+compatible smoke is available.
+
+Next atomic action: checkpoint Laya outputs and the Kev-4B load failure, then
+install the pinned Verdict runtime and run one-record feasibility probes.
 
 ## Handoff
 

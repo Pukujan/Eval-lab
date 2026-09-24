@@ -27,7 +27,45 @@
         "p50": 282.76960399671225,
         "p95": 317.94871240199427
       },
-      "prediction_sha256": "19ab6730c34a478950cf1a04375e3e067236f7fbdc78cbc3bf3b85f7b5637e6d",
+      "prediction_sha256": "c40f76f146d548a8f16e8067f1578130cd7866e68905608ace18ec122ce14cba",
+      "probability_count": 94,
+      "record_count": 94,
+      "resolved_count": 94,
+      "resolved_coverage": 1.0,
+      "runner_revision": "4d1d9a5fe9c1719fd190e757ff4134f043f3fb16",
+      "status_counts": {
+        "ok": 94
+      },
+      "unresolved_count": 0
+    },
+    "laya-421m": {
+      "accuracy": 0.6170212765957447,
+      "accuracy_95_wilson": [
+        0.5159955881639535,
+        0.7088579684486636
+      ],
+      "by_mode": {
+        "all": {
+          "accuracy": 0.6170212765957447,
+          "balanced_accuracy": 0.5692590888173032,
+          "macro_f1": 0.5214932126696833,
+          "probability_count": 94,
+          "probability_metrics": {
+            "accuracy": 0.6170212765957447,
+            "balanced_accuracy": 0.5692590888173032,
+            "brier": 0.48820023808510643,
+            "ece": 0.14961170212765956,
+            "macro_f1": 0.5214932126696833,
+            "nll": 0.6875063454523375
+          },
+          "record_count": 94
+        }
+      },
+      "latency_ms": {
+        "p50": 218.4038534978754,
+        "p95": 259.5422642574704
+      },
+      "prediction_sha256": "ab7b928d118d33beb8681c2ed9316e2b294fefaf2265611872c9d06620652450",
       "probability_count": 94,
       "record_count": 94,
       "resolved_count": 94,
@@ -88,5 +126,34 @@
   "experiment_id": "EXP-20260924-028-legalbench-hearsay",
   "gold_provenance": "benchmark answer key",
   "interpretation_limit": "one fixed-label hearsay classification task; not general legal reasoning",
+  "model_arms": {
+    "kev-0.8b": {
+      "arm_id": "kev-0.8b",
+      "backend": "MLX / Apple Silicon",
+      "max_context_tokens": 1024,
+      "model_id": "jaredpalmer/kev-0.8b",
+      "model_revision": "54f4f8777356cd5bbbb6c6919c657f26e6f2f6d8",
+      "precision": "BF16",
+      "runtime_environment": "Mac external environment ~/.cache/eval-lab/TASK-0053/kev-runtime",
+      "runtime_package_freeze": "kev-runtime-freeze.txt",
+      "runtime_repository": "https://github.com/jaredpalmer/kev",
+      "runtime_revision": "badd506d71399f536a09bba7ad5dd663adb104d2",
+      "source": "https://github.com/jaredpalmer/kev"
+    },
+    "laya-421m": {
+      "arm_id": "laya-421m",
+      "backend": "PyTorch MPS",
+      "max_context_tokens": 512,
+      "model_id": "convaiinnovations/laya",
+      "model_revision": "55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851",
+      "precision": "upstream default",
+      "probability_calibration_note": "Upstream warned this checkpoint contains invalid temperatures; it uses a 0.5 fallback for choice:11+ and says affected confidence entries are uncalibrated.",
+      "runtime_environment": "Mac external environment ~/.cache/eval-lab/TASK-0053/laya-runtime",
+      "runtime_package_freeze": "laya-runtime-freeze.txt",
+      "runtime_repository": "https://github.com/NandhaKishorM/laya",
+      "runtime_revision": "23a17522aa4942da6cce53a995a275760320b691",
+      "source": "https://github.com/NandhaKishorM/laya"
+    }
+  },
   "split": "test"
 }

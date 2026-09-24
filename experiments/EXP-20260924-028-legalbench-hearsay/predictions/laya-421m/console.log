@@ -1,0 +1,8 @@
+Fetching 38 files:   0%|          | 0/38 [00:00<?, ?it/s]Fetching 38 files: 100%|██████████| 38/38 [00:00<00:00, 4848.76it/s]
+/Users/teresaguajardo/.cache/eval-lab/TASK-0053/laya-runtime/lib/python3.12/site-packages/laya/agent.py:928: RuntimeWarning: laya: this checkpoint ships invalid temperatures or values outside [0.5, 5]; using choice:11+=0.10058280825614929 -> 0.5. Treat confidence from the affected entries as uncalibrated.
+  return Agent(model_id_or_path, device=device, token=token, subfolder=subfolder, fast=fast,
+{"arm_id": "laya-421m", "selected_count": 94, "completed_count": 25, "status_counts": {"ok": 25}, "last_record_id": "legalbench-hearsay:test:24", "updated_at_utc": "2026-09-24T07:32:39Z"}
+{"arm_id": "laya-421m", "selected_count": 94, "completed_count": 50, "status_counts": {"ok": 50}, "last_record_id": "legalbench-hearsay:test:49", "updated_at_utc": "2026-09-24T07:32:44Z"}
+{"arm_id": "laya-421m", "selected_count": 94, "completed_count": 75, "status_counts": {"ok": 75}, "last_record_id": "legalbench-hearsay:test:74", "updated_at_utc": "2026-09-24T07:32:50Z"}
+{"arm_id": "laya-421m", "selected_count": 94, "completed_count": 94, "status_counts": {"ok": 94}, "last_record_id": "legalbench-hearsay:test:94", "updated_at_utc": "2026-09-24T07:32:54Z"}
+/Users/teresaguajardo/.cache/eval-lab/TASK-0053/runs/laya-421m/legalbench-hearsay/predictions.jsonl

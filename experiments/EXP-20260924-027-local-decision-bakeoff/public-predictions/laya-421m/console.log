@@ -1,0 +1,30 @@
+Fetching 38 files:   0%|          | 0/38 [00:00<?, ?it/s]Fetching 38 files: 100%|██████████| 38/38 [00:00<00:00, 4839.04it/s]
+/Users/teresaguajardo/.cache/eval-lab/TASK-0053/laya-runtime/lib/python3.12/site-packages/laya/agent.py:928: RuntimeWarning: laya: this checkpoint ships invalid temperatures or values outside [0.5, 5]; using choice:11+=0.10058280825614929 -> 0.5. Treat confidence from the affected entries as uncalibrated.
+  return Agent(model_id_or_path, device=device, token=token, subfolder=subfolder, fast=fast,
+{"arm_id": "laya-421m", "selected_count": 648, "completed_count": 25, "status_counts": {"ok": 25}, "last_record_id": "arc-single:TIMSS_1995_8_I17:correct", "updated_at_utc": "2026-09-24T07:27:03Z"}
+{"arm_id": "laya-421m", "selected_count": 648, "completed_count": 50, "status_counts": {"ok": 50}, "last_record_id": "arc-single:Mercury_7128695:wrong", "updated_at_utc": "2026-09-24T07:27:06Z"}
+{"arm_id": "laya-421m", "selected_count": 648, "completed_count": 75, "status_counts": {"ok": 75}, "last_record_id": "arc-single:Mercury_7042805:correct", "updated_at_utc": "2026-09-24T07:27:10Z"}
+{"arm_id": "laya-421m", "selected_count": 648, "completed_count": 100, "status_counts": {"ok": 100}, "last_record_id": "arc-single:ACTAAP_2013_7_17:wrong", "updated_at_utc": "2026-09-24T07:27:13Z"}
+{"arm_id": "laya-421m", "selected_count": 648, "completed_count": 125, "status_counts": {"ok": 125}, "last_record_id": "arc-pair:Mercury_7172410", "updated_at_utc": "2026-09-24T07:27:17Z"}
+{"arm_id": "laya-421m", "selected_count": 648, "completed_count": 150, "status_counts": {"ok": 150}, "last_record_id": "arc-pair:Mercury_411034", "updated_at_utc": "2026-09-24T07:27:21Z"}
+{"arm_id": "laya-421m", "selected_count": 648, "completed_count": 175, "status_counts": {"ok": 175}, "last_record_id": "arc-pair:NYSEDREGENTS_2004_4_29", "updated_at_utc": "2026-09-24T07:27:24Z"}
+{"arm_id": "laya-421m", "selected_count": 648, "completed_count": 200, "status_counts": {"ok": 200}, "last_record_id": "arc-pair:Mercury_7283308", "updated_at_utc": "2026-09-24T07:27:28Z"}
+{"arm_id": "laya-421m", "selected_count": 648, "completed_count": 225, "status_counts": {"ok": 225}, "last_record_id": "arc-pair:Mercury_SC_405035", "updated_at_utc": "2026-09-24T07:27:32Z"}
+{"arm_id": "laya-421m", "selected_count": 648, "completed_count": 250, "status_counts": {"ok": 250}, "last_record_id": "arc-pair:Mercury_7172673", "updated_at_utc": "2026-09-24T07:27:35Z"}
+{"arm_id": "laya-421m", "selected_count": 648, "completed_count": 275, "status_counts": {"ok": 275}, "last_record_id": "arc-pair:Mercury_7026268", "updated_at_utc": "2026-09-24T07:27:39Z"}
+{"arm_id": "laya-421m", "selected_count": 648, "completed_count": 300, "status_counts": {"ok": 300}, "last_record_id": "gsm8k:gsm8k-main:train-06726:wrong", "updated_at_utc": "2026-09-24T07:27:42Z"}
+{"arm_id": "laya-421m", "selected_count": 648, "completed_count": 325, "status_counts": {"ok": 325}, "last_record_id": "gsm8k:gsm8k-main:train-03610:correct", "updated_at_utc": "2026-09-24T07:27:46Z"}
+{"arm_id": "laya-421m", "selected_count": 648, "completed_count": 350, "status_counts": {"ok": 350}, "last_record_id": "gsm8k:gsm8k-main:train-02855:wrong", "updated_at_utc": "2026-09-24T07:27:49Z"}
+{"arm_id": "laya-421m", "selected_count": 648, "completed_count": 375, "status_counts": {"ok": 375}, "last_record_id": "gsm8k:gsm8k-main:train-07276:correct", "updated_at_utc": "2026-09-24T07:27:52Z"}
+{"arm_id": "laya-421m", "selected_count": 648, "completed_count": 400, "status_counts": {"ok": 400}, "last_record_id": "gsm8k:gsm8k-main:train-02635:wrong", "updated_at_utc": "2026-09-24T07:27:55Z"}
+{"arm_id": "laya-421m", "selected_count": 648, "completed_count": 425, "status_counts": {"ok": 425}, "last_record_id": "gsm8k:gsm8k-main:train-05061:correct", "updated_at_utc": "2026-09-24T07:27:59Z"}
+{"arm_id": "laya-421m", "selected_count": 648, "completed_count": 450, "status_counts": {"ok": 450}, "last_record_id": "mmlu:abstract_algebra:validation:0006:wrong", "updated_at_utc": "2026-09-24T07:28:02Z"}
+{"arm_id": "laya-421m", "selected_count": 648, "completed_count": 475, "status_counts": {"ok": 475}, "last_record_id": "mmlu:elementary_mathematics:validation:0003:correct", "updated_at_utc": "2026-09-24T07:28:05Z"}
+{"arm_id": "laya-421m", "selected_count": 648, "completed_count": 500, "status_counts": {"ok": 500}, "last_record_id": "mmlu:high_school_biology:validation:0012:wrong", "updated_at_utc": "2026-09-24T07:28:09Z"}
+{"arm_id": "laya-421m", "selected_count": 648, "completed_count": 525, "status_counts": {"ok": 515, "skipped": 10}, "last_record_id": "mmlu:logical_fallacies:validation:0007:correct", "updated_at_utc": "2026-09-24T07:28:13Z"}
+{"arm_id": "laya-421m", "selected_count": 648, "completed_count": 550, "status_counts": {"ok": 540, "skipped": 10}, "last_record_id": "mmlu:machine_learning:validation:0003:wrong", "updated_at_utc": "2026-09-24T07:28:17Z"}
+{"arm_id": "laya-421m", "selected_count": 648, "completed_count": 575, "status_counts": {"ok": 565, "skipped": 10}, "last_record_id": "mmlu:professional_law:validation:0020:correct", "updated_at_utc": "2026-09-24T07:28:22Z"}
+{"arm_id": "laya-421m", "selected_count": 648, "completed_count": 600, "status_counts": {"ok": 590, "skipped": 10}, "last_record_id": "mmlu:computer_security:validation:0000:wrong", "updated_at_utc": "2026-09-24T07:28:27Z"}
+{"arm_id": "laya-421m", "selected_count": 648, "completed_count": 625, "status_counts": {"ok": 615, "skipped": 10}, "last_record_id": "single-synthetic-multiple-choice-05-obvious", "updated_at_utc": "2026-09-24T07:28:29Z"}
+{"arm_id": "laya-421m", "selected_count": 648, "completed_count": 648, "status_counts": {"ok": 638, "skipped": 10}, "last_record_id": "single-synthetic-structured-05-subtle", "updated_at_utc": "2026-09-24T07:28:32Z"}
+/Users/teresaguajardo/.cache/eval-lab/TASK-0053/runs/laya-421m/public-selection/predictions.jsonl

@@ -139,6 +139,7 @@ artifacts:
   - hardware-and-runtime.json
   - model-revisions.json
   - kev-runtime-freeze.txt
+  - laya-runtime-freeze.txt
   - smokes/
   - public-predictions/
   - blind-predictions/
@@ -149,8 +150,11 @@ notes: >-
   runner is reachable. Model and upstream code revisions are frozen in
   model-revisions.json. Kev-0.8B has completed both frozen partitions and the
   94-item Hearsay set with all outputs preserved. Laya and
-  Verdict have shorter per-arm context caps than the 4096-token comparison
-  ceiling; over-limit examples remain explicit unresolved statuses. Nimble's
+  Laya and Verdict have shorter per-arm context caps than the 4096-token
+  comparison ceiling; over-limit examples remain explicit unresolved statuses.
+  Laya's checkpoint also emitted an invalid-temperature warning; treat its
+  confidence metrics as diagnostic. The Kev-4B load smoke exited before a
+  prediction; its status and logs are preserved. Nimble's
   upstream unquantized weights exceed the Mac's unified memory. Jev 1.13 on
   the same blind records is a cached reference if protocol compatibility is
   confirmed.
