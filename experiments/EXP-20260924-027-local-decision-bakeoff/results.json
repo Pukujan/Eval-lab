@@ -19,7 +19,7 @@
     "kev-4b": {
       "arm_id": "kev-4b",
       "backend": "MLX / Apple Silicon",
-      "feasibility": "smoke_failed_on_current_host_session; pinned server exited during model load before a prediction; smoke output preserved",
+      "feasibility": "completed_unquantized_on_m1_16gib_after_disk_restore; one-record smoke ok with observed free memory at or above 36 percent; EXP-027 public 648/648 ok, blind 760/760 ok, and EXP-028 94/94 ok; earlier failed load smokes preserved",
       "max_context_tokens": 1024,
       "model_id": "jaredpalmer/kev-4b",
       "model_revision": "1da696f7938f77c4cdf5471e92fd342baff41778",
@@ -28,7 +28,10 @@
       "runtime_package_freeze": "kev-runtime-freeze.txt",
       "runtime_repository": "https://github.com/jaredpalmer/kev",
       "runtime_revision": "badd506d71399f536a09bba7ad5dd663adb104d2",
-      "smoke_artifact": "smokes/kev-4b-exp027-one-record/",
+      "smoke_artifacts": [
+        "smokes/kev-4b-exp027-one-record/",
+        "smokes/kev-4b-exp027-one-record-retry-20260924/"
+      ],
       "source": "https://github.com/jaredpalmer/kev"
     },
     "kev-9b": {
@@ -73,13 +76,24 @@
     "semif-qwen35-4b": {
       "arm_id": "semif-qwen35-4b",
       "backend": "MLX / MLX-LM native direct scoring",
+      "feasibility": "completed_unquantized_on_m1_16gib; EXP-027 public 648/648 ok, blind 760/760 ok, and EXP-028 94/94 ok; quantization was not used",
       "max_context_tokens": 4096,
       "model_id": "Qwen/Qwen3.5-4B",
       "model_revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
       "precision": "BF16 with some FP32 parameters; unquantized",
+      "runtime_environment": "Mac external environment ~/.cache/eval-lab/TASK-0053/semif-runtime",
+      "runtime_package_freeze": "semif-runtime-freeze.txt",
       "runtime_repository": "https://github.com/TheoLeeCJ/SemIf-OpenJev",
       "runtime_revision": "23cf1f39fc9534fe81437200959b6dfc7106e45a",
-      "source": "https://github.com/TheoLeeCJ/SemIf-OpenJev/blob/master/docs/MLX.md"
+      "source": "https://github.com/TheoLeeCJ/SemIf-OpenJev/blob/23cf1f39fc9534fe81437200959b6dfc7106e45a/docs/MLX.md",
+      "weight_shards_gb_rounded": [
+        5.33,
+        3.99
+      ],
+      "weight_shards_source": [
+        "https://huggingface.co/Qwen/Qwen3.5-4B/blob/851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a/model.safetensors-00001-of-00002.safetensors",
+        "https://huggingface.co/Qwen/Qwen3.5-4B/blob/851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a/model.safetensors-00002-of-00002.safetensors"
+      ]
     },
     "verdict-1.4": {
       "arm_id": "verdict-1.4",
@@ -167,6 +181,60 @@
         "unresolved_count": 0,
         "unresolved_reason_counts": {}
       },
+      "kev-4b": {
+        "accuracy": 0.6434210526315789,
+        "accuracy_95_wilson": [
+          0.6087239571790218,
+          0.6766755815375244
+        ],
+        "by_mode": {
+          "pairwise": {
+            "accuracy": 0.9351851851851852,
+            "balanced_accuracy": 0.9351851851851851,
+            "macro_f1": 0.6291539245667687,
+            "probability_count": 108,
+            "probability_metrics": {
+              "accuracy": 0.9351851851851852,
+              "balanced_accuracy": 0.9351851851851851,
+              "brier": 0.13624721955800495,
+              "ece": 0.08903367716559597,
+              "macro_f1": 0.6291539245667687,
+              "nll": 0.2668010317595034
+            },
+            "record_count": 108
+          },
+          "single": {
+            "accuracy": 0.5950920245398773,
+            "balanced_accuracy": 0.5975045167118338,
+            "macro_f1": 0.522646344304303,
+            "probability_count": 652,
+            "probability_metrics": {
+              "accuracy": 0.5950920245398773,
+              "balanced_accuracy": 0.5975045167118338,
+              "brier": 0.5987429778527608,
+              "ece": 0.25944018404907976,
+              "macro_f1": 0.522646344304303,
+              "nll": 0.9055590709692164
+            },
+            "record_count": 652
+          }
+        },
+        "latency_ms": {
+          "p50": 1046.756687501329,
+          "p95": 2476.1558999918634
+        },
+        "prediction_sha256": "3e8d57e7763fbec885d2870e4ee3b5a05ee2a4d48e0129246bdd8106a9513c53",
+        "probability_count": 760,
+        "record_count": 760,
+        "resolved_count": 760,
+        "resolved_coverage": 1.0,
+        "runner_revision": "824dfdc0039fa07253a8128be1d00d65a8033dde",
+        "status_counts": {
+          "ok": 760
+        },
+        "unresolved_count": 0,
+        "unresolved_reason_counts": {}
+      },
       "laya-421m": {
         "accuracy": 0.4852941176470588,
         "accuracy_95_wilson": [
@@ -224,6 +292,60 @@
           "context_limit": 12
         }
       },
+      "semif-qwen35-4b": {
+        "accuracy": 0.5473684210526316,
+        "accuracy_95_wilson": [
+          0.511830690278872,
+          0.5824297078293453
+        ],
+        "by_mode": {
+          "pairwise": {
+            "accuracy": 0.6018518518518519,
+            "balanced_accuracy": 0.6018518518518519,
+            "macro_f1": 0.398452164370903,
+            "probability_count": 108,
+            "probability_metrics": {
+              "accuracy": 0.6018518518518519,
+              "balanced_accuracy": 0.6018518518518519,
+              "brier": 0.4421821316205434,
+              "ece": 0.08436268638175182,
+              "macro_f1": 0.398452164370903,
+              "nll": 0.6776325459478818
+            },
+            "record_count": 108
+          },
+          "single": {
+            "accuracy": 0.5383435582822086,
+            "balanced_accuracy": 0.5405563083408612,
+            "macro_f1": 0.47075495867211414,
+            "probability_count": 652,
+            "probability_metrics": {
+              "accuracy": 0.5383435582822086,
+              "balanced_accuracy": 0.5405563083408612,
+              "brier": 0.7154512466125074,
+              "ece": 0.32318641555885913,
+              "macro_f1": 0.47075495867211414,
+              "nll": 1.1892465614202499
+            },
+            "record_count": 652
+          }
+        },
+        "latency_ms": {
+          "p50": 1321.6967914922861,
+          "p95": 5728.67428750178
+        },
+        "prediction_sha256": "a7dcbd7ca3f34084cd21bdc758e617e1fb065484729d68aed15001106dcbed85",
+        "probability_count": 760,
+        "record_count": 760,
+        "resolved_count": 760,
+        "resolved_coverage": 1.0,
+        "runner_revision": "824dfdc0039fa07253a8128be1d00d65a8033dde",
+        "status_counts": {
+          "ok": 760
+        },
+        "unresolved_count": 0,
+        "unresolved_reason_counts": {}
+      },
       "verdict-1.4": {
         "accuracy": 0.5149384885764499,
         "accuracy_95_wilson": [
@@ -266,7 +388,7 @@
           "p50": 132.6221874987823,
           "p95": 334.2588982486631
         },
-        "prediction_sha256": "5389b8220f32567d187dc4f61409b5481cf571fe11cb2d51aadef56b79371a34",
+        "prediction_sha256": "487f829e21c79832be818d78a9483a6201d7fdaefa2d90642c5deffe170bd452",
         "probability_count": 569,
         "record_count": 760,
         "resolved_count": 569,
@@ -324,7 +446,7 @@
           "p50": 70.67289599217474,
           "p95": 152.86992289766204
         },
-        "prediction_sha256": "4096a1e1e66f585385583157b4a6337d713d07d66a7593cedb8b087183ed9815",
+        "prediction_sha256": "cd175e002f50ccc632841ea00ebff260b7d9ebdbdcec5ffd7d1683c088af821f",
         "probability_count": 526,
         "record_count": 760,
         "resolved_count": 526,
@@ -395,6 +517,60 @@
         "unresolved_count": 0,
         "unresolved_reason_counts": {}
       },
+      "kev-4b": {
+        "accuracy": 0.6882716049382716,
+        "accuracy_95_wilson": [
+          0.6515861234645519,
+          0.7227380265234569
+        ],
+        "by_mode": {
+          "pairwise": {
+            "accuracy": 0.8944444444444445,
+            "balanced_accuracy": 0.8945124212087505,
+            "macro_f1": 0.5978674948240166,
+            "probability_count": 180,
+            "probability_metrics": {
+              "accuracy": 0.8944444444444445,
+              "balanced_accuracy": 0.8945124212087505,
+              "brier": 0.1692447332551218,
+              "ece": 0.06483269107514916,
+              "macro_f1": 0.5978674948240166,
+              "nll": 0.3070015771553942
+            },
+            "record_count": 180
+          },
+          "single": {
+            "accuracy": 0.6089743589743589,
+            "balanced_accuracy": 0.6198201327069661,
+            "macro_f1": 0.556485398983962,
+            "probability_count": 468,
+            "probability_metrics": {
+              "accuracy": 0.6089743589743589,
+              "balanced_accuracy": 0.6198201327069661,
+              "brier": 0.5875563770940171,
+              "ece": 0.24837264957264954,
+              "macro_f1": 0.556485398983962,
+              "nll": 0.8988429062233297
+            },
+            "record_count": 468
+          }
+        },
+        "latency_ms": {
+          "p50": 1079.9679585034028,
+          "p95": 2106.418449904595
+        },
+        "prediction_sha256": "dd97eed5d1ed951821d35c50d68d2d579a4799d8c7212b52706278e202cdf406",
+        "probability_count": 648,
+        "record_count": 648,
+        "resolved_count": 648,
+        "resolved_coverage": 1.0,
+        "runner_revision": "824dfdc0039fa07253a8128be1d00d65a8033dde",
+        "status_counts": {
+          "ok": 648
+        },
+        "unresolved_count": 0,
+        "unresolved_reason_counts": {}
+      },
       "laya-421m": {
         "accuracy": 0.4952978056426332,
         "accuracy_95_wilson": [
@@ -452,6 +628,60 @@
           "context_limit": 10
         }
       },
+      "semif-qwen35-4b": {
+        "accuracy": 0.5416666666666666,
+        "accuracy_95_wilson": [
+          0.5031701119865597,
+          0.5796721179288193
+        ],
+        "by_mode": {
+          "pairwise": {
+            "accuracy": 0.6277777777777778,
+            "balanced_accuracy": 0.624953652206155,
+            "macro_f1": 0.4157225048638638,
+            "probability_count": 180,
+            "probability_metrics": {
+              "accuracy": 0.6277777777777778,
+              "balanced_accuracy": 0.624953652206155,
+              "brier": 0.44252175892367035,
+              "ece": 0.05128056100753452,
+              "macro_f1": 0.4157225048638638,
+              "nll": 0.6890515146372191
+            },
+            "record_count": 180
+          },
+          "single": {
+            "accuracy": 0.5085470085470085,
+            "balanced_accuracy": 0.5192388542599667,
+            "macro_f1": 0.44350235751509637,
+            "probability_count": 468,
+            "probability_metrics": {
+              "accuracy": 0.5085470085470085,
+              "balanced_accuracy": 0.5192388542599667,
+              "brier": 0.747622477834607,
+              "ece": 0.3454881906509891,
+              "macro_f1": 0.44350235751509637,
+              "nll": 1.2353015251333892
+            },
+            "record_count": 468
+          }
+        },
+        "latency_ms": {
+          "p50": 1584.6565000028932,
+          "p95": 2642.3423664506117
+        },
+        "prediction_sha256": "5850d92869a1c133e1b2dca8faa5ebdf633eb9c44b317374ea4df3b07cc508f0",
+        "probability_count": 648,
+        "record_count": 648,
+        "resolved_count": 648,
+        "resolved_coverage": 1.0,
+        "runner_revision": "824dfdc0039fa07253a8128be1d00d65a8033dde",
+        "status_counts": {
+          "ok": 648
+        },
+        "unresolved_count": 0,
+        "unresolved_reason_counts": {}
+      },
       "verdict-1.4": {
         "accuracy": 0.4894067796610169,
         "accuracy_95_wilson": [
@@ -494,7 +724,7 @@
           "p50": 125.29672899108846,
           "p95": 231.24194834745134
         },
-        "prediction_sha256": "bfa721c18c4b5572bb0471e51eb1e6681d1670bf94d6580b221618c3b9d228fa",
+        "prediction_sha256": "d348384c3fe507dd0d81f5217782a992e9e93a0e44b9d1aa0c18e304e4ce6dca",
         "probability_count": 472,
         "record_count": 648,
         "resolved_count": 472,
@@ -552,7 +782,7 @@
           "p50": 69.7923539992189,
           "p95": 120.72825439536246
         },
-        "prediction_sha256": "749bd73418c813cbbdb043d1fe8fe2caa8dfb9a90f49a3db6cd431b3e728c172",
+        "prediction_sha256": "1b6b362f2ff5083a9896b84394c662c7382efb6ce67d1e3a3c463c88c922334d",
         "probability_count": 454,
         "record_count": 648,
         "resolved_count": 454,

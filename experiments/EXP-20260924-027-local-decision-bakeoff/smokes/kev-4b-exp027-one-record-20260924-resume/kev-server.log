@@ -1,0 +1,13 @@
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]Fetching 13 files: 100%|██████████| 13/13 [00:00<00:00, 2589.69it/s]
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 3587.94it/s]
+INFO:     Started server process [57687]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8876 (Press CTRL+C to quit)
+serving jaredpalmer/kev-4b@1da696f7938f77c4cdf5471e92fd342baff41778 (/Users/teresaguajardo/.cache/huggingface/hub/models--jaredpalmer--kev-4b/snapshots/1da696f7938f77c4cdf5471e92fd342baff41778) on mps via mlx (bfloat16) :8876
+INFO:     127.0.0.1:65283 - "GET /v1/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65284 - "POST /v1/systemone HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [57687]

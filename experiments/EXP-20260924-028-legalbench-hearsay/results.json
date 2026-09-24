@@ -39,6 +39,45 @@
       "unresolved_count": 0,
       "unresolved_reason_counts": {}
     },
+    "kev-4b": {
+      "accuracy": 0.723404255319149,
+      "accuracy_95_wilson": [
+        0.6255660780959044,
+        0.8036998027100012
+      ],
+      "by_mode": {
+        "all": {
+          "accuracy": 0.723404255319149,
+          "balanced_accuracy": 0.7326277036355269,
+          "macro_f1": 0.7232789855072463,
+          "probability_count": 94,
+          "probability_metrics": {
+            "accuracy": 0.723404255319149,
+            "balanced_accuracy": 0.7326277036355269,
+            "brier": 0.3690732846808511,
+            "ece": 0.05095744680851068,
+            "macro_f1": 0.7232789855072463,
+            "nll": 0.5494439747570009
+          },
+          "record_count": 94
+        }
+      },
+      "latency_ms": {
+        "p50": 1506.3694789932924,
+        "p95": 1789.4753103981202
+      },
+      "prediction_sha256": "51f90e30d298bc9a09d27df00e26065f770d704c8181643851f375b281e0ce41",
+      "probability_count": 94,
+      "record_count": 94,
+      "resolved_count": 94,
+      "resolved_coverage": 1.0,
+      "runner_revision": "824dfdc0039fa07253a8128be1d00d65a8033dde",
+      "status_counts": {
+        "ok": 94
+      },
+      "unresolved_count": 0,
+      "unresolved_reason_counts": {}
+    },
     "laya-421m": {
       "accuracy": 0.6170212765957447,
       "accuracy_95_wilson": [
@@ -78,6 +117,45 @@
       "unresolved_count": 0,
       "unresolved_reason_counts": {}
     },
+    "semif-qwen35-4b": {
+      "accuracy": 0.48936170212765956,
+      "accuracy_95_wilson": [
+        0.3907276290915208,
+        0.5888311384891503
+      ],
+      "by_mode": {
+        "all": {
+          "accuracy": 0.48936170212765956,
+          "balanced_accuracy": 0.5444086516336861,
+          "macro_f1": 0.4125,
+          "probability_count": 94,
+          "probability_metrics": {
+            "accuracy": 0.48936170212765956,
+            "balanced_accuracy": 0.5444086516336861,
+            "brier": 0.4884388348572359,
+            "ece": 0.1466773290093349,
+            "macro_f1": 0.4125,
+            "nll": 0.6820163046910145
+          },
+          "record_count": 94
+        }
+      },
+      "latency_ms": {
+        "p50": 1993.9584795065457,
+        "p95": 2599.9477914505405
+      },
+      "prediction_sha256": "d193b271a11401e7d1bf4ca448aa08a8b073e68865a4dfeaf17a6245c2371033",
+      "probability_count": 94,
+      "record_count": 94,
+      "resolved_count": 94,
+      "resolved_coverage": 1.0,
+      "runner_revision": "824dfdc0039fa07253a8128be1d00d65a8033dde",
+      "status_counts": {
+        "ok": 94
+      },
+      "unresolved_count": 0,
+      "unresolved_reason_counts": {}
+    },
     "verdict-1.4": {
       "accuracy": 0.43617021276595747,
       "accuracy_95_wilson": [
@@ -105,7 +183,7 @@
         "p50": 273.8405209966004,
         "p95": 290.9574936522404
       },
-      "prediction_sha256": "a32f131269f860fd3da1a251dcb7852e5c85e51a597b79589893e32ee896020c",
+      "prediction_sha256": "b4d94409654e2f29d712f0c93e298f6fd946f095ad68bcbefea6a4f7798c0bde",
       "probability_count": 94,
       "record_count": 94,
       "resolved_count": 94,
@@ -144,7 +222,7 @@
         "p50": 122.31174999033101,
         "p95": 129.8065397022583
       },
-      "prediction_sha256": "dc4111dd7025ddf707d59682136a24203238f6fe3bd0d10e4d81e80000b088c9",
+      "prediction_sha256": "5c8a3c68dcb2876fe2a7c8cc1fd310422dccbf2c622cb1533cdbc5a7e213d6db",
       "probability_count": 94,
       "record_count": 94,
       "resolved_count": 94,
@@ -220,6 +298,24 @@
       "runtime_revision": "badd506d71399f536a09bba7ad5dd663adb104d2",
       "source": "https://github.com/jaredpalmer/kev"
     },
+    "kev-4b": {
+      "arm_id": "kev-4b",
+      "backend": "MLX / Apple Silicon",
+      "feasibility": "completed_unquantized_on_m1_16gib_after_disk_restore; one-record smoke ok with observed free memory at or above 36 percent; EXP-027 public 648/648 ok, blind 760/760 ok, and EXP-028 94/94 ok; earlier failed load smokes preserved",
+      "max_context_tokens": 1024,
+      "model_id": "jaredpalmer/kev-4b",
+      "model_revision": "1da696f7938f77c4cdf5471e92fd342baff41778",
+      "precision": "BF16",
+      "runtime_environment": "Mac external environment ~/.cache/eval-lab/TASK-0053/kev-runtime",
+      "runtime_package_freeze": "kev-runtime-freeze.txt",
+      "runtime_repository": "https://github.com/jaredpalmer/kev",
+      "runtime_revision": "badd506d71399f536a09bba7ad5dd663adb104d2",
+      "smoke_artifacts": [
+        "smokes/kev-4b-exp027-one-record/",
+        "smokes/kev-4b-exp027-one-record-retry-20260924/"
+      ],
+      "source": "https://github.com/jaredpalmer/kev"
+    },
     "laya-421m": {
       "arm_id": "laya-421m",
       "backend": "PyTorch MPS",
@@ -233,6 +329,28 @@
       "runtime_repository": "https://github.com/NandhaKishorM/laya",
       "runtime_revision": "23a17522aa4942da6cce53a995a275760320b691",
       "source": "https://github.com/NandhaKishorM/laya"
+    },
+    "semif-qwen35-4b": {
+      "arm_id": "semif-qwen35-4b",
+      "backend": "MLX / MLX-LM native direct scoring",
+      "feasibility": "completed_unquantized_on_m1_16gib; EXP-027 public 648/648 ok, blind 760/760 ok, and EXP-028 94/94 ok; quantization was not used",
+      "max_context_tokens": 4096,
+      "model_id": "Qwen/Qwen3.5-4B",
+      "model_revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+      "precision": "BF16 with some FP32 parameters; unquantized",
+      "runtime_environment": "Mac external environment ~/.cache/eval-lab/TASK-0053/semif-runtime",
+      "runtime_package_freeze": "semif-runtime-freeze.txt",
+      "runtime_repository": "https://github.com/TheoLeeCJ/SemIf-OpenJev",
+      "runtime_revision": "23cf1f39fc9534fe81437200959b6dfc7106e45a",
+      "source": "https://github.com/TheoLeeCJ/SemIf-OpenJev/blob/23cf1f39fc9534fe81437200959b6dfc7106e45a/docs/MLX.md",
+      "weight_shards_gb_rounded": [
+        5.33,
+        3.99
+      ],
+      "weight_shards_source": [
+        "https://huggingface.co/Qwen/Qwen3.5-4B/blob/851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a/model.safetensors-00001-of-00002.safetensors",
+        "https://huggingface.co/Qwen/Qwen3.5-4B/blob/851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a/model.safetensors-00002-of-00002.safetensors"
+      ]
     },
     "verdict-1.4": {
       "arm_id": "verdict-1.4",

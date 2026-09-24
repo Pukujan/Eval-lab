@@ -1,0 +1,31 @@
+{
+  "arm": {
+    "arm_id": "semif-qwen35-4b",
+    "backend": "MLX / MLX-LM native direct scoring",
+    "max_context_tokens": 4096,
+    "model_id": "Qwen/Qwen3.5-4B",
+    "model_revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+    "precision": "BF16 with some FP32 parameters; unquantized",
+    "runtime_repository": "https://github.com/TheoLeeCJ/SemIf-OpenJev",
+    "runtime_revision": "23cf1f39fc9534fe81437200959b6dfc7106e45a",
+    "source": "https://github.com/TheoLeeCJ/SemIf-OpenJev/blob/master/docs/MLX.md"
+  },
+  "benchmark": "exp027-frozen-pool",
+  "package_versions": {
+    "mlx": "0.32.2",
+    "mlx-lm": "0.32.0",
+    "semif-phase1": "0.1.0",
+    "torch": "2.10.0",
+    "transformers": "5.17.0"
+  },
+  "partition": "public_selection",
+  "platform": "darwin",
+  "protocol_version": "eval-lab-local-decision-v1",
+  "python": "3.12.14 (main, Aug 12 2026, 13:57:54) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "record_ids": [
+    "arc-single:Mercury_SC_400156:correct"
+  ],
+  "resume": false,
+  "runner_revision": "824dfdc0039fa07253a8128be1d00d65a8033dde",
+  "selected_count": 1
+}

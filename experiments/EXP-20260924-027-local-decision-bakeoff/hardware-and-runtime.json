@@ -58,6 +58,22 @@
       ],
       "uv_pip_check": "passed for both source revisions",
       "execution": "CPU / ONNX Runtime; revisions run sequentially in one environment with shared model weights"
+    },
+    {
+      "family": "SemIf",
+      "upstream_revision": "23cf1f39fc9534fe81437200959b6dfc7106e45a",
+      "external_environment": "/Users/teresaguajardo/.cache/eval-lab/TASK-0053/semif-runtime",
+      "external_source": "/Users/teresaguajardo/.cache/eval-lab/TASK-0053/semif-source",
+      "python": "3.12.14",
+      "mlx": "0.32.2",
+      "mlx_lm_revision": "a63e24c389382619eb6d9af656e3b46024be217a",
+      "freeze_file": "semif-runtime-freeze.txt",
+      "execution": "MLX native direct scoring; unquantized Qwen/Qwen3.5-4B; one process at a time",
+      "completed_partitions": [
+        "EXP-027 public_selection 648/648 ok",
+        "EXP-027 blind_holdout 760/760 ok",
+        "EXP-028 test 94/94 ok"
+      ]
     }
   ],
   "inference_libraries_before_model_runtime_install": {
@@ -81,6 +97,7 @@
   },
   "notes": [
     "Hardware and Python/uv were queried over the existing Tailscale SSH alias mac-ts.",
+    "SemIf-4B completed on 2026-09-24 after disk cleanup. Observed system-wide free memory stayed at or above 35 percent during scoring checks and returned to 88 percent after each partition. Data volume free space was about 58 GiB before the blind run.",
     "Free disk is a point-in-time measurement; recheck before downloading each model.",
     "At verdict runtime installation, available disk was 3.1 GiB; after installing dependencies, downloading the model, and running all Verdict partitions it was 1.4 GiB."
   ]

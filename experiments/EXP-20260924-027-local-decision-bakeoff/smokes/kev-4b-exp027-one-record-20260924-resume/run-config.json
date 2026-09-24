@@ -1,0 +1,35 @@
+{
+  "arm": {
+    "arm_id": "kev-4b",
+    "backend": "MLX / Apple Silicon",
+    "feasibility": "smoke_failed_on_current_host_session; pinned server exited during model load before a prediction; smoke output preserved",
+    "max_context_tokens": 1024,
+    "model_id": "jaredpalmer/kev-4b",
+    "model_revision": "1da696f7938f77c4cdf5471e92fd342baff41778",
+    "precision": "BF16",
+    "runtime_environment": "Mac external environment ~/.cache/eval-lab/TASK-0053/kev-runtime",
+    "runtime_package_freeze": "kev-runtime-freeze.txt",
+    "runtime_repository": "https://github.com/jaredpalmer/kev",
+    "runtime_revision": "badd506d71399f536a09bba7ad5dd663adb104d2",
+    "smoke_artifact": "smokes/kev-4b-exp027-one-record/",
+    "source": "https://github.com/jaredpalmer/kev"
+  },
+  "benchmark": "exp027-frozen-pool",
+  "package_versions": {
+    "kev": "0.1.0",
+    "mlx": "0.32.2",
+    "mlx-lm": "0.31.3",
+    "torch": "2.8.0",
+    "transformers": "5.17.0"
+  },
+  "partition": "public_selection",
+  "platform": "darwin",
+  "protocol_version": "eval-lab-local-decision-v1",
+  "python": "3.12.14 (main, Sep  1 2026, 14:09:38) [Clang 22.1.3 ]",
+  "record_ids": [
+    "arc-single:Mercury_SC_400156:correct"
+  ],
+  "resume": false,
+  "runner_revision": "824dfdc0039fa07253a8128be1d00d65a8033dde",
+  "selected_count": 1
+}

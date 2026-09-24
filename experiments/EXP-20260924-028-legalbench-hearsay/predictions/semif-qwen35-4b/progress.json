@@ -1,0 +1,10 @@
+{
+  "arm_id": "semif-qwen35-4b",
+  "selected_count": 94,
+  "completed_count": 94,
+  "status_counts": {
+    "ok": 94
+  },
+  "last_record_id": "legalbench-hearsay:test:94",
+  "updated_at_utc": "2026-09-24T18:44:57Z"
+}

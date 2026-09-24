@@ -3,17 +3,17 @@
 ## Status
 
 Active — tracked by GitHub issue #47. EXP-027 and EXP-028 are in progress.
-The MacBook Pro is reachable over Tailscale SSH. Kev-0.8B, Laya-421M, Verdict
-1.4, and the pre-v1.4 Verdict configuration have finished all three partitions.
-Laya has context-limit skips and an upstream calibration warning; Verdict
-abstentions and context-limit skips are separately reported. Kev-4B failed its
-load smoke before inference, and its retry was interrupted during model load
-after free memory dropped to 10%; no Kev-4B prediction was made. SemIf-4B has
-not yet run; its pinned checkpoint is about 9 GB, and the Mac cleanup/audit
-restored 69 GiB of disk space. Benchmark execution is paused at the user's direction. Kev-4B remains unrun after its previous load
-attempt exhausted most free unified memory. Nimble-9B and Kev-9B are not
-feasible under their pinned, unquantized/32-GiB configurations on this 16-GiB
-host. Hardware is a 2020
+The MacBook Pro is reachable over LAN SSH when Tailscale SSH stalls. Kev-0.8B,
+Laya-421M, Verdict 1.4, the pre-v1.4 Verdict configuration, and SemIf-4B have
+finished all three partitions. Laya has context-limit skips and an upstream
+calibration warning; Verdict abstentions and context-limit skips are separately
+reported. SemIf-4B resolved every selected record: EXP-027 public 648/648 at
+54.17% accuracy, blind 760/760 at 54.74% accuracy, and EXP-028 Hearsay 94/94
+at 48.94% accuracy. Kev-4B's earlier load attempts made no prediction; after
+disk restoration it completed a one-record smoke and all three partitions,
+with blind accuracy 64.34% at 100% coverage. Nimble-9B and Kev-9B are not
+feasible under their
+pinned, unquantized/32-GiB configurations on this 16-GiB host. Hardware is a 2020
 MacBook Pro (MacBookPro17,1), Apple M1, 16 GiB unified memory, macOS 26.4.1.
 The fixed-choice adapters and resumable sequential runner are merged; the
 string-state correction merged in PR #51. The pinned runtimes are installed
@@ -612,6 +612,116 @@ other uses. Remaining EXP-027 runs also await the user's instruction to resume.
 Next atomic action: hold. Do not start inference until the user resumes the
 benchmark. If resumed, evaluate SemIf-4B and separately reassess Kev-4B with
 one model at a time.
+
+### 2026-09-24 — SemIf-4B partitions completed
+
+Status: user resumed benchmark execution. SemIf-4B completed the one-record
+smoke, EXP-027 public selection, EXP-027 blind holdout, and EXP-028 Hearsay
+test. Issue #47 remains open. Kev-4B has not been reassessed in this checkpoint.
+
+Completed work: confirmed the pinned SemIf runtime at
+`~/.cache/eval-lab/TASK-0053/semif-runtime`, source revision
+`23cf1f39fc9534fe81437200959b6dfc7106e45a`, and the already downloaded
+Qwen/Qwen3.5-4B weights. The public partition was already complete on the Mac
+(648/648 ok) and was copied without rerunning. The blind partition was started
+only after confirming no runner was active, 88% system-wide free memory, and
+about 58 GiB free on the data volume. It finished 760/760 ok. Hearsay then
+finished 94/94 ok. Regenerated both experiment reports from the preserved raw
+outputs. Blind accuracy is 0.5474 at 100% coverage; public accuracy is 0.5417
+at 100% coverage; Hearsay accuracy is 0.4894 at 100% coverage. Observed free
+memory stayed at or above 35% during scoring checks and returned to 88% after
+each partition. Runner revision recorded in the run configs is
+`824dfdc0039fa07253a8128be1d00d65a8033dde`.
+
+Files changed: this task file, `checkpoints/CURRENT.md`, EXP-027
+`model-revisions.json`, `experiment.yaml`, `hardware-and-runtime.json`,
+`semif-runtime-freeze.txt`, `results.json`, `report.md`, public and blind
+prediction directories, the SemIf smoke directory, and EXP-028 `predictions/`,
+`results.json`, and `report.md`.
+
+Commands run: workspace-policy check after removing the unused
+`.kilo/worktrees/motley-paperback` checkout; LAN SSH resource checks; SemIf
+blind and Hearsay runner invocations; report regeneration. No Kev-4B process
+was started in this checkpoint.
+
+Decisions: do not rerun the completed public partition; keep the Mac runtime
+outside every Eval Lab checkout; use the same pinned runner revision already
+recorded by the public SemIf run; leave Nimble-9B and Kev-9B unscheduled.
+
+Unresolved: whether Kev-4B can complete a one-record smoke with comfortable
+memory headroom now that disk space is restored. Nimble-9B and Kev-9B remain
+hardware-blocked as pinned.
+
+Next atomic action: reassess Kev-4B with a one-record smoke only, stop the
+load if system-wide free memory falls to 10%, and do not start another model
+while that process is running.
+
+### 2026-09-24 — Kev-4B one-record smoke passed
+
+Status: the resumed Kev-4B smoke completed one EXP-027 public-selection record
+with status `ok`. Issue #47 remains open. Full Kev-4B partitions have not
+started. SemIf-4B results above remain unchanged.
+
+Completed work: with 88% system-wide free memory and no other runner active,
+loaded pinned Kev-4B in the external Kev runtime and scored one record. The
+lowest observed free memory during the load checks was 36%, then it recovered
+to 89% after the process exited. The prediction, progress, run config, runtime
+metadata, server log, and console log are preserved in a new smoke folder.
+Earlier failed smoke folders were not overwritten.
+
+Files changed: this task file, `checkpoints/CURRENT.md`, and
+`experiments/EXP-20260924-027-local-decision-bakeoff/smokes/kev-4b-exp027-one-record-20260924-resume/`.
+
+Commands run: focused tests `tests/test_local_decision_report.py`,
+`tests/test_local_decision_models.py`, and `tests/test_legalbench.py` (14
+passed); LAN SSH memory check; one-record Kev-4B runner invocation.
+
+Decisions: treat the smoke as evidence that Kev-4B can load on this host when
+disk headroom is restored. Do not infer that the earlier interrupted load was
+a model-output failure. Scale only one partition at a time, and stop if free
+memory falls to 10%.
+
+Unresolved: full EXP-027 public, blind, and EXP-028 Hearsay results for
+Kev-4B. Nimble-9B and Kev-9B remain hardware-blocked.
+
+Next atomic action: run Kev-4B on the EXP-027 public partition only. Stop the
+process if system-wide free memory falls to 10%. Do not start blind, Hearsay,
+or another model until that process exits.
+
+### 2026-09-24 — Kev-4B partitions completed
+
+Status: Kev-4B completed EXP-027 public selection, EXP-027 blind holdout, and
+EXP-028 Hearsay after the passing one-record smoke. Issue #47 remains open.
+Nimble-9B and Kev-9B were not started.
+
+Completed work: public 648/648 ok, blind 760/760 ok, and Hearsay 94/94 ok.
+Blind accuracy is 0.6434 at 100% coverage. Public accuracy is 0.6883 at 100%
+coverage. Hearsay accuracy is 0.7234 at 100% coverage. Observed free memory
+during scoring checks stayed around 33–35% and returned to about 89–90% after
+each partition. The 10% stop line was not reached. Earlier failed smoke
+folders were not overwritten. Reports were regenerated from the preserved raw
+outputs.
+
+Files changed: this task file, `checkpoints/CURRENT.md`, EXP-027
+`model-revisions.json`, `experiment.yaml`, `results.json`, `report.md`, public
+and blind `kev-4b` prediction directories, and EXP-028 `predictions/kev-4b/`,
+`results.json`, and `report.md`.
+
+Commands run: LAN SSH sequential Kev-4B runner invocations for public, blind,
+and Hearsay, each with a memory watchdog; report regeneration.
+
+Decisions: scale Kev-4B only after the smoke passed and only one partition at
+a time. Do not schedule Nimble-9B or Kev-9B on this 16 GiB host under their
+pinned configurations. Keep completed raw outputs immutable.
+
+Unresolved: none for the resumed eligible arms. Nimble-9B and Kev-9B remain
+hardware-blocked. The checkpoint still needs publication through issue #47
+and required CI.
+
+Next atomic action: publish this SemIf and Kev-4B checkpoint through issue #47
+and required CI. Do not start Nimble-9B or Kev-9B.
+
+## Handoff
 
 ## Handoff
 

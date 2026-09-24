@@ -69,7 +69,7 @@ arms:
     backend: MLX
     precision: BF16
     context_limit: 1024
-    feasibility: uncertain_on_16_gib_host; only bounded memory smoke before scaling
+    feasibility: completed_after_disk_restore; earlier load attempts preserved; full partitions completed unquantized
   - arm_id: kev-0.8b
     model: jaredpalmer/kev-0.8b
     system: Kev
@@ -139,6 +139,7 @@ artifacts:
   - hardware-and-runtime.json
   - model-revisions.json
   - kev-runtime-freeze.txt
+  - semif-runtime-freeze.txt
   - laya-runtime-freeze.txt
   - verdict-1.4-runtime-freeze.txt
   - verdict-original-runtime-freeze.txt
@@ -160,11 +161,13 @@ notes: >-
   were run sequentially with the same weights; their upstream code revisions,
   context caps, calibration behavior, and package freezes remain distinct.
   Laya's checkpoint also emitted an invalid-temperature warning; treat its
-  confidence metrics as diagnostic. The Kev-4B load smoke exited before a
-  prediction; its status and logs are preserved. Nimble's upstream
+  confidence metrics as diagnostic. The earlier Kev-4B load smokes exited
+  before a prediction and remain preserved. After disk restoration, a new
+  one-record smoke passed and Kev-4B completed EXP-027 public 648/648, blind
+  760/760, and EXP-028 Hearsay 94/94, all with ok status. Nimble's upstream
   unquantized weights exceed the Mac's unified memory. Jev 1.13 on the same
   blind records is a cached reference if protocol compatibility is confirmed.
-  SemIf-4B was not loaded: its pinned Qwen3.5-4B checkpoint is about 9 GB and
-  only 343 MiB remained on disk after the Kev-4B retry. The retry was stopped
-  before inference when free memory fell to 10%; do not infer a provider error
-  or model failure from that interrupted attempt.
+  SemIf-4B later completed unquantized on the restored disk: EXP-027 public
+  648/648 ok, blind 760/760 ok, and EXP-028 Hearsay 94/94 ok. The earlier
+  Kev-4B retry was stopped before inference when free memory fell to 10%; do
+  not infer a provider error or model failure from that interrupted attempt.
