@@ -7,9 +7,11 @@ The MacBook Pro is reachable over Tailscale SSH. Kev-0.8B, Laya-421M, Verdict
 1.4, and the pre-v1.4 Verdict configuration have finished all three partitions.
 Laya has context-limit skips and an upstream calibration warning; Verdict
 abstentions and context-limit skips are separately reported. Kev-4B failed its
-load smoke before inference. SemIf-4B has not yet run. Nimble-9B and Kev-9B are
-not feasible under their pinned, unquantized/32-GiB configurations on this
-16-GiB host. Current free disk after Verdict was 1.4 GiB. Hardware is a 2020
+load smoke before inference, and its retry was interrupted during model load
+after free memory dropped to 10%; no Kev-4B prediction was made. SemIf-4B has
+not yet run because its pinned checkpoint is about 9 GB and only 343 MiB disk
+space remains. Nimble-9B and Kev-9B are not feasible under their pinned,
+unquantized/32-GiB configurations on this 16-GiB host. Hardware is a 2020
 MacBook Pro (MacBookPro17,1), Apple M1, 16 GiB unified memory, macOS 26.4.1.
 The fixed-choice adapters and resumable sequential runner are merged; the
 string-state correction merged in PR #51. The pinned runtimes are installed
@@ -487,6 +489,49 @@ Next atomic action: publish the Verdict predictions, run metadata, metric
 reason breakdown, and task log through the required PR/CI/merge gate; then
 recheck Mac disk and memory before deciding whether SemIf-4B or Kev-4B can
 run safely.
+
+### 2026-09-24 — Kev-4B retry and SemIf-4B storage feasibility
+
+Status: the Kev-4B retry was interrupted before inference to restore Mac
+memory headroom. SemIf-4B has not run because there is insufficient free disk.
+The Verdict results remain checkpointed in PR #54. Issue #47 remains open.
+
+Completed work: after confirming the Mac was reachable, free disk was 1.6 GiB
+and system-wide free memory was 88%. The pinned Kev-4B base weights were
+already cached. The runner/server remained in model load for about 90 seconds;
+system-wide free memory fell to 10% and disk to 343 MiB. I stopped only the
+two Codex model-load processes before a prediction; free memory recovered to
+87%. Preserved the retry's runner config and server log in a new smoke folder.
+The earlier server exit's cause remains undetermined. The pinned SemIf source
+documents its BF16 checkpoint at about 9 GB, with two pinned shards shown as
+5.33 GB and 3.99 GB. This exceeds available disk; do not substitute a
+quantized model into this experiment.
+
+Files changed: this task file, `checkpoints/CURRENT.md`, EXP-027
+`model-revisions.json`, `hardware-and-runtime.json`, `experiment.yaml`, and
+`smokes/kev-4b-exp027-one-record-retry-20260924/kev-server.log` plus its
+`run-config.json`.
+
+Commands run: Tailscale SSH disk/memory/process inspection; one Kev-4B retry
+smoke; process inspection and controlled stop before inference; post-stop
+memory/disk recheck; verified the 9 GB model size using pinned Hugging Face
+weight-shard metadata. No full benchmark run or tests were performed in this
+checkpoint.
+
+Decisions: stop the retry when memory headroom dropped to 10%, retain its
+partial smoke log separately, and make no claim about the earlier load exit's
+cause. Do not start SemIf until the Mac has more than the checkpoint's 9 GB
+weight size free plus runtime headroom. Keep all completed results immutable.
+
+Unresolved: whether the user can make additional Mac disk space and memory
+available; whether Kev-4B will pass a smoke with comfortable resource headroom;
+and whether another device can run the pinned SemIf-4B weights. Nimble-9B and
+Kev-9B remain hardware-blocked as specified in `model-revisions.json`.
+
+Next atomic action: checkpoint this feasibility update through issue #47 and
+required CI. After that, ask for the Mac to be made available with adequate
+free disk and closed/idle inference applications before resuming SemIf or
+Kev-4B. Preserve the open issue and existing immutable result files.
 
 ## Handoff
 
