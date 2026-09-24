@@ -13,7 +13,6 @@ from scripts.finalize_checkpoint import (
 from scripts.publish_checkpoint import (
     checkpoint_pr_body,
     normalize_repo_path,
-    scan_staged_changes,
     task_id_from_branch,
 )
 
@@ -47,34 +46,6 @@ def test_pr_body_links_issue_without_closing_before_finalization() -> None:
     assert "TASK-0051" in body
     assert "`AGENTS.md`" in body
     assert "required CI" in body
-
-
-@pytest.mark.parametrize("path", [".env", "config/.env.production", "data/private-benchmark.json"])
-def test_publisher_rejects_secret_or_private_paths(
-    path: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    from scripts import publish_checkpoint
-
-    monkeypatch.setattr(publish_checkpoint, "run", lambda *_args, **_kwargs: "")
-    with pytest.raises(ValueError, match="possible secret/private content"):
-        scan_staged_changes(tmp_path, {path})
-
-
-@pytest.mark.parametrize(
-    "line",
-    [
-        "+GH_TOKEN=github_pat" + "_123456789012345678901234567890",
-        '+api_key = "sk' + '-123456789012345678901234567890"',
-    ],
-)
-def test_publisher_rejects_credential_like_staged_content(
-    line: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    from scripts import publish_checkpoint
-
-    monkeypatch.setattr(publish_checkpoint, "run", lambda *_args, **_kwargs: line)
-    with pytest.raises(ValueError, match="possible secret/private content"):
-        scan_staged_changes(tmp_path, {"safe.txt"})
 
 
 def test_task_worktree_names_are_validated() -> None:

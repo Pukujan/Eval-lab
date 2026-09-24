@@ -30,13 +30,6 @@ body:
     validations:
       required: true
   - type: textarea
-    id: risk
-    attributes:
-      label: Risk and approval needs
-      description: Identify benchmark methodology/data, paid runs, credentials, releases, or other sensitive paths.
-    validations:
-      required: true
-  - type: textarea
     id: files
     attributes:
       label: Allowed files / scope
@@ -54,6 +47,6 @@ body:
     id: validation
     attributes:
       label: Validation and merge conditions
-      description: Required local gates and GitHub checks; note any human approval gate.
+      description: Required local gates and GitHub checks.
     validations:
       required: true

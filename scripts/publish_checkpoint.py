@@ -13,17 +13,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 TASK_BRANCH = re.compile(r"task/(TASK-\d{4})-[a-z0-9]+(?:-[a-z0-9]+)*\Z", re.IGNORECASE)
 COMMIT_SUBJECT = re.compile(r"TASK-\d{4}: .+\Z")
-SECRET_PATH = re.compile(r"(?:^|/)(?:\.env(?:\..*)?|.*(?:credential|secret).*)$", re.IGNORECASE)
-PRIVATE_PATH = re.compile(
-    r"(?:^|/).*(?:private[-_ ]?benchmark|private[-_ ]?gold|holdout[-_ ]?private).*$", re.IGNORECASE
-)
-SECRET_VALUE = re.compile(
-    r"(?i)\b(?:sk-[a-z0-9_-]{20,}|gh[pousr]_[a-z0-9_]{20,}|github_pat_[a-z0-9_]{20,}|AKIA[0-9A-Z]{16})\b"
-)
-SECRET_ASSIGNMENT = re.compile(
-    r"(?i)\b(?:api[_-]?key|access[_-]?token|client[_-]?secret|password|secret)"
-    r"\s*[:=]\s*[\"']?[A-Za-z0-9/+_=.\-]{24,}"
-)
 REQUIRED_CHECKS = {"quality (Python 3.11)", "quality (Python 3.12)"}
 
 
@@ -105,23 +94,6 @@ def run_local_gates(root: Path, changed_python: list[str]) -> None:
             run(command, cwd=root)
 
 
-def scan_staged_changes(root: Path, paths: set[str]) -> None:
-    violations = sorted(
-        path for path in paths if SECRET_PATH.search(path) or PRIVATE_PATH.search(path)
-    )
-    diff = run(["git", "diff", "--cached", "--no-ext-diff", "--unified=0"], cwd=root)
-    added_lines = [
-        line for line in diff.splitlines() if line.startswith("+") and not line.startswith("+++")
-    ]
-    if any(SECRET_VALUE.search(line) or SECRET_ASSIGNMENT.search(line) for line in added_lines):
-        violations.append("staged content contains a credential-like value")
-    if violations:
-        # Do not echo matching content: it could itself be a secret or private record.
-        raise ValueError(
-            f"refusing to publish possible secret/private content: {sorted(set(violations))}"
-        )
-
-
 def verify_required_checks(root: Path) -> None:
     repo = json.loads(run(["gh", "repo", "view", "--json", "nameWithOwner"], cwd=root))[
         "nameWithOwner"
@@ -201,7 +173,6 @@ def publish(args: argparse.Namespace) -> str:
         staged, _ = changed_paths(root)
         if staged != dirty or task_file not in staged:
             raise ValueError(f"staged checkpoint does not match reviewed changes: {sorted(staged)}")
-        scan_staged_changes(root, staged)
         changed_python = sorted(path for path in staged if path.endswith(".py"))
         run_local_gates(root, changed_python)
         run(["git", "commit", "-m", args.commit_message], cwd=root)

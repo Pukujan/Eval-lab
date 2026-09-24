@@ -24,8 +24,7 @@ Results:
 
 - [ ] Task branch only; no direct push to `main`
 - [ ] Required CI checks are enabled and passing or pending
-- [ ] Auto-merge requested; no checks or approval gates bypassed
-- [ ] Human approval obtained where a protected owner/review gate applies
+- [ ] Auto-merge requested; required CI checks pass before merge
 
 ## Experiments affected
 

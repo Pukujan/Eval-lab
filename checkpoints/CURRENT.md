@@ -1,36 +1,44 @@
 # Current Repository Checkpoint
 
+## 2026-09-24 — TASK-0052 remove optional publish scanning and approval policy
+
+Issue #43 tracks removal of the publisher's credential/private-data scanning
+and the CODEOWNERS/manual-approval policy. The TASK-0051 automation is complete:
+issue #40 is closed, PR #41 merged at `731e692`, PR #42 merged at `80df0fa`,
+and both passed the required Python 3.11/3.12 checks. The canonical checkout is
+clean on `main` at `80df0fa`. Required CI remains the merge gate.
+
+The publisher scanner, CODEOWNERS/manual-approval references, task-form
+approval field, and checkout token-persistence override are removed. Focused
+automation tests pass (11 passed).
+
+Next atomic action: run the full local gates, publish TASK-0052, and let
+CI/auto-merge complete before finalizing issue #43.
+
 ## 2026-09-24 — TASK-0051 finalizer tracking-ref correction
 
-The initial checkpoint automation merged as PR #41 (`731e692`); exact head
-`f3f98c8` passed both required Python CI checks, and the merge-record workflow
-passed. Finalization caught a stale local `origin/main` tracking ref because
-`git fetch origin main` updated `FETCH_HEAD` but did not refresh that ref. The
-canonical checkout is clean on `main` at the merge commit; issue #40 remains
-open, and no worktree was removed. The finalizer/publisher now fetch `main`
-directly into `refs/remotes/origin/main`, with a regression test.
-
-Next atomic action: run local gates, update issue #40, publish the correction,
-then wait for its required CI/auto-merge before finalization.
+PR #41 and PR #42 are merged; issue #40 is closed. PR #42 corrected the stale
+`origin/main` tracking-ref issue detected during finalization. The D: registry
+recognizes the Eval Lab canonical path and `worktrees` location. Its broader
+scan still reports unrelated workspace findings; see issue #40.
 
 ## 2026-09-23 — TASK-0051 GitHub checkpoint automation
 
-GitHub issue #40 tracks automation for the repository's checkpoint-to-PR
-workflow. The task branch contains a publisher that validates task context and
-explicit files, scans staged content for credential/private-data indicators,
-runs repository gates, commits and pushes only the task branch, upserts the PR,
-and requests auto-merge. A finalizer confirms the PR merged before it cleans a
-linked worktree or fast-forwards the canonical checkout. Publishing returns
-while GitHub CI runs; merge confirmation remains a separate required step.
+GitHub issue #40 tracked automation for the repository's checkpoint-to-PR
+workflow. At the original TASK-0051 checkpoint the publisher scanned staged
+content; TASK-0052 removes that scanner. The publisher validates task context
+and explicit files, runs repository gates, commits and pushes only the task
+branch, upserts the PR, and requests auto-merge. A finalizer confirms the PR
+merged before it cleans a linked worktree or fast-forwards the canonical
+checkout. Publishing returns while GitHub CI runs; merge confirmation remains
+a separate required step.
 Final local gates pass: 157 tests, Ruff, mypy, repository/workspace guards,
 package build, lock validation, and diff check.
 
 The repository, D: workspace, and GitHub templates use GitHub Issues as the
 durable task log. Issue #40 remains standalone; only independently deliverable
 work should become sub-issues. The Eval Lab temporary worktree location is
-`D:\\claude\\eval-lab\\worktrees\\<task-id>`. The repository has no
-independent collaborator who can approve this account's code-owner PRs, so the
-CODEOWNERS approval requirement remains disabled pending that reviewer.
+`D:\\claude\\eval-lab\\worktrees\\<task-id>`.
 
 PR #41 merged as `731e692`; see the 2026-09-24 correction checkpoint above.
 
