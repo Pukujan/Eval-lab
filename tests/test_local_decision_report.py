@@ -32,7 +32,16 @@ def test_summary_keeps_binary_and_pairwise_label_spaces_separate(tmp_path) -> No
             "probabilities": {"A": 0.1, "B": 0.7, "TIE": 0.2},
             "latency_ms": 40,
         },
+        {
+            "record_id": "pair-skipped",
+            "execution_status": "skipped",
+            "label": None,
+            "probabilities": None,
+            "error": {"kind": "abstention"},
+            "latency_ms": 15,
+        },
     ]
+    records.append({"record_id": "pair-skipped", "mode": "pairwise", "gold": {"label": "A"}})
     output = tmp_path / "predictions.jsonl"
     output.write_text("\n".join(json.dumps(row) for row in predictions) + "\n", encoding="utf-8")
     (tmp_path / "run-config.json").write_text(
@@ -46,8 +55,9 @@ def test_summary_keeps_binary_and_pairwise_label_spaces_separate(tmp_path) -> No
         mode_key="mode",
     )
 
-    assert result["resolved_coverage"] == 1.0
+    assert result["resolved_coverage"] == pytest.approx(2 / 3)
     assert result["accuracy"] == 1.0
+    assert result["unresolved_reason_counts"] == {"abstention": 1}
     assert result["by_mode"]["single"]["probability_metrics"]["brier"] == pytest.approx(0.08)
     assert result["by_mode"]["pairwise"]["probability_metrics"]["brier"] is not None
     assert result["runner_revision"] == "test-revision"

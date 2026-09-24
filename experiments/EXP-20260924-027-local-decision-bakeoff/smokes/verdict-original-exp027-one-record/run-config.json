@@ -1,0 +1,31 @@
+{
+  "arm": {
+    "arm_id": "verdict-original",
+    "backend": "ONNX Runtime CPU",
+    "max_context_tokens": 1024,
+    "model_id": "heman10x/rlcd-modernbert-151m",
+    "model_revision": "8af2496eb63c7fa66d7d234e1f62629380030eb4",
+    "notes": "Pre-v1.4 inference commit; same weights, before the v1.4 context, calibration-loading, and hypothesis-templating fixes",
+    "precision": "upstream ONNX/F32",
+    "runtime_repository": "https://github.com/Heman10x-NGU/Verdict-open-jev",
+    "runtime_revision": "643fa478834c8df5bd3afe302dbbf8513664f8ef",
+    "source": "https://github.com/Heman10x-NGU/Verdict-open-jev/commit/643fa478834c8df5bd3afe302dbbf8513664f8ef"
+  },
+  "benchmark": "exp027-frozen-pool",
+  "package_versions": {
+    "onnxruntime": "1.30.0",
+    "rlcd": "0.1.0",
+    "torch": "2.14.0",
+    "transformers": "5.17.0"
+  },
+  "partition": "public_selection",
+  "platform": "darwin",
+  "protocol_version": "eval-lab-local-decision-v1",
+  "python": "3.12.14 (main, Aug 12 2026, 13:57:54) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "record_ids": [
+    "arc-single:Mercury_SC_400156:correct"
+  ],
+  "resume": false,
+  "runner_revision": "4d1d9a5fe9c1719fd190e757ff4134f043f3fb16",
+  "selected_count": 1
+}

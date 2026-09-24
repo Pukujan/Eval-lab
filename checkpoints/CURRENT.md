@@ -1,5 +1,34 @@
 # Current Repository Checkpoint
 
+## 2026-09-24 — TASK-0053 Verdict runs recorded
+
+GitHub issue #47 tracks the ongoing comparison. Kev-0.8B, Laya-421M, Verdict
+1.4, and Verdict's pre-v1.4 configuration have completed EXP-027 public and
+blind partitions plus EXP-028 LegalBench Hearsay. Verdict used the same pinned
+151M weights, with each code revision run sequentially. On the blind pool,
+Verdict 1.4 resolved 569/760 (74.87% coverage) at 51.49% accuracy; the
+pre-v1.4 configuration resolved 526/760 (69.21% coverage) at 50.38% accuracy.
+Their Hearsay accuracy was 43.62% (94/94 resolved). Raw outputs preserve
+abstention probabilities; the report separates abstention from context-limit
+skips and states that accuracy/calibration apply to accepted predictions.
+
+Remaining: SemIf Qwen3.5-4B is not yet run; the Mac currently has 1.4 GiB free
+disk and an active ComfyUI process, so recheck feasibility before attempting
+another large weight download. Kev-4B's load smoke failed before inference.
+Nimble-9B's unquantized weights are about 18 GB, and upstream lists 32 GB for
+Kev-9B; neither fits this 16 GiB host as pinned. Keep both experiment manifests
+in progress until remaining eligible arms are completed or explicitly closed
+as infeasible. The latest raw predictions, metrics, runtime freezes, and task
+log are on branch `task/TASK-0053-verdict-runs` pending the checkpoint PR.
+
+TASK-0042 remains active under issue #45. Its GLEIF archive manifest was
+checkpointed in PR #46 and merged; resume its adapter work when this task is
+checkpointed or when it becomes the repository-wide next action.
+
+Next atomic action: publish this Verdict results/report checkpoint through
+issue #47 and required CI; then reassess Mac disk and memory before any
+SemIf-4B or Kev-4B retry. Do not put a repository copy on the Mac.
+
 ## 2026-09-24 — TASK-0053 local decision-model evaluation started
 
 GitHub issue #47 tracks an append-only comparison of the user-provided

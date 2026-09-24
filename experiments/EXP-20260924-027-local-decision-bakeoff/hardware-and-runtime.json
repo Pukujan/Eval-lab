@@ -40,6 +40,24 @@
       "uv_pip_check": "passed",
       "mps_available": true,
       "smoke": "passed; upstream emitted invalid-temperature calibration warning"
+    },
+    {
+      "family": "OpenJev Verdict",
+      "runtime_revisions": [
+        "30f15564821626ca5c1ad5b2638c4eb7078787dd",
+        "643fa478834c8df5bd3afe302dbbf8513664f8ef"
+      ],
+      "external_environment": "/Users/teresaguajardo/.cache/eval-lab/TASK-0053/verdict-1.4-runtime",
+      "python": "3.12.14",
+      "torch": "2.14.0",
+      "transformers": "5.17.0",
+      "onnxruntime": "1.30.0",
+      "freeze_files": [
+        "verdict-1.4-runtime-freeze.txt",
+        "verdict-original-runtime-freeze.txt"
+      ],
+      "uv_pip_check": "passed for both source revisions",
+      "execution": "CPU / ONNX Runtime; revisions run sequentially in one environment with shared model weights"
     }
   ],
   "inference_libraries_before_model_runtime_install": {
@@ -53,6 +71,6 @@
   "notes": [
     "Hardware and Python/uv were queried over the existing Tailscale SSH alias mac-ts.",
     "Free disk is a point-in-time measurement; recheck before downloading each model.",
-    "No model inference or benchmark scoring has occurred at capture time."
+    "At verdict runtime installation, available disk was 3.1 GiB; after installing dependencies, downloading the model, and running all Verdict partitions it was 1.4 GiB."
   ]
 }

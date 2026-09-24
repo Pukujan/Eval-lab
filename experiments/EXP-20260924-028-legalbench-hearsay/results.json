@@ -36,7 +36,8 @@
       "status_counts": {
         "ok": 94
       },
-      "unresolved_count": 0
+      "unresolved_count": 0,
+      "unresolved_reason_counts": {}
     },
     "laya-421m": {
       "accuracy": 0.6170212765957447,
@@ -65,7 +66,7 @@
         "p50": 218.4038534978754,
         "p95": 259.5422642574704
       },
-      "prediction_sha256": "ab7b928d118d33beb8681c2ed9316e2b294fefaf2265611872c9d06620652450",
+      "prediction_sha256": "92220b008f11069eb898846823c6102ca48fa59d816fc1394ded0b07db5eb60e",
       "probability_count": 94,
       "record_count": 94,
       "resolved_count": 94,
@@ -74,7 +75,86 @@
       "status_counts": {
         "ok": 94
       },
-      "unresolved_count": 0
+      "unresolved_count": 0,
+      "unresolved_reason_counts": {}
+    },
+    "verdict-1.4": {
+      "accuracy": 0.43617021276595747,
+      "accuracy_95_wilson": [
+        0.34038166214603166,
+        0.5369709433379954
+      ],
+      "by_mode": {
+        "all": {
+          "accuracy": 0.43617021276595747,
+          "balanced_accuracy": 0.5,
+          "macro_f1": 0.3037037037037037,
+          "probability_count": 94,
+          "probability_metrics": {
+            "accuracy": 0.43617021276595747,
+            "balanced_accuracy": 0.5,
+            "brier": 0.5267011846331394,
+            "ece": 0.12665138706367984,
+            "macro_f1": 0.3037037037037037,
+            "nll": 0.720047731465492
+          },
+          "record_count": 94
+        }
+      },
+      "latency_ms": {
+        "p50": 273.8405209966004,
+        "p95": 290.9574936522404
+      },
+      "prediction_sha256": "a32f131269f860fd3da1a251dcb7852e5c85e51a597b79589893e32ee896020c",
+      "probability_count": 94,
+      "record_count": 94,
+      "resolved_count": 94,
+      "resolved_coverage": 1.0,
+      "runner_revision": "4d1d9a5fe9c1719fd190e757ff4134f043f3fb16",
+      "status_counts": {
+        "ok": 94
+      },
+      "unresolved_count": 0,
+      "unresolved_reason_counts": {}
+    },
+    "verdict-original": {
+      "accuracy": 0.43617021276595747,
+      "accuracy_95_wilson": [
+        0.34038166214603166,
+        0.5369709433379954
+      ],
+      "by_mode": {
+        "all": {
+          "accuracy": 0.43617021276595747,
+          "balanced_accuracy": 0.5,
+          "macro_f1": 0.3037037037037037,
+          "probability_count": 94,
+          "probability_metrics": {
+            "accuracy": 0.43617021276595747,
+            "balanced_accuracy": 0.5,
+            "brier": 0.7536348955899022,
+            "ece": 0.35670273762014393,
+            "macro_f1": 0.3037037037037037,
+            "nll": 1.0024813209200443
+          },
+          "record_count": 94
+        }
+      },
+      "latency_ms": {
+        "p50": 122.31174999033101,
+        "p95": 129.8065397022583
+      },
+      "prediction_sha256": "dc4111dd7025ddf707d59682136a24203238f6fe3bd0d10e4d81e80000b088c9",
+      "probability_count": 94,
+      "record_count": 94,
+      "resolved_count": 94,
+      "resolved_coverage": 1.0,
+      "runner_revision": "4d1d9a5fe9c1719fd190e757ff4134f043f3fb16",
+      "status_counts": {
+        "ok": 94
+      },
+      "unresolved_count": 0,
+      "unresolved_reason_counts": {}
     }
   },
   "dataset_source": {
@@ -153,6 +233,35 @@
       "runtime_repository": "https://github.com/NandhaKishorM/laya",
       "runtime_revision": "23a17522aa4942da6cce53a995a275760320b691",
       "source": "https://github.com/NandhaKishorM/laya"
+    },
+    "verdict-1.4": {
+      "arm_id": "verdict-1.4",
+      "backend": "ONNX Runtime CPU",
+      "max_context_tokens": 512,
+      "model_id": "heman10x/rlcd-modernbert-151m",
+      "model_revision": "8af2496eb63c7fa66d7d234e1f62629380030eb4",
+      "precision": "upstream ONNX/F32",
+      "probability_semantics_note": "The runtime returns a calibrated explicit __insufficient_evidence__ option. Raw distributions are preserved in provider metadata; accuracy and standard class-probability metrics cover only non-abstaining predictions.",
+      "runtime_environment": "Mac external environment ~/.cache/eval-lab/TASK-0053/verdict-1.4-runtime; shared sequentially with the original configuration",
+      "runtime_package_freeze": "verdict-1.4-runtime-freeze.txt",
+      "runtime_repository": "https://github.com/Heman10x-NGU/Verdict-open-jev",
+      "runtime_revision": "30f15564821626ca5c1ad5b2638c4eb7078787dd",
+      "source": "https://github.com/Heman10x-NGU/Verdict-open-jev"
+    },
+    "verdict-original": {
+      "arm_id": "verdict-original",
+      "backend": "ONNX Runtime CPU",
+      "max_context_tokens": 1024,
+      "model_id": "heman10x/rlcd-modernbert-151m",
+      "model_revision": "8af2496eb63c7fa66d7d234e1f62629380030eb4",
+      "notes": "Pre-v1.4 inference commit; same weights, before the v1.4 context, calibration-loading, and hypothesis-templating fixes. The pinned package environment was reused sequentially and only the rlcd package was replaced between runs.",
+      "precision": "upstream ONNX/F32",
+      "probability_semantics_note": "This pre-v1.4 runtime also returns an explicit __insufficient_evidence__ option. Raw distributions are preserved in provider metadata; accuracy and standard class-probability metrics cover only non-abstaining predictions.",
+      "runtime_environment": "Mac external environment ~/.cache/eval-lab/TASK-0053/verdict-1.4-runtime; shared sequentially with Verdict 1.4",
+      "runtime_package_freeze": "verdict-original-runtime-freeze.txt",
+      "runtime_repository": "https://github.com/Heman10x-NGU/Verdict-open-jev",
+      "runtime_revision": "643fa478834c8df5bd3afe302dbbf8513664f8ef",
+      "source": "https://github.com/Heman10x-NGU/Verdict-open-jev/commit/643fa478834c8df5bd3afe302dbbf8513664f8ef"
     }
   },
   "split": "test"
