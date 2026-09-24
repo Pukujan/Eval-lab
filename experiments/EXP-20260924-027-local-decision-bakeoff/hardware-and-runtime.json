@@ -1,0 +1,31 @@
+{
+  "captured_at": "2026-09-24",
+  "host": {
+    "hostname": "MacBookPro.lan",
+    "model_identifier": "MacBookPro17,1",
+    "chip": "Apple M1",
+    "architecture": "arm64",
+    "unified_memory_bytes": 17179869184,
+    "operating_system": "macOS 26.4.1",
+    "os_build": "25E253",
+    "free_disk_gib_rounded_after_runner_tools": 21
+  },
+  "runner_tools": {
+    "python": "3.12.14",
+    "uv": "0.12.18",
+    "installation": "Homebrew Python 3.12 and uv; no Eval Lab checkout or virtual environment on Mac"
+  },
+  "inference_libraries_before_model_runtime_install": {
+    "mlx": false,
+    "mlx_lm": false,
+    "torch": false,
+    "transformers": false,
+    "huggingface_hub": false,
+    "ollama": false
+  },
+  "notes": [
+    "Hardware and Python/uv were queried over the existing Tailscale SSH alias mac-ts.",
+    "Free disk is a point-in-time measurement; recheck before downloading each model.",
+    "No model inference or benchmark scoring has occurred at capture time."
+  ]
+}

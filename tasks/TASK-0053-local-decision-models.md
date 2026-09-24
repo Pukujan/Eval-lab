@@ -2,10 +2,14 @@
 
 ## Status
 
-Active — tracked by GitHub issue #47. EXP-027 and EXP-028 are being
-preregistered. No model calls or benchmark scoring have started. The requested
-MacBook Pro did not answer over Tailscale during setup; machine details and
-runner access remain unresolved.
+Active — tracked by GitHub issue #47. EXP-027 and EXP-028 are preregistered
+and committed. The MacBook Pro is reachable over Tailscale SSH; no model calls
+or benchmark scoring have started. Hardware is a 2020 MacBook Pro (MacBookPro17,1),
+Apple M1, 16 GiB unified memory, macOS 26.4.1, with 21 GiB free disk after
+installing the runner tools. Model and upstream code revisions are pinned in
+the checkpoint notes. Fixed-choice adapters and a resumable sequential runner
+are implemented locally with focused tests passing; no inference runtime is
+installed and model-feasibility probes remain.
 
 ## Objective
 
@@ -32,6 +36,8 @@ Hearsay task, with results and statuses recorded in GitHub.
 - `scripts/build_legalbench_hearsay.py`
 - `tests/test_local_decision_models.py`
 - `tests/test_legalbench.py`
+- `AGENTS.md`
+- `D:\\claude\\AGENTS.md`
 
 ## Experiment plan
 
@@ -173,6 +179,97 @@ output availability. No benchmark model has run.
 Next atomic action: make the MacBook reachable, establish exact model and
 runtime pins, and resolve Nimble's runtime environment before adding the
 model-specific execution adapters and launching the first sequential run.
+
+### 2026-09-24 — Mac runner access and model revisions established
+
+Status: both experiments remain preregistered; no model inference has started.
+
+Completed work: connected through the existing `mac-ts` SSH alias and verified
+the host with `sw_vers`, `uname`, `system_profiler`, `sysctl`, and `df`. The
+host is an Apple M1 MacBook Pro (MacBookPro17,1), 16 GiB unified memory, macOS
+26.4.1, and had 22 GiB free disk. Python 3.14.5 and Homebrew are present, but
+Python 3.12, uv, Ollama, MLX, PyTorch, Transformers, and Hugging Face Hub are
+not available in the shell environment. Tailscale SSH succeeds using the
+existing `mac-ts` host alias and account `teresaguajardo`.
+
+Pinned current Hugging Face revisions: Qwen3.5-4B
+`851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a`; Nimble-9B
+`bd792f44ec8e265be861bfcdf4e05967ffe0e858`; Kev-9B
+`2629c06a5aeb0feb3b9783bafed17ed8f39ecf5c`; Kev-4B
+`1da696f7938f77c4cdf5471e92fd342baff41778`; Kev-0.8B
+`54f4f8777356cd5bbbb6c6919c657f26e6f2f6d8`; Laya
+`55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851`; and Verdict
+`8af2496eb63c7fa66d7d234e1f62629380030eb4` (shared checkpoint for Verdict
+1.4 and original runtime configuration).
+
+Decisions: the user approved a narrowly scoped exception for model-specific
+runtime environments on the Mac, outside any Eval Lab checkout; no Eval Lab
+clone or copied project tree will be placed there. Run one model at a time and
+record runtime/model revisions. Upstream says Nimble's unquantized 9B weights
+alone need about 18 GB, so that arm is incompatible with this 16 GiB host and
+will be recorded blocked unless the pinned runtime offers a validated exact
+checkpoint path that fits. Other feasibility must be established by bounded
+load smokes before benchmark scoring. Laya and Verdict document 512-token
+limits, below EXP-027's 4096 cap; record truncation as a per-arm limitation.
+
+Files changed: this task file, `checkpoints/CURRENT.md`, `AGENTS.md`,
+`D:\\claude\\AGENTS.md`, EXP-027 `experiment.yaml`, `model-revisions.json`,
+and `hardware-and-runtime.json`.
+
+Commands run: workspace-policy check; Tailscale status and ping; SSH probe;
+verified Mac hardware/runtime availability; fetched Hugging Face model metadata
+for immutable revision SHAs and upstream Git commit SHAs; installed Homebrew
+Python 3.12.14 and uv 0.12.18 on the Mac; fetched `origin/main`; synchronized
+the task branch to the merged LegalBench checkpoint. No repo tests or model
+inference have run after these edits; no benchmark commands have run.
+
+Unresolved: install the approved Mac-side runner runtimes, determine exact
+model-specific adapters and tokenization/truncation behavior, then run
+one-record feasibility probes. The 22 GiB free-disk measurement should be
+rechecked immediately before downloading weights.
+
+Next atomic action: run the full checkpoint gates and publish the runner
+implementation before any model call; then install the pinned Kev runtime
+outside the checkout and smoke one record.
+
+### 2026-09-24 — local runner implementation
+
+Status: adapters and resumable per-record runner implemented; runner
+checkpoint pending; no inference or benchmark scoring has started.
+
+Completed work: added fixed-choice request construction for EXP-027 and
+EXP-028; probability validation, retained raw outputs, explicit abstention,
+context-limit and per-record failure statuses; adapters for SemIf, Kev, Laya,
+and Verdict; a one-model-per-process JSONL runner that fsyncs each prediction
+and resumes only missing record IDs. The runner accepts an explicit runner
+revision and does not require copying the Eval Lab checkout to the Mac. Added
+protocol tests covering gold-label exclusion, label stability, probability
+normalization, abstention mass, and inconsistent backend outputs.
+
+Files changed: `AGENTS.md`, `checkpoints/CURRENT.md`, this task file,
+EXP-027 `experiment.yaml`, `hardware-and-runtime.json`, and
+`model-revisions.json`, `scripts/run_local_decision_bakeoff.py`,
+`src/eval_lab/judges/local_decision_models.py`, and
+`tests/test_local_decision_models.py`.
+
+Commands run: repository workspace-policy check passed; Ruff lint passed;
+focused tests passed (`11 passed`). The first test attempt exposed floating
+point representation in a conditional probability assertion; the check now
+uses a rounded numeric comparison. No models were called.
+
+Decisions: retain each native vector and reject malformed mass or selected
+labels that disagree with its declared-choice argmax. Continue to condition
+Verdict's legal-choice probabilities on non-abstention while retaining the
+abstention probability. Write each record before reporting progress so an
+interrupted arm can resume safely.
+
+Unresolved: verify upstream runtime installation and a one-record Kev-0.8B
+smoke; determine whether other model arms fit the host and produce supported
+native probability outputs.
+
+Next atomic action: publish the runner implementation after the complete local
+gates pass; then install the pinned Kev runtime outside the checkout and smoke
+one record.
 
 ## Handoff
 

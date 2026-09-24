@@ -3,22 +3,29 @@
 ## 2026-09-24 — TASK-0053 local decision-model evaluation started
 
 GitHub issue #47 tracks an append-only comparison of the user-provided
-Jev-style local models. EXP-027 will use the exact frozen EXP-015 public and
-blind records; EXP-028 will use the fixed-label LegalBench Hearsay task as a
-small legal-domain complement after its source and license are frozen. No
-model calls have started. The MacBook Pro is currently unreachable over
-Tailscale, so the runner cannot inspect its hardware or begin the requested
-sequential runs yet.
+Jev-style local models. EXP-027 uses the exact frozen EXP-015 public and blind
+records; EXP-028 uses the frozen 94 test rows from LegalBench Hearsay. The
+MacBook Pro is now reachable over the existing Tailscale SSH alias. It is a
+MacBookPro17,1 with Apple M1, 16 GiB unified memory, macOS 26.4.1, and had
+21 GiB free disk after the runner-tool installation. Hugging Face model and
+upstream code revisions are pinned in the EXP-027 `model-revisions.json` and
+`tasks/TASK-0053-local-decision-models.md`. No model calls have started; the
+Mac lacked a compatible runner and inference libraries. A narrow exception now
+allows model-specific environments outside the Eval Lab checkout, without
+cloning or copying the repository. Nimble-9B's unquantized weights exceed this
+host's physical memory; Laya and Verdict have 512-token limits. Homebrew
+Python 3.12.14 and uv 0.12.18 are now installed on the Mac.
 
 TASK-0042 remains active under issue #45. Its GLEIF archive manifest was
 checkpointed in PR #46 and merged; the canonical checkout is now on
 `main`. Resume its adapter work after this model-evaluation task is
 checkpointed or when it becomes the repository-wide next action.
 
-Next atomic action: make the MacBook reachable, establish hardware and runtime
-pins, and resolve Nimble's environment requirement before implementing the
-sequential local-model runner. LegalBench Hearsay source and its 94 frozen
-test records are ready.
+Next atomic action: publish the new fixed-choice adapters and resumable
+sequential runner after repository gates pass. Then install the pinned Kev
+runtime in an approved external Mac environment and run one Kev-0.8B
+feasibility smoke. LegalBench Hearsay source and canonical records are ready.
+Do not put a repository copy on the Mac.
 
 ## 2026-09-24 — TASK-0042 EXP-026 GLEIF track started
 
