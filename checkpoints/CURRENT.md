@@ -1,5 +1,18 @@
 # Current Repository Checkpoint
 
+## 2026-09-24 — TASK-0051 finalizer tracking-ref correction
+
+The initial checkpoint automation merged as PR #41 (`731e692`); exact head
+`f3f98c8` passed both required Python CI checks, and the merge-record workflow
+passed. Finalization caught a stale local `origin/main` tracking ref because
+`git fetch origin main` updated `FETCH_HEAD` but did not refresh that ref. The
+canonical checkout is clean on `main` at the merge commit; issue #40 remains
+open, and no worktree was removed. The finalizer/publisher now fetch `main`
+directly into `refs/remotes/origin/main`, with a regression test.
+
+Next atomic action: run local gates, update issue #40, publish the correction,
+then wait for its required CI/auto-merge before finalization.
+
 ## 2026-09-23 — TASK-0051 GitHub checkpoint automation
 
 GitHub issue #40 tracks automation for the repository's checkpoint-to-PR
@@ -19,9 +32,7 @@ work should become sub-issues. The Eval Lab temporary worktree location is
 independent collaborator who can approve this account's code-owner PRs, so the
 CODEOWNERS approval requirement remains disabled pending that reviewer.
 
-Repository auto-merge is enabled and verified. Next atomic action: publish this
-branch and let required CI/auto-merge proceed asynchronously.
-Keep the checkpoint active until the PR merge is confirmed.
+PR #41 merged as `731e692`; see the 2026-09-24 correction checkpoint above.
 
 ## 2026-09-23 — TASK-0050 temporary-worktree lifecycle correction
 

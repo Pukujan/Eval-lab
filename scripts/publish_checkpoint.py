@@ -210,7 +210,10 @@ def publish(args: argparse.Namespace) -> str:
     else:
         # Resume after a partial publish, such as a successful push followed by
         # a timeout while GitHub was creating or updating the pull request.
-        run(["git", "fetch", "origin", "main"], cwd=root)
+        run(
+            ["git", "fetch", "origin", "+refs/heads/main:refs/remotes/origin/main"],
+            cwd=root,
+        )
         committed_paths = sorted(
             set(
                 run(["git", "diff", "--name-only", "-z", "origin/main...HEAD"], cwd=root).split(
@@ -235,7 +238,10 @@ def publish(args: argparse.Namespace) -> str:
         run_local_gates(root, changed_python)
         verify_open_issue(args.issue, root)
 
-    run(["git", "fetch", "origin", "main"], cwd=root)
+    run(
+        ["git", "fetch", "origin", "+refs/heads/main:refs/remotes/origin/main"],
+        cwd=root,
+    )
     if (
         subprocess.run(
             ["git", "merge-base", "--is-ancestor", "origin/main", "HEAD"], cwd=root, check=False

@@ -2,7 +2,7 @@
 
 ## Status
 
-Active — tracked by GitHub issue #40 on `task/TASK-0051-github-checkpoint-automation`. Implementation and local validation are complete; remote publication, CI, and merge are pending.
+Active — tracked by GitHub issue #40. The initial implementation merged as PR #41; a finalizer tracking-ref correction is in progress on `task/TASK-0051-finalizer-ref-sync`.
 
 ## Goal
 
@@ -63,6 +63,7 @@ The task remains active until its PR is merged and the GitHub issue reflects the
 - 2026-09-23: Implemented the explicit-path publisher, async auto-merge request, exact-head/CI merge-record workflow, safe finalizer, issue/PR templates, CODEOWNERS map, and `D:\claude\eval-lab\worktrees` policy. Finalizer checks the canonical checkout before removing a linked worktree.
 - 2026-09-23: Updated `D:\claude\AGENTS.md`, `D:\claude\PROJECT_ROOTS.md`, and `D:\claude\check-canonical-workspaces.ps1`. `D:\claude` has only this account as a repository collaborator; owner approval cannot be enforced until an independent reviewer is added. The CODEOWNERS review rule therefore remains disabled to avoid making sensitive PRs unmergeable.
 - 2026-09-23: Local gates passed: `uv lock --check`; `uv sync --locked --extra dev`; repo contract; canonical workspace policy; `ruff check .`; changed-Python Ruff format check; `mypy src/eval_lab`; full pytest (`157 passed`); `uv build`; and `git diff --check`. One initial format check failed; the three files were formatted and the complete run passed.
+- 2026-09-24: PR #41 merged after both required Python checks passed; merge commit `731e6928f1acc7fd849a62f8bc4c8ade1157c90d`. The merge-record workflow succeeded on exact head `f3f98c8638b3eaaab18a556919ce2f3143b505aa`. The finalizer correctly stopped before closing issue #40 because `git fetch origin main` did not refresh the local `origin/main` tracking ref. No worktree was removed; canonical `main` is clean and already at the merged commit. The finalizer and publisher now fetch directly into `refs/remotes/origin/main`, with a regression test.
 
 ## Exact files changed
 
@@ -86,6 +87,6 @@ The task remains active until its PR is merged and the GitHub issue reflects the
 
 ## Next atomic action
 
-Update issue #40 with the implemented lifecycle and verified results, publish this branch, then wait for GitHub CI and auto-merge before finalizing.
+Run local gates, update issue #40 with PR #41's merged state and this correction, publish the follow-up branch, then let required CI/auto-merge proceed before finalization.
 
 
