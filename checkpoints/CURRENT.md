@@ -1,5 +1,26 @@
 # Current Repository Checkpoint
 
+## 2026-09-24 — TASK-0053 SemIf-4B partitions completed
+
+The user resumed benchmark execution. SemIf-4B completed EXP-027 public
+(648/648 ok, 54.17% accuracy) and blind (760/760 ok, 54.74% accuracy) plus
+EXP-028 Hearsay (94/94 ok, 48.94% accuracy). Raw outputs and the regenerated
+reports are on `task/TASK-0053-semif-4b`. Observed free memory stayed at or
+above 35% during scoring checks. Issue #47 remains open. Kev-4B has not been
+retried in this checkpoint. Nimble-9B and Kev-9B remain hardware-blocked.
+
+The one-record Kev-4B smoke then passed: one EXP-027 public record returned
+`ok`, observed free memory stayed at or above 36% during load checks, and
+memory recovered to 89% afterward. Earlier failed smoke folders were preserved.
+
+Kev-4B then completed EXP-027 public (648/648 ok, 68.83% accuracy), blind
+(760/760 ok, 64.34% accuracy), and EXP-028 Hearsay (94/94 ok, 72.34% accuracy).
+Observed free memory stayed near 33–35% during scoring and recovered afterward.
+Nimble-9B and Kev-9B remain hardware-blocked and were not started.
+
+Next atomic action: publish this SemIf and Kev-4B checkpoint through issue #47
+and required CI. Do not start Nimble-9B or Kev-9B.
+
 ## 2026-09-24 — TASK-0053 Mac space audit and cleanup
 
 Removed three movie folders from Downloads (~3.0 GB), the Bonsai 27B model and

@@ -1,0 +1,56 @@
+{
+  "model_runtime": {
+    "server_log": "/Users/teresaguajardo/.cache/eval-lab/TASK-0053/runs/kev-4b-hearsay-20260924/kev-server.log",
+    "server_models": {
+      "models": [
+        {
+          "backend": "mlx",
+          "base": "Qwen/Qwen3.5-4B-Base",
+          "cuda_graphs": null,
+          "description": "Kev pointer head on Qwen/Qwen3.5-4B-Base, serving jaredpalmer/kev-4b@1da696f7938f77c4cdf5471e92fd342baff41778 at temperature 2.96",
+          "device": "mps",
+          "dtype": "bfloat16",
+          "lora": 16,
+          "name": "kev-latest",
+          "prefix_cache": {
+            "cached_states": 0,
+            "hits": 0,
+            "min_state_tokens": 0,
+            "misses": 0,
+            "size": 4
+          },
+          "release_date": "2026-09-24",
+          "run": "jaredpalmer/kev-4b@1da696f7938f77c4cdf5471e92fd342baff41778",
+          "temperature": 2.962195104573128
+        },
+        {
+          "backend": "mlx",
+          "base": "Qwen/Qwen3.5-4B-Base",
+          "cuda_graphs": null,
+          "description": "Kev pointer head on Qwen/Qwen3.5-4B-Base, serving jaredpalmer/kev-4b@1da696f7938f77c4cdf5471e92fd342baff41778 at temperature 2.96",
+          "device": "mps",
+          "dtype": "bfloat16",
+          "lora": 16,
+          "name": "jev-latest",
+          "prefix_cache": {
+            "cached_states": 0,
+            "hits": 0,
+            "min_state_tokens": 0,
+            "misses": 0,
+            "size": 4
+          },
+          "release_date": "2026-09-24",
+          "run": "jaredpalmer/kev-4b@1da696f7938f77c4cdf5471e92fd342baff41778",
+          "temperature": 2.962195104573128
+        }
+      ]
+    }
+  },
+  "package_versions": {
+    "kev": "0.1.0",
+    "mlx": "0.32.2",
+    "mlx-lm": "0.31.3",
+    "torch": "2.8.0",
+    "transformers": "5.17.0"
+  }
+}
