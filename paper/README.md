@@ -16,6 +16,7 @@ reporting hide?
 | `paper.md` | The single canonical paper. |
 | `limitations.md` | Limitations of the canonical paper (mirrors Section 6). |
 | `reproducibility.md` | How to regenerate every table and figure offline. |
+| `data/` | Interactive chart data with JSON-LD provenance (`scripts/export_chart_data.py`); see `docs/PROVENANCE.md`. |
 | `figures/benchmark/` | Generated figures and `manifest.json` with source hashes. |
 | `references.bib` | Bibliography used by the archived LaTeX draft. |
 | `archive/` | Superseded drafts, kept for history; see `archive/README.md`. |

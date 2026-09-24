@@ -50,7 +50,7 @@ Stop and checkpoint before proceeding if:
 | Jev pinned arm | pinned model identity + normalized live/mock evidence | yes unless provider externally unavailable and explicitly scoped |
 | Statistical adequacy | counts + uncertainty for low-error claims | yes for confidence-supported claims |
 | Benchmark | deterministic rebuild + source manifest + SHA-256 | yes |
-| Provenance | RO-Crate + PROV graph + SHACL validation | yes |
+| Provenance | RO-Crate + PROV graph + SHACL validation (archived v0.1.0 release; validated in CI since TASK-0059; the canonical paper uses hashes + tests, see `docs/PROVENANCE.md`) | yes |
 | Paper | generated result tables + reproducibility/limitations sections | yes |
 | Citation metadata | valid CFF; DataCite-compatible metadata captured | yes |
 

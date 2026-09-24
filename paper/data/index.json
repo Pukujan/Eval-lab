@@ -1,0 +1,19 @@
+{
+ "schemaVersion": "1.0",
+ "repository": "https://github.com/Pukujan/Eval-lab",
+ "commit": "323850a3bde61e8d820aeedc047fad756f3e467c",
+ "dirty": false,
+ "generatedAt": "2026-09-24T18:49:54-04:00",
+ "generator": "scripts/export_chart_data.py",
+ "files": [
+  {"path":"paper/data/charts/finding_accuracy_range.json","kind":"chart","id":"finding_accuracy_range","bytes":6271,"sha256":"fb0c3735dca834fa9116112f0ee5f47f76b5b3a80fc3289c3ef9478101697057"},
+  {"path":"paper/data/charts/finding_request_settings.json","kind":"chart","id":"finding_request_settings","bytes":5517,"sha256":"6a3c6707029325285b9e7b42c776dcda111dfd0e8908d38187ed2a276fb59d63"},
+  {"path":"paper/data/charts/finding_skipped_questions.json","kind":"chart","id":"finding_skipped_questions","bytes":5994,"sha256":"e93397c5e77386e062413375a0f6a500511e920a40ac0b70a0332cfc1861ad62"},
+  {"path":"paper/data/charts/grok_protocol_ablation.json","kind":"chart","id":"grok_protocol_ablation","bytes":5513,"sha256":"964c6a4d6802fdc268c8b3881323339fa76e542237ff05baecc3cdc994060cac"},
+  {"path":"paper/data/charts/judges_ranked.json","kind":"chart","id":"judges_ranked","bytes":10338,"sha256":"f4e193ab39cb27c1e274822ea36baf6a5d77be157b6a892b5910ac96a8dd609a"},
+  {"path":"paper/data/charts/local_qwen_calibration.json","kind":"chart","id":"local_qwen_calibration","bytes":5349,"sha256":"de48d6ed58b026e2dbac9d14be5c1abeada93318247ffbbf68476935ca4a74bd"},
+  {"path":"paper/data/judges-blind-760.json","kind":"dataset","id":"eval-lab/judges-blind-760","bytes":184006,"sha256":"7bedf662d423921ad807d0b48a3056a770fdf80bcf3ed223a745c6f38455feab"},
+  {"path":"schemas/research-chart-data.v1.schema.json","kind":"schema","id":"research-chart-data.v1.schema.json","bytes":10044,"sha256":"45a44d074799f73c166bc134cc213ecdafe506578c8404d68d60f3d42561a669"},
+  {"path":"schemas/chart-provenance.shapes.ttl","kind":"schema","id":"chart-provenance.shapes.ttl","bytes":2258,"sha256":"d332eca3edcfadf09d490544ae8af6733ab98ce8705b18a1095f554f44ae19fd"}
+ ]
+}

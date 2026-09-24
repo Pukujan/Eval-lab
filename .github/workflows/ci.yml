@@ -84,7 +84,13 @@ jobs:
         run: uv run --locked mypy src/eval_lab
 
       - name: Unit tests
-        run: uv run --locked python -m pytest -q
+        run: uv run --locked python -m pytest tests -q
+
+      - name: Chart data export is current (TASK-0059)
+        run: uv run --locked python scripts/export_chart_data.py --check
+
+      - name: Archived v0.1.0 release validates (RO-Crate, PROV-O, SHACL)
+        run: uv run --locked python scripts/validate_research_artifacts.py --benchmark benchmark/eval-lab-select-v0.1.0
 
       - name: Build distributions
         run: uv build --out-dir "$RUNNER_TEMP/eval-lab-dist"

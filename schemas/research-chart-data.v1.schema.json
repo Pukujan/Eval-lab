@@ -1,0 +1,217 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Pukujan/Eval-lab/blob/main/schemas/research-chart-data.v1.schema.json",
+  "title": "Eval Lab research chart data v1 (dataset or chart file)",
+  "description": "Files written by scripts/export_chart_data.py. Every file is also JSON-LD: only @context-mapped keys (provenance) become RDF; see schemas/chart-provenance.shapes.ttl and docs/PROVENANCE.md.",
+  "type": "object",
+  "required": ["@context", "id", "type", "kind", "schemaVersion", "title", "experimentId", "provenance"],
+  "properties": {
+    "kind": {"enum": ["dataset", "chart"]},
+    "schemaVersion": {"const": "1.0"}
+  },
+  "oneOf": [
+    {"$ref": "#/$defs/dataset"},
+    {"$ref": "#/$defs/chart"}
+  ],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "repoPath": {"type": "string", "pattern": "^(?![A-Za-z]:)(?!/)(?!.*\\.\\.)[A-Za-z0-9_./+-]+$"},
+    "httpsId": {"type": "string", "pattern": "^https://github\\.com/Pukujan/Eval-lab/"},
+    "nullableNumber": {"type": ["number", "null"]},
+    "sourceEntity": {
+      "type": "object",
+      "required": ["id", "type", "path", "sha256", "role"],
+      "properties": {
+        "id": {"$ref": "#/$defs/httpsId"},
+        "type": {"const": "prov:Entity"},
+        "path": {"$ref": "#/$defs/repoPath"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "role": {"type": "string", "minLength": 1},
+        "wasDerivedFrom": {
+          "type": "array",
+          "items": {"oneOf": [{"$ref": "#/$defs/httpsId"}, {"$ref": "#/$defs/sourceEntity"}]}
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["summary", "repository", "commit", "dirty", "generatedAt", "generator", "policy", "wasGeneratedBy", "wasDerivedFrom"],
+      "additionalProperties": false,
+      "properties": {
+        "summary": {"type": "string", "minLength": 1},
+        "repository": {"const": "https://github.com/Pukujan/Eval-lab"},
+        "commit": {"$ref": "#/$defs/commit"},
+        "dirty": {"type": "boolean"},
+        "generatedAt": {"type": "string", "format": "date-time"},
+        "generator": {"const": "scripts/export_chart_data.py"},
+        "policy": {
+          "type": "object",
+          "required": ["pooling", "aggregates", "interval", "blind_holdout"],
+          "additionalProperties": {"type": "string"}
+        },
+        "wasGeneratedBy": {
+          "type": "object",
+          "required": ["id", "type", "endedAtTime", "gitCommit", "gitDirty", "wasAssociatedWith", "used"],
+          "properties": {
+            "id": {"type": "string", "pattern": "^urn:eval-lab:export:[0-9a-f]{40}:"},
+            "type": {"const": "prov:Activity"},
+            "endedAtTime": {"type": "string", "format": "date-time"},
+            "gitCommit": {"$ref": "#/$defs/commit"},
+            "gitDirty": {"type": "boolean"},
+            "wasAssociatedWith": {
+              "type": "object",
+              "required": ["id", "type", "path", "sha256"],
+              "properties": {
+                "id": {"$ref": "#/$defs/httpsId"},
+                "type": {"type": "array", "contains": {"const": "prov:SoftwareAgent"}},
+                "path": {"$ref": "#/$defs/repoPath"},
+                "sha256": {"$ref": "#/$defs/sha256"}
+              }
+            },
+            "used": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/httpsId"}}
+          }
+        },
+        "wasDerivedFrom": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/sourceEntity"}}
+      }
+    },
+    "measure": {
+      "type": "object",
+      "required": ["key", "label", "unit", "format", "better", "interval", "definition", "n"],
+      "additionalProperties": false,
+      "properties": {
+        "key": {"type": "string"},
+        "label": {"type": "string"},
+        "unit": {"type": "string"},
+        "format": {"type": "string"},
+        "better": {"enum": ["higher", "lower", "none"]},
+        "interval": {"enum": ["wilson_95", "none"]},
+        "definition": {"type": "string", "minLength": 1},
+        "n": {"type": "string"}
+      }
+    },
+    "dimension": {
+      "type": "object",
+      "required": ["key", "label", "type", "scope"],
+      "properties": {
+        "key": {"type": "string"},
+        "label": {"type": "string"},
+        "type": {"enum": ["nominal", "ordinal", "quantitative"]},
+        "scope": {"enum": ["entity", "slice"]},
+        "field": {"type": "string"},
+        "unit": {"type": "string"},
+        "values": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "entity": {
+      "type": "object",
+      "required": ["id", "label", "shortLabel", "headline", "experiment", "experimentIds", "deployment", "modelFamily", "modelId", "paramsB", "route", "settings", "settingsEvidence", "derived", "recordCount", "resolved", "correct", "statusCounts"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+        "label": {"type": "string"},
+        "shortLabel": {"type": "string", "maxLength": 32},
+        "headline": {"type": "boolean"},
+        "experiment": {"type": "string", "pattern": "^EXP-\\d{3}(\\+\\d{3})*$"},
+        "experimentIds": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^EXP-\\d{3}$"}},
+        "deployment": {"enum": ["api", "local", "baseline"]},
+        "modelFamily": {"type": "string"},
+        "modelId": {"type": "string"},
+        "paramsB": {"$ref": "#/$defs/nullableNumber"},
+        "route": {"type": "string"},
+        "harness": {"type": "string"},
+        "settings": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["maxOutputTokens", "maxOutputTokensStatus", "contextCapTokens", "thinking", "decoding", "temperature"],
+          "properties": {
+            "maxOutputTokens": {"type": ["integer", "null"], "minimum": 1},
+            "maxOutputTokensStatus": {"enum": ["set", "provider_default", "not_applicable"]},
+            "contextCapTokens": {"type": ["integer", "null"], "minimum": 1},
+            "thinking": {"enum": ["on", "off", "provider_default", "not_applicable"]},
+            "decoding": {"enum": ["generative_label", "label_log_likelihood", "native_label_head", "constant"]},
+            "temperature": {"$ref": "#/$defs/nullableNumber"}
+          }
+        },
+        "settingsEvidence": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/repoPath"}},
+        "derived": {"type": "boolean"},
+        "rankAllRecord": {"type": ["integer", "null"]},
+        "sharedRankAllRecord": {"type": ["integer", "null"]},
+        "recordCount": {"type": "integer", "minimum": 1},
+        "resolved": {"type": "integer", "minimum": 0},
+        "correct": {"type": "integer", "minimum": 0},
+        "statusCounts": {"type": "object", "additionalProperties": {"type": "integer"}}
+      }
+    },
+    "observation": {
+      "type": "object",
+      "required": ["entity", "slice", "sliceValue", "metric", "value", "ciLow", "ciHigh", "n"],
+      "additionalProperties": false,
+      "properties": {
+        "entity": {"type": "string"},
+        "slice": {"enum": ["overall", "mode", "taskSource"]},
+        "sliceValue": {"type": "string"},
+        "metric": {"type": "string"},
+        "value": {"$ref": "#/$defs/nullableNumber"},
+        "ciLow": {"$ref": "#/$defs/nullableNumber"},
+        "ciHigh": {"$ref": "#/$defs/nullableNumber"},
+        "n": {"type": "integer", "minimum": 0}
+      }
+    },
+    "dataset": {
+      "type": "object",
+      "required": ["kind", "datasetId", "recordCount", "population", "levels", "dimensions", "measures", "entities", "observations", "aggregates", "comparisons", "experiments", "runs", "notes"],
+      "properties": {
+        "kind": {"const": "dataset"},
+        "datasetId": {"type": "string"},
+        "recordCount": {"type": "integer"},
+        "provenance": {"$ref": "#/$defs/provenance"},
+        "levels": {"type": "array", "items": {"type": "object", "required": ["key", "label", "description"]}},
+        "dimensions": {"type": "array", "items": {"$ref": "#/$defs/dimension"}},
+        "measures": {"type": "array", "items": {"$ref": "#/$defs/measure"}},
+        "entities": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/entity"}},
+        "observations": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/observation"}},
+        "aggregates": {
+          "type": "array",
+          "items": {"type": "object", "required": ["key", "metric", "method", "over", "value"]}
+        },
+        "comparisons": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["left", "right", "view", "n", "leftOnlyCorrect", "rightOnlyCorrect", "pExact", "pHolm"],
+            "properties": {"view": {"enum": ["all", "shared"]}}
+          }
+        },
+        "experiments": {
+          "type": "array",
+          "items": {"type": "object", "required": ["id", "experimentId", "directory", "status", "entities"]}
+        },
+        "runs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["entity", "experiment", "experimentDirectory", "runPath", "path", "sha256", "mergeOrder"],
+            "properties": {"path": {"$ref": "#/$defs/repoPath"}, "sha256": {"$ref": "#/$defs/sha256"}}
+          }
+        },
+        "notes": {"type": "object"}
+      }
+    },
+    "chart": {
+      "type": "object",
+      "required": ["kind", "chartId", "dataset", "figure", "data"],
+      "properties": {
+        "kind": {"const": "chart"},
+        "chartId": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+        "dataset": {"type": ["string", "null"]},
+        "provenance": {"$ref": "#/$defs/provenance"},
+        "figure": {
+          "type": "object",
+          "required": ["generator", "variants"],
+          "properties": {"variants": {"type": "object", "additionalProperties": {"$ref": "#/$defs/repoPath"}}}
+        },
+        "data": {"type": "object", "required": ["rows"]}
+      }
+    }
+  }
+}
