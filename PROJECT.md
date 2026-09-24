@@ -15,9 +15,13 @@ The project is not primarily about making a small model imitate a frontier model
 - a compact encoder classifier as a later alternative if decoder models are not competitive
 - stronger chat models such as Luna, Sol, or Grok only as optional critics, rubric designers, adversaries, and disagreement analysts
 
-## Initial research question
+## Research question
 
-Can a lightweight judge achieve useful multi-domain accuracy and calibrated confidence on objectively labeled evaluation tasks, and can selective escalation make it operationally reliable?
+When independent judges, from small local models to frontier APIs, receive identical typed decisions with objective gold labels, how do their accuracy and coverage differ, and what does accuracy-only reporting hide?
+
+The canonical answer is [`paper/paper.md`](paper/paper.md), built on the offline analysis [EXP-029](experiments/EXP-20260924-029-consolidated-judge-analysis/) (TASK-0056).
+
+The original question (can a lightweight judge reach useful multi-domain accuracy and calibrated confidence, and can selective escalation make it operationally reliable?) is narrowed to the above. Selective escalation, routing, confidence calibration and domain pilots are future work; see Section 7 of the paper and [`paper/archive/`](paper/archive/).
 
 ## Primary metrics
 
@@ -93,7 +97,7 @@ v0 is successful when another agent can clone the repo and:
 
 ## TASK-0010 research-release phase
 
-After TASK-0009, Eval Lab moves from baseline construction to selective escalation and publication-quality reproducibility.
+After TASK-0009, Eval Lab moved from baseline construction to selective escalation and publication-quality reproducibility. That TASK-0010 draft is archived at `paper/archive/selective-escalation/`; TASK-0056 replaced it as the canonical paper with `paper/paper.md`.
 
 TASK-0010 must produce:
 - a frozen selective-escalation experiment;

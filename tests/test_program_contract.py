@@ -107,6 +107,7 @@ def test_task_0010_research_release_contract() -> None:
         assert term in standard
     assert "M-01" in differential
     assert "D-01" in differential
-    assert (ROOT / "paper" / "main.tex").is_file()
+    assert (ROOT / "paper" / "paper.md").is_file()
+    assert (ROOT / "paper" / "archive" / "selective-escalation" / "main.tex").is_file()
     assert (ROOT / "benchmark" / "eval-lab-select-v0.1.0" / "benchmark.yaml").is_file()
     assert (ROOT / "CITATION.cff").is_file()

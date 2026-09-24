@@ -11,7 +11,7 @@ from typing import Any
 BENCHMARK = Path("benchmark/eval-lab-select-v0.1.0")
 EXPERIMENT = Path("experiments/EXP-20260920-009-selective-escalation")
 SMOKE_EXPERIMENT = EXPERIMENT
-PAPER = Path("paper")
+PAPER = Path("paper/archive/selective-escalation")
 
 REQUIRED_PAPER_SECTIONS = (
     "Abstract",
@@ -43,7 +43,9 @@ PCM_NOTE = (
 
 
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:
-    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    return [
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
+    ]
 
 
 def _write_text(path: Path, text: str) -> None:
@@ -79,7 +81,11 @@ def _claim(point: dict[str, Any] | None) -> str:
     if not point:
         return "n/a"
     if point.get("collapsed"):
-        return "collapsed/descriptive" if point.get("claim_status") != "confidence-supported" else "collapsed"
+        return (
+            "collapsed/descriptive"
+            if point.get("claim_status") != "confidence-supported"
+            else "collapsed"
+        )
     return str(point.get("claim_status", "descriptive"))
 
 
@@ -90,11 +96,19 @@ def _smoke_differential() -> dict[str, Any]:
         arms[name] = _read_jsonl(path) if path.exists() else []
     by_arm = {name: {row["record_id"]: row for row in rows} for name, rows in arms.items()}
     comparable = []
-    for record_id in sorted(set.intersection(*(set(values) for values in by_arm.values()))) if by_arm else []:
+    for record_id in (
+        sorted(set.intersection(*(set(values) for values in by_arm.values()))) if by_arm else []
+    ):
         rows = {name: by_arm[name][record_id] for name in by_arm}
         if all(row.get("execution_status") == "ok" for row in rows.values()):
             labels = {name: rows[name].get("label") for name in rows}
-            comparable.append({"record_id": record_id, "labels": labels, "all_agree": len(set(labels.values())) == 1})
+            comparable.append(
+                {
+                    "record_id": record_id,
+                    "labels": labels,
+                    "all_agree": len(set(labels.values())) == 1,
+                }
+            )
     return {
         "scope": "separate one-record provider smoke canary; not part of pinned/rolling pooled estimates",
         "arms": {
@@ -182,16 +196,16 @@ ex:experiment a prov:Activity ;
     prov:used ex:benchmark ;
     prov:generated ex:results ;
     prov:wasAssociatedWith ex:agent ;
-    ex:status "{results['status']}" .
+    ex:status "{results["status"]}" .
 
 ex:results a prov:Entity ;
-    dcterms:identifier "{results['experiment_id']}/results.json" ;
-    ex:providerEvaluationCount "{results['counts']['provider_evaluation']}"^^xsd:integer .
+    dcterms:identifier "{results["experiment_id"]}/results.json" ;
+    ex:providerEvaluationCount "{results["counts"]["provider_evaluation"]}"^^xsd:integer .
 '''
 
 
 def _shapes() -> str:
-    return '''@prefix ex: <https://example.org/eval-lab/> .
+    return """@prefix ex: <https://example.org/eval-lab/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
@@ -204,7 +218,7 @@ ex:EntityShape a sh:NodeShape ;
 ex:BenchmarkShape a sh:NodeShape ;
     sh:targetNode ex:benchmark ;
     sh:property [ sh:path ex:fingerprint ; sh:minCount 1 ; sh:datatype xsd:string ; sh:pattern "^[0-9a-f]{64}$" ] .
-'''
+"""
 
 
 def _metric_table(results: dict[str, Any]) -> str:
@@ -250,12 +264,14 @@ def _coverage_figure(results: dict[str, Any]) -> tuple[str, str]:
         value = float(results["policies"][name].get("execution_coverage") or 0.0)
         x = 20 + index * 34
         height = max(1, int(value * 160))
-        bars.append(f'<rect x="{x}" y="{180-height}" width="24" height="{height}" fill="#3264a8"/>')
+        bars.append(
+            f'<rect x="{x}" y="{180 - height}" width="24" height="{height}" fill="#3264a8"/>'
+        )
         bar = "X" * max(1, round(value * 20))
         tex_rows.append(f"{_tex(name)} & {bar} & {_fmt(value)} \\\\")
     svg = (
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="220" viewBox="0 0 {width} 220">'
-        '<title>Execution coverage by routing policy</title>'
+        "<title>Execution coverage by routing policy</title>"
         f'<line x1="10" y1="180" x2="{width - 10}" y2="180" stroke="black"/>'
         + "".join(bars)
         + "</svg>\n"
@@ -287,9 +303,7 @@ def _collapsed_text(results: dict[str, Any]) -> str:
     if underpowered:
         parts.append(
             "Descriptive/underpowered target points, because the Wilson 95\\% upper bound exceeds the "
-            "preregistered target: "
-            + ", ".join(_tex(name) for name in underpowered)
-            + "."
+            "preregistered target: " + ", ".join(_tex(name) for name in underpowered) + "."
         )
     if not parts:
         parts.append("No collapsed or underpowered target points were recorded in results.json.")
@@ -370,7 +384,7 @@ def render_paper(
         root / "reproducibility.md",
         "# Reproducibility appendix\n\n"
         "```powershell\n"
-        "$env:PYTHONPATH = \"$PWD\\src\"\n"
+        '$env:PYTHONPATH = "$PWD\\src"\n'
         ".venv\\Scripts\\python.exe scripts/build_selective_benchmark.py\n"
         f".venv\\Scripts\\python.exe scripts/run_selective_escalation.py --skip-providers --provider-limit 500 --output {experiment.as_posix()} --pinned-predictions experiments/EXP-20260920-009-selective-escalation/provider-pinned.jsonl --rolling-predictions experiments/EXP-20260920-009-selective-escalation/provider-rolling.jsonl --qwen-predictions experiments/EXP-20260920-009-selective-escalation/qwen-streaming-final-merged-20260920-010/predictions.jsonl --experiment-id {experiment_id}\n"
         f".venv\\Scripts\\python.exe scripts/generate_research_artifacts.py --experiment {experiment.as_posix()} --smoke-experiment {smoke_experiment.as_posix()}\n"
@@ -405,7 +419,7 @@ def render_paper(
 \\maketitle
 \\section*{{Abstract}}
 \\begin{{abstract}}
-We evaluate a frozen TASK-0009 TF-IDF plus logistic-regression student with confidence-based selective escalation on EvalLab-Select v0.1.0. Experiment \\texttt{{{_tex(experiment_id)}}} is the completion replay of the planned EXP-20260920-009 baseline using committed provider artifacts. The benchmark contains {counts['threshold_selection']} threshold-selection and {counts['final_evaluation']} final-evaluation records with disjoint source families. Provider-only pinned Jev and Qwen policies are reported over the frozen final pool with unresolved records retained. Provider failures remain explicitly unresolved. The benchmark fingerprint is \\texttt{{{fingerprint}}}.
+We evaluate a frozen TASK-0009 TF-IDF plus logistic-regression student with confidence-based selective escalation on EvalLab-Select v0.1.0. Experiment \\texttt{{{_tex(experiment_id)}}} is the completion replay of the planned EXP-20260920-009 baseline using committed provider artifacts. The benchmark contains {counts["threshold_selection"]} threshold-selection and {counts["final_evaluation"]} final-evaluation records with disjoint source families. Provider-only pinned Jev and Qwen policies are reported over the frozen final pool with unresolved records retained. Provider failures remain explicitly unresolved. The benchmark fingerprint is \\texttt{{{fingerprint}}}.
 \\end{{abstract}}
 \\section{{Introduction}}
 Selective escalation asks whether a calibrated lightweight judge can keep high-confidence cases local and send the remainder to a stronger judge. The scientific questions are local coverage at declared error targets, the value of pinned Jev structured decisions, avoided external calls relative to strong-judge-only operation, and whether a typed System-One specification yields a reproducible Jev/Qwen differential. This report is generated from \\texttt{{{_tex(experiment.name)}/results.json}}.
@@ -418,11 +432,11 @@ The primary student is the frozen TASK-0009 arm D TF-IDF plus logistic-regressio
 \\section{{Selective Escalation Method}}
 Thresholds are selected only on the threshold-selection partition. Final-evaluation labels never influence threshold, confidence definition, provider, typed-question wording, target error, or policy. Local routes always record \\texttt{{provider\\_status=not\\_called}}. Escalated routes record the provider execution status and remain unresolved on failure. Policies are P0 local-only, P1 pinned Jev only, P2 Qwen3.8 Flash only, P3 calibrated local to pinned Jev, P4 raw-confidence local to pinned Jev, P5 matched-random to pinned Jev, and P6 calibrated local to Qwen. Rolling Jev remains a separate canary and is never pooled with pinned Jev.
 \\section{{Jev/System-One Differential Method}}
-The typed System-One specification is provider-independent and is executed through pinned OpenRouter \\texttt{{typesafe/jev-1.13}} and a YOLO-Auto Qwen3.8 Flash adapter. Objective verifier and answer-key labels remain gold. The frozen final-prefix differential contains {final_differential.get('comparable_count', 0)} comparable record(s) and {final_differential.get('agreement_count', 0)} agreement(s). The separate smoke differential contains {differential.get('comparable_count', 0)} comparable record(s) and {differential.get('agreement_count', 0)} agreement(s).
+The typed System-One specification is provider-independent and is executed through pinned OpenRouter \\texttt{{typesafe/jev-1.13}} and a YOLO-Auto Qwen3.8 Flash adapter. Objective verifier and answer-key labels remain gold. The frozen final-prefix differential contains {final_differential.get("comparable_count", 0)} comparable record(s) and {final_differential.get("agreement_count", 0)} agreement(s). The separate smoke differential contains {differential.get("comparable_count", 0)} comparable record(s) and {differential.get("agreement_count", 0)} agreement(s).
 \\section{{Experiments}}
 Experiment \\texttt{{{_tex(experiment_id)}}} replays the frozen student and EvalLab-Select split over a deterministic 500-record provider prefix of the final-evaluation order. Provider artifacts are loaded from committed EXP-009 pinned, rolling, and streaming Qwen files. Offline metrics, including accuracy, balanced accuracy, macro F1, coverage, escalation, unresolved rate, Wilson intervals, latency p95, external calls per 1,000, and provider resource metadata, are computed from those artifacts.
 \\section{{Results}}
-Machine-generated routing results are in \\texttt{{generated/table\\_selective\\_results.tex}} and Figure~\\ref{{fig:coverage}}, both sourced from \\texttt{{results.json}}. Local-only accuracy is {_fmt(local.get('accuracy'))} with resolved risk {_fmt(local.get('final_resolved_risk'))}. Provider-only pinned Jev execution coverage is {_fmt(pinned.get('execution_coverage'))} with unresolved rate {_fmt(pinned.get('unresolved_rate'))}; Qwen-only execution coverage is {_fmt(qwen.get('execution_coverage'))} with unresolved rate {_fmt(qwen.get('unresolved_rate'))}. {_collapsed_text(results)}
+Machine-generated routing results are in \\texttt{{generated/table\\_selective\\_results.tex}} and Figure~\\ref{{fig:coverage}}, both sourced from \\texttt{{results.json}}. Local-only accuracy is {_fmt(local.get("accuracy"))} with resolved risk {_fmt(local.get("final_resolved_risk"))}. Provider-only pinned Jev execution coverage is {_fmt(pinned.get("execution_coverage"))} with unresolved rate {_fmt(pinned.get("unresolved_rate"))}; Qwen-only execution coverage is {_fmt(qwen.get("execution_coverage"))} with unresolved rate {_fmt(qwen.get("unresolved_rate"))}. {_collapsed_text(results)}
 \\begin{{table}}[h]
 \\centering
 \\resizebox{{\\textwidth}}{{!}}{{\\input{{generated/table_selective_results.tex}}}}
@@ -449,7 +463,7 @@ The committed replay records local-only, provider-only, selective, matched-rando
 Exact reproduction commands, PCM compatibility, and the machine-readable metric bundle follow. Headline numbers in the tables are regenerated from \\texttt{{results.json}} and are not copied by hand.
 \\verbatiminput{{reproducibility.md}}
 \\bibliographystyle{{plain}}
-\\bibliography{{references}}
+\\bibliography{{../../references}}
 \\end{{document}}
 """,
     )
@@ -473,7 +487,10 @@ def generate() -> None:
         BENCHMARK / "datacite.json",
         {
             "@context": "https://schema.datacite.org/meta/kernel-4.6/metadata.xsd",
-            "identifier": {"identifierType": "SHA256", "identifier": results["benchmark_fingerprint"]},
+            "identifier": {
+                "identifierType": "SHA256",
+                "identifier": results["benchmark_fingerprint"],
+            },
             "creators": [{"name": "Pukujan"}],
             "titles": [{"title": "EvalLab-Select"}],
             "publisher": "Eval Lab",

@@ -216,4 +216,4 @@ Research artifact validation:
 
 Offline reproduction must regenerate routing summaries, risk-coverage data, result tables, paper tables/figures, and benchmark checksums without provider credentials.
 
-If a LaTeX compiler is available, `paper/main.tex` must compile; a missing local TeX installation is recorded separately from source validation.
+If a LaTeX compiler is available, the archived `paper/archive/selective-escalation/main.tex` must compile; a missing local TeX installation is recorded separately from source validation.

@@ -1,5 +1,22 @@
 # Current Repository Checkpoint
 
+## 2026-09-24 — TASK-0056 consolidated paper around one research question
+
+GitHub issue #63 tracks the consolidation. `paper/paper.md` is now the single
+canonical paper, answering: when independent judges, from small local models
+to frontier APIs, receive identical typed decisions with objective gold
+labels, how do their accuracy and coverage differ, and what does
+accuracy-only reporting hide? All tables come from the new offline analysis
+`scripts/analyze_judge_comparison.py` (EXP-029: 25 arms on the 760 blind
+records, Wilson intervals, Holm-corrected McNemar). Older drafts
+(`main.tex`, `calibrated_judge_study.md`, `benchmark_comparison_study.md`)
+are in `paper/archive/`. The Qwen 84.48% vs 97–99% variance is explained by
+request configuration (EXP-013 sent `max_tokens=128` and thinking off). No
+model runs. Routing/escalation is future work in PROJECT.md and README.md.
+
+Next atomic action: merge the TASK-0056 PR after required CI, then finalize
+issue #63.
+
 ## 2026-09-24 — TASK-0055 paper updated with EXP-027/EXP-028
 
 GitHub issue #61 tracks the paper update. `paper/benchmark_comparison_study.md`

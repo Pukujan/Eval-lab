@@ -1,11 +1,11 @@
-"""Render the data-first figures used by the benchmark paper and web page.
+"""Render the data-first figures used by the consolidated judge paper and web page.
 
-The script deliberately reads committed experiment artifacts instead of keeping
-parallel hand-entered result tables.  Accuracy is conditional on resolved
-labels; coverage is the resolved fraction of each declared partition (the
-760-record blind pool, or the 94-record LegalBench Hearsay test split).
-Direct-provider, InferHub, and local decision-model results are rendered
-separately and never pooled.
+The script reads committed experiment artifacts instead of keeping parallel
+hand-entered result tables.  The two headline figures read the EXP-029
+consolidated analysis (``scripts/analyze_judge_comparison.py``); the Grok
+ablation and calibration-appendix figures read EXP-025 and EXP-019.  Figures
+that the paper no longer references are deleted so the directory mirrors the
+paper.
 
 Usage:
     .venv\\Scripts\\python.exe scripts\\generate_benchmark_figures.py
@@ -37,43 +37,58 @@ GRAY = "#94A5B8"
 
 
 SOURCES = {
-    "direct": ROOT
+    "analysis": ROOT
     / "experiments"
-    / "EXP-20260922-022-fast-provider-wave"
-    / "runs"
-    / "blind-comparison-20260922"
-    / "results.json",
-    "inferhub": ROOT
-    / "experiments"
-    / "EXP-20260922-024-inferhub-recommendation-wave"
-    / "runs"
-    / "blind-comparison-20260922"
+    / "EXP-20260924-029-consolidated-judge-analysis"
     / "results.json",
     "grok": ROOT / "experiments" / "EXP-20260922-025-grok-protocol-ablation" / "results.json",
     "calibration": ROOT
     / "experiments"
     / "EXP-20260921-019-calibrated-judge-study"
     / "results.json",
-    "local_decision": ROOT
-    / "experiments"
-    / "EXP-20260924-027-local-decision-bakeoff"
-    / "results.json",
-    "hearsay": ROOT / "experiments" / "EXP-20260924-028-legalbench-hearsay" / "results.json",
-    "hearsay_records": ROOT
-    / "experiments"
-    / "EXP-20260924-028-legalbench-hearsay"
-    / "canonical-records.jsonl",
 }
 
-LOCAL_LABELS = {
-    "kev-4b": "Kev-4B",
-    "semif-qwen35-4b": "SemIf (Qwen3.5-4B)",
-    "verdict-1.4": "Verdict 1.4",
-    "verdict-original": "Verdict pre-v1.4",
-    "kev-0.8b": "Kev-0.8B",
-    "laya-421m": "Laya 421M",
+SHORT = {
+    "jev_exp014": "Jev (014)",
+    "qwen_flash_exp013": "Qwen Flash, thinking off (013)",
+    "grok46_exp015": "Grok 4.6 (015)",
+    "qwen_flash_exp015": "Qwen Flash one pass (015)",
+    "qwen_flash_exp015_016": "Qwen Flash 015+016 merge",
+    "grok46_exp022": "Grok 4.6 (022)",
+    "grok47_exp022": "Grok 4.7 (022)",
+    "qwen_flash_exp022": "Qwen Flash (022)",
+    "jev_exp022": "Jev (022)",
+    "ali_qwen38_flash_exp024": "Qwen3.8 Flash (024)",
+    "ali_qwen38_max_exp024": "Qwen 3.8 Max (024)",
+    "ali_glm52_exp024": "GLM 5.2 (024)",
+    "ali_kimi_k27_code_exp024": "Kimi K2.7 Code (024)",
+    "cbcn_deepseek_v4_flash_exp024": "DeepSeek V4 Flash (024)",
+    "cb_deepseek_v41_flash_exp024": "DeepSeek V4.1 Flash (024)",
+    "cbcn_glm53_flash_exp024": "GLM 5.3 Flash (024)",
+    "cbcn_minimax_m3_exp024": "MiniMax M3 (024)",
+    "grok46_exp025": "Grok 4.6 rerun (025)",
+    "qwen3_4b_exp017": "Qwen3-4B local (017)",
+    "kev_4b_exp027": "Kev-4B (027)",
+    "semif_qwen35_4b_exp027": "SemIf 4B (027)",
+    "verdict_14_exp027": "Verdict 1.4 (027)",
+    "verdict_original_exp027": "Verdict pre-v1.4 (027)",
+    "kev_08b_exp027": "Kev-0.8B (027)",
+    "laya_421m_exp027": "Laya 421M (027)",
+    "majority_exp014": "Majority label",
 }
-LOCAL_FAMILY_COLORS = {"kev": TEAL, "semif": CYAN, "verdict": GOLD, "laya": PLUM}
+
+
+def arm_color(key: str, arm: dict[str, Any]) -> str:
+    if arm["family"] == "baseline":
+        return GRAY
+    if arm["family"] == "local":
+        return PLUM
+    if key.startswith("grok"):
+        return CORAL
+    if key.startswith("jev"):
+        return GOLD
+    return TEAL
+
 
 # Fixed SVG ids and no timestamp keep regenerated SVGs byte-stable.
 plt.rcParams["svg.hashsalt"] = "eval-lab-benchmark-figures"
@@ -85,59 +100,8 @@ def read_json(path: Path) -> dict[str, Any]:
 
 
 def sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
-
-
-def direct_rows(payload: dict[str, Any]) -> list[dict[str, Any]]:
-    labels = {
-        "grok_46": "Grok 4.6 Build",
-        "grok_47": "Grok 4.7 Build",
-        "qwen_flash": "Qwen Flash",
-        "jev": "Jev 1.13",
-    }
-    return [
-        {
-            "key": key,
-            "label": label,
-            "accuracy": float(arm["accuracy"]),
-            "coverage": float(arm["resolved_coverage"]),
-            "resolved": int(arm["resolved_count"]),
-            "record_count": int(arm["record_count"]),
-        }
-        for key, label in labels.items()
-        for arm in [payload["arms"][key]]
-    ]
-
-
-def inferhub_rows(payload: dict[str, Any]) -> list[dict[str, Any]]:
-    labels = {
-        "ali_qwen38_flash": "Qwen3.8 Flash",
-        "ali_qwen38_max": "Qwen 3.8 Max",
-        "ali_glm52": "GLM 5.2",
-        "ali_kimi_k27_code": "Kimi K2.7 Code",
-        "cbcn_deepseek_v4_flash": "DeepSeek V4 Flash",
-        "cb_deepseek_v41_flash": "DeepSeek V4.1 Flash",
-        "cbcn_glm53_flash": "GLM 5.3 Flash",
-        "cbcn_minimax_m3": "MiniMax M3",
-    }
-    rows = []
-    for key, label in labels.items():
-        arm = payload["arms"][key]
-        rows.append(
-            {
-                "key": key,
-                "label": label,
-                "accuracy": float(arm["accuracy"]),
-                "coverage": float(arm["resolved_coverage"]),
-                "resolved": int(arm["resolved_count"]),
-                "record_count": int(arm["record_count"]),
-            }
-        )
-    return sorted(rows, key=lambda row: (-row["coverage"], -row["accuracy"]))
+    """SHA-256 of LF-normalized bytes so Windows CRLF checkouts hash identically."""
+    return hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
 
 
 def apply_theme(ax: plt.Axes, xlim: tuple[float, float]) -> None:
@@ -166,55 +130,6 @@ def save_figure(fig: plt.Figure, stem: str) -> list[str]:
     fig.savefig(svg, facecolor=BG, bbox_inches="tight", pad_inches=0.18, metadata={"Date": None})
     plt.close(fig)
     return [str(png.relative_to(ROOT)), str(svg.relative_to(ROOT))]
-
-
-def plot_comparison(
-    rows: list[dict[str, Any]], stem: str, title: str, subtitle: str, source: str
-) -> list[str]:
-    fig, axes = plt.subplots(1, 2, figsize=(14, max(5.7, 1.03 * len(rows) + 1.3)), sharey=True)
-    fig.patch.set_facecolor(BG)
-    add_title(fig, title, subtitle)
-    palette = [
-        CORAL
-        if row["label"].startswith("Grok")
-        else GOLD
-        if row["label"].startswith("Jev")
-        else TEAL
-        for row in rows
-    ]
-    y = np.arange(len(rows))
-
-    for index, (ax, metric, header) in enumerate(
-        zip(
-            axes, ("accuracy", "coverage"), ("Accuracy among resolved labels", "Execution coverage")
-        )
-    ):
-        values = [row[metric] * 100 for row in rows]
-        bars = ax.barh(y, values, height=0.62, color=palette, edgecolor="none")
-        apply_theme(ax, (0, 105))
-        ax.set_title(header, loc="left", fontsize=11.5, fontweight="bold", color=INK, pad=12)
-        ax.set_xlabel("Percent", color=MUTED, fontsize=9.5)
-        ax.set_xticks([0, 25, 50, 75, 100])
-        ax.set_xticklabels(["0", "25", "50", "75", "100"])
-        if index == 0:
-            ax.set_yticks(y, [row["label"] for row in rows])
-            ax.tick_params(axis="y", labelcolor=INK, labelsize=10.5, pad=8)
-        else:
-            ax.tick_params(axis="y", left=False, labelleft=False)
-        ax.invert_yaxis()
-        for bar, value in zip(bars, values):
-            ax.text(
-                min(value + 1.2, 101.5),
-                bar.get_y() + bar.get_height() / 2,
-                f"{value:.2f}%",
-                va="center",
-                fontsize=9.5,
-                color=INK,
-            )
-
-    fig.subplots_adjust(left=0.24, right=0.97, top=0.79, bottom=0.14, wspace=0.25)
-    add_source(fig, source)
-    return save_figure(fig, stem)
 
 
 def plot_grok(payload: dict[str, Any]) -> list[str]:
@@ -363,207 +278,177 @@ def plot_calibration(payload: dict[str, Any]) -> list[str]:
     return save_figure(fig, "local_qwen_calibration")
 
 
-def local_rows(arms: dict[str, Any]) -> list[dict[str, Any]]:
-    rows = []
-    for key, label in LOCAL_LABELS.items():
-        arm = arms[key]
-        low, high = arm["accuracy_95_wilson"]
-        rows.append(
-            {
-                "key": key,
-                "label": label,
-                "accuracy": float(arm["accuracy"]),
-                "low": float(low),
-                "high": float(high),
-                "coverage": float(arm["resolved_coverage"]),
-                "resolved": int(arm["resolved_count"]),
-                "record_count": int(arm["record_count"]),
-            }
-        )
-    return rows
+def spread(values: list[float], gap: float) -> list[float]:
+    """Push sorted label positions apart by at least ``gap`` (deterministic)."""
+    placed: list[float] = []
+    for value in values:
+        placed.append(value if not placed else max(value, placed[-1] + gap))
+    shift = (placed[-1] - values[-1]) / 2 if placed else 0.0
+    return [value - shift for value in placed]
 
 
-def majority_label_rate(path: Path) -> tuple[str, float]:
-    counts: dict[str, int] = {}
-    with path.open("r", encoding="utf-8") as handle:
-        for line in handle:
-            if line.strip():
-                label = json.loads(line)["gold"]["label"]
-                counts[label] = counts.get(label, 0) + 1
-    label = max(counts, key=lambda key: counts[key])
-    return label, counts[label] / sum(counts.values())
-
-
-def not_run_arms(payload: dict[str, Any]) -> list[str]:
-    completed = set(payload["partitions"][payload["primary_partition"]])
-    return [arm["model_id"] for key, arm in payload["model_arms"].items() if key not in completed]
-
-
-def draw_accuracy_panel(
-    ax: plt.Axes, rows: list[dict[str, Any]], colors: list[str], header: str
-) -> None:
-    y = np.arange(len(rows))
-    values = [row["accuracy"] * 100 for row in rows]
-    lower = [(row["accuracy"] - row["low"]) * 100 for row in rows]
-    upper = [(row["high"] - row["accuracy"]) * 100 for row in rows]
-    ax.barh(y, values, height=0.62, color=colors, edgecolor="none")
-    ax.errorbar(values, y, xerr=[lower, upper], fmt="none", ecolor=INK, elinewidth=1.1, capsize=3)
-    apply_theme(ax, (0, 105))
-    ax.set_title(header, loc="left", fontsize=11.5, fontweight="bold", color=INK, pad=12)
-    ax.set_xlabel("Percent (bar: accuracy; whisker: 95% Wilson interval)", color=MUTED, fontsize=9)
-    ax.set_xticks([0, 25, 50, 75, 100])
-    for index, row in enumerate(rows):
-        ax.text(
-            min(row["high"] * 100 + 1.2, 101.5),
-            index,
-            f"{row['accuracy'] * 100:.2f}%",
-            va="center",
-            fontsize=9.5,
-            color=INK,
-        )
-
-
-def plot_local_decision(
-    bakeoff: dict[str, Any], hearsay: dict[str, Any], records_path: Path
-) -> tuple[list[str], dict[str, Any]]:
-    blind = sorted(
-        local_rows(bakeoff["partitions"][bakeoff["primary_partition"]]),
-        key=lambda row: -row["accuracy"],
-    )
-    by_key = {row["key"]: row for row in local_rows(hearsay["arms"])}
-    legal = [by_key[row["key"]] for row in blind]
-    majority_label, majority_rate = majority_label_rate(records_path)
-    missing = not_run_arms(bakeoff)
-    colors = [
-        next(
-            color for prefix, color in LOCAL_FAMILY_COLORS.items() if row["key"].startswith(prefix)
-        )
-        for row in blind
-    ]
-    y = np.arange(len(blind))
-
-    fig, axes = plt.subplots(1, 3, figsize=(17, 6.8), sharey=True)
+def plot_accuracy_vs_coverage(payload: dict[str, Any]) -> list[str]:
+    arms = payload["arms"]
+    keys = list(arms)
+    fig, ax = plt.subplots(figsize=(14, 9.2))
     fig.patch.set_facecolor(BG)
     add_title(
         fig,
-        "Local decision models: frozen blind pool and LegalBench Hearsay",
-        "EXP-027 blind holdout (760 records, primary) and EXP-028 Hearsay test (94 records) "
-        "are separate benchmarks \u00b7 accuracy is conditional on a resolved label",
+        "Accuracy among answered records vs. share of records answered",
+        "760 blind records \u00b7 every arm on the same typed decisions \u00b7 dotted curves: "
+        "all-record accuracy (unanswered earns no credit)",
     )
-    blind_ax, coverage_ax, legal_ax = axes
-    draw_accuracy_panel(blind_ax, blind, colors, "EXP-027 blind accuracy")
-    blind_ax.set_yticks(y, [row["label"] for row in blind])
-    blind_ax.tick_params(axis="y", labelcolor=INK, labelsize=10.5, pad=8)
-    blind_ax.invert_yaxis()
-
-    coverage = [row["coverage"] * 100 for row in blind]
-    bars = coverage_ax.barh(y, coverage, height=0.62, color=colors, edgecolor="none")
-    apply_theme(coverage_ax, (0, 125))
-    coverage_ax.set_title(
-        "EXP-027 blind coverage", loc="left", fontsize=11.5, fontweight="bold", color=INK, pad=12
-    )
-    coverage_ax.set_xlabel("Percent of 760 blind records resolved", color=MUTED, fontsize=9)
-    coverage_ax.set_xticks([0, 25, 50, 75, 100])
-    coverage_ax.tick_params(axis="y", left=False, labelleft=False)
-    for bar, row in zip(bars, blind):
-        coverage_ax.text(
-            row["coverage"] * 100 + 1.2,
-            bar.get_y() + bar.get_height() / 2,
-            f"{row['coverage'] * 100:.2f}% ({row['resolved']}/{row['record_count']})",
-            va="center",
-            fontsize=9,
-            color=INK,
+    ax.set_facecolor(BG)
+    for level in (40, 50, 60, 70, 80, 90):
+        xs = np.linspace(max(level, 50), 100, 200)
+        ax.plot(xs, level * 100 / xs, color=GRID, linestyle=":", linewidth=1.1, zorder=1)
+        x_label = max(50.6, level * 100 / 101.5)
+        ax.text(
+            x_label,
+            level * 100 / x_label,
+            f"{level}% of all records",
+            color=MUTED,
+            fontsize=7.5,
+            va="bottom",
+            rotation=-18,
         )
-
-    draw_accuracy_panel(legal_ax, legal, colors, "EXP-028 Hearsay accuracy (94/94 resolved)")
-    legal_ax.tick_params(axis="y", left=False, labelleft=False)
-    legal_ax.axvline(majority_rate * 100, color=CORAL, linestyle="--", linewidth=1.3)
-    legal_ax.set_xlabel(
-        f"Percent (whisker: 95% Wilson interval; dashed: always '{majority_label}' "
-        f"= {majority_rate * 100:.2f}%)",
-        color=MUTED,
-        fontsize=9,
+    for key in keys:
+        arm = arms[key]
+        ax.scatter(
+            arm["coverage"] * 100,
+            arm["conditional_accuracy"] * 100,
+            s=70,
+            color=arm_color(key, arm),
+            edgecolor="white",
+            linewidth=0.8,
+            zorder=3,
+        )
+    right = sorted(
+        (k for k in keys if arms[k]["coverage"] >= 0.9),
+        key=lambda k: (arms[k]["conditional_accuracy"], k),
     )
-
-    fig.text(
-        0.055,
-        0.105,
-        "Not run (pinned configuration infeasible on the 16 GiB M1 host): "
-        + ", ".join(missing)
-        + " \u00b7 unresolved = Verdict abstentions and Verdict 1.4/Laya context-limit skips",
-        ha="left",
-        va="bottom",
-        fontsize=10.5,
-        color=INK,
-        bbox={"boxstyle": "round,pad=0.6", "facecolor": "#E9F7F4", "edgecolor": "#B9E7DE"},
+    left = sorted(
+        (k for k in keys if arms[k]["coverage"] < 0.9),
+        key=lambda k: (arms[k]["conditional_accuracy"], k),
     )
-    fig.subplots_adjust(left=0.13, right=0.98, top=0.79, bottom=0.24, wspace=0.18)
-    add_source(
+    for group, x_text, align in ((right, 108.5, "left"), (left, None, "left")):
+        ys = spread([arms[k]["conditional_accuracy"] * 100 for k in group], 2.05)
+        for key, y_text in zip(group, ys):
+            arm = arms[key]
+            x, y = arm["coverage"] * 100, arm["conditional_accuracy"] * 100
+            tx = x_text if x_text is not None else x + 2.2
+            ax.annotate(
+                SHORT[key],
+                (x, y),
+                xytext=(tx, y_text),
+                textcoords="data",
+                fontsize=8.6,
+                color=INK,
+                ha=align,
+                va="center",
+                arrowprops={"arrowstyle": "-", "color": GRID, "linewidth": 0.8},
+                annotation_clip=False,
+            )
+    ax.set_xlim(50, 102)
+    ax.set_ylim(28, 103)
+    ax.grid(color=GRID, linewidth=0.7)
+    ax.set_axisbelow(True)
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+    ax.tick_params(colors=MUTED, labelsize=10, length=0)
+    ax.set_xlabel("Coverage: records with a legal label (%)", color=MUTED, fontsize=10)
+    ax.set_ylabel("Conditional accuracy: correct / answered (%)", color=MUTED, fontsize=10)
+    handles = [
+        plt.Line2D([], [], marker="o", linestyle="", color=c, markersize=8, label=t)
+        for c, t in (
+            (TEAL, "Qwen / other API"),
+            (GOLD, "Jev (API)"),
+            (CORAL, "Grok Build (API)"),
+            (PLUM, "Local model"),
+            (GRAY, "Majority-label reference"),
+        )
+    ]
+    ax.legend(handles=handles, loc="lower left", frameon=False, fontsize=9)
+    fig.subplots_adjust(left=0.07, right=0.72, top=0.86, bottom=0.1)
+    add_source(fig, "Source: EXP-20260924-029 results.json (scripts/analyze_judge_comparison.py)")
+    return save_figure(fig, "blind_accuracy_vs_coverage")
+
+
+def plot_conditional_vs_all_record(payload: dict[str, Any]) -> list[str]:
+    arms = payload["arms"]
+    order = payload["rank_by_all_record_accuracy"] + [
+        k for k in arms if arms[k]["family"] == "baseline"
+    ]
+    y = np.arange(len(order))
+    fig, ax = plt.subplots(figsize=(13, 0.42 * len(order) + 2.6))
+    fig.patch.set_facecolor(BG)
+    add_title(
         fig,
-        "Source: EXP-20260924-027 and EXP-20260924-028 results.json \u00b7 Hearsay majority-class "
-        "rate from canonical-records.jsonl gold labels \u00b7 public partition not plotted",
+        "What accuracy-only reporting hides",
+        "760 blind records \u00b7 hollow: accuracy among answered records \u00b7 filled: "
+        "accuracy over all records \u00b7 whisker: 95% Wilson interval (all-record)",
     )
-    derived = {
-        "hearsay_majority_label": majority_label,
-        "hearsay_majority_rate": majority_rate,
-        "exp027_not_run_model_ids": missing,
-    }
-    return save_figure(fig, "local_decision_models"), derived
+    for index, key in enumerate(order):
+        arm = arms[key]
+        cond = arm["conditional_accuracy"] * 100
+        allr = arm["all_record_accuracy"] * 100
+        low, high = (v * 100 for v in arm["all_record_accuracy_95_wilson"])
+        color = arm_color(key, arm)
+        ax.plot([allr, cond], [index, index], color=GRID, linewidth=2.2, zorder=1)
+        ax.plot([low, high], [index, index], color=INK, linewidth=0.9, zorder=2)
+        ax.scatter(cond, index, s=46, facecolor=BG, edgecolor=color, linewidth=1.6, zorder=3)
+        ax.scatter(allr, index, s=46, color=color, zorder=4)
+        gap = cond - allr
+        note = f"{allr:.1f}%" + (f"  (\u2212{gap:.1f} pts)" if gap >= 0.5 else "")
+        ax.text(101.5, index, note, va="center", fontsize=8.8, color=INK)
+    apply_theme(ax, (25, 100.5))
+    ax.set_yticks(y, [SHORT[k] for k in order])
+    ax.tick_params(axis="y", labelcolor=INK, labelsize=9.5, pad=6)
+    ax.invert_yaxis()
+    ax.set_xlabel("Percent", color=MUTED, fontsize=9.5)
+    fig.subplots_adjust(left=0.22, right=0.86, top=0.9, bottom=0.07)
+    add_source(fig, "Source: EXP-20260924-029 results.json (scripts/analyze_judge_comparison.py)")
+    return save_figure(fig, "blind_conditional_vs_all_record")
 
 
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
-    direct = read_json(SOURCES["direct"])
-    inferhub = read_json(SOURCES["inferhub"])
+    analysis = read_json(SOURCES["analysis"])
     grok = read_json(SOURCES["grok"])
     calibration = read_json(SOURCES["calibration"])
-    local_decision = read_json(SOURCES["local_decision"])
-    hearsay = read_json(SOURCES["hearsay"])
+
+    stems = [
+        "blind_accuracy_vs_coverage",
+        "blind_conditional_vs_all_record",
+        "grok_protocol_ablation",
+        "local_qwen_calibration",
+    ]
+    for stale in sorted(OUT.glob("*.png")) + sorted(OUT.glob("*.svg")):
+        if stale.stem not in stems:
+            stale.unlink()
 
     generated: list[str] = []
-    generated += plot_comparison(
-        direct_rows(direct),
-        "direct_wave_accuracy_coverage",
-        "Direct wave: correctness and coverage tell different stories",
-        "EXP-022 • same 760-record blind holdout • accuracy is conditional on a resolved label",
-        "Source: EXP-20260922-022 fast-provider wave • 760 blind records",
-    )
-    generated += plot_comparison(
-        inferhub_rows(inferhub),
-        "inferhub_wave_accuracy_coverage",
-        "InferHub wave: the best conditional score is not the safest default",
-        "EXP-024 • same 760-record blind holdout • unresolved provider/parse states remain outside accuracy",
-        "Source: EXP-20260922-024 recommendation-policy wave • 760 blind records",
-    )
+    generated += plot_accuracy_vs_coverage(analysis)
+    generated += plot_conditional_vs_all_record(analysis)
     generated += plot_grok(grok)
     generated += plot_calibration(calibration)
-    local_outputs, local_derived = plot_local_decision(
-        local_decision, hearsay, SOURCES["hearsay_records"]
-    )
-    generated += local_outputs
 
     manifest = {
         "generator": "scripts/generate_benchmark_figures.py",
         "figure_policy": {
-            "accuracy": "conditional on resolved labels",
-            "coverage": "resolved fraction of the declared partition (760 blind or 94 Hearsay test records)",
+            "accuracy": "conditional accuracy = correct / resolved; all-record accuracy = "
+            "correct / 760 with unresolved earning no credit",
+            "coverage": "resolved fraction of the 760-record blind holdout",
             "probability_metrics": "rendered only for validated native/local probability maps",
-            "pooling": "direct, InferHub, and local decision-model results remain separate",
-            "local_decision": "EXP-027 blind (primary) and EXP-028 Hearsay are separate panels; public partition not plotted",
+            "pooling": "arms are separate runs on the same records; nothing is pooled except the "
+            "declared EXP-015 + EXP-016 Qwen merge",
         },
         "sources": {
-            key: {"path": str(path.relative_to(ROOT)), "sha256": sha256(path)}
+            key: {"path": path.relative_to(ROOT).as_posix(), "sha256": sha256(path)}
             for key, path in SOURCES.items()
         },
-        "outputs": generated,
-        "figures": [
-            "direct_wave_accuracy_coverage",
-            "inferhub_wave_accuracy_coverage",
-            "grok_protocol_ablation",
-            "local_qwen_calibration",
-            "local_decision_models",
-        ],
-        "derived": {"local_decision_models": local_derived},
+        "outputs": [Path(item).as_posix() for item in generated],
+        "figures": stems,
     }
     with (OUT / "manifest.json").open("w", encoding="utf-8", newline="\n") as handle:
         json.dump(manifest, handle, indent=2)
