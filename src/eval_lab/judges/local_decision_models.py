@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import math
 from collections.abc import Mapping, Sequence
 from typing import Any
@@ -43,12 +44,16 @@ def request_for_record(record: Mapping[str, Any], benchmark: str) -> dict[str, A
             question = instructions or "Which candidate better satisfies the criterion?"
         else:
             raise ValueError(f"unsupported judgment mode: {mode!r}")
-        state = {
-            "prompt": prompt,
-            "candidate_a": str(record["candidate_a"]),
-            "candidate_b": record.get("candidate_b"),
-            "mode": mode,
-        }
+        state = json.dumps(
+            {
+                "prompt": prompt,
+                "candidate_a": str(record["candidate_a"]),
+                "candidate_b": record.get("candidate_b"),
+                "mode": mode,
+            },
+            ensure_ascii=False,
+            sort_keys=True,
+        )
     else:
         raise ValueError(f"unsupported benchmark: {benchmark!r}")
 

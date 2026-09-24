@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 from eval_lab.judges.local_decision_models import normalize_choice_output, request_for_record
 
 
@@ -17,7 +19,7 @@ def test_exp027_single_request_uses_fixed_labels_and_hides_gold() -> None:
     request = request_for_record(record, "exp027-frozen-pool")
 
     assert request["labels"] == ["pass", "fail"]
-    assert request["state"]["candidate_a"] == "B) blue"
+    assert json.loads(request["state"])["candidate_a"] == "B) blue"
     assert "gold" not in str(request)
 
 
