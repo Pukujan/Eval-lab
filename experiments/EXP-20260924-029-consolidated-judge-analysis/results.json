@@ -7286,5 +7286,32 @@
     "path": "experiments/EXP-20260921-015-grok-luna-qwen-bakeoff/records.jsonl",
     "sha256": "b7edd61269f0f7757e734bc7e3f665ac2bcd6d908a1e56f73f0b0291d55b64d8"
   },
+  "shared_ranks_all_record": {
+    "ali_glm52_exp024": 5,
+    "ali_kimi_k27_code_exp024": 1,
+    "ali_qwen38_flash_exp024": 1,
+    "ali_qwen38_max_exp024": 1,
+    "cb_deepseek_v41_flash_exp024": 11,
+    "cbcn_deepseek_v4_flash_exp024": 11,
+    "cbcn_glm53_flash_exp024": 1,
+    "cbcn_minimax_m3_exp024": 5,
+    "grok46_exp015": 19,
+    "grok46_exp022": 19,
+    "grok46_exp025": 19,
+    "grok47_exp022": 19,
+    "jev_exp014": 9,
+    "jev_exp022": 9,
+    "kev_08b_exp027": 16,
+    "kev_4b_exp027": 14,
+    "laya_421m_exp027": 16,
+    "qwen3_4b_exp017": 19,
+    "qwen_flash_exp013": 11,
+    "qwen_flash_exp015": 14,
+    "qwen_flash_exp015_016": 5,
+    "qwen_flash_exp022": 5,
+    "semif_qwen35_4b_exp027": 16,
+    "verdict_14_exp027": 19,
+    "verdict_original_exp027": 25
+  },
   "status": "completed"
 }

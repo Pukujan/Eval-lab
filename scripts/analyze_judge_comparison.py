@@ -501,6 +501,30 @@ def grok_ablation_summary() -> dict[str, Any]:
     }
 
 
+SHARED_RANK_ALPHA = 0.05
+
+
+def _pair(pairs: dict[str, Any], a: str, b: str) -> dict[str, Any]:
+    return pairs.get(f"{a}|{b}") or pairs[f"{b}|{a}"]
+
+
+def shared_ranks(order: list[str], pairs: dict[str, Any]) -> dict[str, int]:
+    """Competition ranks by all-record accuracy; an arm shares the rank of its group's top arm
+    when the Holm-corrected all-760 McNemar test cannot separate the two (p >= 0.05)."""
+    ranks: dict[str, int] = {}
+    group_top = None
+    for position, key in enumerate(order, start=1):
+        if (
+            group_top is not None
+            and _pair(pairs, group_top, key)["all_p_holm"] >= SHARED_RANK_ALPHA
+        ):
+            ranks[key] = ranks[group_top]
+        else:
+            group_top = key
+            ranks[key] = position
+    return ranks
+
+
 def build() -> dict[str, Any]:
     records = load_blind_records()
     if len(records) != 760:
@@ -519,6 +543,7 @@ def build() -> dict[str, Any]:
         (k for k in arms if arms[k]["family"] != "baseline"),
         key=lambda k: (-arms[k]["all_record_accuracy"], k),
     )
+    tests = paired_tests(predictions, records)
     return {
         "experiment_id": EXPERIMENT_ID,
         "status": "completed",
@@ -542,7 +567,8 @@ def build() -> dict[str, Any]:
         "arms": arms,
         "rank_by_conditional_accuracy": order_conditional,
         "rank_by_all_record_accuracy": order_all,
-        "paired_tests": paired_tests(predictions, records),
+        "paired_tests": tests,
+        "shared_ranks_all_record": shared_ranks(order_all, tests["pairs"]),
         "focus_pairs": [f"{a}|{b}" for a, b in FOCUS_PAIRS],
         "not_run": {
             "mimo_v25_exp024": "cp/cline-pass/mimo-v2.5 returned HTTP 402 on both canary attempts; "

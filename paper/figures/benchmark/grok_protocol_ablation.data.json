@@ -1,0 +1,37 @@
+{
+  "blind_baseline": {
+    "coverage": 0.9960526315789474,
+    "pairwise_accuracy": 0.018691588785046728,
+    "score": 0.25857656362329257,
+    "single_accuracy": 0.49846153846153846
+  },
+  "rows": [
+    {
+      "coverage": 1.0,
+      "key": "typed_schema",
+      "label": "Typed schema (baseline)",
+      "score": 0.265625
+    },
+    {
+      "coverage": 0.984375,
+      "key": "explicit_schema",
+      "label": "Explicit wording + schema",
+      "score": 0.25806451612903225
+    },
+    {
+      "coverage": 0.984375,
+      "key": "semantic_schema",
+      "label": "Semantic labels + schema",
+      "score": 0.2661290322580645
+    },
+    {
+      "coverage": 0.0,
+      "key": "explicit_no_schema",
+      "label": "Explicit wording, no schema",
+      "score": null
+    }
+  ],
+  "source": "EXP-025",
+  "subtitle": "EXP-025 public diagnostic (64 questions)",
+  "title": "No request format fixed Grok Build's failure"
+}

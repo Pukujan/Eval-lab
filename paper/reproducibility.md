@@ -14,7 +14,7 @@ uv run --locked python -m pytest tests/test_judge_comparison_analysis.py
 | --- | --- | --- |
 | `experiments/EXP-20260924-029-consolidated-judge-analysis/results.json`, `report.md` | `scripts/analyze_judge_comparison.py` | blind prediction files of EXP-013/014/015/016/017/022/024/025/027 |
 | Generated tables in `paper.md` (slim `body_*` tables and full appendix tables) | `scripts/analyze_judge_comparison.py --update-paper` | EXP-029 analysis (plus EXP-025 public variants for the Grok appendix table) |
-| `figures/benchmark/finding_accuracy_range.*`, `finding_skipped_questions.*`, `finding_request_settings.*` (body), `blind_accuracy_vs_coverage.*` (appendix) | `scripts/generate_benchmark_figures.py` | EXP-029 `results.json` |
+| `figures/benchmark/finding_accuracy_range.*`, `finding_skipped_questions.*`, `finding_request_settings.*` (body), `judges_ranked.*` (appendix; `*.svg` variants plus `*.data.json`) | `scripts/generate_benchmark_figures.py` | EXP-029 `results.json` |
 | `figures/benchmark/grok_protocol_ablation.*` | `scripts/generate_benchmark_figures.py` | EXP-025 results |
 | `figures/benchmark/local_qwen_calibration.*` | `scripts/generate_benchmark_figures.py` | EXP-019 results |
 

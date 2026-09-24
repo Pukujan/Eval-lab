@@ -1,9 +1,5 @@
 # Accuracy is not enough: correctness and coverage of independent judges on identical objective decisions
 
-**Status:** working paper; pending owner review<br />
-**Evidence:** EXP-013 to EXP-027 prediction files, consolidated by the offline analysis EXP-029<br />
-**Repository:** [Eval Lab](https://github.com/Pukujan/Eval-lab/tree/main)
-
 > [!IMPORTANT]
 > **At a glance**
 >
@@ -13,6 +9,10 @@
 > - **Finding 2:** a high accuracy score can hide a judge that skipped up to four in ten questions.
 > - **Finding 3:** the same model scored 84.5% or 97.4% on the same questions, depending only on its request settings.
 > - **Finding 4:** most small local models, and Grok Build, did no better than always giving the same answer.
+
+**Status:** working paper; pending owner review<br />
+**Evidence:** EXP-013 to EXP-027 prediction files, consolidated by the offline analysis EXP-029<br />
+**Repository:** [Eval Lab](https://github.com/Pukujan/Eval-lab/tree/main)
 
 ## 1. The problem
 
@@ -120,11 +120,18 @@ record token counts.
 Qwen3.8 Flash and Qwen 3.8 Max answered every question and got 99.2% and
 99.1% right. On only seven questions was one right and the other wrong, so
 the difference is not meaningful. Kimi K2.7 Code, GLM 5.3 Flash and MiniMax M3
-came close behind. Jev also answered everything but got 89.9% right, a clear
+came close behind. Kimi K2.7 Code and GLM 5.3 Flash cannot be separated from
+Qwen3.8 Flash either, so four judges share first place in the full ranking
+(Figure A1). Jev also answered everything but got 89.9% right, a clear
 step down.
 
-<figure>
-  <img src="figures/benchmark/finding_accuracy_range.png" alt="Bar chart of accuracy over all 760 questions for selected judges" />
+<figure data-figure="finding_accuracy_range">
+  <picture>
+    <source media="(prefers-color-scheme: dark) and (max-width: 700px)" srcset="figures/benchmark/finding_accuracy_range.dark.tall.svg" />
+    <source media="(max-width: 700px)" srcset="figures/benchmark/finding_accuracy_range.light.tall.svg" />
+    <source media="(prefers-color-scheme: dark)" srcset="figures/benchmark/finding_accuracy_range.dark.wide.svg" />
+    <img src="figures/benchmark/finding_accuracy_range.light.wide.svg" alt="Bar chart of accuracy over all 760 questions for selected judges" />
+  </picture>
   <figcaption>Figure 1. Share of all 760 questions each judge got right; skipped questions count as wrong. The dashed line is the always-same-answer baseline.</figcaption>
 </figure>
 
@@ -152,8 +159,13 @@ Qwen run looked excellent on paper while answering barely more than half the
 questions. The Verdict models answered about half correctly, but once their
 abstentions count they fall below the always-same-answer baseline.
 
-<figure>
-  <img src="figures/benchmark/finding_skipped_questions.png" alt="Dumbbell chart comparing accuracy when answered with accuracy over all questions" />
+<figure data-figure="finding_skipped_questions">
+  <picture>
+    <source media="(prefers-color-scheme: dark) and (max-width: 700px)" srcset="figures/benchmark/finding_skipped_questions.dark.tall.svg" />
+    <source media="(max-width: 700px)" srcset="figures/benchmark/finding_skipped_questions.light.tall.svg" />
+    <source media="(prefers-color-scheme: dark)" srcset="figures/benchmark/finding_skipped_questions.dark.wide.svg" />
+    <img src="figures/benchmark/finding_skipped_questions.light.wide.svg" alt="Dumbbell chart comparing accuracy when answered with accuracy over all questions" />
+  </picture>
   <figcaption>Figure 2. Hollow dot: accuracy on answered questions. Filled dot: accuracy over all 760. The gap is what an accuracy-only table hides.</figcaption>
 </figure>
 
@@ -173,8 +185,13 @@ The Qwen result in Section 3 is a finding in its own right. Changing only the
 request settings moved the same model from 84.5% to 97.4% on identical questions.
 That gap is larger than the gap between Qwen and Jev.
 
-<figure>
-  <img src="figures/benchmark/finding_request_settings.png" alt="Bar chart of Qwen3.8 Flash accuracy under different request settings" />
+<figure data-figure="finding_request_settings">
+  <picture>
+    <source media="(prefers-color-scheme: dark) and (max-width: 700px)" srcset="figures/benchmark/finding_request_settings.dark.tall.svg" />
+    <source media="(max-width: 700px)" srcset="figures/benchmark/finding_request_settings.light.tall.svg" />
+    <source media="(prefers-color-scheme: dark)" srcset="figures/benchmark/finding_request_settings.dark.wide.svg" />
+    <img src="figures/benchmark/finding_request_settings.light.wide.svg" alt="Bar chart of Qwen3.8 Flash accuracy under different request settings" />
+  </picture>
   <figcaption>Figure 3. Qwen3.8 Flash on the same questions under three request settings, overall and on GSM8K math.</figcaption>
 </figure>
 
@@ -394,9 +411,14 @@ It is the same 760-question blind pool, split by source.
 
 </details>
 
-<figure>
-  <img src="figures/benchmark/blind_accuracy_vs_coverage.png" alt="Scatter chart of accuracy on answered questions against coverage for every judge" />
-  <figcaption>Figure A1. Every judge on one chart: accuracy on answered questions against coverage. Dotted curves mark equal accuracy over all 760 questions.</figcaption>
+<figure data-figure="judges_ranked">
+  <picture>
+    <source media="(prefers-color-scheme: dark) and (max-width: 700px)" srcset="figures/benchmark/judges_ranked.dark.tall.svg" />
+    <source media="(max-width: 700px)" srcset="figures/benchmark/judges_ranked.light.tall.svg" />
+    <source media="(prefers-color-scheme: dark)" srcset="figures/benchmark/judges_ranked.dark.wide.svg" />
+    <img src="figures/benchmark/judges_ranked.light.wide.svg" alt="Ranked chart of all 25 judges by accuracy over all 760 questions, with 95% intervals and share answered" />
+  </picture>
+  <figcaption>Figure A1. Four judges share first place, and eight score below the always-same-answer baseline. Judges share a rank when a Holm-corrected McNemar test over all 760 questions cannot separate them from the top judge of their group; red percentages mark judges that answered fewer than 99% of questions.</figcaption>
 </figure>
 
 ## Appendix B. Paired tests
@@ -474,8 +496,13 @@ the baseline matched the earlier runs (Appendix B).
 | explicit wording, no schema | 0/64 | n/a (no readable answers) |
 <!-- /generated -->
 
-<figure>
-  <img src="figures/benchmark/grok_protocol_ablation.png" alt="Bar chart of Grok Build scores under four request formats" />
+<figure data-figure="grok_protocol_ablation">
+  <picture>
+    <source media="(prefers-color-scheme: dark) and (max-width: 700px)" srcset="figures/benchmark/grok_protocol_ablation.dark.tall.svg" />
+    <source media="(max-width: 700px)" srcset="figures/benchmark/grok_protocol_ablation.light.tall.svg" />
+    <source media="(prefers-color-scheme: dark)" srcset="figures/benchmark/grok_protocol_ablation.dark.wide.svg" />
+    <img src="figures/benchmark/grok_protocol_ablation.light.wide.svg" alt="Bar chart of Grok Build scores under four request formats" />
+  </picture>
   <figcaption>Figure D1. No request format beat the typed baseline on the EXP-025 public diagnostic.</figcaption>
 </figure>
 
@@ -489,8 +516,13 @@ applied once to the blind set. Accuracy stayed at 44.61%, while Brier score
 fell from 0.7037 to 0.5160, NLL from 1.0767 to 0.7430 and ECE from 0.3411 to
 0.0783. Its confidence became more honest while its decisions stayed weak.
 
-<figure>
-  <img src="figures/benchmark/local_qwen_calibration.png" alt="Bar charts of calibration error before and after temperature scaling" />
+<figure data-figure="local_qwen_calibration">
+  <picture>
+    <source media="(prefers-color-scheme: dark) and (max-width: 700px)" srcset="figures/benchmark/local_qwen_calibration.dark.tall.svg" />
+    <source media="(max-width: 700px)" srcset="figures/benchmark/local_qwen_calibration.light.tall.svg" />
+    <source media="(prefers-color-scheme: dark)" srcset="figures/benchmark/local_qwen_calibration.dark.wide.svg" />
+    <img src="figures/benchmark/local_qwen_calibration.light.wide.svg" alt="Bar charts of calibration error before and after temperature scaling" />
+  </picture>
   <figcaption>Figure E1. Calibration made local Qwen3-4B's confidence more honest without changing its answers.</figcaption>
 </figure>
 

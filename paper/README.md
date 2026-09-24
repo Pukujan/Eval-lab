@@ -33,8 +33,19 @@ site):
 
 - Callouts use GitHub alert syntax: `> [!IMPORTANT]` for the At a glance box,
   `> [!NOTE]` for side notes.
-- Figures use `<figure><img src="figures/benchmark/NAME.png" alt="…" /><figcaption>…</figcaption></figure>`;
-  chart titles state the finding.
+- Every figure has four SVG variants from one script run:
+  `NAME.{light,dark}.{wide,tall}.svg` (wide for desktop, tall for screens
+  under ~700px), plus `NAME.data.json` with the plotted numbers so a site can
+  later draw the same chart interactively. In the paper a figure is
+  `<figure data-figure="NAME"><picture>` with `<source>` elements for
+  dark/tall (`prefers-color-scheme`, `max-width: 700px`) and an
+  `<img src="figures/benchmark/NAME.light.wide.svg">` fallback, followed by a
+  `<figcaption>` whose first sentence is the takeaway. Chart titles state the
+  finding.
+- Figure A1 (`judges_ranked`) uses shared ranks: a judge shares the rank of the
+  top judge of its group when the Holm-corrected McNemar p-value over all 760
+  questions is at least 0.05 (`shared_ranks_all_record` in EXP-029
+  `results.json`).
 - Appendix tables sit inside `<details><summary>…</summary>` with blank lines
   around the generated block so Markdown tables render.
 
