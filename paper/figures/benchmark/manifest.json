@@ -2,9 +2,10 @@
   "generator": "scripts/generate_benchmark_figures.py",
   "figure_policy": {
     "accuracy": "conditional on resolved labels",
-    "coverage": "resolved fraction of the declared 760-record blind pool",
+    "coverage": "resolved fraction of the declared partition (760 blind or 94 Hearsay test records)",
     "probability_metrics": "rendered only for validated native/local probability maps",
-    "pooling": "direct and InferHub waves remain separate"
+    "pooling": "direct, InferHub, and local decision-model results remain separate",
+    "local_decision": "EXP-027 blind (primary) and EXP-028 Hearsay are separate panels; public partition not plotted"
   },
   "sources": {
     "direct": {
@@ -22,6 +23,18 @@
     "calibration": {
       "path": "experiments\\EXP-20260921-019-calibrated-judge-study\\results.json",
       "sha256": "1532fd2433cd406fdd6e2bbcf891dd2b1b088df91f561264442fc238b5613d45"
+    },
+    "local_decision": {
+      "path": "experiments\\EXP-20260924-027-local-decision-bakeoff\\results.json",
+      "sha256": "13674027cbac368971b5c674ad546eb30590476a01ef57b7d576f186b072d14a"
+    },
+    "hearsay": {
+      "path": "experiments\\EXP-20260924-028-legalbench-hearsay\\results.json",
+      "sha256": "f8c537facec429c8e78a39fac16167b53a399058d9469356febc23e2b0a4f8bf"
+    },
+    "hearsay_records": {
+      "path": "experiments\\EXP-20260924-028-legalbench-hearsay\\canonical-records.jsonl",
+      "sha256": "bd516bc8e5c3e822d97f6921016b6b383e0fa169fc9a077158feebb054b7c2a7"
     }
   },
   "outputs": [
@@ -32,12 +45,25 @@
     "paper\\figures\\benchmark\\grok_protocol_ablation.png",
     "paper\\figures\\benchmark\\grok_protocol_ablation.svg",
     "paper\\figures\\benchmark\\local_qwen_calibration.png",
-    "paper\\figures\\benchmark\\local_qwen_calibration.svg"
+    "paper\\figures\\benchmark\\local_qwen_calibration.svg",
+    "paper\\figures\\benchmark\\local_decision_models.png",
+    "paper\\figures\\benchmark\\local_decision_models.svg"
   ],
   "figures": [
     "direct_wave_accuracy_coverage",
     "inferhub_wave_accuracy_coverage",
     "grok_protocol_ablation",
-    "local_qwen_calibration"
-  ]
+    "local_qwen_calibration",
+    "local_decision_models"
+  ],
+  "derived": {
+    "local_decision_models": {
+      "hearsay_majority_label": "No",
+      "hearsay_majority_rate": 0.5638297872340425,
+      "exp027_not_run_model_ids": [
+        "jaredpalmer/kev-9b",
+        "bespokelabs/Bespoke-Nimble-9B"
+      ]
+    }
+  }
 }
