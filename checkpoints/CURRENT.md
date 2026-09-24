@@ -1,5 +1,25 @@
 # Current Repository Checkpoint
 
+## 2026-09-24 — TASK-0053 local decision-model evaluation started
+
+GitHub issue #47 tracks an append-only comparison of the user-provided
+Jev-style local models. EXP-027 will use the exact frozen EXP-015 public and
+blind records; EXP-028 will use the fixed-label LegalBench Hearsay task as a
+small legal-domain complement after its source and license are frozen. No
+model calls have started. The MacBook Pro is currently unreachable over
+Tailscale, so the runner cannot inspect its hardware or begin the requested
+sequential runs yet.
+
+TASK-0042 remains active under issue #45. Its GLEIF archive manifest was
+checkpointed in PR #46 and merged; the canonical checkout is now on
+`main`. Resume its adapter work after this model-evaluation task is
+checkpointed or when it becomes the repository-wide next action.
+
+Next atomic action: make the MacBook reachable, establish hardware and runtime
+pins, and resolve Nimble's environment requirement before implementing the
+sequential local-model runner. LegalBench Hearsay source and its 94 frozen
+test records are ready.
+
 ## 2026-09-24 — TASK-0042 EXP-026 GLEIF track started
 
 GitHub issue #45 tracks the next research checkpoint: build the EXP-026

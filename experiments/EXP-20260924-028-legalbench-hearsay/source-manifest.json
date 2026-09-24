@@ -1,0 +1,46 @@
+{
+  "dataset": "LegalBench Hearsay",
+  "dataset_repository": "https://huggingface.co/datasets/nguha/legalbench",
+  "dataset_revision": "daec8237410aa23e3faf4bc41ad8b3a7e1696826",
+  "task": "hearsay",
+  "task_documentation_repository": "https://github.com/HazyResearch/legalbench",
+  "task_documentation_revision": "b46bf4ffae90524b2b72aaa30e7745fe9db64481",
+  "task_page": "https://hazyresearch.stanford.edu/legalbench/tasks/hearsay.html",
+  "license": "CC BY 4.0",
+  "license_url": "https://creativecommons.org/licenses/by/4.0/",
+  "attribution": "Neel Guha; LegalBench task authors as identified by the project",
+  "retrieved_date": "2026-09-24",
+  "files": [
+    {
+      "path": "data/hearsay/train.tsv",
+      "url": "https://huggingface.co/datasets/nguha/legalbench/resolve/daec8237410aa23e3faf4bc41ad8b3a7e1696826/data/hearsay/train.tsv",
+      "bytes": 760,
+      "rows_excluding_header": 5,
+      "sha256": "f93ce532ada8a9ea8b2027b649e6db3126e1bbceaf198692a742813b0314008f",
+      "local_cache_path": "outputs/EXP-20260924-028-legalbench-hearsay/source/train.tsv",
+      "repository_path": "experiments/EXP-20260924-028-legalbench-hearsay/source/train.tsv"
+    },
+    {
+      "path": "data/hearsay/test.tsv",
+      "url": "https://huggingface.co/datasets/nguha/legalbench/resolve/daec8237410aa23e3faf4bc41ad8b3a7e1696826/data/hearsay/test.tsv",
+      "bytes": 16108,
+      "rows_excluding_header": 94,
+      "sha256": "f6ce5ed63ba93768eafa611610312a42a1b4d70ae57addf2e04bf87cf2bd4be9",
+      "local_cache_path": "outputs/EXP-20260924-028-legalbench-hearsay/source/test.tsv",
+      "repository_path": "experiments/EXP-20260924-028-legalbench-hearsay/source/test.tsv"
+    },
+    {
+      "path": "tasks/hearsay/base_prompt.txt",
+      "url": "https://raw.githubusercontent.com/HazyResearch/legalbench/b46bf4ffae90524b2b72aaa30e7745fe9db64481/tasks/hearsay/base_prompt.txt",
+      "bytes": 855,
+      "sha256": "a0dc84db3aff09d9390813347257ed3abe1d7502c2461034bccb8da493431990",
+      "repository_path": "experiments/EXP-20260924-028-legalbench-hearsay/source/base_prompt.txt"
+    }
+  ],
+  "published_task_size": 100,
+  "published_test_size": 95,
+  "observed_source_train_rows": 5,
+  "observed_source_test_rows": 94,
+  "discrepancy": "Pinned machine-readable source contains one fewer test row than the task page reports; preserve source data as distributed and do not fabricate a missing item.",
+  "canonical_records_sha256": "4b516314fd01454972e975d4da11c4f843841e5e20427f95a4bdeb8c67a18650"
+}
