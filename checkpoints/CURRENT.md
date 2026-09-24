@@ -10,6 +10,20 @@ for deep divers" block. Jargon is defined on first use. No numbers changed.
 
 Next atomic action: merge the follow-up PR after required CI, then close #67.
 
+## 2026-09-24 — TASK-0059 provenance-aware chart data export
+
+GitHub issue #69. `scripts/export_chart_data.py` writes the interactive-chart
+data to `paper/data/` (`judges-blind-760.json`, `charts/<figure>.json`,
+`index.json`). The files are JSON-LD, with PROV-O provenance (commit, dirty flag,
+hashed inputs) and a schema of dimensions, measures, entities and observations,
+built for design-bakery #49. Structured arm settings live in
+`paper/data/sources/arm-metadata.yaml`. JSON Schema, SHACL (pyshacl), hash
+recomputation, clean-tree and no-blind-leak tests run in CI, as do the export
+`--check` and the archived v0.1.0 validator. EXP-029 `code_commit` is corrected.
+`docs/PROVENANCE.md` states what provenance is actually used. No new runs.
+
+Next atomic action: merge the TASK-0059 PR after required CI, then close #69.
+
 ## 2026-09-24 — TASK-0058 figure variants and ranked judge chart
 
 GitHub issue #67. Every paper figure is now four SVG variants
