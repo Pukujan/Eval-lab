@@ -139,3 +139,48 @@ def test_finalizer_preserves_worktree_when_canonical_checkout_is_dirty(
         finalize_checkpoint.finalize(42, 40, root, root / "worktrees" / "TASK-0051")
 
     assert not any(command[:3] == ["git", "worktree", "remove"] for command in calls)
+
+
+def test_finalizer_updates_remote_tracking_ref_before_comparing_main(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls: list[list[str]] = []
+    task_branch = "task/TASK-0051-finalizer-ref-sync"
+
+    def fake_run(command: list[str], *, cwd: Path) -> str:
+        calls.append(command)
+        if command[:3] == ["gh", "pr", "view"]:
+            return (
+                '{"state":"MERGED","mergedAt":"2026-09-24T00:00:00Z",'
+                f'"headRefName":"{task_branch}","headRefOid":"abc123",'
+                '"baseRefName":"main","mergeCommit":{"oid":"def456"},'
+                '"statusCheckRollup":['
+                '{"name":"quality (Python 3.11)","conclusion":"SUCCESS"},'
+                '{"name":"quality (Python 3.12)","conclusion":"SUCCESS"}],'
+                '"body":"Task issue: #40"}'
+            )
+        if command == ["git", "status", "--porcelain=v1", "--untracked-files=all"]:
+            return ""
+        if command == ["git", "rev-parse", f"refs/heads/{task_branch}"]:
+            return "abc123"
+        if command == ["git", "branch", "--show-current"]:
+            return task_branch
+        if command == ["git", "rev-parse", "HEAD"]:
+            return "def456"
+        if command == ["git", "rev-parse", "origin/main"]:
+            return "def456"
+        if command == ["git", "fetch", "origin", "+refs/heads/main:refs/remotes/origin/main"]:
+            return ""
+        if command[:2] in (["git", "switch"], ["git", "pull"]) or command[:3] == [
+            "gh",
+            "issue",
+            "close",
+        ]:
+            return ""
+        raise AssertionError(f"unexpected command: {command}")
+
+    monkeypatch.setattr(finalize_checkpoint, "run", fake_run)
+    result = finalize_checkpoint.finalize(42, 40, tmp_path / "eval-lab", None)
+
+    assert "issue #40 updated" in result
+    assert ["git", "fetch", "origin", "+refs/heads/main:refs/remotes/origin/main"] in calls

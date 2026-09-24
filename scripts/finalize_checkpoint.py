@@ -122,7 +122,10 @@ def finalize(pr_number: int, issue_number: int, canonical_root: Path, worktree: 
         if local_head != head_sha:
             raise ValueError("local task branch differs from the exact merged PR head")
 
-    run(["git", "fetch", "origin", "main"], cwd=root)
+    run(
+        ["git", "fetch", "origin", "+refs/heads/main:refs/remotes/origin/main"],
+        cwd=root,
+    )
     branch = run(["git", "branch", "--show-current"], cwd=root)
     if branch != "main":
         run(["git", "switch", "main"], cwd=root)
