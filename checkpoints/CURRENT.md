@@ -1,19 +1,25 @@
 # Current Repository Checkpoint
 
-## 2026-09-24 — TASK-0052 remove optional publish scanning and approval policy
+## 2026-09-24 — TASK-0042 EXP-026 GLEIF track started
 
-Issue #43 tracks removal of the publisher's credential/private-data scanning
-and the CODEOWNERS/manual-approval policy. The TASK-0051 automation is complete:
-issue #40 is closed, PR #41 merged at `731e692`, PR #42 merged at `80df0fa`,
-and both passed the required Python 3.11/3.12 checks. The canonical checkout is
-clean on `main` at `80df0fa`. Required CI remains the merge gate.
+GitHub issue #45 tracks the next research checkpoint: build the EXP-026
+canonical adapter from the downloaded 2026-09-24 GLEIF Golden Copy archives.
+Their checksums and source details are in
+`experiments/EXP-20260922-026-gleif-objective-track/source-manifest.json`; the
+archives are retained in the ignored `outputs/` source cache. EXP-025 Grok
+protocol ablation is complete; do not rerun or overwrite it. EXP-026 remains
+preregistered, and no model calls have occurred.
 
-The publisher scanner, CODEOWNERS/manual-approval references, task-form
-approval field, and checkout token-persistence override are removed. Focused
-automation tests pass (11 passed).
+The TASK-0051 automation is complete: issue #40 is closed, PR #41 merged at
+`731e692`, and PR #42 merged at `80df0fa`. TASK-0052 is also complete: issue
+#43 is closed, PR #44 is merged at `6421574`, and required Python 3.11/3.12 CI
+checks passed. The canonical checkout was clean on `main` at `6421574` before
+starting TASK-0042.
 
-Next atomic action: run the full local gates, publish TASK-0052, and let
-CI/auto-merge complete before finalizing issue #43.
+Next atomic action: implement and validate the canonical GLEIF adapter and
+entity-disjoint split from the downloaded archives; run only public canaries
+until source, split, and adapter artifacts are durable. Do not score the blind
+split before that checkpoint.
 
 ## 2026-09-24 — TASK-0051 finalizer tracking-ref correction
 

@@ -1,0 +1,30 @@
+{
+  "source": "GLEIF Golden Copy",
+  "snapshot_date": "2026-09-24",
+  "retrieved_date": "2026-09-24",
+  "license": "CC0 1.0 Universal",
+  "license_url": "https://www.gleif.org/en/meta/lei-data-terms-of-use",
+  "format": "CSV in ZIP archives",
+  "files": [
+    {
+      "name": "20260924-0000-lei2.csv.zip",
+      "url": "https://goldencopy.gleif.org/storage/golden-copy-files/2026/09/24/1280135/20260924-0000-gleif-goldencopy-lei2-golden-copy.csv.zip",
+      "bytes": 505126792,
+      "sha256": "d1b68a0396f7f150c9cc4d3a07538cb407c600ea9066adf08128337d3fe31506",
+      "cdf_version": "LEI_3.1",
+      "records_reported_by_publish_api": 3440285,
+      "local_cache_path": "outputs/EXP-20260922-026-gleif-objective-track/source/20260924-0000-lei2.csv.zip"
+    },
+    {
+      "name": "20260924-0000-rr.csv.zip",
+      "url": "https://goldencopy.gleif.org/storage/golden-copy-files/2026/09/24/1280180/20260924-0000-gleif-goldencopy-rr-golden-copy.csv.zip",
+      "bytes": 24383319,
+      "sha256": "10f9c10fd157cfe3451f93bd94cd2f11adb3e2d44904f878e82112c18ff10f4d",
+      "cdf_version": "RR_2.1",
+      "records_reported_by_publish_api": 488776,
+      "local_cache_path": "outputs/EXP-20260922-026-gleif-objective-track/source/20260924-0000-rr.csv.zip"
+    }
+  ],
+  "canonical_dataset_sha256": null,
+  "notes": "Archive hashes describe the downloaded ZIP bytes. The canonical dataset and fingerprint are pending extraction, filtering, and deterministic normalization. GLEIF license and data format are documented at the linked official sources."
+}
