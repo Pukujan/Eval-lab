@@ -142,6 +142,68 @@ Offline re-analysis of committed blind predictions (760 records, frozen EXP-015 
 | Verdict 1.4 (EXP-027) | 51.55% (249/483) | 51.16% (44/86) |
 | Verdict pre-v1.4 (EXP-027) | 51.06% (217/425) | 47.52% (48/101) |
 
+## Paper body: leading and notable judges
+
+| Judge | Type | Answered | Correct, all 760 questions |
+|---|---|---:|---:|
+| Qwen3.8 Flash | API | 100.0% | 99.2% |
+| Qwen 3.8 Max | API | 100.0% | 99.1% |
+| Kimi K2.7 Code | API | 99.7% | 98.3% |
+| Jev 1.13 | API | 100.0% | 89.9% |
+| Kev-4B (best local model) | local | 100.0% | 64.3% |
+| Always-same-answer baseline | reference | 100.0% | 50.3% |
+| Grok 4.6 Build | API | 99.6% | 43.3% |
+
+## Paper body: where accuracy-only numbers mislead
+
+| Judge | Answered | Correct when it answered | Correct, all 760 | Why questions were lost |
+|---|---:|---:|---:|---|
+| DeepSeek V4 Flash | 80.4% | 99.8% | 80.3% | 149 unreadable answers |
+| GLM 5.2 | 95.7% | 99.2% | 94.9% | 33 unreadable answers |
+| Qwen3.8 Flash, one pass | 58.2% | 99.1% | 57.6% | 317 rate-limited |
+| Verdict 1.4 (local) | 74.9% | 51.5% | 38.6% | 179 abstained, 12 too long for the model |
+| Verdict pre-v1.4 (local) | 69.2% | 50.4% | 34.9% | 234 abstained |
+
+## Paper body: Qwen3.8 Flash request settings
+
+| Qwen3.8 Flash run | Request settings | Typical answer time | Correct when it answered | Math (GSM8K) |
+|---|---|---:|---:|---:|
+| EXP-013 | 128-token cap, thinking off | 0.5 s | 84.5% | 65.5% |
+| EXP-022 | provider defaults | 4.3 s | 97.4% | 99.5% |
+| EXP-024 | other route and prompt, 1,024-token cap | 5.5 s | 99.2% | 99.0% |
+
+## Paper body: local models
+
+| Model | Answered | Correct, all 760 |
+|---|---:|---:|
+| Kev-4B (best local model) | 100.0% | 64.3% |
+| SemIf 4B | 100.0% | 54.7% |
+| Kev-0.8B | 100.0% | 50.3% |
+| Laya 421M | 98.4% | 47.8% |
+| Qwen3-4B | 100.0% | 44.6% |
+| Verdict 1.4 (local) | 74.9% | 38.6% |
+| Verdict pre-v1.4 (local) | 69.2% | 34.9% |
+| Always-same-answer baseline | 100.0% | 50.3% |
+
+## Paper body: question sources
+
+| Source | Questions | What it tests |
+|---|---:|---|
+| MMLU (8 subjects) | 320 | school and professional knowledge |
+| GSM8K | 200 | grade-school math word problems |
+| ARC-Challenge | 120 | harder science questions |
+| ARC-Easy | 100 | pick the better of two answers |
+| Eval Lab synthetic | 20 | small hand-built checks |
+
+## EXP-025 Grok protocol ablation (public diagnostic)
+
+| Request format | Public answered | Mode-balanced score |
+|---|---:|---:|
+| typed schema (baseline) | 64/64 | 0.2656 |
+| explicit wording + schema | 63/64 | 0.2581 |
+| semantic labels + schema | 63/64 | 0.2661 |
+| explicit wording, no schema | 0/64 | n/a (no readable answers) |
+
 ## Not run or excluded
 
 - `mimo_v25_exp024`: cp/cline-pass/mimo-v2.5 returned HTTP 402 on both canary attempts; no blind predictions exist (EXP-024 RESULTS.md)

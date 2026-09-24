@@ -2941,6 +2941,33 @@
     "grok46_exp022|majority_exp014",
     "verdict_14_exp027|majority_exp014"
   ],
+  "grok_protocol_ablation": {
+    "path": "experiments/EXP-20260922-025-grok-protocol-ablation/results.json",
+    "public_record_count": 64,
+    "sha256": "c9498843b63c796d2c2d72d565344857d37a5670823fceded8ac19f33bde42fb",
+    "variants": {
+      "explicit_no_schema": {
+        "coverage": 0.0,
+        "resolved": 0,
+        "selection_score": null
+      },
+      "explicit_schema": {
+        "coverage": 0.984375,
+        "resolved": 63,
+        "selection_score": 0.25806451612903225
+      },
+      "semantic_schema": {
+        "coverage": 0.984375,
+        "resolved": 63,
+        "selection_score": 0.2661290322580645
+      },
+      "typed_schema": {
+        "coverage": 1.0,
+        "resolved": 64,
+        "selection_score": 0.265625
+      }
+    }
+  },
   "not_run": {
     "bespoke_nimble_9b_exp027": "pinned unquantized configuration does not fit the 16 GiB host",
     "kev_9b_exp027": "pinned configuration does not fit the 16 GiB host",

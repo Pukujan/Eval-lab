@@ -9,7 +9,7 @@
   "sources": {
     "analysis": {
       "path": "experiments/EXP-20260924-029-consolidated-judge-analysis/results.json",
-      "sha256": "945208f21da47748433e75564935ba1bd58b7d5f748d971d8b742b90b3ecafe0"
+      "sha256": "218156077babf90616149d4fde5a44875deb419434ed6d58f0e29db3362bcd90"
     },
     "grok": {
       "path": "experiments/EXP-20260922-025-grok-protocol-ablation/results.json",
@@ -21,18 +21,24 @@
     }
   },
   "outputs": [
+    "paper/figures/benchmark/finding_accuracy_range.png",
+    "paper/figures/benchmark/finding_accuracy_range.svg",
+    "paper/figures/benchmark/finding_skipped_questions.png",
+    "paper/figures/benchmark/finding_skipped_questions.svg",
+    "paper/figures/benchmark/finding_request_settings.png",
+    "paper/figures/benchmark/finding_request_settings.svg",
     "paper/figures/benchmark/blind_accuracy_vs_coverage.png",
     "paper/figures/benchmark/blind_accuracy_vs_coverage.svg",
-    "paper/figures/benchmark/blind_conditional_vs_all_record.png",
-    "paper/figures/benchmark/blind_conditional_vs_all_record.svg",
     "paper/figures/benchmark/grok_protocol_ablation.png",
     "paper/figures/benchmark/grok_protocol_ablation.svg",
     "paper/figures/benchmark/local_qwen_calibration.png",
     "paper/figures/benchmark/local_qwen_calibration.svg"
   ],
   "figures": [
+    "finding_accuracy_range",
+    "finding_skipped_questions",
+    "finding_request_settings",
     "blind_accuracy_vs_coverage",
-    "blind_conditional_vs_all_record",
     "grok_protocol_ablation",
     "local_qwen_calibration"
   ]
