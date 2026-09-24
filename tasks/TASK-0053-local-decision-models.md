@@ -271,6 +271,35 @@ Next atomic action: publish the runner implementation after the complete local
 gates pass; then install the pinned Kev runtime outside the checkout and smoke
 one record.
 
+### 2026-09-24 — runner checkpoint merged
+
+Status: runner and preregistration are merged; no model calls have started.
+GitHub issue #47 remains open for execution and reporting.
+
+Completed work: PR #49 merged at `824dfdc0039fa07253a8128be1d00d65a8033dde`.
+Required Python 3.11 and 3.12 CI checks passed. The local publisher gates also
+passed, including repo contract, workspace policy, Ruff, mypy, full pytest,
+and package build. Finalization verified the exact merge, updated issue #47,
+audited checkout state, and synchronized canonical `main`. Began a fresh
+runtime checkpoint branch from the merged commit. EXP-027 now names the merged
+runner revision `aac7576441dc85a990023e2e5264a0ab4730e953`.
+
+Files changed: `checkpoints/CURRENT.md`, this task file, and EXP-027
+`experiment.yaml`.
+
+Commands run: checkpoint publisher; required CI checks; PR finalizer; no model
+inference or benchmark commands.
+
+Decisions: continue the active TASK-0053 work on a fresh branch after the
+runner PR merged. Record the exact merged runner commit in the preregistration
+before any model call.
+
+Unresolved: pinned Kev runtime install and Kev-0.8B smoke; per-model hardware
+feasibility; full sequential scoring and metrics.
+
+Next atomic action: install the pinned Kev runtime outside the repository on
+the Mac and smoke one record from EXP-027 public-selection records.
+
 ## Handoff
 
 Use this file as the task authority. Follow `checkpoints/CURRENT.md` for the
