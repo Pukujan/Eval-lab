@@ -1,5 +1,16 @@
 # Current Repository Checkpoint
 
+## 2026-09-24 — TASK-0058 figure variants and ranked judge chart
+
+GitHub issue #67. Every paper figure is now four SVG variants
+(`NAME.{light,dark}.{wide,tall}.svg`) plus `NAME.data.json`, from one
+deterministic script run; PNGs are gone. Figure A1 is a ranked chart of all 25
+judges with shared ranks from the existing Holm-corrected all-record McNemar
+tests (four judges share first place). Paper metadata moved below At a glance.
+No new runs.
+
+Next atomic action: merge the TASK-0058 PR after required CI, then close #67.
+
 ## 2026-09-24 — TASK-0057 paper rewritten as a readable narrative
 
 GitHub issue #65. `paper/paper.md` now reads At a glance → problem → setup →

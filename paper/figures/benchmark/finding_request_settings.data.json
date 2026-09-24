@@ -1,0 +1,38 @@
+{
+  "rows": [
+    {
+      "gsm8k": 0.655,
+      "key": "qwen_flash_exp013",
+      "label": "EXP-013",
+      "overall": 0.8448275862068966,
+      "settings": "128-token cap, thinking off"
+    },
+    {
+      "gsm8k": 0.995,
+      "key": "qwen_flash_exp022",
+      "label": "EXP-022",
+      "overall": 0.9736495388669302,
+      "settings": "provider defaults"
+    },
+    {
+      "gsm8k": 0.99,
+      "key": "ali_qwen38_flash_exp024",
+      "label": "EXP-024",
+      "overall": 0.9921052631578947,
+      "settings": "other route, 1,024-token cap"
+    }
+  ],
+  "series": [
+    {
+      "key": "overall",
+      "label": "All questions"
+    },
+    {
+      "key": "gsm8k",
+      "label": "Math (GSM8K)"
+    }
+  ],
+  "subtitle": "Qwen3.8 Flash accuracy when it answered, by request settings",
+  "title": "Same model, same questions: 84.5% vs 97.4%",
+  "unit": "fraction"
+}

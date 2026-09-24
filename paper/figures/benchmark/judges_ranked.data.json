@@ -1,0 +1,336 @@
+{
+  "baseline": {
+    "label": "always-same-answer baseline",
+    "value": 0.5026315789473684
+  },
+  "rows": [
+    {
+      "coverage": 1.0,
+      "family": "provider_api",
+      "highlight": true,
+      "interval": [
+        0.9828839090316631,
+        0.9963768935370373
+      ],
+      "key": "ali_qwen38_flash_exp024",
+      "label": "Qwen3.8 Flash",
+      "rank": 1,
+      "value": 0.9921052631578947
+    },
+    {
+      "coverage": 1.0,
+      "family": "provider_api",
+      "highlight": true,
+      "interval": [
+        0.9811110602091844,
+        0.9955313979676212
+      ],
+      "key": "ali_qwen38_max_exp024",
+      "label": "Qwen 3.8 Max",
+      "rank": 1,
+      "value": 0.9907894736842106
+    },
+    {
+      "coverage": 0.9973684210526316,
+      "family": "provider_api",
+      "highlight": false,
+      "interval": [
+        0.9709556255816879,
+        0.9899767662437481
+      ],
+      "key": "ali_kimi_k27_code_exp024",
+      "label": "Kimi K2.7 Code",
+      "rank": 1,
+      "value": 0.9828947368421053
+    },
+    {
+      "coverage": 0.9947368421052631,
+      "family": "provider_api",
+      "highlight": false,
+      "interval": [
+        0.959702949673978,
+        0.9829010314081938
+      ],
+      "key": "cbcn_glm53_flash_exp024",
+      "label": "GLM 5.3 Flash",
+      "rank": 1,
+      "value": 0.9736842105263158
+    },
+    {
+      "coverage": 0.9986842105263158,
+      "family": "provider_api",
+      "highlight": false,
+      "interval": [
+        0.959702949673978,
+        0.9829010314081938
+      ],
+      "key": "qwen_flash_exp015_016",
+      "label": "Qwen3.8 Flash + retry",
+      "rank": 5,
+      "value": 0.9736842105263158
+    },
+    {
+      "coverage": 0.9986842105263158,
+      "family": "provider_api",
+      "highlight": false,
+      "interval": [
+        0.9581283100022105,
+        0.981857326688066
+      ],
+      "key": "qwen_flash_exp022",
+      "label": "Qwen3.8 Flash (defaults)",
+      "rank": 5,
+      "value": 0.9723684210526315
+    },
+    {
+      "coverage": 0.9789473684210527,
+      "family": "provider_api",
+      "highlight": false,
+      "interval": [
+        0.9426848485374384,
+        0.9711173442338892
+      ],
+      "key": "cbcn_minimax_m3_exp024",
+      "label": "MiniMax M3",
+      "rank": 5,
+      "value": 0.9592105263157895
+    },
+    {
+      "coverage": 0.9565789473684211,
+      "family": "provider_api",
+      "highlight": false,
+      "interval": [
+        0.9306187870342895,
+        0.9622366506018787
+      ],
+      "key": "ali_glm52_exp024",
+      "label": "GLM 5.2",
+      "rank": 5,
+      "value": 0.9486842105263158
+    },
+    {
+      "coverage": 1.0,
+      "family": "provider_api",
+      "highlight": false,
+      "interval": [
+        0.8766185431070428,
+        0.9193581520290133
+      ],
+      "key": "jev_exp014",
+      "label": "Jev 1.13 (run 1)",
+      "rank": 9,
+      "value": 0.9
+    },
+    {
+      "coverage": 1.0,
+      "family": "provider_api",
+      "highlight": true,
+      "interval": [
+        0.8751866864885562,
+        0.9181716642556048
+      ],
+      "key": "jev_exp022",
+      "label": "Jev 1.13",
+      "rank": 9,
+      "value": 0.8986842105263158
+    },
+    {
+      "coverage": 0.9921052631578947,
+      "family": "provider_api",
+      "highlight": true,
+      "interval": [
+        0.8102830308240081,
+        0.8626314778929867
+      ],
+      "key": "qwen_flash_exp013",
+      "label": "Qwen3.8 Flash, thinking off",
+      "rank": 11,
+      "value": 0.8381578947368421
+    },
+    {
+      "coverage": 0.8171052631578948,
+      "family": "provider_api",
+      "highlight": false,
+      "interval": [
+        0.7769841593790754,
+        0.8330900839324413
+      ],
+      "key": "cb_deepseek_v41_flash_exp024",
+      "label": "DeepSeek V4.1 Flash",
+      "rank": 11,
+      "value": 0.8065789473684211
+    },
+    {
+      "coverage": 0.8039473684210526,
+      "family": "provider_api",
+      "highlight": true,
+      "interval": [
+        0.7728429848911623,
+        0.8293762252446696
+      ],
+      "key": "cbcn_deepseek_v4_flash_exp024",
+      "label": "DeepSeek V4 Flash",
+      "rank": 11,
+      "value": 0.8026315789473685
+    },
+    {
+      "coverage": 1.0,
+      "family": "local",
+      "highlight": true,
+      "interval": [
+        0.6087239571790218,
+        0.6766755815375244
+      ],
+      "key": "kev_4b_exp027",
+      "label": "Kev-4B (local)",
+      "rank": 14,
+      "value": 0.6434210526315789
+    },
+    {
+      "coverage": 0.5815789473684211,
+      "family": "provider_api",
+      "highlight": true,
+      "interval": [
+        0.540887160170178,
+        0.6109768145597275
+      ],
+      "key": "qwen_flash_exp015",
+      "label": "Qwen3.8 Flash, one pass",
+      "rank": 14,
+      "value": 0.5763157894736842
+    },
+    {
+      "coverage": 1.0,
+      "family": "local",
+      "highlight": false,
+      "interval": [
+        0.511830690278872,
+        0.5824297078293453
+      ],
+      "key": "semif_qwen35_4b_exp027",
+      "label": "SemIf 4B (local)",
+      "rank": 16,
+      "value": 0.5473684210526316
+    },
+    {
+      "coverage": 1.0,
+      "family": "local",
+      "highlight": false,
+      "interval": [
+        0.46716064963661835,
+        0.5380760391471714
+      ],
+      "key": "kev_08b_exp027",
+      "label": "Kev-0.8B (local)",
+      "rank": 16,
+      "value": 0.5026315789473684
+    },
+    {
+      "coverage": 0.9842105263157894,
+      "family": "local",
+      "highlight": false,
+      "interval": [
+        0.44232121115417344,
+        0.5131669341836128
+      ],
+      "key": "laya_421m_exp027",
+      "label": "Laya 421M (local)",
+      "rank": 16,
+      "value": 0.4776315789473684
+    },
+    {
+      "coverage": 1.0,
+      "family": "local",
+      "highlight": false,
+      "interval": [
+        0.41107170592768394,
+        0.48157617400462416
+      ],
+      "key": "qwen3_4b_exp017",
+      "label": "Qwen3-4B (local)",
+      "rank": 19,
+      "value": 0.44605263157894737
+    },
+    {
+      "coverage": 0.9947368421052631,
+      "family": "provider_api",
+      "highlight": false,
+      "interval": [
+        0.400686908828951,
+        0.47101421596819776
+      ],
+      "key": "grok46_exp015",
+      "label": "Grok 4.6 Build (run 1)",
+      "rank": 19,
+      "value": 0.4355263157894737
+    },
+    {
+      "coverage": 0.9960526315789474,
+      "family": "provider_api",
+      "highlight": true,
+      "interval": [
+        0.3980932097514751,
+        0.4683712262618839
+      ],
+      "key": "grok46_exp022",
+      "label": "Grok 4.6 Build",
+      "rank": 19,
+      "value": 0.4328947368421053
+    },
+    {
+      "coverage": 0.9960526315789474,
+      "family": "provider_api",
+      "highlight": false,
+      "interval": [
+        0.3942045446241561,
+        0.46440485821351807
+      ],
+      "key": "grok46_exp025",
+      "label": "Grok 4.6 Build (rerun)",
+      "rank": 19,
+      "value": 0.42894736842105263
+    },
+    {
+      "coverage": 0.9552631578947368,
+      "family": "provider_api",
+      "highlight": false,
+      "interval": [
+        0.38125874533957765,
+        0.4511672135791473
+      ],
+      "key": "grok47_exp022",
+      "label": "Grok 4.7 Build",
+      "rank": 19,
+      "value": 0.41578947368421054
+    },
+    {
+      "coverage": 0.7486842105263158,
+      "family": "local",
+      "highlight": true,
+      "interval": [
+        0.35158084657932903,
+        0.42062319132581266
+      ],
+      "key": "verdict_14_exp027",
+      "label": "Verdict 1.4 (local)",
+      "rank": 19,
+      "value": 0.38552631578947366
+    },
+    {
+      "coverage": 0.6921052631578948,
+      "family": "local",
+      "highlight": false,
+      "interval": [
+        0.3156411661747734,
+        0.38324922875731054
+      ],
+      "key": "verdict_original_exp027",
+      "label": "Verdict pre-v1.4 (local)",
+      "rank": 25,
+      "value": 0.34868421052631576
+    }
+  ],
+  "subtitle": "All 25 judges, correct over all 760 questions, with 95% Wilson intervals. Shared rank = not separable from the group's top judge (Holm-corrected McNemar).",
+  "title": "4 judges share first place; 8 score below the baseline",
+  "unit": "fraction"
+}

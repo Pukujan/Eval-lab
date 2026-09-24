@@ -1,0 +1,46 @@
+{
+  "baseline": {
+    "label": "always-same-answer baseline",
+    "value": 0.5026315789473684
+  },
+  "rows": [
+    {
+      "all_record_accuracy": 0.8026315789473685,
+      "answered_accuracy": 0.9983633387888707,
+      "coverage": 0.8039473684210526,
+      "key": "cbcn_deepseek_v4_flash_exp024",
+      "label": "DeepSeek V4 Flash"
+    },
+    {
+      "all_record_accuracy": 0.9486842105263158,
+      "answered_accuracy": 0.9917469050894085,
+      "coverage": 0.9565789473684211,
+      "key": "ali_glm52_exp024",
+      "label": "GLM 5.2"
+    },
+    {
+      "all_record_accuracy": 0.5763157894736842,
+      "answered_accuracy": 0.9909502262443439,
+      "coverage": 0.5815789473684211,
+      "key": "qwen_flash_exp015",
+      "label": "Qwen3.8 Flash, one pass"
+    },
+    {
+      "all_record_accuracy": 0.38552631578947366,
+      "answered_accuracy": 0.5149384885764499,
+      "coverage": 0.7486842105263158,
+      "key": "verdict_14_exp027",
+      "label": "Verdict 1.4 (local)"
+    },
+    {
+      "all_record_accuracy": 0.34868421052631576,
+      "answered_accuracy": 0.5038022813688213,
+      "coverage": 0.6921052631578948,
+      "key": "verdict_original_exp027",
+      "label": "Verdict pre-v1.4 (local)"
+    }
+  ],
+  "subtitle": "Hollow: correct when it answered \u00b7 filled: correct over all 760",
+  "title": "Scores on answered questions hide skipped ones",
+  "unit": "fraction"
+}

@@ -1,0 +1,25 @@
+{
+  "rows": [
+    {
+      "calibrated": 0.5160339956496602,
+      "key": "brier",
+      "label": "Brier score",
+      "raw": 0.7036824847148387
+    },
+    {
+      "calibrated": 0.7430236501814631,
+      "key": "nll",
+      "label": "Negative log likelihood",
+      "raw": 1.076729516647522
+    },
+    {
+      "calibrated": 0.07834063916107518,
+      "key": "ece",
+      "label": "Expected calibration error",
+      "raw": 0.3411375292308107
+    }
+  ],
+  "source": "EXP-019",
+  "subtitle": "Local Qwen3-4B, blind set (accuracy 44.61% before and after) \u00b7 lower is better",
+  "title": "Calibration made confidence more honest; answers stayed the same"
+}
