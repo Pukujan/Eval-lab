@@ -2,7 +2,9 @@ id: EXP-20260924-029-consolidated-judge-analysis
 status: completed
 hypothesis: On identical typed decisions with objective gold labels, independent judges differ in coverage as well as accuracy, and accuracy computed only over answered records misranks judges whose unresolved share is large.
 created_at: 2026-09-24
-code_commit: 51256cb
+code_commit: 0b996a5d0b4557b65692e3c697cda5045d2d06f9
+code_commit_note: commit whose scripts/analyze_judge_comparison.py last regenerated results.json (TASK-0058). The original value 51256cb predated the TASK-0056/0057/0058 regenerations and was corrected in TASK-0059; tests/test_chart_data_export.py checks that results.json at code_commit is byte-identical to the committed file.
+results_sha256: 5e1e831a0827a9735696405ce75f62fe58a696e8be96f6353ed5ba01af56a228
 seed: none (deterministic offline analysis; no sampling)
 analysis_type: offline re-analysis of committed prediction files; no model or provider calls
 dataset:

@@ -542,6 +542,15 @@ uv run --locked python -m pytest tests/test_judge_comparison_analysis.py
 Every source prediction file is listed with an LF-normalized SHA-256 in
 [EXP-029 `results.json`](https://github.com/Pukujan/Eval-lab/blob/main/experiments/EXP-20260924-029-consolidated-judge-analysis/results.json).
 
+Chart data for the interactive versions of these figures is exported by
+`scripts/export_chart_data.py` to
+[`paper/data/`](https://github.com/Pukujan/Eval-lab/tree/main/paper/data/). It has
+one row per judge run and no individual questions or answer keys. Each file
+records the exporter's commit and the SHA-256 of every input, as W3C PROV-O terms
+in JSON-LD. CI checks each file against a JSON Schema and SHACL shapes, and
+recomputes every hash. Provenance here means these hashes, commits and tests; see
+[`docs/PROVENANCE.md`](https://github.com/Pukujan/Eval-lab/blob/main/docs/PROVENANCE.md).
+
 Experiment bundles:
 [EXP-013](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260921-013-qwen-multidomain-holdout/),
 [EXP-014](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260921-014-independent-jev-benchmark/),

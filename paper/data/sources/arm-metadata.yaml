@@ -1,0 +1,210 @@
+# Structured judge-arm metadata for scripts/export_chart_data.py (TASK-0059).
+#
+# One entry per arm key in scripts/analyze_judge_comparison.py ARMS. These fields
+# were free text in each arm's `harness` string; here they are structured, and
+# each one cites the committed file that records it (`evidence`).
+# tests/test_chart_data_export.py checks that:
+#   * the keys match the EXP-029 arms exactly,
+#   * every evidence path exists,
+#   * settings agree with the harness text and with the per-prediction
+#     provider_metadata (max_tokens, context_cap, model id) wherever that exists.
+#
+# Field meanings:
+#   short_label: display label without the experiment suffix (the experiment is
+#     its own field).
+#   model_family: vendor/model family used as a filter dimension.
+#   model_id: model identifier as recorded in the predictions (judge_id).
+#   params_b: parameter count in billions, only when public (else null).
+#   settings.max_output_tokens: output-token cap sent with the request; null when
+#     not sent.
+#   settings.max_output_tokens_status: set | provider_default | not_applicable.
+#   settings.context_cap_tokens: input truncation cap for local scorers; null if none.
+#   settings.thinking: off (explicitly disabled) | provider_default (no flag sent)
+#     | not_applicable (scoring models and baselines that do not generate text).
+#   settings.decoding: generative_label | label_log_likelihood | native_label_head
+#     | constant.
+#   settings.temperature: when recorded in the request; null otherwise.
+schema: eval-lab.arm-metadata/1
+arms:
+  jev_exp014:
+    short_label: Jev 1.13 (pinned)
+    model_family: Jev
+    model_id: typesafe/jev-1.13
+    params_b: null
+    settings: {max_output_tokens: null, max_output_tokens_status: provider_default, context_cap_tokens: null, thinking: provider_default, decoding: generative_label, temperature: 0}
+    evidence: [src/eval_lab/escalation/providers.py, experiments/EXP-20260921-014-independent-jev-benchmark/experiment.yaml]
+  qwen_flash_exp013:
+    short_label: Qwen3.8 Flash, thinking off
+    model_family: Qwen
+    model_id: qwen3.8-flash
+    params_b: null
+    settings: {max_output_tokens: 128, max_output_tokens_status: set, context_cap_tokens: null, thinking: "off", decoding: generative_label, temperature: 0}
+    evidence: [scripts/run_qwen_streaming_retry.py]
+  grok46_exp015:
+    short_label: Grok 4.6 Build
+    model_family: Grok
+    model_id: grok-4.6
+    params_b: null
+    settings: {max_output_tokens: null, max_output_tokens_status: provider_default, context_cap_tokens: null, thinking: provider_default, decoding: generative_label, temperature: null}
+    evidence: [scripts/run_grok_luna_qwen_bakeoff.py]
+  qwen_flash_exp015:
+    short_label: Qwen3.8 Flash, one pass
+    model_family: Qwen
+    model_id: qwen3.8-flash
+    params_b: null
+    settings: {max_output_tokens: null, max_output_tokens_status: provider_default, context_cap_tokens: null, thinking: provider_default, decoding: generative_label, temperature: 0}
+    evidence: [scripts/run_grok_luna_qwen_bakeoff.py]
+  qwen_flash_exp015_016:
+    short_label: Qwen3.8 Flash, pass + retry
+    model_family: Qwen
+    model_id: qwen3.8-flash
+    params_b: null
+    settings: {max_output_tokens: null, max_output_tokens_status: provider_default, context_cap_tokens: null, thinking: provider_default, decoding: generative_label, temperature: 0}
+    evidence: [scripts/run_grok_luna_qwen_bakeoff.py, experiments/EXP-20260921-016-qwen-rate-limit-retry/experiment.yaml]
+  grok46_exp022:
+    short_label: Grok 4.6 Build
+    model_family: Grok
+    model_id: grok-4.6
+    params_b: null
+    settings: {max_output_tokens: null, max_output_tokens_status: provider_default, context_cap_tokens: null, thinking: provider_default, decoding: generative_label, temperature: null}
+    evidence: [scripts/run_grok_luna_qwen_bakeoff.py]
+  grok47_exp022:
+    short_label: Grok 4.7 Build
+    model_family: Grok
+    model_id: grok-4.7
+    params_b: null
+    settings: {max_output_tokens: null, max_output_tokens_status: provider_default, context_cap_tokens: null, thinking: provider_default, decoding: generative_label, temperature: null}
+    evidence: [scripts/run_grok_luna_qwen_bakeoff.py]
+  qwen_flash_exp022:
+    short_label: Qwen3.8 Flash
+    model_family: Qwen
+    model_id: qwen3.8-flash
+    params_b: null
+    settings: {max_output_tokens: null, max_output_tokens_status: provider_default, context_cap_tokens: null, thinking: provider_default, decoding: generative_label, temperature: 0}
+    evidence: [scripts/run_grok_luna_qwen_bakeoff.py]
+  jev_exp022:
+    short_label: Jev 1.13
+    model_family: Jev
+    model_id: typesafe/jev-1.13
+    params_b: null
+    settings: {max_output_tokens: null, max_output_tokens_status: provider_default, context_cap_tokens: null, thinking: provider_default, decoding: generative_label, temperature: 0}
+    evidence: [src/eval_lab/escalation/providers.py]
+  ali_qwen38_flash_exp024:
+    short_label: Qwen3.8 Flash
+    model_family: Qwen
+    model_id: ali/qwen3.8-flash
+    params_b: null
+    settings: &inferhub {max_output_tokens: 1024, max_output_tokens_status: set, context_cap_tokens: null, thinking: provider_default, decoding: generative_label, temperature: 0}
+    evidence: &inferhub_ev [scripts/run_inferhub_arm.py]
+  ali_qwen38_max_exp024:
+    short_label: Qwen 3.8 Max
+    model_family: Qwen
+    model_id: ali/qwen3.8-max
+    params_b: null
+    settings: *inferhub
+    evidence: *inferhub_ev
+  ali_glm52_exp024:
+    short_label: GLM 5.2
+    model_family: GLM
+    model_id: ali/glm-5.2
+    params_b: null
+    settings: *inferhub
+    evidence: *inferhub_ev
+  ali_kimi_k27_code_exp024:
+    short_label: Kimi K2.7 Code
+    model_family: Kimi
+    model_id: ali/kimi-k2.7-code
+    params_b: null
+    settings: *inferhub
+    evidence: *inferhub_ev
+  cbcn_deepseek_v4_flash_exp024:
+    short_label: DeepSeek V4 Flash
+    model_family: DeepSeek
+    model_id: cbcn/deepseek-v4-flash
+    params_b: null
+    settings: *inferhub
+    evidence: *inferhub_ev
+  cb_deepseek_v41_flash_exp024:
+    short_label: DeepSeek V4.1 Flash
+    model_family: DeepSeek
+    model_id: cb/deepseek-v4.1-flash
+    params_b: null
+    settings: *inferhub
+    evidence: *inferhub_ev
+  cbcn_glm53_flash_exp024:
+    short_label: GLM 5.3 Flash
+    model_family: GLM
+    model_id: cbcn/glm-5.3-flash
+    params_b: null
+    settings: *inferhub
+    evidence: *inferhub_ev
+  cbcn_minimax_m3_exp024:
+    short_label: MiniMax M3
+    model_family: MiniMax
+    model_id: cbcn/minimax-m3
+    params_b: null
+    settings: *inferhub
+    evidence: *inferhub_ev
+  grok46_exp025:
+    short_label: Grok 4.6 Build, typed rerun
+    model_family: Grok
+    model_id: grok-4.6
+    params_b: null
+    settings: {max_output_tokens: null, max_output_tokens_status: provider_default, context_cap_tokens: null, thinking: provider_default, decoding: generative_label, temperature: null}
+    evidence: [experiments/EXP-20260922-025-grok-protocol-ablation/experiment.yaml]
+  qwen3_4b_exp017:
+    short_label: Qwen3-4B (local)
+    model_family: Qwen
+    model_id: Qwen/Qwen3-4B
+    params_b: 4
+    settings: {max_output_tokens: null, max_output_tokens_status: not_applicable, context_cap_tokens: 2048, thinking: not_applicable, decoding: label_log_likelihood, temperature: null}
+    evidence: [experiments/EXP-20260921-017-judge-calibration/experiment.yaml]
+  kev_4b_exp027:
+    short_label: Kev-4B (local)
+    model_family: Kev
+    model_id: jaredpalmer/kev-4b
+    params_b: 4
+    settings: {max_output_tokens: null, max_output_tokens_status: not_applicable, context_cap_tokens: 1024, thinking: not_applicable, decoding: native_label_head, temperature: null}
+    evidence: &exp027 [experiments/EXP-20260924-027-local-decision-bakeoff/experiment.yaml]
+  semif_qwen35_4b_exp027:
+    short_label: SemIf Qwen3.5-4B (local)
+    model_family: SemIf
+    model_id: Qwen/Qwen3.5-4B
+    params_b: 4
+    settings: {max_output_tokens: null, max_output_tokens_status: not_applicable, context_cap_tokens: 4096, thinking: not_applicable, decoding: native_label_head, temperature: null}
+    evidence: *exp027
+  verdict_14_exp027:
+    short_label: Verdict 1.4 (local)
+    model_family: Verdict
+    model_id: heman10x/rlcd-modernbert-151m
+    params_b: 0.151
+    settings: {max_output_tokens: null, max_output_tokens_status: not_applicable, context_cap_tokens: 512, thinking: not_applicable, decoding: native_label_head, temperature: null}
+    evidence: *exp027
+  verdict_original_exp027:
+    short_label: Verdict pre-v1.4 (local)
+    model_family: Verdict
+    model_id: heman10x/rlcd-modernbert-151m
+    params_b: 0.151
+    settings: {max_output_tokens: null, max_output_tokens_status: not_applicable, context_cap_tokens: 1024, thinking: not_applicable, decoding: native_label_head, temperature: null}
+    evidence: *exp027
+  kev_08b_exp027:
+    short_label: Kev-0.8B (local)
+    model_family: Kev
+    model_id: jaredpalmer/kev-0.8b
+    params_b: 0.8
+    settings: {max_output_tokens: null, max_output_tokens_status: not_applicable, context_cap_tokens: 1024, thinking: not_applicable, decoding: native_label_head, temperature: null}
+    evidence: *exp027
+  laya_421m_exp027:
+    short_label: Laya 421M (local)
+    model_family: Laya
+    model_id: convaiinnovations/laya
+    params_b: 0.421
+    settings: {max_output_tokens: null, max_output_tokens_status: not_applicable, context_cap_tokens: 512, thinking: not_applicable, decoding: native_label_head, temperature: null}
+    evidence: *exp027
+  majority_exp014:
+    short_label: Majority-label baseline
+    model_family: baseline
+    model_id: frozen-majority-label
+    params_b: null
+    settings: {max_output_tokens: null, max_output_tokens_status: not_applicable, context_cap_tokens: null, thinking: not_applicable, decoding: constant, temperature: null}
+    evidence: [experiments/EXP-20260921-014-independent-jev-benchmark/experiment.yaml]

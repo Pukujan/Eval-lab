@@ -1,0 +1,35 @@
+# SHACL shapes for the provenance graph of files written by
+# scripts/export_chart_data.py (TASK-0059). Only the JSON-LD @context-mapped
+# keys become RDF; the numeric payload is validated by
+# research-chart-data.v1.schema.json instead.
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix schema: <https://schema.org/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ev: <https://github.com/Pukujan/Eval-lab/blob/main/docs/PROVENANCE.md#> .
+@prefix evs: <https://github.com/Pukujan/Eval-lab/blob/main/schemas/chart-provenance.shapes.ttl#> .
+
+evs:ExportedDatasetShape a sh:NodeShape ;
+  sh:targetClass schema:Dataset ;
+  sh:property [ sh:path schema:name ; sh:minCount 1 ; sh:datatype xsd:string ] ;
+  sh:property [ sh:path ev:schemaVersion ; sh:minCount 1 ; sh:maxCount 1 ; sh:hasValue "1.0" ] ;
+  sh:property [ sh:path ev:experimentId ; sh:minCount 1 ; sh:pattern "^EXP-\\d{3}|^EXP-\\d{8}-\\d{3}-" ] ;
+  sh:property [ sh:path prov:wasGeneratedBy ; sh:minCount 1 ; sh:maxCount 1 ; sh:class prov:Activity ] ;
+  sh:property [ sh:path prov:wasDerivedFrom ; sh:minCount 1 ] .
+
+# Every derivation source and the generating software agent, at any depth, must be
+# an Eval Lab blob IRI pinned to a 40-hex commit, with a path and a SHA-256.
+evs:HashedEntityShape a sh:NodeShape ;
+  sh:targetObjectsOf prov:wasDerivedFrom, prov:wasAssociatedWith ;
+  sh:nodeKind sh:IRI ;
+  sh:pattern "^https://github\\.com/Pukujan/Eval-lab/blob/[0-9a-f]{40}/" ;
+  sh:property [ sh:path ev:sha256 ; sh:minCount 1 ; sh:maxCount 1 ; sh:pattern "^[0-9a-f]{64}$" ] ;
+  sh:property [ sh:path ev:path ; sh:minCount 1 ; sh:maxCount 1 ; sh:pattern "^[A-Za-z0-9_][A-Za-z0-9_./+-]*$" ] .
+
+evs:ExportActivityShape a sh:NodeShape ;
+  sh:targetClass prov:Activity ;
+  sh:property [ sh:path ev:gitCommit ; sh:minCount 1 ; sh:maxCount 1 ; sh:pattern "^[0-9a-f]{40}$" ] ;
+  sh:property [ sh:path ev:gitDirty ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:boolean ] ;
+  sh:property [ sh:path prov:endedAtTime ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:dateTime ] ;
+  sh:property [ sh:path prov:used ; sh:minCount 1 ] ;
+  sh:property [ sh:path prov:wasAssociatedWith ; sh:minCount 1 ; sh:maxCount 1 ; sh:class prov:SoftwareAgent ] .

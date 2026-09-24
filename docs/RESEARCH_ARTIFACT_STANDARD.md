@@ -4,6 +4,14 @@
 
 TASK-0010 should leave behind more than a one-off experiment. The repository should contain a compact benchmark release and paper source that an independent reader can inspect, rebuild, cite, and challenge.
 
+## Current status (TASK-0059)
+
+This standard was written for TASK-0010. In practice, RO-Crate, PROV-O Turtle and
+SHACL were produced only for the archived `benchmark/eval-lab-select-v0.1.0/`
+release. The canonical paper uses SHA-256 manifests and tests, plus JSON-LD
+PROV-O chart-data exports. OWL is not used. See `docs/PROVENANCE.md` for what is
+actually in use.
+
 ## Standards stack
 
 ### 1. RO-Crate 1.3 — outer research object
