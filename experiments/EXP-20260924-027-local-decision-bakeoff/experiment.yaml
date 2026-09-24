@@ -1,0 +1,92 @@
+id: EXP-20260924-027-local-decision-bakeoff
+status: preregistered
+hypothesis: >-
+  Compact decision models can provide useful accuracy and native confidence
+  on the frozen Eval Lab typed-choice benchmark, with accuracy, coverage,
+  calibration, and latency varying across model architecture and size.
+created_at: 2026-09-24
+code_commit: pending_task_checkpoint
+seed: 20260924
+context_limit: 4096
+dataset:
+  name: independent Eval Lab objective pool copied from EXP-014
+  version: EXP-20260921-015 exact source freeze
+  fingerprint: b7edd61269f0f7757e734bc7e3f665ac2bcd6d908a1e56f73f0b0291d55b64d8
+  public_record_count: 648
+  blind_record_count: 760
+  split_policy: source-problem disjoint public selection and blind holdout; blind is primary
+typed_protocol:
+  spec_id: eval-lab-system-one
+  spec_version: 0.1.0
+  fingerprint: 0d07bd8b8b60bd7f0b5b7a5f5819b7d329ea121f686b240e465695b6f6eca1e4
+  legal_single_labels: [pass, fail]
+  legal_pairwise_labels: [A, B, TIE]
+arms:
+  - arm_id: semif-qwen35-4b
+    model: Qwen/Qwen3.5-4B
+    system: SemIf
+    backend: pending_hardware_and_runtime_probe
+  - arm_id: nimble-9b
+    model: bespokelabs/Bespoke-Nimble-9B
+    system: Bespoke Nimble
+    backend: pending_hardware_and_runtime_probe
+  - arm_id: kev-9b
+    model: jaredpalmer/kev-9b
+    system: Kev
+    backend: pending_hardware_and_runtime_probe
+  - arm_id: kev-4b
+    model: jaredpalmer/kev-4b
+    system: Kev
+    backend: pending_hardware_and_runtime_probe
+  - arm_id: kev-0.8b
+    model: jaredpalmer/kev-0.8b
+    system: Kev
+    backend: pending_hardware_and_runtime_probe
+  - arm_id: laya-421m
+    model: convaiinnovations/laya
+    system: Laya
+    backend: pending_hardware_and_runtime_probe
+  - arm_id: verdict-1.4
+    model: heman10x/rlcd-modernbert-151m
+    system: OpenJev Verdict 1.4
+    backend: pending_hardware_and_runtime_probe
+  - arm_id: verdict-original
+    model: heman10x/rlcd-modernbert-151m
+    system: Verdict original configuration
+    backend: pending_hardware_and_runtime_probe
+    note: Shared weights with Verdict 1.4; distinguish engine/readout configuration, not model checkpoint.
+evaluation:
+  primary_partition: blind_holdout
+  public_partition_role: descriptive_and_optional_calibration_fit
+  one_pass_per_selected_record: true
+  run_order: sequential_one_model_at_a_time
+  missingness_rule: runtime and parse failures remain statuses and are excluded from resolved accuracy
+  probability_rule: calibration metrics require validated native probability vectors
+  calibration_method: raw native confidence primary; optional temperature scaling fit on public only
+  confidence_level: 0.95
+metrics:
+  - accuracy
+  - balanced_accuracy
+  - macro_f1
+  - resolved_coverage
+  - unresolved_rate
+  - brier_when_probabilities_available
+  - nll_when_probabilities_available
+  - ece_when_probabilities_available
+  - latency_p50
+  - latency_p95
+  - status_counts
+artifacts:
+  - source-pool-fingerprint.json
+  - hardware-and-runtime.json
+  - model-revisions.json
+  - public-predictions/
+  - blind-predictions/
+  - results.json
+  - report.md
+notes: >-
+  EXP-014, EXP-015, and EXP-025 are complete and immutable. The local Mac
+  runner is currently inaccessible. Model versions, quantization, and
+  probability availability must be frozen before the first run. Jev 1.13 on
+  the same blind records is a cached reference if protocol compatibility is
+  confirmed.
