@@ -1,5 +1,17 @@
 # Current Repository Checkpoint
 
+## 2026-09-24 — TASK-0057 paper rewritten as a readable narrative
+
+GitHub issue #65. `paper/paper.md` now reads At a glance → problem → setup →
+what happened → four findings → what it means → limitations → future work,
+with slim generated body tables and full tables in collapsed appendices. Three
+new finding charts replace the dense overview charts. A new test checks that
+every decimal number in the prose appears in committed results. No new runs;
+the research question and the EXP-029 statistics are unchanged. The Design
+Bakery mirror is paused pending UX research (design-bakery #48).
+
+Next atomic action: merge the TASK-0057 PR after required CI, then close #65.
+
 ## 2026-09-24 — TASK-0056 consolidated paper around one research question
 
 GitHub issue #63 tracks the consolidation. `paper/paper.md` is now the single

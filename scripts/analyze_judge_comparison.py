@@ -485,6 +485,22 @@ def paired_tests(
     }
 
 
+GROK_ABLATION = E + "EXP-20260922-025-grok-protocol-ablation/results.json"
+
+
+def grok_ablation_summary() -> dict[str, Any]:
+    """Public-diagnostic variant scores from EXP-025, copied for the paper appendix table."""
+    path = ROOT / GROK_ABLATION
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    public = payload["public"]
+    return {
+        "path": GROK_ABLATION,
+        "sha256": sha256(path),
+        "public_record_count": public["record_count"],
+        "variants": {key: public["variants"][key] for key in sorted(public["variants"])},
+    }
+
+
 def build() -> dict[str, Any]:
     records = load_blind_records()
     if len(records) != 760:
@@ -507,6 +523,7 @@ def build() -> dict[str, Any]:
         "experiment_id": EXPERIMENT_ID,
         "status": "completed",
         "analysis": "offline re-analysis of committed blind predictions; no model calls",
+        "grok_protocol_ablation": grok_ablation_summary(),
         "records": {
             "path": str(RECORDS.relative_to(ROOT).as_posix()),
             "sha256": sha256(RECORDS),
@@ -726,6 +743,173 @@ def table_composition(result: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+# --- Slim body tables (plain labels, 1-decimal percentages) -----------------
+
+PLAIN = {
+    "ali_qwen38_flash_exp024": "Qwen3.8 Flash",
+    "ali_qwen38_max_exp024": "Qwen 3.8 Max",
+    "ali_kimi_k27_code_exp024": "Kimi K2.7 Code",
+    "jev_exp022": "Jev 1.13",
+    "kev_4b_exp027": "Kev-4B (best local model)",
+    "majority_exp014": "Always-same-answer baseline",
+    "grok46_exp022": "Grok 4.6 Build",
+    "cbcn_deepseek_v4_flash_exp024": "DeepSeek V4 Flash",
+    "ali_glm52_exp024": "GLM 5.2",
+    "qwen_flash_exp015": "Qwen3.8 Flash, one pass",
+    "verdict_14_exp027": "Verdict 1.4 (local)",
+    "verdict_original_exp027": "Verdict pre-v1.4 (local)",
+    "semif_qwen35_4b_exp027": "SemIf 4B",
+    "kev_08b_exp027": "Kev-0.8B",
+    "laya_421m_exp027": "Laya 421M",
+    "qwen3_4b_exp017": "Qwen3-4B",
+}
+BODY_LEADERS = (
+    "ali_qwen38_flash_exp024",
+    "ali_qwen38_max_exp024",
+    "ali_kimi_k27_code_exp024",
+    "jev_exp022",
+    "kev_4b_exp027",
+    "majority_exp014",
+    "grok46_exp022",
+)
+BODY_HIDDEN = (
+    "cbcn_deepseek_v4_flash_exp024",
+    "ali_glm52_exp024",
+    "qwen_flash_exp015",
+    "verdict_14_exp027",
+    "verdict_original_exp027",
+)
+BODY_LOCAL = (
+    "kev_4b_exp027",
+    "semif_qwen35_4b_exp027",
+    "kev_08b_exp027",
+    "laya_421m_exp027",
+    "qwen3_4b_exp017",
+    "verdict_14_exp027",
+    "verdict_original_exp027",
+    "majority_exp014",
+)
+QWEN_SETTINGS = {
+    "qwen_flash_exp013": ("EXP-013", "128-token cap, thinking off"),
+    "qwen_flash_exp022": ("EXP-022", "provider defaults"),
+    "ali_qwen38_flash_exp024": ("EXP-024", "other route and prompt, 1,024-token cap"),
+}
+STATUS_PLAIN = {
+    "rate_limited": "rate-limited",
+    "provider_error": "provider errors",
+    "provider_timeout": "timeouts",
+    "parse_error": "unreadable answers",
+    "abstention": "abstained",
+    "context_limit_skip": "too long for the model",
+}
+
+
+def p1(value: float | None) -> str:
+    return pct(value, 1)
+
+
+def lost_reason(arm: dict[str, Any]) -> str:
+    parts = [
+        f"{arm['status_counts'][s]} {STATUS_PLAIN[s]}"
+        for s in STATUS_ORDER
+        if arm["status_counts"].get(s, 0) >= 5
+    ]
+    return ", ".join(parts) or "—"
+
+
+def table_body_leaders(result: dict[str, Any]) -> str:
+    arms = result["arms"]
+    lines = [
+        "| Judge | Type | Answered | Correct, all 760 questions |",
+        "|---|---|---:|---:|",
+    ]
+    for key in BODY_LEADERS:
+        arm = arms[key]
+        kind = {"provider_api": "API", "local": "local", "baseline": "reference"}[arm["family"]]
+        lines.append(
+            f"| {PLAIN[key]} | {kind} | {p1(arm['coverage'])} | {p1(arm['all_record_accuracy'])} |"
+        )
+    return "\n".join(lines)
+
+
+def table_body_hidden(result: dict[str, Any]) -> str:
+    arms = result["arms"]
+    lines = [
+        "| Judge | Answered | Correct when it answered | Correct, all 760 | Why questions were lost |",
+        "|---|---:|---:|---:|---|",
+    ]
+    for key in BODY_HIDDEN:
+        arm = arms[key]
+        lines.append(
+            f"| {PLAIN[key]} | {p1(arm['coverage'])} | {p1(arm['conditional_accuracy'])} | "
+            f"{p1(arm['all_record_accuracy'])} | {lost_reason(arm)} |"
+        )
+    return "\n".join(lines)
+
+
+def table_body_qwen(result: dict[str, Any]) -> str:
+    arms = result["arms"]
+    lines = [
+        "| Qwen3.8 Flash run | Request settings | Typical answer time | Correct when it answered | Math (GSM8K) |",
+        "|---|---|---:|---:|---:|",
+    ]
+    for key, (label, settings) in QWEN_SETTINGS.items():
+        arm = arms[key]
+        lines.append(
+            f"| {label} | {settings} | {arm['median_resolved_latency_ms'] / 1000:.1f} s | "
+            f"{p1(arm['conditional_accuracy'])} | {p1(arm['by_source']['GSM8K']['accuracy'])} |"
+        )
+    return "\n".join(lines)
+
+
+def table_body_local(result: dict[str, Any]) -> str:
+    arms = result["arms"]
+    lines = ["| Model | Answered | Correct, all 760 |", "|---|---:|---:|"]
+    for key in BODY_LOCAL:
+        arm = arms[key]
+        lines.append(f"| {PLAIN[key]} | {p1(arm['coverage'])} | {p1(arm['all_record_accuracy'])} |")
+    return "\n".join(lines)
+
+
+SOURCE_BLURBS = {
+    "MMLU (8 subjects)": ("MMLU (8 subjects)", "school and professional knowledge"),
+    "GSM8K": ("GSM8K", "grade-school math word problems"),
+    "EvalLab-Select / ARC-Challenge": ("ARC-Challenge", "harder science questions"),
+    "ARC-Easy (pairwise)": ("ARC-Easy", "pick the better of two answers"),
+    "Eval Lab synthetic (4 families)": ("Eval Lab synthetic", "small hand-built checks"),
+}
+
+
+def table_body_sources(result: dict[str, Any]) -> str:
+    comp = result["records"]["composition"]
+    rows = sorted(comp.items(), key=lambda item: (-sum(item[1].values()), item[0]))
+    lines = ["| Source | Questions | What it tests |", "|---|---:|---|"]
+    for source, modes in rows:
+        name, blurb = SOURCE_BLURBS[source]
+        lines.append(f"| {name} | {sum(modes.values())} | {blurb} |")
+    return "\n".join(lines)
+
+
+GROK_VARIANTS = (
+    ("typed_schema", "typed schema (baseline)"),
+    ("explicit_schema", "explicit wording + schema"),
+    ("semantic_schema", "semantic labels + schema"),
+    ("explicit_no_schema", "explicit wording, no schema"),
+)
+
+
+def table_grok_ablation(result: dict[str, Any]) -> str:
+    ablation = result["grok_protocol_ablation"]
+    n = ablation["public_record_count"]
+    lines = ["| Request format | Public answered | Mode-balanced score |", "|---|---:|---:|"]
+    for key, label in GROK_VARIANTS:
+        variant = ablation["variants"][key]
+        score = variant["selection_score"]
+        shown = "n/a (no readable answers)" if score is None else f"{score:.4f}"
+        lines.append(f"| {label} | {variant['resolved']}/{n} | {shown} |")
+    return "\n".join(lines)
+
+
 TABLES = {
     "composition": table_composition,
     "main": table_main,
@@ -734,6 +918,12 @@ TABLES = {
     "qwen": table_qwen,
     "sources": table_sources,
     "modes": table_modes,
+    "body_leaders": table_body_leaders,
+    "body_hidden": table_body_hidden,
+    "body_qwen": table_body_qwen,
+    "body_local": table_body_local,
+    "body_sources": table_body_sources,
+    "grok_ablation": table_grok_ablation,
 }
 
 
@@ -755,6 +945,12 @@ def render_report(result: dict[str, Any]) -> str:
         "qwen": "Qwen3.8 Flash across runs",
         "sources": "Per-source accuracy (same pool)",
         "modes": "Accuracy by decision mode",
+        "body_leaders": "Paper body: leading and notable judges",
+        "body_hidden": "Paper body: where accuracy-only numbers mislead",
+        "body_qwen": "Paper body: Qwen3.8 Flash request settings",
+        "body_local": "Paper body: local models",
+        "body_sources": "Paper body: question sources",
+        "grok_ablation": "EXP-025 Grok protocol ablation (public diagnostic)",
     }
     for name, render in TABLES.items():
         parts += [f"## {titles[name]}", "", render(result), ""]

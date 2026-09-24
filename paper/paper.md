@@ -1,122 +1,263 @@
 # Accuracy is not enough: correctness and coverage of independent judges on identical objective decisions
 
 **Status:** working paper; pending owner review<br />
-**Evidence:** EXP-013, EXP-014, EXP-015, EXP-016, EXP-017, EXP-019, EXP-022, EXP-024, EXP-025, EXP-027; consolidated in EXP-029<br />
+**Evidence:** EXP-013 to EXP-027 prediction files, consolidated by the offline analysis EXP-029<br />
 **Repository:** [Eval Lab](https://github.com/Pukujan/Eval-lab/tree/main)
 
-## Abstract
+> [!IMPORTANT]
+> **At a glance**
+>
+> - **The problem:** AI "judges" are usually compared by one accuracy score, which ignores the questions a judge never answered.
+> - **What we did:** we gave 25 judges, from small laptop models to frontier APIs, the same 760 questions with known right answers, and counted both what they got right and what they skipped.
+> - **Finding 1:** the best judges got about 99% of all questions right, and the top two are statistically tied.
+> - **Finding 2:** a high accuracy score can hide a judge that skipped up to four in ten questions.
+> - **Finding 3:** the same model scored 84.5% or 97.4% on the same questions, depending only on its request settings.
+> - **Finding 4:** most small local models, and Grok Build, did no better than always giving the same answer.
 
-Model judges are usually compared by one accuracy number. We gave 25 judge arms,
-from sub-billion-parameter local models to frontier APIs, the same 760 blind,
-typed decisions with objective gold labels (answer keys or deterministic
-verifiers). For each run we report two things separately: coverage, the share
-of records that received a legal label, and accuracy. We report accuracy both
-among answered records and over all 760, where an unanswered record earns
-nothing. Wilson intervals and exact paired McNemar tests with Holm correction
-come from a committed script, not from hand-entered tables.
+## 1. The problem
 
-The best full-coverage API routes reached 99.21% (Qwen3.8 Flash) and 99.08%
-(Qwen 3.8 Max). The two are statistically indistinguishable. Accuracy-only
-reporting hid three kinds of failure. The run with the highest conditional
-accuracy, DeepSeek V4 Flash at 99.84%, answered only 80.39% of records. A
-rate-limited Qwen run scored 99.10% on the 58.16% of records it answered.
-Local Verdict models reached about 50% on the records they did not abstain
-on, but fell to 34.87–38.55% over all records, below the 50.26% of a
-majority-label reference. The same model on the same records scored 84.48% or
-97.36% depending only on its request configuration. Jev held full coverage at
-89.87–90.00%. The best local model reached 64.34%. Grok Build stayed at
-41.58–43.55% over all records in four runs, collapsing on pairwise decisions.
-Accuracy tables for judges should always carry coverage, the unresolved-state
-breakdown, and the request configuration.
+Teams increasingly use one AI model to grade another model's work. They pick
+that "judge" by looking at a single accuracy number.
 
-## 1. Question and problem
+That number is usually computed only over the questions the judge answered. A
+judge can hit a rate limit, return text nobody can parse, or decline to answer,
+and none of that shows up in its accuracy.
 
 > **Research question.** When independent judges, from small local models to
 > frontier APIs, receive identical typed decisions with objective gold labels,
 > how do their accuracy and coverage differ, and what does accuracy-only
 > reporting hide?
 
-Teams pick a model judge from a headline accuracy score. That score is
-normally computed over the answers the judge returned. It is silent about
-records that were rate-limited, timed out, failed to parse, or were declined,
-and it hides the request settings that produced it. This study holds the
-records, rubric, label set and gold labels fixed. Every arm faces the same 760
-blind decisions, so its correctness and its missing verdicts can be read side
-by side.
-
-This is a measurement study of objective, typed decisions. It does not rank
-providers by price. It does not claim general legal, financial or open-ended
-reasoning ability, and it does not evaluate routing or escalation (Section 7).
+This is a measurement study of objective decisions. It does not rank
+providers in general, and it does not cover open-ended or subjective grading.
 
 ## 2. Setup
 
-### 2.1 Records and gold labels
+**The questions.** Every judge saw the same 760 held-back questions, called
+the blind set. Most ask whether a proposed answer is correct (`pass` or
+`fail`). The rest show two answers and ask which is better (`A` or `B`). The
+right answer always comes from an answer key or an automatic checker, never
+from a model.
 
-The frozen EXP-015 pool contains 1,408 records: 648 public-selection and 760
-source-problem-disjoint blind-holdout records. The pool was built in EXP-013 and
-reused byte-for-byte by EXP-014 and EXP-015. Only the blind holdout is analysed
-here. Each record has a question, one candidate (`single`: `pass`/`fail`) or two
-candidates (`pairwise`: `A`/`B`/`TIE`), a rubric, the legal label set, and a gold
-label from a benchmark answer key or deterministic verifier. Model outputs are
-never used as gold.
-
-<!-- generated:composition -->
-| Source | Single | Pairwise | Total |
-|---|---:|---:|---:|
-| ARC-Easy (pairwise) | 0 | 100 | 100 |
-| Eval Lab synthetic (4 families) | 12 | 8 | 20 |
-| EvalLab-Select / ARC-Challenge | 120 | 0 | 120 |
-| GSM8K | 200 | 0 | 200 |
-| MMLU (8 subjects) | 320 | 0 | 320 |
-| **Total** | 652 | 108 | 760 |
+<!-- generated:body_sources -->
+| Source | Questions | What it tests |
+|---|---:|---|
+| MMLU (8 subjects) | 320 | school and professional knowledge |
+| GSM8K | 200 | grade-school math word problems |
+| ARC-Challenge | 120 | harder science questions |
+| ARC-Easy | 100 | pick the better of two answers |
+| Eval Lab synthetic | 20 | small hand-built checks |
 <!-- /generated -->
 
-The blind gold labels are nearly balanced: 324 `pass` and 328 `fail` single
-records, and 54 `A` and 54 `B` pairwise records (no `TIE` gold labels).
+**The judges.** A "judge" here means one recorded run of one model over all
+760 questions. API judges got an identical, strictly formatted request and had
+to reply with one allowed label. Local models ran on the author's own hardware
+and scored the allowed labels directly. That is a different harness, so
+local-versus-API comparisons use the same questions but not the same method.
 
-### 2.2 Arms
+**What we measured.**
 
-An arm is one committed run of one judge over all 760 blind records. API arms
-receive the provider-neutral typed decision packet (`eval-lab-system-one`
-v0.1.0) and must return one legal label. Local arms score the legal labels
-natively on the same records. They answer the same questions, **but under a
-different harness**, so local-versus-API comparisons are same-record, not
-same-harness. The EXP-015 + EXP-016 Qwen arm is the only derived arm. It is a
-declared merge, also used in EXP-019, in which the 317 rate-limited EXP-015
-records are filled from the separate EXP-016 retry. The majority-label
-reference answers `fail` for every single record and `B` for every pairwise
-record; it is the frozen EXP-014 baseline.
+- **Coverage** is the share of the 760 questions a judge answered with an
+  allowed label.
+- **Accuracy when it answered** is correct answers divided by answered
+  questions. This is the number most leaderboards report.
+- **Accuracy over all 760** counts a skipped question as wrong, as it would be
+  in a pipeline that needs a verdict for every item.
+- A **Wilson interval** is the range the true accuracy plausibly falls in
+  (95% confidence) given the sample size.
+- A **McNemar test** compares two judges on the same questions by looking only
+  at questions where exactly one of them was right.
 
-Not run or excluded: MiMo V2.5 (EXP-024) returned HTTP 402 on both canary
-attempts, so no blind predictions exist. Bespoke Nimble-9B and Kev-9B (EXP-027)
-do not fit the 16 GiB host in their pinned configurations. Luna (EXP-015) is
-excluded under the project's vendor-independent comparison policy (EXP-019). A
-missing arm is not a result.
+Every table and chart comes from committed scripts
+([`analyze_judge_comparison.py`](https://github.com/Pukujan/Eval-lab/blob/main/scripts/analyze_judge_comparison.py),
+[`generate_benchmark_figures.py`](https://github.com/Pukujan/Eval-lab/blob/main/scripts/generate_benchmark_figures.py)),
+and a test fails if the paper drifts from their output.
 
-### 2.3 Metrics and tests
+## 3. What happened
 
-- **Resolved:** the arm returned a legal label. Everything else is an explicit
-  status: rate limited (HTTP 429), provider error, provider timeout, parse
-  failure, abstention, or context-cap skip.
-- **Coverage** = resolved / 760.
-- **Conditional accuracy** = correct / resolved. This is the number
-  accuracy-only tables report.
-- **All-record accuracy** = correct / 760. An unresolved record earns no
-  credit, as it would in a pipeline that needs a verdict for every item.
-- **Intervals:** 95% Wilson score intervals.
-- **Paired tests:** exact two-sided McNemar tests on (a) records both arms
-  resolved and (b) all 760 records, with unresolved counted as not correct.
-  Holm correction is applied over all 325 arm pairs, separately for each view.
+Most API judges ran cleanly, but several runs lost questions along the way,
+and one discovery changed how we read the results.
 
-Everything in the tables below is generated by
-[`scripts/analyze_judge_comparison.py`](https://github.com/Pukujan/Eval-lab/blob/main/scripts/analyze_judge_comparison.py)
-from committed prediction files. The run is recorded as
-[EXP-029](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260924-029-consolidated-judge-analysis/),
-and a test fails if a table here drifts from the script's output.
+**Runs lost questions in different ways.** One Qwen run hit the provider's
+rate limit on 317 questions; a separate retry recovered them. DeepSeek V4
+Flash and V4.1 Flash returned answers our parser could not read on 149 and 139
+questions. Two local Verdict models declined to answer a quarter to a third of
+the time. MiMo V2.5 was refused with a payment error (HTTP 402) before it
+answered anything, and two 9-billion-parameter local models did not fit in the
+16 GB test machine. We report all of these as results, not as footnotes.
 
-## 3. Results
+**Grok Build failed, and fixing the format did not help.** Grok Build
+answered nearly every question but was right only about four times in ten. It
+almost always chose the wrong answer on "which is better" questions. A
+preregistered follow-up (EXP-025) tried four different request formats. It
+found and fixed a real bug in our text decoding on Windows, but no format
+improved the score (Appendix D).
 
-### 3.1 Every arm on the same 760 records
+**The same model gave two very different scores.** Qwen3.8 Flash scored 84.5%
+in its first run and 97.4% in a later run on the exact same questions. The
+question files are byte-identical, and the model name and request format match.
+What differed was a setting in the script that sent the requests.
+
+<!-- generated:body_qwen -->
+| Qwen3.8 Flash run | Request settings | Typical answer time | Correct when it answered | Math (GSM8K) |
+|---|---|---:|---:|---:|
+| EXP-013 | 128-token cap, thinking off | 0.5 s | 84.5% | 65.5% |
+| EXP-022 | provider defaults | 4.3 s | 97.4% | 99.5% |
+| EXP-024 | other route and prompt, 1,024-token cap | 5.5 s | 99.2% | 99.0% |
+<!-- /generated -->
+
+The first run capped each reply at 128 tokens and switched the model's
+"thinking" off. The later runs left both at the provider default. With the
+defaults, answers took about nine times longer, and math accuracy jumped from
+65.5% to 99.5%. That suggests the model reasons silently before answering when
+allowed to. We could not confirm this directly because those runs did not
+record token counts.
+
+## 4. What we found
+
+### Finding 1: The best judges got about 99% right, and the top two are tied
+
+Qwen3.8 Flash and Qwen 3.8 Max answered every question and got 99.2% and
+99.1% right. On only seven questions was one right and the other wrong, so
+the difference is not meaningful. Kimi K2.7 Code, GLM 5.3 Flash and MiniMax M3
+came close behind. Jev also answered everything but got 89.9% right, a clear
+step down.
+
+<figure>
+  <img src="figures/benchmark/finding_accuracy_range.png" alt="Bar chart of accuracy over all 760 questions for selected judges" />
+  <figcaption>Figure 1. Share of all 760 questions each judge got right; skipped questions count as wrong. The dashed line is the always-same-answer baseline.</figcaption>
+</figure>
+
+<!-- generated:body_leaders -->
+| Judge | Type | Answered | Correct, all 760 questions |
+|---|---|---:|---:|
+| Qwen3.8 Flash | API | 100.0% | 99.2% |
+| Qwen 3.8 Max | API | 100.0% | 99.1% |
+| Kimi K2.7 Code | API | 99.7% | 98.3% |
+| Jev 1.13 | API | 100.0% | 89.9% |
+| Kev-4B (best local model) | local | 100.0% | 64.3% |
+| Always-same-answer baseline | reference | 100.0% | 50.3% |
+| Grok 4.6 Build | API | 99.6% | 43.3% |
+<!-- /generated -->
+
+### Finding 2: A high accuracy score can hide a judge that skips questions
+
+DeepSeek V4 Flash had the highest accuracy of any judge on the questions it
+answered, 99.8%. But it answered only 80.4% of them, so it got 80.3% of the
+full set right. It falls from first place to thirteenth once skipped
+questions count.
+
+The same pattern appears with rate limits and abstentions. A rate-limited
+Qwen run looked excellent on paper while answering barely more than half the
+questions. The Verdict models answered about half correctly, but once their
+abstentions count they fall below the always-same-answer baseline.
+
+<figure>
+  <img src="figures/benchmark/finding_skipped_questions.png" alt="Dumbbell chart comparing accuracy when answered with accuracy over all questions" />
+  <figcaption>Figure 2. Hollow dot: accuracy on answered questions. Filled dot: accuracy over all 760. The gap is what an accuracy-only table hides.</figcaption>
+</figure>
+
+<!-- generated:body_hidden -->
+| Judge | Answered | Correct when it answered | Correct, all 760 | Why questions were lost |
+|---|---:|---:|---:|---|
+| DeepSeek V4 Flash | 80.4% | 99.8% | 80.3% | 149 unreadable answers |
+| GLM 5.2 | 95.7% | 99.2% | 94.9% | 33 unreadable answers |
+| Qwen3.8 Flash, one pass | 58.2% | 99.1% | 57.6% | 317 rate-limited |
+| Verdict 1.4 (local) | 74.9% | 51.5% | 38.6% | 179 abstained, 12 too long for the model |
+| Verdict pre-v1.4 (local) | 69.2% | 50.4% | 34.9% | 234 abstained |
+<!-- /generated -->
+
+### Finding 3: Request settings moved one model as much as switching models
+
+The Qwen result in Section 3 is a finding in its own right. Changing only the
+request settings moved the same model from 84.5% to 97.4% on identical questions.
+That gap is larger than the gap between Qwen and Jev.
+
+<figure>
+  <img src="figures/benchmark/finding_request_settings.png" alt="Bar chart of Qwen3.8 Flash accuracy under different request settings" />
+  <figcaption>Figure 3. Qwen3.8 Flash on the same questions under three request settings, overall and on GSM8K math.</figcaption>
+</figure>
+
+### Finding 4: Most small local models did no better than always giving the same answer
+
+A judge that always says `fail` (or `B` for two-answer questions) is right
+50.3% of the time here. Kev-4B was the only local model clearly above that,
+at 64.3%. It was strongest on the two-answer questions (93.5%) and only
+modestly above the baseline on the rest (59.5%). SemIf and Kev-0.8B were not
+meaningfully different from the baseline, and the rest scored below it.
+
+Grok Build is an API judge, but it landed with this group: its best run got
+43.6% right, significantly below the baseline.
+
+<!-- generated:body_local -->
+| Model | Answered | Correct, all 760 |
+|---|---:|---:|
+| Kev-4B (best local model) | 100.0% | 64.3% |
+| SemIf 4B | 100.0% | 54.7% |
+| Kev-0.8B | 100.0% | 50.3% |
+| Laya 421M | 98.4% | 47.8% |
+| Qwen3-4B | 100.0% | 44.6% |
+| Verdict 1.4 (local) | 74.9% | 38.6% |
+| Verdict pre-v1.4 (local) | 69.2% | 34.9% |
+| Always-same-answer baseline | 100.0% | 50.3% |
+<!-- /generated -->
+
+## 5. What it means
+
+On objective questions with known answers, judges really do differ, from
+near-perfect to worse than a constant guess. But the ranking depends on what
+you count. Three reporting rules follow:
+
+1. **Always report coverage next to accuracy**, with a breakdown of why
+   questions were lost: rate limits, errors, unreadable answers, abstentions.
+2. **Report accuracy over all questions**, or state exactly what happens to a
+   skipped one (retried, sent to another judge, or counted as a miss).
+3. **Report the request settings**: token caps, thinking flags, prompt and
+   route. Without them a judge score cannot be reproduced.
+
+## 6. Limitations
+
+- **One question pool.** It is objective and typed, and dominated by MMLU and
+  GSM8K. There are only 108 two-answer questions and no ties. Results may not
+  carry over to open-ended or subjective grading.
+- **Runs, not models.** Each judge is usually a single run on a single date,
+  through a specific route. Only Jev (two runs), Grok 4.6 (three) and Qwen
+  Flash (four setups) were repeated. Providers can change behaviour over time.
+- **Local models used a different harness** and different length limits.
+  Two 9B models were not run.
+- **The Qwen explanation is inferred.** It rests on the recorded settings and
+  answer times; token counts were not recorded. The InferHub run also changed
+  the prompt and route, so its gain cannot be pinned on one factor.
+- **Unreadable answers** were recorded, but the raw text was not kept, so we
+  cannot tell whether the model, its length, or our parser was at fault.
+- **Many comparisons.** Correcting for 325 pairwise tests is conservative.
+- **Exclusions.** Luna is excluded by project policy.
+
+## 7. Future work
+
+These topics appeared in earlier drafts and are kept out of this paper
+because they answer different questions or lack finished evidence. Earlier
+drafts are in [`paper/archive/`](https://github.com/Pukujan/Eval-lab/tree/main/paper/archive/).
+
+- **Routing and selective escalation** (EXP-009 to EXP-012): in the completed
+  replay, every routing policy kept almost nothing local. No positive evidence
+  yet.
+- **Domain pilots:** LegalBench Hearsay (EXP-028); GLEIF (EXP-026,
+  preregistered, not run); SEC EDGAR/XBRL, CourtListener and HumanEval
+  (EXP-020, planning only).
+- **Provider selection and price** (EXP-023/024): an operational question.
+- **Training a small judge:** TF-IDF student (EXP-008) and teacher-assisted
+  hard negatives (EXP-004/007).
+- **Confidence calibration** for local models and a confidence interface for
+  API judges.
+
+## Appendix A. Every judge, in full
+
+All 25 judges and the reference, ordered by accuracy over all 760 questions.
+Intervals are 95% Wilson intervals.
+
+<details>
+<summary>Full results table (26 rows)</summary>
 
 <!-- generated:main -->
 | Arm | Family | Resolved | Coverage | Conditional accuracy (95% CI) | All-record accuracy (95% CI) | Unresolved |
@@ -149,36 +290,10 @@ and a test fails if a table here drifts from the script's output.
 | Majority label (EXP-014 reference) | reference | 760/760 | 100.00% | 50.26% (46.7–53.8) | 50.26% (46.7–53.8) | — |
 <!-- /generated -->
 
-![Conditional accuracy against coverage for every arm](figures/benchmark/blind_accuracy_vs_coverage.png)
+</details>
 
-*Figure 1. Each point is one arm on the same 760 blind records. Dotted curves
-mark constant all-record accuracy: an arm far to the left can have high
-conditional accuracy and still answer few records correctly.*
-
-Roughly five tiers are visible:
-
-1. **About 99% at full coverage:** Qwen3.8 Flash and Qwen 3.8 Max (EXP-024).
-2. **About 97–99% with some missing verdicts:** Kimi K2.7 Code, GLM 5.3 Flash,
-   MiniMax M3, GLM 5.2, and the YOLO-Auto Qwen Flash runs with provider-default
-   settings.
-3. **About 90% at full coverage:** Jev.
-4. **44.61–64.34% conditional:** local models.
-5. **About 43%:** Grok Build, significantly below the majority reference
-   (Table 3).
-
-The majority-label reference sits at 50.26%. Kev-0.8B lands exactly on it.
-Laya 421M, local Qwen3-4B, and every Grok run fall below it.
-
-### 3.2 What accuracy-only reporting hides
-
-![Conditional versus all-record accuracy](figures/benchmark/blind_conditional_vs_all_record.png)
-
-*Figure 2. Hollow markers show conditional accuracy and filled markers show
-all-record accuracy. The gap is the share of records the arm never answered
-correctly because it never answered them.*
-
-Ranking arms by conditional accuracy and by all-record accuracy gives
-different orders:
+<details>
+<summary>How rankings change when skipped questions count (rank shifts)</summary>
 
 <!-- generated:ranks -->
 | Arm | Rank by conditional accuracy | Rank by all-record accuracy | Shift |
@@ -208,142 +323,10 @@ different orders:
 | Grok 4.6 Build, typed rerun (EXP-025) | 25 | 22 | +3 |
 <!-- /generated -->
 
-Three kinds of missing verdict produce the largest shifts:
+</details>
 
-- **Parse failures.** DeepSeek V4 Flash has the highest conditional accuracy
-  in the study but 149 parse failures. It drops from first to thirteenth.
-  DeepSeek V4.1 Flash (139 parse failures) and GLM 5.2 (33) move the same way.
-  On the records both answered, DeepSeek V4 Flash and Qwen3.8 Flash cannot be
-  distinguished. Over all 760 records the difference is decisive (Table 3).
-- **Rate limits.** The one-pass EXP-015 Qwen run scored 99.10% on what it
-  answered, but 317 rate-limited records leave it at 57.63% overall. The
-  separate EXP-016 retry recovers those records. Reporting the one-pass
-  number alone would describe a judge that answered barely more than half the
-  pool.
-- **Abstentions.** Verdict 1.4 and its pre-v1.4 configuration abstain on 179
-  and 234 records. They are close to 50% on what they answer. On shared
-  records Verdict 1.4 cannot be distinguished from the majority reference.
-  Over all records it is significantly worse (Table 3).
-
-Provider errors and timeouts are small for most API arms. The exception is
-Grok 4.7, with 33 process-exit errors.
-
-### 3.3 Paired comparisons
-
-<!-- generated:pairs -->
-| Comparison (A vs B) | Shared resolved | A-only / B-only correct | Holm p (shared) | A-only / B-only correct, all 760 | Holm p (all 760) |
-|---|---:|---:|---:|---:|---:|
-| Qwen3.8 Flash (EXP-024) vs Qwen 3.8 Max (EXP-024) | 760 | 4 / 3 | 1.0000 | 4 / 3 | 1.0000 |
-| Qwen3.8 Flash (EXP-024) vs DeepSeek V4 Flash (EXP-024) | 611 | 0 / 1 | 1.0000 | 145 / 1 | <0.0001 |
-| Qwen3.8 Flash (EXP-024) vs GLM 5.2 (EXP-024) | 727 | 3 / 2 | 1.0000 | 35 / 2 | <0.0001 |
-| Qwen3.8 Flash (EXP-022) vs Jev 1.13 (EXP-022) | 759 | 67 / 10 | <0.0001 | 67 / 11 | <0.0001 |
-| Qwen3.8 Flash (EXP-022) vs Qwen3.8 Flash (EXP-024) | 759 | 1 / 15 | 0.0545 | 1 / 16 | 0.0195 |
-| Qwen3.8 Flash, thinking off (EXP-013/014) vs Qwen3.8 Flash (EXP-022) | 753 | 7 / 103 | <0.0001 | 7 / 109 | <0.0001 |
-| Jev 1.13 (EXP-014) vs Jev 1.13 (EXP-022) | 760 | 4 / 3 | 1.0000 | 4 / 3 | 1.0000 |
-| Jev 1.13 (EXP-022) vs Kev-4B (EXP-027) | 760 | 222 / 28 | <0.0001 | 222 / 28 | <0.0001 |
-| Grok 4.6 Build (EXP-022) vs Grok 4.7 Build (EXP-022) | 723 | 14 / 15 | 1.0000 | 30 / 17 | 1.0000 |
-| Grok 4.6 Build (EXP-022) vs Grok 4.6 Build, typed rerun (EXP-025) | 754 | 14 / 11 | 1.0000 | 16 / 13 | 1.0000 |
-| Kev-4B (EXP-027) vs SemIf (Qwen3.5-4B) (EXP-027) | 760 | 108 / 35 | <0.0001 | 108 / 35 | <0.0001 |
-| Kev-4B (EXP-027) vs Majority label (EXP-014 reference) | 760 | 370 / 263 | 0.0027 | 370 / 263 | 0.0019 |
-| SemIf (Qwen3.5-4B) (EXP-027) vs Majority label (EXP-014 reference) | 760 | 319 / 285 | 1.0000 | 319 / 285 | 1.0000 |
-| Grok 4.6 Build (EXP-022) vs Majority label (EXP-014 reference) | 757 | 11 / 62 | <0.0001 | 11 / 64 | <0.0001 |
-| Verdict 1.4 (EXP-027) vs Majority label (EXP-014 reference) | 569 | 218 / 212 | 1.0000 | 218 / 307 | 0.0089 |
-<!-- /generated -->
-
-*Table 3. "A-only / B-only correct" counts the records where exactly one arm is
-correct; these discordant counts drive McNemar's test.*
-
-- The two full-coverage leaders (Qwen3.8 Flash and Qwen 3.8 Max) disagree on
-  only seven records and are statistically indistinguishable.
-- The two Jev runs (EXP-014 and EXP-022) also agree closely, which suggests
-  Jev's result is stable across runs.
-- Qwen Flash beats Jev in the matched EXP-022 wave.
-- Jev beats the best local model, Kev-4B, by a wide margin.
-- Kev-4B beats both SemIf and the majority reference. SemIf does not beat
-  the reference.
-- Grok 4.6 and Grok 4.7 do not differ from each other, and neither does the
-  Grok 4.6 typed rerun from EXP-022.
-
-### 3.4 Same model, same records, different request
-
-The same YOLO-Auto `qwen3.8-flash` model scored 84.48% in EXP-013 and 97.36%
-in EXP-022 on identical records. The difference is significant (Table 3). The
-records are byte-identical, and the model ID, typed specification and wire
-protocol are the same. The committed runner code differs:
-
-- **EXP-013** reused `run_qwen_streaming_retry._prompt`, which sets
-  `max_tokens=128` and `chat_template_kwargs={"enable_thinking": false}`.
-  EXP-014's Qwen comparison arm is the same prediction file, not a separate
-  run.
-- **EXP-015, EXP-016 and EXP-022** used `run_grok_luna_qwen_bakeoff._qwen_payload`.
-  It sends the same system message and typed payload at temperature 0 but sets
-  neither a token limit nor a thinking flag, leaving both at the provider
-  default. Git history shows neither field was ever present in that runner.
-- **EXP-024** reached the model through InferHub (`ali/qwen3.8-flash`) with a
-  different, user-only prompt (`run_inferhub_arm.build_prompt`) and
-  `max_tokens=1024`.
-
-<!-- generated:qwen -->
-| Run | Request configuration | Median latency (resolved) | Coverage | Conditional accuracy | GSM8K accuracy |
-|---|---|---:|---:|---:|---:|
-| Qwen3.8 Flash, thinking off (EXP-013/014) | run_qwen_streaming_retry._prompt: max_tokens=128, enable_thinking=False | 0.47 s | 99.21% | 84.48% | 65.5% (131/200) |
-| Qwen3.8 Flash, one pass (EXP-015) | run_grok_luna_qwen_bakeoff._qwen_payload: no max_tokens, no thinking flag | 4.22 s | 58.16% | 99.10% | 98.5% (196/199) |
-| Qwen3.8 Flash, EXP-015 + EXP-016 retry (declared merge) | as EXP-015; rate-limited records filled from the EXP-016 retry | 4.16 s | 99.87% | 97.50% | 98.5% (196/199) |
-| Qwen3.8 Flash (EXP-022) | run_grok_luna_qwen_bakeoff._qwen_payload: no max_tokens, no thinking flag | 4.34 s | 99.87% | 97.36% | 99.5% (199/200) |
-| Qwen3.8 Flash (EXP-024) | run_inferhub_arm.build_prompt: user-only prompt, max_tokens=1024 | 5.52 s | 100.00% | 99.21% | 99.0% (198/200) |
-<!-- /generated -->
-
-The gap sits almost entirely in reasoning-heavy sources. On GSM8K arithmetic
-the configured-off run accepted many wrong solutions. The median resolved
-latency rose roughly ninefold under the default configuration. The EXP-024
-InferHub route reports a median of 165 completion tokens per resolved record,
-for a JSON label of a few characters.
-
-The artifacts are consistent with the provider performing hidden reasoning
-under default settings and not when it was explicitly disabled. The YOLO-Auto
-runs did not record token usage, so this mechanism is inferred from the
-request configuration and latency, not observed directly.
-
-What the artifacts do establish is that request configuration alone moved the
-same model by about 13 points on the same records. A reported judge score
-without its request configuration is not reproducible.
-
-### 3.5 Per-source breakdown of the same pool
-
-EXP-013 has previously been described as a broader multidomain collection. It
-is not. It is the same 760-record blind pool, broken down by source. The
-breakdown below applies that view to six representative arms.
-
-<!-- generated:sources -->
-| Source (blind records) | Qwen3.8 Flash, thinking off (EXP-013/014) | Qwen3.8 Flash (EXP-022) | Qwen3.8 Flash (EXP-024) | Jev 1.13 (EXP-022) | Grok 4.6 Build (EXP-022) | Kev-4B (EXP-027) |
-|---|---:|---:|---:|---:|---:|---:|
-| ARC-Easy (pairwise) (100) | 97.0% (97/100) | 100.0% (100/100) | 100.0% (100/100) | 100.0% (100/100) | 1.0% (1/100) | 96.0% (96/100) |
-| Eval Lab synthetic (4 families) (20) | 52.6% (10/19) | 70.0% (14/20) | 95.0% (19/20) | 70.0% (14/20) | 40.0% (8/20) | 60.0% (12/20) |
-| EvalLab-Select / ARC-Challenge (120) | 99.2% (119/120) | 99.2% (119/120) | 100.0% (120/120) | 99.2% (119/120) | 51.7% (62/120) | 84.2% (101/120) |
-| GSM8K (200) | 65.5% (131/200) | 99.5% (199/200) | 99.0% (198/200) | 71.5% (143/200) | 50.0% (100/200) | 50.0% (100/200) |
-| MMLU (8 subjects) (320) | 88.9% (280/315) | 96.2% (307/319) | 99.1% (317/320) | 95.9% (307/320) | 49.8% (158/317) | 56.2% (180/320) |
-<!-- /generated -->
-
-Averages over the pool mask large source effects:
-
-- GSM8K separates arms most. Jev reaches 71.5% there against 99.5% for Qwen
-  Flash in the same wave.
-- Every Grok run fails the pairwise ARC-Easy items.
-- The 20-record synthetic families are too small to support per-source claims.
-
-### 3.6 The low end: local models
-
-The six EXP-027 local decision models and the EXP-017 local Qwen3-4B scorer
-answered the same 760 records on a single laptop-class host. They score legal
-labels natively, a different harness from the API arms. They used context caps
-from 512 to 4,096 tokens; over-cap records are skipped statuses.
-
-Kev-4B is the strongest local arm at 64.34%. It is the only one clearly above
-the majority reference, and most of its advantage comes from pairwise records
-(Table 4). SemIf is not distinguishable from the reference (Table 3). The rest
-cluster around or below 50%, and the Verdict models lose a quarter to a third
-of the pool to abstention. None is a substitute for the API judges
-on this pool.
+<details>
+<summary>Accuracy by question type (single answer vs pick-the-better)</summary>
 
 <!-- generated:modes -->
 | Arm | Single pass/fail accuracy | Pairwise A/B/TIE accuracy |
@@ -375,137 +358,147 @@ on this pool.
 | Verdict pre-v1.4 (EXP-027) | 51.06% (217/425) | 47.52% (48/101) |
 <!-- /generated -->
 
-*Table 4. Accuracy by decision mode (resolved records).*
+</details>
 
-## 4. Robustness and failure analysis: Grok Build
+<details>
+<summary>Accuracy by source for six representative judges</summary>
 
-Grok Build is the one API judge that answers nearly every record yet performs
-at or below the majority reference. Four blind runs across three experiments
-(EXP-015, EXP-022 for 4.6 and 4.7, EXP-025) give the same picture:
+The earlier EXP-013 report described this breakdown as a broader collection.
+It is the same 760-question blind pool, split by source.
 
-- about 50% on single records;
-- 0.93–3.74% on pairwise records (Table 4);
-- about 43% overall.
+<!-- generated:sources -->
+| Source (blind records) | Qwen3.8 Flash, thinking off (EXP-013/014) | Qwen3.8 Flash (EXP-022) | Qwen3.8 Flash (EXP-024) | Jev 1.13 (EXP-022) | Grok 4.6 Build (EXP-022) | Kev-4B (EXP-027) |
+|---|---:|---:|---:|---:|---:|---:|
+| ARC-Easy (pairwise) (100) | 97.0% (97/100) | 100.0% (100/100) | 100.0% (100/100) | 100.0% (100/100) | 1.0% (1/100) | 96.0% (96/100) |
+| Eval Lab synthetic (4 families) (20) | 52.6% (10/19) | 70.0% (14/20) | 95.0% (19/20) | 70.0% (14/20) | 40.0% (8/20) | 60.0% (12/20) |
+| EvalLab-Select / ARC-Challenge (120) | 99.2% (119/120) | 99.2% (119/120) | 100.0% (120/120) | 99.2% (119/120) | 51.7% (62/120) | 84.2% (101/120) |
+| GSM8K (200) | 65.5% (131/200) | 99.5% (199/200) | 99.0% (198/200) | 71.5% (143/200) | 50.0% (100/200) | 50.0% (100/200) |
+| MMLU (8 subjects) (320) | 88.9% (280/315) | 96.2% (307/319) | 99.1% (317/320) | 95.9% (307/320) | 49.8% (158/317) | 56.2% (180/320) |
+<!-- /generated -->
 
-The Build CLI surfaced `grok-4.6-build` and `grok-4.7-build`. Requested and
-surfaced model IDs are kept separate in the artifacts.
+</details>
 
-EXP-025 preregistered a test of whether the typed contract caused the failure.
-It compared four variants on a 64-record public diagnostic: the original typed
-schema, explicit task wording with schema, semantic labels with schema, and
-explicit wording with no native schema. To replace the baseline, a variant had
-to keep at least 95% public coverage and improve the mode-balanced score by at
-least 0.10.
+<details>
+<summary>Question pool composition</summary>
 
-No variant passed:
+<!-- generated:composition -->
+| Source | Single | Pairwise | Total |
+|---|---:|---:|---:|
+| ARC-Easy (pairwise) | 0 | 100 | 100 |
+| Eval Lab synthetic (4 families) | 12 | 8 | 20 |
+| EvalLab-Select / ARC-Challenge | 120 | 0 | 120 |
+| GSM8K | 200 | 0 | 200 |
+| MMLU (8 subjects) | 320 | 0 | 320 |
+| **Total** | 652 | 108 | 760 |
+<!-- /generated -->
 
-| Variant | Public resolved | Mode-balanced score |
+</details>
+
+<figure>
+  <img src="figures/benchmark/blind_accuracy_vs_coverage.png" alt="Scatter chart of accuracy on answered questions against coverage for every judge" />
+  <figcaption>Figure A1. Every judge on one chart: accuracy on answered questions against coverage. Dotted curves mark equal accuracy over all 760 questions.</figcaption>
+</figure>
+
+## Appendix B. Paired tests
+
+Exact two-sided McNemar tests on (a) questions both judges answered and (b)
+all 760 questions with skipped counted as wrong. Holm correction is applied
+over all 325 pairs, separately for each view. "A-only / B-only correct"
+counts questions where exactly one judge was right.
+
+<details>
+<summary>Selected paired comparisons (15 rows)</summary>
+
+<!-- generated:pairs -->
+| Comparison (A vs B) | Shared resolved | A-only / B-only correct | Holm p (shared) | A-only / B-only correct, all 760 | Holm p (all 760) |
+|---|---:|---:|---:|---:|---:|
+| Qwen3.8 Flash (EXP-024) vs Qwen 3.8 Max (EXP-024) | 760 | 4 / 3 | 1.0000 | 4 / 3 | 1.0000 |
+| Qwen3.8 Flash (EXP-024) vs DeepSeek V4 Flash (EXP-024) | 611 | 0 / 1 | 1.0000 | 145 / 1 | <0.0001 |
+| Qwen3.8 Flash (EXP-024) vs GLM 5.2 (EXP-024) | 727 | 3 / 2 | 1.0000 | 35 / 2 | <0.0001 |
+| Qwen3.8 Flash (EXP-022) vs Jev 1.13 (EXP-022) | 759 | 67 / 10 | <0.0001 | 67 / 11 | <0.0001 |
+| Qwen3.8 Flash (EXP-022) vs Qwen3.8 Flash (EXP-024) | 759 | 1 / 15 | 0.0545 | 1 / 16 | 0.0195 |
+| Qwen3.8 Flash, thinking off (EXP-013/014) vs Qwen3.8 Flash (EXP-022) | 753 | 7 / 103 | <0.0001 | 7 / 109 | <0.0001 |
+| Jev 1.13 (EXP-014) vs Jev 1.13 (EXP-022) | 760 | 4 / 3 | 1.0000 | 4 / 3 | 1.0000 |
+| Jev 1.13 (EXP-022) vs Kev-4B (EXP-027) | 760 | 222 / 28 | <0.0001 | 222 / 28 | <0.0001 |
+| Grok 4.6 Build (EXP-022) vs Grok 4.7 Build (EXP-022) | 723 | 14 / 15 | 1.0000 | 30 / 17 | 1.0000 |
+| Grok 4.6 Build (EXP-022) vs Grok 4.6 Build, typed rerun (EXP-025) | 754 | 14 / 11 | 1.0000 | 16 / 13 | 1.0000 |
+| Kev-4B (EXP-027) vs SemIf (Qwen3.5-4B) (EXP-027) | 760 | 108 / 35 | <0.0001 | 108 / 35 | <0.0001 |
+| Kev-4B (EXP-027) vs Majority label (EXP-014 reference) | 760 | 370 / 263 | 0.0027 | 370 / 263 | 0.0019 |
+| SemIf (Qwen3.5-4B) (EXP-027) vs Majority label (EXP-014 reference) | 760 | 319 / 285 | 1.0000 | 319 / 285 | 1.0000 |
+| Grok 4.6 Build (EXP-022) vs Majority label (EXP-014 reference) | 757 | 11 / 62 | <0.0001 | 11 / 64 | <0.0001 |
+| Verdict 1.4 (EXP-027) vs Majority label (EXP-014 reference) | 569 | 218 / 212 | 1.0000 | 218 / 307 | 0.0089 |
+<!-- /generated -->
+
+</details>
+
+## Appendix C. Qwen request settings in detail
+
+- **EXP-013** used `run_qwen_streaming_retry._prompt`, which sets
+  `max_tokens=128` and `chat_template_kwargs={"enable_thinking": false}`.
+  EXP-014's Qwen arm is the same prediction file, not a separate run.
+- **EXP-015, EXP-016 and EXP-022** used
+  `run_grok_luna_qwen_bakeoff._qwen_payload`: the same system message and
+  payload at temperature 0, with no token limit and no thinking flag. Git
+  history shows neither field was ever present in that runner.
+- **EXP-024** used InferHub (`ali/qwen3.8-flash`) with a user-only prompt
+  (`run_inferhub_arm.build_prompt`) and `max_tokens=1024`.
+
+<details>
+<summary>All Qwen3.8 Flash runs (5 rows)</summary>
+
+<!-- generated:qwen -->
+| Run | Request configuration | Median latency (resolved) | Coverage | Conditional accuracy | GSM8K accuracy |
+|---|---|---:|---:|---:|---:|
+| Qwen3.8 Flash, thinking off (EXP-013/014) | run_qwen_streaming_retry._prompt: max_tokens=128, enable_thinking=False | 0.47 s | 99.21% | 84.48% | 65.5% (131/200) |
+| Qwen3.8 Flash, one pass (EXP-015) | run_grok_luna_qwen_bakeoff._qwen_payload: no max_tokens, no thinking flag | 4.22 s | 58.16% | 99.10% | 98.5% (196/199) |
+| Qwen3.8 Flash, EXP-015 + EXP-016 retry (declared merge) | as EXP-015; rate-limited records filled from the EXP-016 retry | 4.16 s | 99.87% | 97.50% | 98.5% (196/199) |
+| Qwen3.8 Flash (EXP-022) | run_grok_luna_qwen_bakeoff._qwen_payload: no max_tokens, no thinking flag | 4.34 s | 99.87% | 97.36% | 99.5% (199/200) |
+| Qwen3.8 Flash (EXP-024) | run_inferhub_arm.build_prompt: user-only prompt, max_tokens=1024 | 5.52 s | 100.00% | 99.21% | 99.0% (198/200) |
+<!-- /generated -->
+
+</details>
+
+## Appendix D. Grok Build protocol ablation
+
+EXP-025 compared four request formats on a 64-question public diagnostic. To
+replace the baseline, a format had to keep at least 95% coverage and improve
+the mode-balanced score by at least 0.10. None did, and the blind rerun of
+the baseline matched the earlier runs (Appendix B).
+
+<!-- generated:grok_ablation -->
+| Request format | Public answered | Mode-balanced score |
 |---|---:|---:|
 | typed schema (baseline) | 64/64 | 0.2656 |
-| explicit schema | 63/64 | 0.2581 |
-| semantic schema | 63/64 | 0.2661 |
-| explicit, no schema | 0/64 | n/a (57 parse failures, 6 provider errors, 1 rate limit) |
+| explicit wording + schema | 63/64 | 0.2581 |
+| semantic labels + schema | 63/64 | 0.2661 |
+| explicit wording, no schema | 0/64 | n/a (no readable answers) |
+<!-- /generated -->
 
-The ablation found and fixed a real harness defect: a Windows locale-decoding
-error in the shared stream reader. It did not find a better contract. The
-typed baseline's blind rerun reproduced the earlier result, and paired tests
-find no difference between runs (Table 3).
-
-The honest conclusion is narrow. Grok Build underperforms sharply under this
-typed-judge harness family. The experiments cannot separate model behaviour
-from harness effects, and this is not a general capability estimate.
-
-![Grok protocol ablation](figures/benchmark/grok_protocol_ablation.png)
-
-*Figure 3. EXP-025 public diagnostic and blind typed-baseline rerun.*
+<figure>
+  <img src="figures/benchmark/grok_protocol_ablation.png" alt="Bar chart of Grok Build scores under four request formats" />
+  <figcaption>Figure D1. No request format beat the typed baseline on the EXP-025 public diagnostic.</figcaption>
+</figure>
 
 Source: [EXP-025](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260922-025-grok-protocol-ablation/).
 
-## 5. Discussion: how judge results should be reported
+## Appendix E. Calibration (outside the research question)
 
-On objective typed decisions, the same records separate judges clearly, from
-about 99% down to below the majority reference. But the order depends on what
-is counted. Three reporting rules follow directly from the results:
+No API judge exposed usable probabilities. For the local Qwen3-4B scorer
+(EXP-017/019), temperature scaling was fit on public questions only and
+applied once to the blind set. Accuracy stayed at 44.61%, while Brier score
+fell from 0.7037 to 0.5160, NLL from 1.0767 to 0.7430 and ECE from 0.3411 to
+0.0783. Its confidence became more honest while its decisions stayed weak.
 
-1. **Report coverage and the unresolved breakdown next to accuracy.** In this
-   study the highest conditional accuracy belonged to an arm that answered
-   80.39% of records. Abstention turned roughly 50% conditional accuracy into
-   an all-record score below a constant-label baseline.
-2. **Report all-record accuracy, or state the fallback.** Whether an unanswered
-   record is retried, routed elsewhere, or counted as a miss is part of the
-   judge's operational definition.
-3. **Report the request configuration.** Token limits, thinking flags, prompt
-   framing and route moved one model by about 13 points on identical records.
-
-## 6. Limitations
-
-- **One pool.** It is objective and typed, and dominated by MMLU (320) and
-  GSM8K (200). There are only 108 pairwise records and no `TIE` gold labels.
-  Results do not transfer to open-ended, subjective, legal-opinion or
-  expert-adjudicated tasks.
-- **Runs, not models.** Arms are single runs from different dates, harnesses
-  and routes. Apart from Jev (two runs), Grok 4.6 (three) and Qwen Flash
-  (four configurations), there is no run-to-run replication. Provider
-  behaviour can change between dates.
-- **Local arms** use a different harness and different context caps from the
-  API arms. Nimble-9B and Kev-9B were not run.
-- **Qwen explanation.** The Section 3.4 explanation rests on committed request
-  configuration and latency. Token usage was not recorded for the YOLO-Auto
-  runs, so hidden reasoning is inferred, not observed. EXP-024 also changed
-  the prompt and route, so its gain cannot be attributed to one factor.
-- **Parse failures** in EXP-024 are recorded as `label_not_found`, but the raw
-  response text was not retained. Whether the cause is the model, output
-  length, or the parser cannot be determined from the artifacts.
-- **Multiple testing.** Holm correction over 325 pairs is conservative. Paired
-  tests on shared records exclude each arm's unresolved records by
-  construction.
-- **Exclusions.** Luna is excluded by project policy, so the study cannot
-  speak to that model.
-- **Confidence.** Calibration is outside the research question. Only local
-  scorers expose probabilities; see Appendix A.
-
-## 7. Future work (moved out of this paper)
-
-These directions appeared in earlier drafts. They are kept out of this paper
-because they answer different questions or lack completed evidence. Earlier
-drafts are preserved in [`paper/archive/`](https://github.com/Pukujan/Eval-lab/tree/main/paper/archive/).
-
-- **Selective escalation and routing** (EXP-009 to EXP-012). In the completed
-  replay, every calibrated routing policy collapsed to nearly zero local
-  coverage and was marked descriptive. There is no positive evidence yet.
-- **Domain pilots:**
-  - LegalBench Hearsay (EXP-028) is a small, separate task.
-  - GLEIF (EXP-026) is preregistered but not run.
-  - SEC EDGAR/XBRL and CourtListener tracks and HumanEval (EXP-020) are
-    planning-only.
-- **Provider selection and price** (EXP-023/024 InferHub recommendation
-  policy). This is an operational question, not the scientific subject.
-- **Training a small judge:** TF-IDF student (EXP-008), teacher-assisted hard
-  negatives (EXP-004/007).
-- **Confidence calibration** for probability-bearing local arms (EXP-027
-  native probabilities) and a confidence interface for API judges.
-
-## Appendix A. Calibration (outside the research question)
-
-No API arm exposed a validated probability map, so API judges are not called
-calibrated here. For the local Qwen3-4B scorer (EXP-017/019), scalar
-temperature scaling was fit on public-selection records only, separately for
-single (T = 6.864867) and pairwise (T = 403.428793) records. It was then
-applied once to the blind holdout.
-
-Labels and accuracy (44.61%) were unchanged. Blind Brier score fell from 0.7037
-to 0.5160, NLL from 1.0767 to 0.7430, and ECE from 0.3411 to 0.0783. The judge's
-confidence became more honest while its decisions stayed weak. Calibration is a
-separate property from accuracy.
-
-![Local Qwen3-4B calibration](figures/benchmark/local_qwen_calibration.png)
+<figure>
+  <img src="figures/benchmark/local_qwen_calibration.png" alt="Bar charts of calibration error before and after temperature scaling" />
+  <figcaption>Figure E1. Calibration made local Qwen3-4B's confidence more honest without changing its answers.</figcaption>
+</figure>
 
 Source: [EXP-019](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260921-019-calibrated-judge-study/).
 
-## Appendix B. Reproducibility
+## Appendix F. Reproducibility
 
-Regenerate the analysis, the paper tables and the figures offline, with no
-provider credentials:
+Everything regenerates offline, with no provider credentials:
 
 ```powershell
 uv sync --locked --extra dev --extra figures
@@ -518,15 +511,14 @@ Every source prediction file is listed with an LF-normalized SHA-256 in
 [EXP-029 `results.json`](https://github.com/Pukujan/Eval-lab/blob/main/experiments/EXP-20260924-029-consolidated-judge-analysis/results.json).
 
 Experiment bundles:
-
-- [EXP-013 Qwen Flash, thinking off](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260921-013-qwen-multidomain-holdout/)
-- [EXP-014 independent Jev](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260921-014-independent-jev-benchmark/)
-- [EXP-015 Grok/Qwen bakeoff](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260921-015-grok-luna-qwen-bakeoff/)
-- [EXP-016 Qwen rate-limit retry](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260921-016-qwen-rate-limit-retry/)
-- [EXP-017 local Qwen3-4B](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260921-017-judge-calibration/)
-- [EXP-019 calibration study](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260921-019-calibrated-judge-study/)
-- [EXP-022 direct wave](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260922-022-fast-provider-wave/)
-- [EXP-024 InferHub wave](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260922-024-inferhub-recommendation-wave/)
-- [EXP-025 Grok protocol ablation](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260922-025-grok-protocol-ablation/)
-- [EXP-027 local decision models](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260924-027-local-decision-bakeoff/)
-- [EXP-029 consolidated analysis](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260924-029-consolidated-judge-analysis/)
+[EXP-013](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260921-013-qwen-multidomain-holdout/),
+[EXP-014](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260921-014-independent-jev-benchmark/),
+[EXP-015](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260921-015-grok-luna-qwen-bakeoff/),
+[EXP-016](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260921-016-qwen-rate-limit-retry/),
+[EXP-017](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260921-017-judge-calibration/),
+[EXP-019](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260921-019-calibrated-judge-study/),
+[EXP-022](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260922-022-fast-provider-wave/),
+[EXP-024](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260922-024-inferhub-recommendation-wave/),
+[EXP-025](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260922-025-grok-protocol-ablation/),
+[EXP-027](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260924-027-local-decision-bakeoff/),
+[EXP-029](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260924-029-consolidated-judge-analysis/).

@@ -51,3 +51,39 @@ def test_arms_cover_all_blind_records_and_keep_unresolved_visible() -> None:
 def test_paper_tables_are_generated() -> None:
     paper = Path(__file__).resolve().parents[1] / "paper" / "paper.md"
     assert paper_tables_current(build(), paper)
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def _numeric_leaves(value: object) -> list[float]:
+    if isinstance(value, bool):
+        return []
+    if isinstance(value, (int, float)):
+        return [float(value)]
+    if isinstance(value, dict):
+        return [x for item in value.values() for x in _numeric_leaves(item)]
+    if isinstance(value, list):
+        return [x for item in value for x in _numeric_leaves(item)]
+    return []
+
+
+def test_paper_prose_numbers_trace_to_committed_results() -> None:
+    """Every decimal percentage or 4-decimal metric in the paper prose must come from results."""
+    import re
+
+    sources = [
+        ROOT / "experiments/EXP-20260924-029-consolidated-judge-analysis/results.json",
+        ROOT / "experiments/EXP-20260922-025-grok-protocol-ablation/results.json",
+        ROOT / "experiments/EXP-20260921-019-calibrated-judge-study/results.json",
+    ]
+    leaves = [x for path in sources for x in _numeric_leaves(json.loads(path.read_text("utf-8")))]
+    allowed = set()
+    for x in leaves:
+        allowed |= {f"{x * 100:.1f}", f"{x * 100:.2f}", f"{x:.1f}", f"{x:.2f}", f"{x:.4f}"}
+    text = (ROOT / "paper/paper.md").read_text(encoding="utf-8")
+    prose = re.sub(r"<!-- generated:[a-z_]+ -->.*?<!-- /generated -->", "", text, flags=re.DOTALL)
+    cited = re.findall(r"(\d+\.\d+)%", prose) + re.findall(r"\b(0\.\d{4})\b", prose)
+    assert cited, "expected numeric claims in the paper prose"
+    unsupported = sorted({value for value in cited if value not in allowed})
+    assert not unsupported, f"paper prose numbers not found in committed results: {unsupported}"

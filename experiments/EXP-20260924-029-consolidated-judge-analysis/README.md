@@ -27,7 +27,10 @@ label scoring, not the provider typed-output protocol).
   95% Wilson intervals, status breakdown, per-mode and per-source accuracy,
   median latency and tokens where recorded; exact McNemar tests for all 325
   arm pairs (shared resolved records and all 760), Holm-corrected.
-- `report.md` — human-readable summary of the same data.
+- `report.md` — human-readable summary of the same data, including the slim
+  paper-body tables.
+- `results.json` also copies the EXP-025 public Grok variant scores (with the
+  source hash) for the paper's appendix table.
 
 ## Reproduce
 

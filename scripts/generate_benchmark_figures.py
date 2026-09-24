@@ -109,18 +109,18 @@ def apply_theme(ax: plt.Axes, xlim: tuple[float, float]) -> None:
     ax.set_xlim(*xlim)
     ax.grid(axis="x", color=GRID, linewidth=0.8)
     ax.set_axisbelow(True)
-    ax.tick_params(colors=MUTED, labelsize=10, length=0)
+    ax.tick_params(colors=MUTED, labelsize=14, length=0)
     for spine in ax.spines.values():
         spine.set_visible(False)
 
 
 def add_title(fig: plt.Figure, title: str, subtitle: str) -> None:
-    fig.text(0.055, 0.955, title, ha="left", va="top", fontsize=20, fontweight="bold", color=INK)
-    fig.text(0.055, 0.916, subtitle, ha="left", va="top", fontsize=10.5, color=MUTED)
+    fig.text(0.02, 0.985, title, ha="left", va="top", fontsize=21, fontweight="bold", color=INK)
+    fig.text(0.02, 0.925, subtitle, ha="left", va="top", fontsize=14, color=MUTED)
 
 
 def add_source(fig: plt.Figure, text: str) -> None:
-    fig.text(0.055, 0.026, text, ha="left", va="bottom", fontsize=8.5, color=MUTED)
+    fig.text(0.02, 0.005, text, ha="left", va="bottom", fontsize=11, color=MUTED)
 
 
 def save_figure(fig: plt.Figure, stem: str) -> list[str]:
@@ -139,12 +139,12 @@ def plot_grok(payload: dict[str, Any]) -> list[str]:
     scores = [public[key]["selection_score"] for key in order]
     coverages = [public[key]["coverage"] * 100 for key in order]
     y = np.arange(len(order))
-    fig, axes = plt.subplots(1, 2, figsize=(13.5, 6.2), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(12, 6.6), sharey=True)
     fig.patch.set_facecolor(BG)
     add_title(
         fig,
-        "Grok protocol ablation: no tested contract fixed the blind failure",
-        "EXP-025 public selection • mode-balanced score and resolved coverage are shown separately",
+        "No request format fixed Grok Build's failure",
+        "EXP-025 public diagnostic (64 questions): score and share answered",
     )
     score_ax, coverage_ax = axes
     score_values = [value if value is not None else 0 for value in scores]
@@ -154,15 +154,15 @@ def plot_grok(payload: dict[str, Any]) -> list[str]:
     score_ax.set_title(
         "Public mode-balanced score",
         loc="left",
-        fontsize=11.5,
+        fontsize=15,
         fontweight="bold",
         color=INK,
         pad=12,
     )
-    score_ax.set_xlabel("Score", color=MUTED, fontsize=9.5)
+    score_ax.set_xlabel("Score", color=MUTED, fontsize=13)
     score_ax.set_xticks([0, 0.1, 0.2, 0.3])
     score_ax.set_yticks(y, labels)
-    score_ax.tick_params(axis="y", labelcolor=INK, labelsize=10.5, pad=8)
+    score_ax.tick_params(axis="y", labelcolor=INK, labelsize=14, pad=8)
     score_ax.invert_yaxis()
     for key, bar, value in zip(order, bars, scores):
         if value is None:
@@ -171,7 +171,7 @@ def plot_grok(payload: dict[str, Any]) -> list[str]:
                 bar.get_y() + bar.get_height() / 2,
                 "not scored: 0 resolved",
                 va="center",
-                fontsize=9.5,
+                fontsize=13,
                 color=INK,
             )
         else:
@@ -180,16 +180,16 @@ def plot_grok(payload: dict[str, Any]) -> list[str]:
                 bar.get_y() + bar.get_height() / 2,
                 f"{value:.4f}",
                 va="center",
-                fontsize=9.5,
+                fontsize=13,
                 color=INK,
             )
 
     bars = coverage_ax.barh(y, coverages, height=0.62, color=colors, edgecolor="none")
     apply_theme(coverage_ax, (0, 105))
     coverage_ax.set_title(
-        "Public resolved coverage", loc="left", fontsize=11.5, fontweight="bold", color=INK, pad=12
+        "Public resolved coverage", loc="left", fontsize=15, fontweight="bold", color=INK, pad=12
     )
-    coverage_ax.set_xlabel("Percent of 64 records", color=MUTED, fontsize=9.5)
+    coverage_ax.set_xlabel("Percent of 64 records", color=MUTED, fontsize=13)
     coverage_ax.set_xticks([0, 25, 50, 75, 100])
     coverage_ax.tick_params(axis="y", left=False, labelleft=False)
     for bar, value in zip(bars, coverages):
@@ -198,7 +198,7 @@ def plot_grok(payload: dict[str, Any]) -> list[str]:
             bar.get_y() + bar.get_height() / 2,
             f"{value:.2f}%",
             va="center",
-            fontsize=9.5,
+            fontsize=13,
             color=INK,
         )
 
@@ -211,7 +211,7 @@ def plot_grok(payload: dict[str, Any]) -> list[str]:
         f"{blind['single_accuracy'] * 100:.1f}% single • {blind['pairwise_accuracy'] * 100:.1f}% pairwise",
         ha="left",
         va="bottom",
-        fontsize=10.5,
+        fontsize=14,
         color=INK,
         bbox={"boxstyle": "round,pad=0.6", "facecolor": "#E9F7F4", "edgecolor": "#B9E7DE"},
     )
@@ -231,12 +231,12 @@ def plot_calibration(payload: dict[str, Any]) -> list[str]:
         ("Negative log likelihood", "nll"),
         ("Expected calibration error", "ece"),
     ]
-    fig, axes = plt.subplots(1, 3, figsize=(14, 5.6))
+    fig, axes = plt.subplots(1, 3, figsize=(12, 6))
     fig.patch.set_facecolor(BG)
     add_title(
         fig,
-        "Calibration changes confidence, not selected labels",
-        "Local Qwen 4B blind holdout • temperature fit on a separate public calibration split",
+        "Calibration made confidence honest; answers stayed the same",
+        "Local Qwen3-4B, blind set; temperature fit on separate public questions",
     )
     for ax, (label, key) in zip(axes, metrics):
         values = [float(raw[key]), float(calibrated[key])]
@@ -244,10 +244,10 @@ def plot_calibration(payload: dict[str, Any]) -> list[str]:
         ymax = max(values) * 1.35
         apply_theme(ax, (-0.6, 1.6))
         ax.set_ylim(0, ymax)
-        ax.set_title(label, loc="left", fontsize=11.5, fontweight="bold", color=INK, pad=12)
+        ax.set_title(label, loc="left", fontsize=15, fontweight="bold", color=INK, pad=12)
         ax.set_xticks([0, 1], ["Raw", "Calibrated"])
-        ax.tick_params(axis="x", labelcolor=INK, labelsize=10)
-        ax.set_ylabel("Lower is better", color=MUTED, fontsize=9.5)
+        ax.tick_params(axis="x", labelcolor=INK, labelsize=14)
+        ax.set_ylabel("Lower is better", color=MUTED, fontsize=13)
         for bar, value in zip(bars, values):
             ax.text(
                 bar.get_x() + bar.get_width() / 2,
@@ -255,7 +255,7 @@ def plot_calibration(payload: dict[str, Any]) -> list[str]:
                 f"{value:.4f}",
                 ha="center",
                 va="top",
-                fontsize=10,
+                fontsize=14,
                 color="white",
                 fontweight="bold",
             )
@@ -266,7 +266,7 @@ def plot_calibration(payload: dict[str, Any]) -> list[str]:
         f"Accuracy is unchanged at {float(calibrated['accuracy']) * 100:.2f}% • calibration improves confidence metrics only",
         ha="left",
         va="bottom",
-        fontsize=10.5,
+        fontsize=14,
         color=INK,
         bbox={"boxstyle": "round,pad=0.6", "facecolor": "#E9F7F4", "edgecolor": "#B9E7DE"},
     )
@@ -290,13 +290,12 @@ def spread(values: list[float], gap: float) -> list[float]:
 def plot_accuracy_vs_coverage(payload: dict[str, Any]) -> list[str]:
     arms = payload["arms"]
     keys = list(arms)
-    fig, ax = plt.subplots(figsize=(14, 9.2))
+    fig, ax = plt.subplots(figsize=(14, 11))
     fig.patch.set_facecolor(BG)
     add_title(
         fig,
-        "Accuracy among answered records vs. share of records answered",
-        "760 blind records \u00b7 every arm on the same typed decisions \u00b7 dotted curves: "
-        "all-record accuracy (unanswered earns no credit)",
+        "Every judge: accuracy when answered vs. share answered",
+        "760 blind questions \u00b7 dotted curves: equal accuracy over all 760",
     )
     ax.set_facecolor(BG)
     for level in (40, 50, 60, 70, 80, 90):
@@ -308,7 +307,7 @@ def plot_accuracy_vs_coverage(payload: dict[str, Any]) -> list[str]:
             level * 100 / x_label,
             f"{level}% of all records",
             color=MUTED,
-            fontsize=7.5,
+            fontsize=11,
             va="bottom",
             rotation=-18,
         )
@@ -332,7 +331,7 @@ def plot_accuracy_vs_coverage(payload: dict[str, Any]) -> list[str]:
         key=lambda k: (arms[k]["conditional_accuracy"], k),
     )
     for group, x_text, align in ((right, 108.5, "left"), (left, None, "left")):
-        ys = spread([arms[k]["conditional_accuracy"] * 100 for k in group], 2.05)
+        ys = spread([arms[k]["conditional_accuracy"] * 100 for k in group], 2.6)
         for key, y_text in zip(group, ys):
             arm = arms[key]
             x, y = arm["coverage"] * 100, arm["conditional_accuracy"] * 100
@@ -342,7 +341,7 @@ def plot_accuracy_vs_coverage(payload: dict[str, Any]) -> list[str]:
                 (x, y),
                 xytext=(tx, y_text),
                 textcoords="data",
-                fontsize=8.6,
+                fontsize=12,
                 color=INK,
                 ha=align,
                 va="center",
@@ -355,9 +354,9 @@ def plot_accuracy_vs_coverage(payload: dict[str, Any]) -> list[str]:
     ax.set_axisbelow(True)
     for spine in ax.spines.values():
         spine.set_visible(False)
-    ax.tick_params(colors=MUTED, labelsize=10, length=0)
-    ax.set_xlabel("Coverage: records with a legal label (%)", color=MUTED, fontsize=10)
-    ax.set_ylabel("Conditional accuracy: correct / answered (%)", color=MUTED, fontsize=10)
+    ax.tick_params(colors=MUTED, labelsize=14, length=0)
+    ax.set_xlabel("Coverage: records with a legal label (%)", color=MUTED, fontsize=14)
+    ax.set_ylabel("Conditional accuracy: correct / answered (%)", color=MUTED, fontsize=14)
     handles = [
         plt.Line2D([], [], marker="o", linestyle="", color=c, markersize=8, label=t)
         for c, t in (
@@ -368,47 +367,214 @@ def plot_accuracy_vs_coverage(payload: dict[str, Any]) -> list[str]:
             (GRAY, "Majority-label reference"),
         )
     ]
-    ax.legend(handles=handles, loc="lower left", frameon=False, fontsize=9)
+    ax.legend(handles=handles, loc="lower left", frameon=False, fontsize=13)
     fig.subplots_adjust(left=0.07, right=0.72, top=0.86, bottom=0.1)
     add_source(fig, "Source: EXP-20260924-029 results.json (scripts/analyze_judge_comparison.py)")
     return save_figure(fig, "blind_accuracy_vs_coverage")
 
 
-def plot_conditional_vs_all_record(payload: dict[str, Any]) -> list[str]:
+FINDING_ARMS = (
+    "ali_qwen38_flash_exp024",
+    "ali_qwen38_max_exp024",
+    "ali_kimi_k27_code_exp024",
+    "cbcn_glm53_flash_exp024",
+    "cbcn_minimax_m3_exp024",
+    "jev_exp022",
+    "cbcn_deepseek_v4_flash_exp024",
+    "kev_4b_exp027",
+    "semif_qwen35_4b_exp027",
+    "grok46_exp022",
+    "verdict_14_exp027",
+)
+PLAIN = {
+    "ali_qwen38_flash_exp024": "Qwen3.8 Flash",
+    "ali_qwen38_max_exp024": "Qwen 3.8 Max",
+    "ali_kimi_k27_code_exp024": "Kimi K2.7 Code",
+    "cbcn_glm53_flash_exp024": "GLM 5.3 Flash",
+    "cbcn_minimax_m3_exp024": "MiniMax M3",
+    "jev_exp022": "Jev 1.13",
+    "cbcn_deepseek_v4_flash_exp024": "DeepSeek V4 Flash",
+    "kev_4b_exp027": "Kev-4B (local)",
+    "semif_qwen35_4b_exp027": "SemIf 4B (local)",
+    "grok46_exp022": "Grok 4.6 Build",
+    "verdict_14_exp027": "Verdict 1.4 (local)",
+    "ali_glm52_exp024": "GLM 5.2",
+    "qwen_flash_exp015": "Qwen3.8 Flash, one pass",
+    "verdict_original_exp027": "Verdict pre-v1.4 (local)",
+}
+SOURCE_NOTE = "Source: EXP-029 results.json (scripts/analyze_judge_comparison.py)"
+
+
+def finding_color(key: str, arm: dict[str, Any], majority: float) -> str:
+    if arm["all_record_accuracy"] < majority:
+        return CORAL
+    if arm["family"] == "local":
+        return PLUM
+    if arm["all_record_accuracy"] >= 0.98:
+        return TEAL
+    return "#8FA9BF"
+
+
+def plot_finding_accuracy_range(payload: dict[str, Any]) -> list[str]:
     arms = payload["arms"]
-    order = payload["rank_by_all_record_accuracy"] + [
-        k for k in arms if arms[k]["family"] == "baseline"
-    ]
-    y = np.arange(len(order))
-    fig, ax = plt.subplots(figsize=(13, 0.42 * len(order) + 2.6))
+    majority = arms["majority_exp014"]["all_record_accuracy"]
+    keys = sorted(FINDING_ARMS, key=lambda k: (-arms[k]["all_record_accuracy"], k))
+    values = [arms[k]["all_record_accuracy"] * 100 for k in keys]
+    y = np.arange(len(keys))
+    fig, ax = plt.subplots(figsize=(9, 7.4))
     fig.patch.set_facecolor(BG)
     add_title(
         fig,
-        "What accuracy-only reporting hides",
-        "760 blind records \u00b7 hollow: accuracy among answered records \u00b7 filled: "
-        "accuracy over all records \u00b7 whisker: 95% Wilson interval (all-record)",
+        "Top judges get ~99% right; some do worse than a constant guess",
+        "Share of all 760 questions answered correctly (skipped = wrong)",
     )
-    for index, key in enumerate(order):
+    colors = [finding_color(k, arms[k], majority) for k in keys]
+    ax.barh(y, values, height=0.68, color=colors, edgecolor="none")
+    apply_theme(ax, (0, 112))
+    ax.axvline(majority * 100, color=INK, linestyle="--", linewidth=1.4)
+    ax.text(
+        majority * 100 + 1,
+        -0.75,
+        f"always-same-answer baseline {majority * 100:.1f}%",
+        fontsize=13,
+        color=INK,
+        va="center",
+    )
+    ax.set_ylim(len(keys) - 0.4, -1.2)
+    ax.set_yticks(y, [PLAIN[k] for k in keys])
+    ax.tick_params(axis="y", labelcolor=INK, labelsize=14, pad=6)
+    ax.set_xticks([0, 25, 50, 75, 100])
+    for index, value in enumerate(values):
+        if value < majority * 100:
+            ax.text(
+                value - 1,
+                index,
+                f"{value:.1f}%",
+                va="center",
+                ha="right",
+                fontsize=14,
+                color="white",
+                fontweight="bold",
+            )
+        else:
+            ax.text(value + 1, index, f"{value:.1f}%", va="center", fontsize=14, color=INK)
+    legend = [
+        plt.Rectangle((0, 0), 1, 1, color=c, label=text)
+        for c, text in (
+            (TEAL, "API, 98% or more"),
+            ("#8FA9BF", "other API"),
+            (PLUM, "local, above baseline"),
+            (CORAL, "below baseline"),
+        )
+    ]
+    ax.legend(
+        handles=legend, loc="lower right", frameon=True, facecolor=BG, edgecolor=GRID, fontsize=13
+    )
+    fig.subplots_adjust(left=0.27, right=0.97, top=0.86, bottom=0.08)
+    add_source(fig, SOURCE_NOTE)
+    return save_figure(fig, "finding_accuracy_range")
+
+
+SKIP_ARMS = (
+    "cbcn_deepseek_v4_flash_exp024",
+    "ali_glm52_exp024",
+    "qwen_flash_exp015",
+    "verdict_14_exp027",
+    "verdict_original_exp027",
+)
+
+
+def plot_finding_skipped(payload: dict[str, Any]) -> list[str]:
+    arms = payload["arms"]
+    majority = arms["majority_exp014"]["all_record_accuracy"] * 100
+    fig, ax = plt.subplots(figsize=(9, 6.2))
+    fig.patch.set_facecolor(BG)
+    add_title(
+        fig,
+        "Scores on answered questions hide skipped ones",
+        "Hollow: correct when it answered \u00b7 filled: correct over all 760",
+    )
+    for index, key in enumerate(SKIP_ARMS):
         arm = arms[key]
         cond = arm["conditional_accuracy"] * 100
         allr = arm["all_record_accuracy"] * 100
-        low, high = (v * 100 for v in arm["all_record_accuracy_95_wilson"])
-        color = arm_color(key, arm)
-        ax.plot([allr, cond], [index, index], color=GRID, linewidth=2.2, zorder=1)
-        ax.plot([low, high], [index, index], color=INK, linewidth=0.9, zorder=2)
-        ax.scatter(cond, index, s=46, facecolor=BG, edgecolor=color, linewidth=1.6, zorder=3)
-        ax.scatter(allr, index, s=46, color=color, zorder=4)
-        gap = cond - allr
-        note = f"{allr:.1f}%" + (f"  (\u2212{gap:.1f} pts)" if gap >= 0.5 else "")
-        ax.text(101.5, index, note, va="center", fontsize=8.8, color=INK)
-    apply_theme(ax, (25, 100.5))
-    ax.set_yticks(y, [SHORT[k] for k in order])
-    ax.tick_params(axis="y", labelcolor=INK, labelsize=9.5, pad=6)
-    ax.invert_yaxis()
-    ax.set_xlabel("Percent", color=MUTED, fontsize=9.5)
-    fig.subplots_adjust(left=0.22, right=0.86, top=0.9, bottom=0.07)
-    add_source(fig, "Source: EXP-20260924-029 results.json (scripts/analyze_judge_comparison.py)")
-    return save_figure(fig, "blind_conditional_vs_all_record")
+        ax.plot(
+            [allr, cond], [index, index], color=GRID, linewidth=6, zorder=1, solid_capstyle="round"
+        )
+        ax.scatter(cond, index, s=190, facecolor=BG, edgecolor=TEAL, linewidth=2.6, zorder=3)
+        ax.scatter(allr, index, s=190, color=CORAL, zorder=4)
+        ax.text(cond + 3, index, f"{cond:.1f}%", va="center", fontsize=14, color=MUTED)
+        ax.text(
+            allr - 3,
+            index,
+            f"{allr:.1f}%",
+            va="center",
+            ha="right",
+            fontsize=14,
+            color=INK,
+            fontweight="bold",
+        )
+    ax.axvline(majority, color=MUTED, linestyle=":", linewidth=1.2, zorder=0)
+    ax.text(majority, -0.62, f"baseline {majority:.1f}%", ha="center", fontsize=13, color=MUTED)
+    apply_theme(ax, (15, 115))
+    ax.set_xticks([25, 50, 75, 100])
+    ax.set_yticks(np.arange(len(SKIP_ARMS)), [PLAIN[k] for k in SKIP_ARMS])
+    ax.tick_params(axis="y", labelcolor=INK, labelsize=14, pad=6)
+    ax.set_ylim(len(SKIP_ARMS) - 0.4, -0.9)
+    fig.subplots_adjust(left=0.3, right=0.97, top=0.84, bottom=0.1)
+    add_source(fig, SOURCE_NOTE)
+    return save_figure(fig, "finding_skipped_questions")
+
+
+QWEN_RUNS = (
+    ("qwen_flash_exp013", "EXP-013\n128-token cap,\nthinking off"),
+    ("qwen_flash_exp022", "EXP-022\nprovider\ndefaults"),
+    ("ali_qwen38_flash_exp024", "EXP-024\nother route,\n1,024-token cap"),
+)
+
+
+def plot_finding_request_settings(payload: dict[str, Any]) -> list[str]:
+    arms = payload["arms"]
+    first, second = arms["qwen_flash_exp013"], arms["qwen_flash_exp022"]
+    fig, ax = plt.subplots(figsize=(9, 6.4))
+    fig.patch.set_facecolor(BG)
+    add_title(
+        fig,
+        f"Same model, same questions: {first['conditional_accuracy'] * 100:.1f}% vs "
+        f"{second['conditional_accuracy'] * 100:.1f}%",
+        "Qwen3.8 Flash accuracy when it answered, by request settings",
+    )
+    x = np.arange(len(QWEN_RUNS))
+    width = 0.36
+    overall = [arms[k]["conditional_accuracy"] * 100 for k, _ in QWEN_RUNS]
+    math = [arms[k]["by_source"]["GSM8K"]["accuracy"] * 100 for k, _ in QWEN_RUNS]
+    bars_a = ax.bar(x - width / 2, overall, width, color=TEAL, label="All questions")
+    bars_b = ax.bar(x + width / 2, math, width, color=PLUM, label="Math (GSM8K)")
+    for bars in (bars_a, bars_b):
+        for bar in bars:
+            ax.text(
+                bar.get_x() + bar.get_width() / 2,
+                bar.get_height() + 1.2,
+                f"{bar.get_height():.1f}%",
+                ha="center",
+                va="bottom",
+                fontsize=14,
+                color=INK,
+            )
+    ax.set_facecolor(BG)
+    ax.set_ylim(0, 112)
+    ax.set_yticks([0, 25, 50, 75, 100])
+    ax.grid(axis="y", color=GRID, linewidth=0.8)
+    ax.set_axisbelow(True)
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+    ax.tick_params(colors=MUTED, labelsize=14, length=0)
+    ax.set_xticks(x, [label for _, label in QWEN_RUNS])
+    ax.tick_params(axis="x", labelcolor=INK, labelsize=14)
+    ax.legend(loc="upper left", bbox_to_anchor=(0, 1.12), ncol=2, frameon=False, fontsize=14)
+    fig.subplots_adjust(left=0.08, right=0.98, top=0.78, bottom=0.22)
+    add_source(fig, SOURCE_NOTE)
+    return save_figure(fig, "finding_request_settings")
 
 
 def main() -> None:
@@ -418,8 +584,10 @@ def main() -> None:
     calibration = read_json(SOURCES["calibration"])
 
     stems = [
+        "finding_accuracy_range",
+        "finding_skipped_questions",
+        "finding_request_settings",
         "blind_accuracy_vs_coverage",
-        "blind_conditional_vs_all_record",
         "grok_protocol_ablation",
         "local_qwen_calibration",
     ]
@@ -428,8 +596,10 @@ def main() -> None:
             stale.unlink()
 
     generated: list[str] = []
+    generated += plot_finding_accuracy_range(analysis)
+    generated += plot_finding_skipped(analysis)
+    generated += plot_finding_request_settings(analysis)
     generated += plot_accuracy_vs_coverage(analysis)
-    generated += plot_conditional_vs_all_record(analysis)
     generated += plot_grok(grok)
     generated += plot_calibration(calibration)
 
