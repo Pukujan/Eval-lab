@@ -1,0 +1,118 @@
+{
+  "calibration_policy": "native confidence only; metrics computed separately within each judgment mode",
+  "dataset_fingerprint": "b7edd61269f0f7757e734bc7e3f665ac2bcd6d908a1e56f73f0b0291d55b64d8",
+  "experiment_id": "EXP-20260924-027-local-decision-bakeoff",
+  "partitions": {
+    "blind": {
+      "kev-0.8b": {
+        "accuracy": 0.5026315789473684,
+        "accuracy_95_wilson": [
+          0.46716064963661835,
+          0.5380760391471714
+        ],
+        "by_mode": {
+          "pairwise": {
+            "accuracy": 0.3148148148148148,
+            "balanced_accuracy": 0.3148148148148148,
+            "macro_f1": 0.27390180878552967,
+            "probability_count": 108,
+            "probability_metrics": {
+              "accuracy": 0.3148148148148148,
+              "balanced_accuracy": 0.3148148148148148,
+              "brier": 0.712017136144525,
+              "ece": 0.21875089795219418,
+              "macro_f1": 0.27390180878552967,
+              "nll": 1.1746543346831504
+            },
+            "record_count": 108
+          },
+          "single": {
+            "accuracy": 0.5337423312883436,
+            "balanced_accuracy": 0.5351174345076785,
+            "macro_f1": 0.5098326277054565,
+            "probability_count": 652,
+            "probability_metrics": {
+              "accuracy": 0.5337423312883436,
+              "balanced_accuracy": 0.5351174345076785,
+              "brier": 0.6184070705214724,
+              "ece": 0.22291733128834354,
+              "macro_f1": 0.5098326277054565,
+              "nll": 0.8671352680352532
+            },
+            "record_count": 652
+          }
+        },
+        "latency_ms": {
+          "p50": 176.72883300110698,
+          "p95": 367.60985414694
+        },
+        "prediction_sha256": "cfa0429f2fede4b87bc7fc84c4317f0da661fa07422ac0f44e77e0c6c767a9a9",
+        "probability_count": 760,
+        "record_count": 760,
+        "resolved_count": 760,
+        "resolved_coverage": 1.0,
+        "runner_revision": "4d1d9a5fe9c1719fd190e757ff4134f043f3fb16",
+        "status_counts": {
+          "ok": 760
+        },
+        "unresolved_count": 0
+      }
+    },
+    "public": {
+      "kev-0.8b": {
+        "accuracy": 0.4737654320987654,
+        "accuracy_95_wilson": [
+          0.43558887492203513,
+          0.5122512025386523
+        ],
+        "by_mode": {
+          "pairwise": {
+            "accuracy": 0.37777777777777777,
+            "balanced_accuracy": 0.3774564330737857,
+            "macro_f1": 0.32354992938934546,
+            "probability_count": 180,
+            "probability_metrics": {
+              "accuracy": 0.37777777777777777,
+              "balanced_accuracy": 0.3774564330737857,
+              "brier": 0.6729084374902945,
+              "ece": 0.15743124577922357,
+              "macro_f1": 0.32354992938934546,
+              "nll": 1.1125800464754083
+            },
+            "record_count": 180
+          },
+          "single": {
+            "accuracy": 0.5106837606837606,
+            "balanced_accuracy": 0.5181146836785054,
+            "macro_f1": 0.48261828784945665,
+            "probability_count": 468,
+            "probability_metrics": {
+              "accuracy": 0.5106837606837606,
+              "balanced_accuracy": 0.5181146836785054,
+              "brier": 0.6603481666239317,
+              "ece": 0.25342329059829055,
+              "macro_f1": 0.48261828784945665,
+              "nll": 0.9221343494185363
+            },
+            "record_count": 468
+          }
+        },
+        "latency_ms": {
+          "p50": 172.07085349946283,
+          "p95": 312.66053364815883
+        },
+        "prediction_sha256": "e8af35d8e8ded89928d02b965de2d009ee0a65623c018b5823a6f668a7607a4a",
+        "probability_count": 648,
+        "record_count": 648,
+        "resolved_count": 648,
+        "resolved_coverage": 1.0,
+        "runner_revision": "4d1d9a5fe9c1719fd190e757ff4134f043f3fb16",
+        "status_counts": {
+          "ok": 648
+        },
+        "unresolved_count": 0
+      }
+    }
+  },
+  "primary_partition": "blind"
+}

@@ -1,5 +1,5 @@
 id: EXP-20260924-028-legalbench-hearsay
-status: preregistered
+status: in_progress
 hypothesis: >-
   Jev-style fixed-choice models can classify the official LegalBench Hearsay
   examples with measurable task-specific accuracy and native confidence.
@@ -42,7 +42,7 @@ artifacts:
   - source-manifest.json
   - source/
   - canonical-records.jsonl
-  - model-predictions/
+  - predictions/
   - results.json
   - report.md
 notes: >-

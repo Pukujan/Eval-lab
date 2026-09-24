@@ -2,14 +2,14 @@
 
 ## Status
 
-Active — tracked by GitHub issue #47. EXP-027 and EXP-028 are preregistered
-and committed. The MacBook Pro is reachable over Tailscale SSH; no model calls
-or benchmark scoring have started. Hardware is a 2020 MacBook Pro (MacBookPro17,1),
-Apple M1, 16 GiB unified memory, macOS 26.4.1, with 21 GiB free disk after
-installing the runner tools. Fixed-choice adapters and a resumable sequential
-runner are merged; a state serialization correction is pushed for review. The
-pinned Kev runtime is installed externally and passes package and server
-checks; no weights have been downloaded and no model has run.
+Active — tracked by GitHub issue #47. EXP-027 and EXP-028 are in progress.
+The MacBook Pro is reachable over Tailscale SSH. Kev-0.8B has
+finished EXP-027 public and blind partitions and EXP-028 Hearsay with all
+selected records resolved. Other model arms remain. Hardware is a 2020 MacBook
+Pro (MacBookPro17,1), Apple M1, 16 GiB unified memory, macOS 26.4.1. The
+fixed-choice adapters and resumable sequential runner are merged; the
+string-state correction merged in PR #51. The pinned Kev runtime is installed
+externally and passes package checks.
 
 ## Objective
 
@@ -33,8 +33,10 @@ Hearsay task, with results and statuses recorded in GitHub.
 - `src/eval_lab/judges/local_decision_models.py`
 - `src/eval_lab/datasets/legalbench.py`
 - `scripts/run_local_decision_bakeoff.py`
+- `scripts/report_local_decision_bakeoff.py`
 - `scripts/build_legalbench_hearsay.py`
 - `tests/test_local_decision_models.py`
+- `tests/test_local_decision_report.py`
 - `tests/test_legalbench.py`
 - `AGENTS.md`
 - `D:\\claude\\AGENTS.md`
@@ -330,8 +332,51 @@ set before loading weights.
 Unresolved: merge the correction and runtime record; confirm Kev-0.8B can load
 and return a valid one-record choice; determine feasibility of remaining arms.
 
-Next atomic action: publish the protocol correction and runtime pins; after
-required CI passes, run one Kev-0.8B public-selection smoke record.
+Next atomic action: checkpoint Kev-0.8B's predictions and reports, then start
+the next feasible pinned model one at a time.
+
+### 2026-09-24 — Kev-0.8B first benchmark runs
+
+Status: Kev-0.8B completed EXP-027 public-selection (648/648), blind holdout
+(760/760), and EXP-028 LegalBench Hearsay test (94/94). All records resolved
+with `ok` status. EXP-027 and EXP-028 are marked in progress; additional model
+arms remain.
+
+Completed work: the one-record EXP-027 smoke loaded Kev-0.8B on the Mac M1
+using MLX/BF16 and returned a valid `pass` decision with probabilities
+0.7961/0.2039 in 2.26 seconds. Full public and blind runs used the exact
+EXP-015 IDs; a local audit confirmed 648 and 760 unique expected IDs. The
+LegalBench run returned exactly its 94 frozen test IDs. Preserved raw outputs,
+server/runtime metadata, run configs, progress files, and the smoke artifacts.
+Generated initial results and reports: blind accuracy 0.5026 (760 resolved,
+100% coverage), public accuracy 0.4738, and LegalBench Hearsay accuracy 0.5426
+(94 resolved). Calibration and class metrics are split by the EXP-027 single
+and pairwise label spaces. Output SHA-256 values are in the `results.json`
+summaries.
+
+Files changed: both experiment manifests; EXP-027 raw output directories
+`public-predictions/kev-0.8b/`, `blind-predictions/kev-0.8b/`,
+`smokes/kev-0.8b-exp027-one-record/`, `results.json`, and `report.md`; EXP-028
+`predictions/kev-0.8b/`, `results.json`, and `report.md`; new
+`scripts/report_local_decision_bakeoff.py` and
+`tests/test_local_decision_report.py`; this task file and `checkpoints/CURRENT.md`.
+
+Commands run: Mac sequential runner for one smoke, 648 public records, 760
+blind records, and 94 Hearsay records; local exact-ID/status validation and
+SHA-256; initial metrics/report generation; Ruff and focused tests (`14
+passed`). All three full runs reported all selected records as `ok`.
+
+Decisions: keep the public smoke in a separate folder from scored outputs;
+retain blind holdout as the primary accuracy; compute calibration and
+class-balanced metrics within each fixed label space rather than pooling
+single and pairwise labels.
+
+Unresolved: finish the remaining feasible model arms, record hardware
+infeasibility for Nimble-9B and Kev-9B without downloading oversized weights,
+then regenerate aggregate reports and finalize both experiments.
+
+Next atomic action: publish the Kev-0.8B raw predictions and validated reports;
+after the checkpoint merges, begin the next feasible model arm sequentially.
 
 ## Handoff
 

@@ -1,5 +1,5 @@
 id: EXP-20260924-027-local-decision-bakeoff
-status: preregistered
+status: in_progress
 hypothesis: >-
   Compact decision models can provide useful accuracy and native confidence
   on the frozen Eval Lab typed-choice benchmark, with accuracy, coverage,
@@ -139,6 +139,7 @@ artifacts:
   - hardware-and-runtime.json
   - model-revisions.json
   - kev-runtime-freeze.txt
+  - smokes/
   - public-predictions/
   - blind-predictions/
   - results.json
@@ -146,7 +147,8 @@ artifacts:
 notes: >-
   EXP-014, EXP-015, and EXP-025 are complete and immutable. The local Mac
   runner is reachable. Model and upstream code revisions are frozen in
-  model-revisions.json. Run one bounded smoke before full scoring. Laya and
+  model-revisions.json. Kev-0.8B has completed both frozen partitions and the
+  94-item Hearsay set with all outputs preserved. Laya and
   Verdict have shorter per-arm context caps than the 4096-token comparison
   ceiling; over-limit examples remain explicit unresolved statuses. Nimble's
   upstream unquantized weights exceed the Mac's unified memory. Jev 1.13 on
