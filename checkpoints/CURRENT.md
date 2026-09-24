@@ -1,5 +1,15 @@
 # Current Repository Checkpoint
 
+## 2026-09-24 — TASK-0058 follow-up: two-layer paper
+
+Issue #67 reopened. `paper/paper.md` now opens with a claim title, a
+one-sentence subtitle, a plain-language short version (five bullets) and one
+summary chart, so it can be read in about two minutes. Each finding is a
+question heading, a bold takeaway, a short paragraph and a collapsed "Details
+for deep divers" block. Jargon is defined on first use. No numbers changed.
+
+Next atomic action: merge the follow-up PR after required CI, then close #67.
+
 ## 2026-09-24 — TASK-0059 provenance-aware chart data export
 
 GitHub issue #69. `scripts/export_chart_data.py` writes the interactive-chart

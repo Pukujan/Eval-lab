@@ -1,14 +1,25 @@
-# Accuracy is not enough: correctness and coverage of independent judges on identical objective decisions
+# Accuracy is not enough: AI judges should also be scored on the questions they skip
+
+<p class="paper-subtitle"><em>We gave 25 AI judges the same 760 questions with known answers and found that one accuracy number hides skipped questions and request settings that change the score.</em></p>
 
 > [!IMPORTANT]
-> **At a glance**
+> **The short version**
 >
-> - **The problem:** AI "judges" are usually compared by one accuracy score, which ignores the questions a judge never answered.
-> - **What we did:** we gave 25 judges, from small laptop models to frontier APIs, the same 760 questions with known right answers, and counted both what they got right and what they skipped.
-> - **Finding 1:** the best judges got about 99% of all questions right, and the top two are statistically tied.
-> - **Finding 2:** a high accuracy score can hide a judge that skipped up to four in ten questions.
-> - **Finding 3:** the same model scored 84.5% or 97.4% on the same questions, depending only on its request settings.
-> - **Finding 4:** most small local models, and Grok Build, did no better than always giving the same answer.
+> - An **AI judge** is an AI model used to grade answers. The best ones we tested got about 99% of our questions right.
+> - Some judges looked just as good but quietly skipped up to 4 in 10 questions. Counting a skipped question as a miss reshuffles the ranking.
+> - The same model scored 84.5% or 97.4% on the same questions, depending only on how it was asked.
+> - Most small models that run on a laptop did no better than always giving the same answer.
+> - When you choose a judge, ask how many questions it answered and how it was set up, not only for its score.
+
+<figure data-figure="finding_skipped_questions">
+  <picture>
+    <source media="(prefers-color-scheme: dark) and (max-width: 700px)" srcset="figures/benchmark/finding_skipped_questions.dark.tall.svg" />
+    <source media="(max-width: 700px)" srcset="figures/benchmark/finding_skipped_questions.light.tall.svg" />
+    <source media="(prefers-color-scheme: dark)" srcset="figures/benchmark/finding_skipped_questions.dark.wide.svg" />
+    <img src="figures/benchmark/finding_skipped_questions.light.wide.svg" alt="Dumbbell chart comparing accuracy when answered with accuracy over all questions" />
+  </picture>
+  <figcaption>Figure 1. A judge's score depends on whether skipped questions count. Hollow dot: share right among the questions the judge answered. Filled dot: share right out of all 760, with skipped questions counted as misses.</figcaption>
+</figure>
 
 **Status:** working paper; pending owner review<br />
 **Evidence:** EXP-013 to EXP-027 prediction files, consolidated by the offline analysis EXP-029<br />
@@ -17,27 +28,42 @@
 ## 1. The problem
 
 Teams increasingly use one AI model to grade another model's work. They pick
-that "judge" by looking at a single accuracy number.
+that judge by looking at a single accuracy number.
 
 That number is usually computed only over the questions the judge answered. A
-judge can hit a rate limit, return text nobody can parse, or decline to answer,
-and none of that shows up in its accuracy.
+judge can be refused by the provider for sending too many requests (a *rate
+limit*), return text nobody can read, or decline to answer, and none of that
+shows up in its accuracy.
 
 > **Research question.** When independent judges, from small local models to
 > frontier APIs, receive identical typed decisions with objective gold labels,
 > how do their accuracy and coverage differ, and what does accuracy-only
 > reporting hide?
 
-This is a measurement study of objective decisions. It does not rank
-providers in general, and it does not cover open-ended or subjective grading.
+This is a measurement study of questions with one right answer. It does not
+rank providers in general, and it does not cover open-ended or subjective
+grading.
 
 ## 2. Setup
 
-**The questions.** Every judge saw the same 760 held-back questions, called
-the blind set. Most ask whether a proposed answer is correct (`pass` or
+Every judge saw the same 760 questions, kept hidden from all tuning (the
+*blind set*). Most ask whether a proposed answer is correct (`pass` or
 `fail`). The rest show two answers and ask which is better (`A` or `B`). The
 right answer always comes from an answer key or an automatic checker, never
 from a model.
+
+A "judge" here means one recorded run of one model over all 760 questions.
+*API* judges are models called over the internet from a provider; *local*
+judges ran on the author's own computer.
+
+We track two numbers for each judge. **Coverage** is the share of the 760
+questions it answered with an allowed label. **Accuracy over all 760** counts
+a skipped question as wrong, as it would be in a pipeline that needs a verdict
+for every item. Most leaderboards instead report **accuracy when it
+answered**, which ignores skipped questions.
+
+<details class="deep-dive">
+<summary>Details for deep divers: question sources, harnesses and statistics</summary>
 
 <!-- generated:body_sources -->
 | Source | Questions | What it tests |
@@ -49,34 +75,35 @@ from a model.
 | Eval Lab synthetic | 20 | small hand-built checks |
 <!-- /generated -->
 
-**The judges.** A "judge" here means one recorded run of one model over all
-760 questions. API judges got an identical, strictly formatted request and had
-to reply with one allowed label. Local models ran on the author's own hardware
-and scored the allowed labels directly. That is a different harness, so
-local-versus-API comparisons use the same questions but not the same method.
+API judges got an identical, strictly formatted request and had to reply with
+one allowed label. Local models ran in a different program (a different
+*harness*) that scored the allowed labels directly, so local-versus-API
+comparisons use the same questions but not the same method.
 
-**What we measured.**
-
-- **Coverage** is the share of the 760 questions a judge answered with an
-  allowed label.
-- **Accuracy when it answered** is correct answers divided by answered
-  questions. This is the number most leaderboards report.
-- **Accuracy over all 760** counts a skipped question as wrong, as it would be
-  in a pipeline that needs a verdict for every item.
 - A **Wilson interval** is the range the true accuracy plausibly falls in
   (95% confidence) given the sample size.
 - A **McNemar test** compares two judges on the same questions by looking only
-  at questions where exactly one of them was right.
+  at questions where exactly one of them was right. With many comparisons we
+  apply the **Holm correction**, which raises the bar for calling a difference
+  real.
 
 Every table and chart comes from committed scripts
 ([`analyze_judge_comparison.py`](https://github.com/Pukujan/Eval-lab/blob/main/scripts/analyze_judge_comparison.py),
 [`generate_benchmark_figures.py`](https://github.com/Pukujan/Eval-lab/blob/main/scripts/generate_benchmark_figures.py)),
 and a test fails if the paper drifts from their output.
 
+</details>
+
 ## 3. What happened
 
-Most API judges ran cleanly, but several runs lost questions along the way,
-and one discovery changed how we read the results.
+Most API judges ran cleanly, but several runs lost questions along the way:
+rate limits, answers our program could not read, and local models that
+declined to answer. We report these as results, not as footnotes. One model,
+Grok Build, answered almost everything but was mostly wrong, and changing how
+we asked did not help.
+
+<details class="deep-dive">
+<summary>Details for deep divers: what each run lost, and the Grok Build follow-up</summary>
 
 **Runs lost questions in different ways.** One Qwen run hit the provider's
 rate limit on 317 questions; a separate retry recovered them. DeepSeek V4
@@ -84,46 +111,29 @@ Flash and V4.1 Flash returned answers our parser could not read on 149 and 139
 questions. Two local Verdict models declined to answer a quarter to a third of
 the time. MiMo V2.5 was refused with a payment error (HTTP 402) before it
 answered anything, and two 9-billion-parameter local models did not fit in the
-16 GB test machine. We report all of these as results, not as footnotes.
+16 GB test machine.
 
 **Grok Build failed, and fixing the format did not help.** Grok Build
 answered nearly every question but was right only about four times in ten. It
 almost always chose the wrong answer on "which is better" questions. A
-preregistered follow-up (EXP-025) tried four different request formats. It
-found and fixed a real bug in our text decoding on Windows, but no format
-improved the score (Appendix D).
+follow-up whose plan was fixed in advance (a *preregistered* experiment,
+EXP-025) tried four different request formats. It found and fixed a real bug
+in our text decoding on Windows, but no format improved the score
+(Appendix D).
 
-**The same model gave two very different scores.** Qwen3.8 Flash scored 84.5%
-in its first run and 97.4% in a later run on the exact same questions. The
-question files are byte-identical, and the model name and request format match.
-What differed was a setting in the script that sent the requests.
-
-<!-- generated:body_qwen -->
-| Qwen3.8 Flash run | Request settings | Typical answer time | Correct when it answered | Math (GSM8K) |
-|---|---|---:|---:|---:|
-| EXP-013 | 128-token cap, thinking off | 0.5 s | 84.5% | 65.5% |
-| EXP-022 | provider defaults | 4.3 s | 97.4% | 99.5% |
-| EXP-024 | other route and prompt, 1,024-token cap | 5.5 s | 99.2% | 99.0% |
-<!-- /generated -->
-
-The first run capped each reply at 128 tokens and switched the model's
-"thinking" off. The later runs left both at the provider default. With the
-defaults, answers took about nine times longer, and math accuracy jumped from
-65.5% to 99.5%. That suggests the model reasons silently before answering when
-allowed to. We could not confirm this directly because those runs did not
-record token counts.
+</details>
 
 ## 4. What we found
 
-### Finding 1: The best judges got about 99% right, and the top two are tied
+### Finding 1: How good are the best judges?
+
+**The best judges are nearly perfect, and four of them are statistically tied
+for first place.**
 
 Qwen3.8 Flash and Qwen 3.8 Max answered every question and got 99.2% and
-99.1% right. On only seven questions was one right and the other wrong, so
-the difference is not meaningful. Kimi K2.7 Code, GLM 5.3 Flash and MiniMax M3
-came close behind. Kimi K2.7 Code and GLM 5.3 Flash cannot be separated from
-Qwen3.8 Flash either, so four judges share first place in the full ranking
-(Figure A1). Jev also answered everything but got 89.9% right, a clear
-step down.
+99.1% right. Kimi K2.7 Code and GLM 5.3 Flash were close enough that the
+difference could be chance. Jev also answered everything but got 89.9% right,
+a clear step down.
 
 <figure data-figure="finding_accuracy_range">
   <picture>
@@ -132,8 +142,17 @@ step down.
     <source media="(prefers-color-scheme: dark)" srcset="figures/benchmark/finding_accuracy_range.dark.wide.svg" />
     <img src="figures/benchmark/finding_accuracy_range.light.wide.svg" alt="Bar chart of accuracy over all 760 questions for selected judges" />
   </picture>
-  <figcaption>Figure 1. Share of all 760 questions each judge got right; skipped questions count as wrong. The dashed line is the always-same-answer baseline.</figcaption>
+  <figcaption>Figure 2. A few judges come close to perfect, and two score below a constant guess. Share of all 760 questions each judge got right; skipped questions count as wrong. The dashed line is the always-same-answer baseline.</figcaption>
 </figure>
+
+<details class="deep-dive">
+<summary>Details for deep divers: ties, shared ranks and the leaders table</summary>
+
+On only seven questions was one of the two Qwen judges right and the other
+wrong, so their difference is not meaningful. Kimi K2.7 Code and GLM 5.3
+Flash cannot be separated from Qwen3.8 Flash either (Holm-corrected McNemar
+over all 760 questions), so four judges share first place in the full ranking
+(Figure A1). MiniMax M3 came close behind.
 
 <!-- generated:body_leaders -->
 | Judge | Type | Answered | Correct, all 760 questions |
@@ -147,27 +166,24 @@ step down.
 | Grok 4.6 Build | API | 99.6% | 43.3% |
 <!-- /generated -->
 
-### Finding 2: A high accuracy score can hide a judge that skips questions
+</details>
+
+### Finding 2: What does one accuracy number hide?
+
+**A judge can look best on the questions it answered and still miss a fifth
+of the work.**
 
 DeepSeek V4 Flash had the highest accuracy of any judge on the questions it
-answered, 99.8%. But it answered only 80.4% of them, so it got 80.3% of the
-full set right. It falls from first place to thirteenth once skipped
-questions count.
+answered, 99.8%. But it answered only 80.4% of them, so it falls from first
+place to thirteenth once skipped questions count (Figure 1).
+
+<details class="deep-dive">
+<summary>Details for deep divers: rate limits, abstentions and the full comparison</summary>
 
 The same pattern appears with rate limits and abstentions. A rate-limited
 Qwen run looked excellent on paper while answering barely more than half the
 questions. The Verdict models answered about half correctly, but once their
 abstentions count they fall below the always-same-answer baseline.
-
-<figure data-figure="finding_skipped_questions">
-  <picture>
-    <source media="(prefers-color-scheme: dark) and (max-width: 700px)" srcset="figures/benchmark/finding_skipped_questions.dark.tall.svg" />
-    <source media="(max-width: 700px)" srcset="figures/benchmark/finding_skipped_questions.light.tall.svg" />
-    <source media="(prefers-color-scheme: dark)" srcset="figures/benchmark/finding_skipped_questions.dark.wide.svg" />
-    <img src="figures/benchmark/finding_skipped_questions.light.wide.svg" alt="Dumbbell chart comparing accuracy when answered with accuracy over all questions" />
-  </picture>
-  <figcaption>Figure 2. Hollow dot: accuracy on answered questions. Filled dot: accuracy over all 760. The gap is what an accuracy-only table hides.</figcaption>
-</figure>
 
 <!-- generated:body_hidden -->
 | Judge | Answered | Correct when it answered | Correct, all 760 | Why questions were lost |
@@ -179,11 +195,16 @@ abstentions count they fall below the always-same-answer baseline.
 | Verdict pre-v1.4 (local) | 69.2% | 50.4% | 34.9% | 234 abstained |
 <!-- /generated -->
 
-### Finding 3: Request settings moved one model as much as switching models
+</details>
 
-The Qwen result in Section 3 is a finding in its own right. Changing only the
-request settings moved the same model from 84.5% to 97.4% on identical questions.
-That gap is larger than the gap between Qwen and Jev.
+### Finding 3: Does it matter how you ask?
+
+**How you ask matters as much as which model you ask.**
+
+Qwen3.8 Flash scored 84.5% in its first run and 97.4% in a later run on the
+exact same questions, with the same model name and request format. Only the
+request settings differed. That gap is larger than the gap between Qwen and
+Jev.
 
 <figure data-figure="finding_request_settings">
   <picture>
@@ -192,19 +213,47 @@ That gap is larger than the gap between Qwen and Jev.
     <source media="(prefers-color-scheme: dark)" srcset="figures/benchmark/finding_request_settings.dark.wide.svg" />
     <img src="figures/benchmark/finding_request_settings.light.wide.svg" alt="Bar chart of Qwen3.8 Flash accuracy under different request settings" />
   </picture>
-  <figcaption>Figure 3. Qwen3.8 Flash on the same questions under three request settings, overall and on GSM8K math.</figcaption>
+  <figcaption>Figure 3. Request settings alone moved one model by more than the gap between models. Qwen3.8 Flash on the same questions under three request settings, overall and on GSM8K math.</figcaption>
 </figure>
 
-### Finding 4: Most small local models did no better than always giving the same answer
+<details class="deep-dive">
+<summary>Details for deep divers: which settings changed, and why it matters</summary>
 
-A judge that always says `fail` (or `B` for two-answer questions) is right
-50.3% of the time here. Kev-4B was the only local model clearly above that,
-at 64.3%. It was strongest on the two-answer questions (93.5%) and only
-modestly above the baseline on the rest (59.5%). SemIf and Kev-0.8B were not
-meaningfully different from the baseline, and the rest scored below it.
+<!-- generated:body_qwen -->
+| Qwen3.8 Flash run | Request settings | Typical answer time | Correct when it answered | Math (GSM8K) |
+|---|---|---:|---:|---:|
+| EXP-013 | 128-token cap, thinking off | 0.5 s | 84.5% | 65.5% |
+| EXP-022 | provider defaults | 4.3 s | 97.4% | 99.5% |
+| EXP-024 | other route and prompt, 1,024-token cap | 5.5 s | 99.2% | 99.0% |
+<!-- /generated -->
 
-Grok Build is an API judge, but it landed with this group: its best run got
-43.6% right, significantly below the baseline.
+The first run capped each reply at 128 *tokens* (word pieces; the cap limits
+reply length) and switched the model's "thinking" (silent reasoning before
+answering) off. The later runs left both at the provider default. With the
+defaults, answers took about nine times longer, and math accuracy jumped from
+65.5% to 99.5%. That suggests the model reasons silently before answering when
+allowed to. We could not confirm this directly because those runs did not
+record token counts. The question files are byte-identical across runs.
+
+</details>
+
+### Finding 4: Can small local models do the job?
+
+**Most small models that run on a laptop were no better than a constant
+guess.**
+
+A judge that always gives the same answer (`fail`, or `B` for two-answer
+questions) is right 50.3% of the time here; we call this the
+*always-same-answer baseline*. Kev-4B was the only local model clearly above
+it, at 64.3%. Grok Build, an API judge, landed with this group.
+
+<details class="deep-dive">
+<summary>Details for deep divers: local models by question type, and Grok Build</summary>
+
+Kev-4B was strongest on the two-answer questions (93.5%) and only modestly
+above the baseline on the rest (59.5%). SemIf and Kev-0.8B were not
+meaningfully different from the baseline, and the rest scored below it. Grok
+Build's best run got 43.6% right, significantly below the baseline.
 
 <!-- generated:body_local -->
 | Model | Answered | Correct, all 760 |
@@ -218,6 +267,8 @@ Grok Build is an API judge, but it landed with this group: its best run got
 | Verdict pre-v1.4 (local) | 69.2% | 34.9% |
 | Always-same-answer baseline | 100.0% | 50.3% |
 <!-- /generated -->
+
+</details>
 
 ## 5. What it means
 
