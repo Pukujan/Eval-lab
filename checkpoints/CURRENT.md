@@ -1,5 +1,17 @@
 # Current Repository Checkpoint
 
+## 2026-09-24 — TASK-0055 paper updated with EXP-027/EXP-028
+
+GitHub issue #61 tracks the paper update. `paper/benchmark_comparison_study.md`
+now reports the completed TASK-0053 local decision-model results (EXP-027
+blind primary, public descriptive; EXP-028 Hearsay separate) with a generated
+`local_decision_models` figure. Nimble-9B and Kev-9B are stated as not run.
+The figure script's `matplotlib` dependency is now the optional `figures`
+extra. TASK-0053 (issue #47) remains open.
+
+Next atomic action: merge the TASK-0055 PR after required CI, then finalize
+issue #61. Do not start Nimble-9B or Kev-9B.
+
 ## 2026-09-24 — TASK-0053 SemIf-4B partitions completed
 
 The user resumed benchmark execution. SemIf-4B completed EXP-027 public
