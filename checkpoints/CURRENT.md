@@ -1,5 +1,20 @@
 # Current Repository Checkpoint
 
+## 2026-09-24 — TASK-0053 Mac space audit and cleanup
+
+Removed three movie folders from Downloads (~3.0 GB), the Bonsai 27B model and
+projector (~6.1 GB), and its metadata-only Hugging Face entry. Audited all
+remaining HF model weights: they belong to EXP-027 arms and the exact Qwen
+base checkpoints named in Kev's adapter configs. No unrelated HF weights
+remain. Preserved LoRAs and Flux. Mac has 69 GiB free. Docker data uses 22 GiB
+but is not required by this experiment; it remains untouched. ComfyUI is a
+separate native install. No inference ran; user asked to pause. Issue #47 is
+open.
+
+Next atomic action: hold until the user resumes benchmark execution. Then run
+eligible remaining arms on the Mac, one model at a time.
+
+
 ## 2026-09-24 — TASK-0053 Mac model caches cleaned
 
 Removed five unrelated Ollama models, the Qwen Image/Z-Image/Z-Image Turbo

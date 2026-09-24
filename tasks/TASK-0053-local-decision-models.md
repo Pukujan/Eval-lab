@@ -9,8 +9,8 @@ Laya has context-limit skips and an upstream calibration warning; Verdict
 abstentions and context-limit skips are separately reported. Kev-4B failed its
 load smoke before inference, and its retry was interrupted during model load
 after free memory dropped to 10%; no Kev-4B prediction was made. SemIf-4B has
-not yet run; its pinned checkpoint is about 9 GB, and a Mac model-cache cleanup
-restored 66 GiB of disk space. Kev-4B remains unrun after its previous load
+not yet run; its pinned checkpoint is about 9 GB, and the Mac cleanup/audit
+restored 69 GiB of disk space. Benchmark execution is paused at the user's direction. Kev-4B remains unrun after its previous load
 attempt exhausted most free unified memory. Nimble-9B and Kev-9B are not
 feasible under their pinned, unquantized/32-GiB configurations on this 16-GiB
 host. Hardware is a 2020
@@ -571,6 +571,47 @@ requirements.
 Next atomic action: publish this cache-cleanup checkpoint through issue #47
 and required CI; then run SemIf-4B on its frozen benchmark partitions and
 reassess Kev-4B loading separately with the restored disk headroom.
+
+### 2026-09-24 — Mac Downloads, Bonsai, and Hugging Face cache audit
+
+Status: user-requested local cleanup is complete; benchmark execution is paused
+at the user's direction. Issue #47 is open. No inference ran during cleanup.
+
+Completed work: removed three movie folders from `~/Downloads` (about 3.0 GB),
+the Bonsai 27B GGUF and its mmproj from
+`~/Bonsai-demo/models/bonsai2-gguf` (about 6.1 GB), and the metadata-only 27B
+Hugging Face repo entry. Free disk rose from 66 GiB to 69 GiB. Audited every
+remaining large HF model link. The ~14 GiB of HF model weights map to this
+experiment: Kev's adapter configs identify Qwen3.5-0.8B-Base and
+Qwen3.5-4B-Base as their base models; the Kev adapters, Laya variants, and
+Verdict files map to their pinned arms. No other downloaded HF model weights
+remain. Flux repo entries and all 7.5 GiB of LoRAs were preserved.
+
+Docker occupies about 22 GiB in its VM data and was left untouched. The
+experiment runs its pinned native macOS runtimes and does not use Docker;
+ComfyUI is a separate native Python install, not an experiment container.
+
+Files changed: this task file and `checkpoints/CURRENT.md`; Mac-side deletion
+was limited to the three named Downloads folders, the Bonsai 27B model folder,
+and the metadata-only 27B HF repo entry.
+
+Commands run: Tailscale SSH size inventory and HF symlink-to-weight audit;
+removed the three movie folders, Bonsai model folder, and HF metadata entry;
+verified HF model refs, preserved caches, and 69 GiB free disk. No inference
+or tests ran.
+
+Decisions: retain every HF weight referenced by the frozen EXP-027 models or
+Kev base adapters. No unrelated HF weights remained to delete. Leave Docker
+VM data untouched because the user asked whether the experiment needs it;
+Docker is not a dependency of EXP-027/028. Respect the user's instruction to
+pause before further experiment runs.
+
+Unresolved: user has not directed whether Docker VM data should be removed for
+other uses. Remaining EXP-027 runs also await the user's instruction to resume.
+
+Next atomic action: hold. Do not start inference until the user resumes the
+benchmark. If resumed, evaluate SemIf-4B and separately reassess Kev-4B with
+one model at a time.
 
 ## Handoff
 
