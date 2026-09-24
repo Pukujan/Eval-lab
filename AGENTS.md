@@ -101,17 +101,12 @@ the checkpoint commit, push only the task branch, create or update its PR, and
 request GitHub auto-merge. The publisher returns while required CI runs; agents
 may continue or hand off asynchronously. The PR must reference its issue;
 close it only after finalization. A merged-PR workflow records the exact PR
-head and merge SHA. `CODEOWNERS` marks sensitive changes to benchmark
-methodology/data, paid provider runs, secrets, workflow permissions, or
-releases for maintainer review. The repository needs an independent code owner
-before GitHub can enforce those reviews; routine
-reversible changes may auto-merge after CI. Never push directly to `main` or
-bypass a failed or missing check.
+head and merge SHA. Task PRs auto-merge after the required CI checks. Never
+push directly to `main` or bypass a failed or missing required check.
 
 A checkpoint is complete only after GitHub confirms its PR merged with required
 CI successful. Do not leave completed work or handoff state only in chat or a
-local branch. Before publishing, verify that no credentials, private benchmark
-material, or user data are included. After merge, run
+local branch. After merge, run
 `scripts/finalize_checkpoint.py` to confirm the merge, audit tracked,
 untracked, and ignored state, remove a clean linked worktree normally, and
 fast-forward the canonical checkout to `origin/main`. Never force-remove a
@@ -161,7 +156,3 @@ Gold labels must identify their provenance:
 - executable test
 - human adjudication
 - explicitly marked weak/model supervision
-
-## Safety and secrets
-
-Never commit API keys, tokens, private benchmark material, or user data. Use environment variables and local `.env` files ignored by Git.

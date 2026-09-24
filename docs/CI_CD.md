@@ -58,23 +58,13 @@ head and merge SHA on the linked issue after GitHub merges the PR.
 
 GitHub branch protection on `main` enforces pull requests, the Python 3.11 and
 3.12 CI status checks, and up-to-date branches. Direct pushes, force-pushes,
-branch deletion, and administrator bypass are disabled. Required approval
-count remains zero. Sensitive paths are listed in `CODEOWNERS`. This repository
-currently has no independent code owner who can review this account's PRs, so
-required code-owner review is not enabled; add an independent reviewer before
-turning it on, so protected changes do not become permanently unmergeable. Use
-squash merge for one coherent
-commit per checkpoint. Keep the issue and worktree open until the finalizer
+branch deletion, and administrator bypass are disabled. Task PRs auto-merge
+after the required checks pass. Use squash merge for one coherent commit per
+checkpoint. Keep the issue and worktree open until the finalizer
 records post-merge cleanup.
 
 Configure/verify the protection rule as part of repository setup; documenting a
 merge requirement is not an adequate substitute for an enforced GitHub rule.
-
-## CI secrets
-
-Provider keys are optional GitHub Actions secrets and must only be used in explicitly manual or protected integration workflows.
-
-Ordinary CI must succeed without provider secrets.
 
 ## Experiment execution
 

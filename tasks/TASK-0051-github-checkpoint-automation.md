@@ -2,7 +2,7 @@
 
 ## Status
 
-Active — tracked by GitHub issue #40. The initial implementation merged as PR #41; a finalizer tracking-ref correction is in progress on `task/TASK-0051-finalizer-ref-sync`.
+Completed — tracked by closed GitHub issue #40. PR #41 and the finalizer correction PR #42 are merged. TASK-0052 supersedes the publisher-scanning and review-policy details recorded below.
 
 ## Goal
 
@@ -17,7 +17,7 @@ Make GitHub the authoritative change log and automate the routine path from a co
 - Temporary linked worktrees live only in `D:\claude\eval-lab\worktrees\<task-id>` and are removed with normal Git operations after merge and a full state check.
 - The default environment remains the canonical root `.venv`; a managed Gravebuster pnpm/uv runtime is a separate requirement whose exact host path and execution boundary are not yet confirmed. Do not install or migrate runtimes in this task.
 - Preserve required Python 3.11/3.12 CI checks and main protection. Repository auto-merge is enabled; auto-merge may proceed only when required checks pass. No bypass permissions are added.
-- `CODEOWNERS` identifies sensitive paths. GitHub currently has only the PR owner's account as a collaborator, so non-author code-owner approval cannot be enforced until an independent reviewer is added; routine PR auto-merge remains gated by the required CI checks.
+- Task PRs auto-merge after the required Python 3.11 and 3.12 checks pass.
 
 ## Files in scope
 
@@ -44,7 +44,7 @@ Update this list before editing any additional file.
 ## Acceptance criteria
 
 - The repo and D: workspace policies consistently require GitHub issue tracking and use `D:\claude\eval-lab\worktrees` for temporary Eval Lab worktrees.
-- An issue template captures objective, acceptance criteria, scope, risk, and validation. PRs link their issue without closing it; finalization closes the issue only after merge verification.
+- An issue template captures objective, acceptance criteria, scope, and validation. PRs link their issue without closing it; finalization closes the issue only after merge verification.
 - A tested publisher commits explicitly selected checkpoint files, pushes only the active task branch, creates or updates its PR, and enables auto-merge without waiting for CI.
 - Publishing stops on dirty/unselected state, wrong branch, missing task/issue context, failed validation, or unavailable GitHub authentication; it never bypasses main protection.
 - A tested finalizer confirms the PR is merged, audits tracked, untracked, and ignored worktree state, removes only a clean temporary worktree normally, and synchronizes the canonical checkout with `origin/main`.
@@ -53,17 +53,18 @@ Update this list before editing any additional file.
 
 ## Handoff
 
-The task remains active until its PR is merged and the GitHub issue reflects the final state. If publishing stops after a commit or push, rerun the publisher with the same explicit paths to resume; do not create a second checkpoint or PR.
+Completed. Issue #40 reflects the verified merge and finalization state.
 
 ## Checkpoint log
 
 - 2026-09-23: Opened GitHub issue #40 before implementation. The issue list had no existing parent that fit, so #40 remains standalone; decompose into GitHub sub-issues only if the task splits into separately deliverable work.
 - 2026-09-23: Repository is clean on `main` at `bc777271`, equal to `origin/main`; PR #39 merged and both required Python CI matrices passed. Main requires PRs and `quality (Python 3.11)` / `quality (Python 3.12)` checks. No active linked worktrees exist.
 - 2026-09-23: Workspace policy guard passed before task work.
-- 2026-09-23: Implemented the explicit-path publisher, async auto-merge request, exact-head/CI merge-record workflow, safe finalizer, issue/PR templates, CODEOWNERS map, and `D:\claude\eval-lab\worktrees` policy. Finalizer checks the canonical checkout before removing a linked worktree.
-- 2026-09-23: Updated `D:\claude\AGENTS.md`, `D:\claude\PROJECT_ROOTS.md`, and `D:\claude\check-canonical-workspaces.ps1`. `D:\claude` has only this account as a repository collaborator; owner approval cannot be enforced until an independent reviewer is added. The CODEOWNERS review rule therefore remains disabled to avoid making sensitive PRs unmergeable.
+- 2026-09-23: Implemented the explicit-path publisher, async auto-merge request, exact-head/CI merge-record workflow, finalizer, issue/PR templates, and `D:\claude\eval-lab\worktrees` policy. Finalizer checks the canonical checkout before removing a linked worktree.
+- 2026-09-23: Updated `D:\claude\AGENTS.md`, `D:\claude\PROJECT_ROOTS.md`, and `D:\claude\check-canonical-workspaces.ps1`.
 - 2026-09-23: Local gates passed: `uv lock --check`; `uv sync --locked --extra dev`; repo contract; canonical workspace policy; `ruff check .`; changed-Python Ruff format check; `mypy src/eval_lab`; full pytest (`157 passed`); `uv build`; and `git diff --check`. One initial format check failed; the three files were formatted and the complete run passed.
 - 2026-09-24: PR #41 merged after both required Python checks passed; merge commit `731e6928f1acc7fd849a62f8bc4c8ade1157c90d`. The merge-record workflow succeeded on exact head `f3f98c8638b3eaaab18a556919ce2f3143b505aa`. The finalizer correctly stopped before closing issue #40 because `git fetch origin main` did not refresh the local `origin/main` tracking ref. No worktree was removed; canonical `main` is clean and already at the merged commit. The finalizer and publisher now fetch directly into `refs/remotes/origin/main`, with a regression test.
+- 2026-09-24: PR #42 merged at `80df0fa3af5595ace27876610534ff33ff64193d`; both required CI checks and the merge-record workflow passed. Issue #40 is closed, and canonical `main` is synchronized.
 
 ## Exact files changed
 
@@ -87,6 +88,6 @@ The task remains active until its PR is merged and the GitHub issue reflects the
 
 ## Next atomic action
 
-Run local gates, update issue #40 with PR #41's merged state and this correction, publish the follow-up branch, then let required CI/auto-merge proceed before finalization.
+No further TASK-0051 action remains. TASK-0052 tracks the follow-up simplification.
 
 

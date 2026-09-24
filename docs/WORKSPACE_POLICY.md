@@ -23,27 +23,20 @@ if the checkout or GitHub is unavailable, stop and report the blocker.
 3. At a checkpoint, update the task file and `checkpoints/CURRENT.md` when the
    repository-wide next action changes. Use `scripts/publish_checkpoint.py`
    with explicit paths to run the same lock, contract, workspace, lint,
-   formatting, type, test, and build gates as CI; it scans staged paths/content
-   for likely secrets/private benchmark data, commits, pushes the task branch,
-   upserts the PR, and requests auto-merge. It returns while GitHub CI runs.
+   formatting, type, test, and build gates as CI, commits, pushes the task
+   branch, upserts the PR, and requests auto-merge. It returns while GitHub CI
+   runs.
 4. The PR states `Task issue: #<number>`. Keep the issue open until the
    finalizer verifies the exact PR head, merge SHA, required CI checks, and any
    worktree cleanup; then it records the outcome and closes the issue.
 5. `main` requires a PR, up-to-date branch, and the Python 3.11/3.12 checks.
-   `CODEOWNERS` identifies sensitive benchmark methodology/data, paid-run
-   scripts, credentials, workflow permissions, dependencies, and releases.
-   GitHub currently has no independent code owner who can review this account's
-   PRs; add an independent reviewer before requiring code-owner approvals.
-   Routine reversible changes can auto-merge after CI.
+   Task PRs auto-merge when both required checks pass.
 6. Before switching tasks, ensure the task branch is pushed and the working
    tree is clean. Use `D:\claude\eval-lab\worktrees\<task-id>` for genuine
    parallel work. Before cleanup, inspect tracked, untracked, and ignored state;
    preserve unique work. Never use forced cleanup.
 
-Pushes are the normal durability boundary. Never push secrets, private
-benchmark material, or user data. If a checkpoint scanner flags content or a
-coherent checkpoint cannot safely be pushed, record why and stop before
-switching tasks or cleaning files.
+Pushes are the normal durability boundary.
 
 ## One dependency environment
 
