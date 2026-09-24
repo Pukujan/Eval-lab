@@ -68,6 +68,17 @@
     "huggingface_hub": false,
     "ollama": false
   },
+  "latest_resource_observations": {
+    "host": "mac-ts / MacBookPro17,1",
+    "disk_free_before_kev4b_retry_gib_rounded": 1.6,
+    "disk_free_during_kev4b_retry_mib_rounded": 345,
+    "system_wide_free_memory_percent_before_retry": 88,
+    "system_wide_free_memory_percent_during_model_load": 10,
+    "system_wide_free_memory_percent_after_stopping_codex_model_processes": 87,
+    "comfyui_process_was_running": true,
+    "codex_model_processes_stopped_before_prediction": true,
+    "interpretation": "The second Kev-4B attempt was interrupted to restore memory headroom. The first attempt's exit cause remains undetermined. No model result was produced."
+  },
   "notes": [
     "Hardware and Python/uv were queried over the existing Tailscale SSH alias mac-ts.",
     "Free disk is a point-in-time measurement; recheck before downloading each model.",

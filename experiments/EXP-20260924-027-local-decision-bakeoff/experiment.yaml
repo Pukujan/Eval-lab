@@ -164,3 +164,7 @@ notes: >-
   prediction; its status and logs are preserved. Nimble's upstream
   unquantized weights exceed the Mac's unified memory. Jev 1.13 on the same
   blind records is a cached reference if protocol compatibility is confirmed.
+  SemIf-4B was not loaded: its pinned Qwen3.5-4B checkpoint is about 9 GB and
+  only 343 MiB remained on disk after the Kev-4B retry. The retry was stopped
+  before inference when free memory fell to 10%; do not infer a provider error
+  or model failure from that interrupted attempt.

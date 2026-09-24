@@ -12,7 +12,16 @@
       "backend": "MLX / MLX-LM native direct scoring",
       "precision": "BF16 with some FP32 parameters; unquantized",
       "max_context_tokens": 4096,
-      "source": "https://github.com/TheoLeeCJ/SemIf-OpenJev/blob/master/docs/MLX.md"
+      "feasibility": "not_run_due_to_insufficient_disk; pinned upstream documentation says the BF16 checkpoint is about 9 GB, while the Mac had 343 MiB free after the Kev-4B retry; quantization would be a distinct experiment",
+      "weight_shards_gb_rounded": [
+        5.33,
+        3.99
+      ],
+      "weight_shards_source": [
+        "https://huggingface.co/Qwen/Qwen3.5-4B/blob/851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a/model.safetensors-00001-of-00002.safetensors",
+        "https://huggingface.co/Qwen/Qwen3.5-4B/blob/851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a/model.safetensors-00002-of-00002.safetensors"
+      ],
+      "source": "https://github.com/TheoLeeCJ/SemIf-OpenJev/blob/23cf1f39fc9534fe81437200959b6dfc7106e45a/docs/MLX.md"
     },
     {
       "arm_id": "nimble-9b",
@@ -50,8 +59,11 @@
       "max_context_tokens": 1024,
       "runtime_environment": "Mac external environment ~/.cache/eval-lab/TASK-0053/kev-runtime",
       "runtime_package_freeze": "kev-runtime-freeze.txt",
-      "feasibility": "smoke_failed_on_current_host_session; pinned server exited during model load before a prediction; smoke output preserved",
-      "smoke_artifact": "smokes/kev-4b-exp027-one-record/",
+      "feasibility": "two_load_attempts_without_prediction; first pinned server exited during model load with cause undetermined; retry was stopped before a prediction after system-wide free memory fell from 88% to 10% and disk fell from 1.6 GiB to 343 MiB; both smoke artifacts preserved",
+      "smoke_artifacts": [
+        "smokes/kev-4b-exp027-one-record/",
+        "smokes/kev-4b-exp027-one-record-retry-20260924/"
+      ],
       "source": "https://github.com/jaredpalmer/kev"
     },
     {

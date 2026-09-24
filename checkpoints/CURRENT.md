@@ -1,5 +1,21 @@
 # Current Repository Checkpoint
 
+## 2026-09-24 — TASK-0053 Mac resource limits recorded
+
+PR #54 merged the Verdict 1.4 and pre-v1.4 runs and reports; issue #47 remains
+open. A second Kev-4B load attempt was stopped before inference after system-
+wide free memory fell from 88% to 10%; memory recovered to 87% after stopping
+only the two Codex model-load processes. Free disk was 1.6 GiB before the
+attempt and 343 MiB during it. The first Kev-4B load exit remains unexplained.
+The pinned SemIf Qwen3.5-4B checkpoint is about 9 GB (5.33 GB and 3.99 GB
+shards), so it was not downloaded or run. The retry log and run config are
+preserved in a separate smoke folder. No inference result was produced.
+
+Next atomic action: publish the feasibility update through issue #47 and
+required CI. Resume SemIf-4B or Kev-4B only after the Mac has ample disk and
+memory headroom. Nimble-9B and Kev-9B remain infeasible under the current
+pinned host constraints.
+
 ## 2026-09-24 — TASK-0053 Verdict runs recorded
 
 GitHub issue #47 tracks the ongoing comparison. Kev-0.8B, Laya-421M, Verdict
@@ -12,9 +28,7 @@ Their Hearsay accuracy was 43.62% (94/94 resolved). Raw outputs preserve
 abstention probabilities; the report separates abstention from context-limit
 skips and states that accuracy/calibration apply to accepted predictions.
 
-Remaining: SemIf Qwen3.5-4B is not yet run; the Mac currently has 1.4 GiB free
-disk and an active ComfyUI process, so recheck feasibility before attempting
-another large weight download. Kev-4B's load smoke failed before inference.
+At the time of this checkpoint SemIf Qwen3.5-4B and Kev-4B were not completed.
 Nimble-9B's unquantized weights are about 18 GB, and upstream lists 32 GB for
 Kev-9B; neither fits this 16 GiB host as pinned. Keep both experiment manifests
 in progress until remaining eligible arms are completed or explicitly closed
