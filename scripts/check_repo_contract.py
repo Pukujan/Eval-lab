@@ -47,7 +47,9 @@ REQUIRED_FILES = [
     "benchmark/eval-lab-select-v0.1.0/benchmark.yaml",
     "benchmark/eval-lab-select-v0.1.0/README.md",
     "paper/references.bib",
-    "paper/main.tex",
+    "paper/paper.md",
+    "paper/archive/README.md",
+    "paper/archive/selective-escalation/main.tex",
     "CITATION.cff",
     "experiments/README.md",
 ]

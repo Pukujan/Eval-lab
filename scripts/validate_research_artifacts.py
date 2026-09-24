@@ -36,7 +36,8 @@ def validate_bundle(benchmark: Path) -> dict[str, object]:
     required_citation = {"cff-version", "title", "authors", "repository-code", "version"}
     if not required_citation <= set(citation):
         raise ValueError("CITATION.cff is missing required keys")
-    for path in (Path("paper/main.tex"), Path("paper/reproducibility.md"), Path("paper/limitations.md")):
+    archive = Path("paper/archive/selective-escalation")
+    for path in (archive / "main.tex", archive / "reproducibility.md", archive / "limitations.md"):
         if not path.is_file() or not path.read_text(encoding="utf-8").strip():
             raise ValueError(f"missing paper artifact: {path}")
     return {

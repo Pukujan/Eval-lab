@@ -1,0 +1,5 @@
+# Limitations and threats to validity
+
+The frozen student is a compact TF-IDF plus logistic-regression arm trained on the small TASK-0009 corpus. ARC answer-key labels measure objective choice correctness and do not establish broad human-evaluation validity. The calibrated threshold claims have Wilson uncertainty and are descriptive when the upper bound does not meet the target. Provider smoke and partial live availability can leave unresolved records; unresolved calls are not scored as local errors and never receive a local fallback. The rolling Jev alias is a separate canary and is excluded from pinned estimates.
+
+Project Continuity Modules (PCM) was inspected at `Pukujan/project-continuity-modules@3a34b4a73842c824de5359f06e04568e8ce4aaa4`. Eval Lab maps PROJECT.md to PCM PROJECT, checkpoints/CURRENT.md to CURRENT, TASK files to TASK, and checkpoint logs to CHECKPOINT. PCM currently exposes minimal and software templates; its planned research profile is not implemented, so this release treats PCM as a continuity compatibility reference and keeps RO-Crate 1.3 plus PROV-O as the scientific provenance standard.

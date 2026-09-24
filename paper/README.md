@@ -1,7 +1,32 @@
-# Eval Lab Research Paper
+# Eval Lab paper
 
-TASK-0010 will generate an arXiv-ready independent research report from committed experiment artifacts.
+**Canonical paper:** [`paper.md`](paper.md) — *Accuracy is not enough:
+correctness and coverage of independent judges on identical objective
+decisions.*
 
-Paper source will live in this directory and reported tables/figures must be generated from versioned result artifacts rather than copied manually.
+Research question: when independent judges, from small local models to
+frontier APIs, receive identical typed decisions with objective gold labels,
+how do their accuracy and coverage differ, and what does accuracy-only
+reporting hide?
 
-See `docs/RESEARCH_ARTIFACT_STANDARD.md`.
+## Layout
+
+| Path | Contents |
+| --- | --- |
+| `paper.md` | The single canonical paper. |
+| `limitations.md` | Limitations of the canonical paper (mirrors Section 6). |
+| `reproducibility.md` | How to regenerate every table and figure offline. |
+| `figures/benchmark/` | Generated figures and `manifest.json` with source hashes. |
+| `references.bib` | Bibliography used by the archived LaTeX draft. |
+| `archive/` | Superseded drafts, kept for history; see `archive/README.md`. |
+
+## Rules
+
+- Tables inside `<!-- generated:NAME -->` blocks in `paper.md` are written by
+  `scripts/analyze_judge_comparison.py --update-paper`. Never hand-edit them;
+  `tests/test_judge_comparison_analysis.py` fails if they drift.
+- Figures are written by `scripts/generate_benchmark_figures.py` from committed
+  results files; the manifest records each source's SHA-256.
+- Links in the paper point at Eval Lab `main`.
+
+See also `docs/RESEARCH_ARTIFACT_STANDARD.md`.

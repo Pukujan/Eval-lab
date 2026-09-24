@@ -1,13 +1,27 @@
-# Reproducibility appendix
+# Reproducibility
+
+Everything in [`paper.md`](paper.md) regenerates offline from committed
+artifacts. No provider credentials or model downloads are needed.
 
 ```powershell
-$env:PYTHONPATH = "$PWD\src"
-.venv\Scripts\python.exe scripts/build_selective_benchmark.py
-.venv\Scripts\python.exe scripts/run_selective_escalation.py --skip-providers --provider-limit 500 --output experiments/EXP-20260920-012-selective-escalation-qwen-streaming --pinned-predictions experiments/EXP-20260920-009-selective-escalation/provider-pinned.jsonl --rolling-predictions experiments/EXP-20260920-009-selective-escalation/provider-rolling.jsonl --qwen-predictions experiments/EXP-20260920-009-selective-escalation/qwen-streaming-final-merged-20260920-010/predictions.jsonl --experiment-id EXP-20260920-012-selective-escalation-qwen-streaming
-.venv\Scripts\python.exe scripts/generate_research_artifacts.py --experiment experiments/EXP-20260920-012-selective-escalation-qwen-streaming --smoke-experiment experiments/EXP-20260920-009-selective-escalation
-.venv\Scripts\python.exe scripts/validate_research_artifacts.py --benchmark benchmark/eval-lab-select-v0.1.0
+uv sync --locked --extra dev --extra figures
+uv run --locked python scripts/analyze_judge_comparison.py --update-paper
+uv run --locked python scripts/generate_benchmark_figures.py
+uv run --locked python -m pytest tests/test_judge_comparison_analysis.py
 ```
 
-Provider smoke calls are isolated with `scripts/smoke_task0010_providers.py`; pinned and rolling Jev outputs are never pooled.
+| Output | Produced by | From |
+| --- | --- | --- |
+| `experiments/EXP-20260924-029-consolidated-judge-analysis/results.json`, `report.md` | `scripts/analyze_judge_comparison.py` | blind prediction files of EXP-013/014/015/016/017/022/024/025/027 |
+| Generated tables in `paper.md` | `scripts/analyze_judge_comparison.py --update-paper` | EXP-029 analysis |
+| `figures/benchmark/blind_accuracy_vs_coverage.*`, `blind_conditional_vs_all_record.*` | `scripts/generate_benchmark_figures.py` | EXP-029 `results.json` |
+| `figures/benchmark/grok_protocol_ablation.*` | `scripts/generate_benchmark_figures.py` | EXP-025 results |
+| `figures/benchmark/local_qwen_calibration.*` | `scripts/generate_benchmark_figures.py` | EXP-019 results |
 
-Project Continuity Modules (PCM) was inspected at `Pukujan/project-continuity-modules@3a34b4a73842c824de5359f06e04568e8ce4aaa4`. Eval Lab maps PROJECT.md to PCM PROJECT, checkpoints/CURRENT.md to CURRENT, TASK files to TASK, and checkpoint logs to CHECKPOINT. PCM currently exposes minimal and software templates; its planned research profile is not implemented, so this release treats PCM as a continuity compatibility reference and keeps RO-Crate 1.3 plus PROV-O as the scientific provenance standard.
+Input files are fingerprinted with LF-normalized SHA-256 (in EXP-029
+`results.json` and `figures/benchmark/manifest.json`), so Windows CRLF and
+Linux LF checkouts give identical hashes. Both scripts are deterministic;
+rerunning them should produce no diff.
+
+The archived selective-escalation LaTeX draft keeps its own reproducibility
+notes in `archive/selective-escalation/reproducibility.md`.
