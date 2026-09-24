@@ -15,6 +15,20 @@
     "uv": "0.12.18",
     "installation": "Homebrew Python 3.12 and uv; no Eval Lab checkout or virtual environment on Mac"
   },
+  "installed_model_runtimes": [
+    {
+      "family": "Kev",
+      "upstream_revision": "badd506d71399f536a09bba7ad5dd663adb104d2",
+      "external_environment": "/Users/teresaguajardo/.cache/eval-lab/TASK-0053/kev-runtime",
+      "python": "3.12.14",
+      "kev": "0.1.0",
+      "mlx": "0.32.2",
+      "mlx_lm": "0.31.3",
+      "freeze_file": "kev-runtime-freeze.txt",
+      "uv_pip_check": "passed",
+      "server_help": "passed; no model loaded"
+    }
+  ],
   "inference_libraries_before_model_runtime_install": {
     "mlx": false,
     "mlx_lm": false,

@@ -5,7 +5,7 @@ hypothesis: >-
   on the frozen Eval Lab typed-choice benchmark, with accuracy, coverage,
   calibration, and latency varying across model architecture and size.
 created_at: 2026-09-24
-code_commit: aac7576441dc85a990023e2e5264a0ab4730e953
+code_commit: 4d1d9a5fe9c1719fd190e757ff4134f043f3fb16
 seed: 20260924
 context_limit: 4096
 runner_host:
@@ -138,6 +138,7 @@ artifacts:
   - source-pool-fingerprint.json
   - hardware-and-runtime.json
   - model-revisions.json
+  - kev-runtime-freeze.txt
   - public-predictions/
   - blind-predictions/
   - results.json
