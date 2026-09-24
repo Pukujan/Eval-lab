@@ -24,7 +24,7 @@ The sole durable local Eval Lab checkout is `D:\claude\eval-lab`. Do not
 create another clone, copied project directory, or task-named sibling
 checkout. Work in the canonical folder by default. A temporary linked
 worktree is allowed when a task genuinely needs isolation or parallel work;
-create it only at `D:\claude\eval-lab\.worktrees\<task-id>`. Keep worktrees
+create it only at `D:\claude\eval-lab\worktrees\<task-id>`. Keep worktrees
 limited to active tasks and remove them after their work is durably checkpointed
 and complete.
 
@@ -43,7 +43,7 @@ fast-forward the canonical checkout to `origin/main`; do not create a second
 directory to preserve an old branch.
 
 Never run `git clone` for Eval Lab. Never create a linked worktree outside
-`D:\claude\eval-lab\.worktrees`. If GitHub or the current checkout is
+`D:\claude\eval-lab\worktrees`. If GitHub or the current checkout is
 unavailable, stop and report the blocker rather than creating another local
 copy.
 
@@ -86,18 +86,36 @@ before task work and after cleanup. The repository contract check also enforces
 the canonical path, in-root temporary-worktree placement, and one-environment
 rules.
 
-## GitHub checkpoint policy
+## GitHub issue and checkpoint policy
+
+GitHub Issues are the authoritative change log. Create or update an issue
+before implementation, and put its number in the task file. Use a GitHub
+sub-issue only when a parent task has independently deliverable child tasks;
+do not maintain a second issue register in the repository.
 
 GitHub is the durable record for committed task progress; local folders are
-working state, not backup. At each meaningful stopping point, validate, commit,
-and push the coherent checkpoint to its task branch, then open or update its PR
-to `main`. A completed checkpoint is not complete until its PR is merged after
-all required CI checks pass. Do not switch to another task with a completed
-checkpoint unmerged, or leave completed work or handoff state only on a local
-branch. Interim work may remain in the same open PR while a task is active.
-Before pushing, verify that no credentials, private benchmark material, or user
-data are included. After a task is merged, fast-forward the same canonical
-checkout to `origin/main`.
+working state, not backup. At each meaningful stopping point, update the task
+file and, when the repository-wide next action changes, `checkpoints/CURRENT.md`.
+Use `scripts/publish_checkpoint.py` with explicit paths to run local gates, make
+the checkpoint commit, push only the task branch, create or update its PR, and
+request GitHub auto-merge. The publisher returns while required CI runs; agents
+may continue or hand off asynchronously. The PR must reference its issue;
+close it only after finalization. A merged-PR workflow records the exact PR
+head and merge SHA. `CODEOWNERS` marks sensitive changes to benchmark
+methodology/data, paid provider runs, secrets, workflow permissions, or
+releases for maintainer review. The repository needs an independent code owner
+before GitHub can enforce those reviews; routine
+reversible changes may auto-merge after CI. Never push directly to `main` or
+bypass a failed or missing check.
+
+A checkpoint is complete only after GitHub confirms its PR merged with required
+CI successful. Do not leave completed work or handoff state only in chat or a
+local branch. Before publishing, verify that no credentials, private benchmark
+material, or user data are included. After merge, run
+`scripts/finalize_checkpoint.py` to confirm the merge, audit tracked,
+untracked, and ignored state, remove a clean linked worktree normally, and
+fast-forward the canonical checkout to `origin/main`. Never force-remove a
+worktree or discard unique state.
 
 ## Required checkpoint behavior
 

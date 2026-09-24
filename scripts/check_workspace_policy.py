@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 ENVIRONMENT_DIRS = {".venv", "node_modules"}
 NODE_LOCKFILES = ("pnpm-lock.yaml", "package-lock.json", "yarn.lock", "bun.lock", "bun.lockb")
 TASK_WORKTREE_NAME = re.compile(r"TASK-\d{4}(?:-[a-z0-9]+(?:-[a-z0-9]+)*)?\Z", re.IGNORECASE)
+WORKTREES_DIRECTORY = "worktrees"
 
 
 def _normalized(path: Path) -> str:
@@ -53,7 +54,7 @@ def _check_worktrees(
             f"canonical checkout is missing from its Git worktree list: {root.resolve()}"
         )
 
-    worktrees_root = (root / ".worktrees").resolve()
+    worktrees_root = (root / WORKTREES_DIRECTORY).resolve()
     seen: set[str] = set()
     for path in paths:
         path_key = _normalized(path)
@@ -68,7 +69,7 @@ def _check_worktrees(
         if resolved.parent != worktrees_root:
             violations.append(
                 "temporary worktrees must be direct children of the canonical "
-                f".worktrees directory: {resolved}"
+                f"{WORKTREES_DIRECTORY} directory: {resolved}"
             )
         if not TASK_WORKTREE_NAME.fullmatch(resolved.name):
             violations.append(

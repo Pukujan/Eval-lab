@@ -1,0 +1,60 @@
+name: Task merge record
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+
+permissions:
+  contents: read
+  checks: read
+  issues: write
+  pull-requests: read
+
+jobs:
+  record-merged-checkpoint:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      PR_MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+    steps:
+      - name: Verify exact merged head and required checks
+        id: verify
+        shell: bash
+        run: |
+          set -euo pipefail
+          pr_json="$(gh pr view "$PR_NUMBER" --json body,headRefOid,mergeCommit,statusCheckRollup)"
+          jq -e --arg head "$PR_HEAD_SHA" --arg merge "$PR_MERGE_SHA" '
+            def passing($name): any(.statusCheckRollup[]?;
+              ((.name // .context) == $name) and ((.conclusion // .state) == "SUCCESS"));
+            .headRefOid == $head and
+            .mergeCommit.oid == $merge and
+            passing("quality (Python 3.11)") and
+            passing("quality (Python 3.12)")
+          ' <<< "$pr_json" >/dev/null
+          issue_number="$(jq -er '.body | capture("Task issue: #(?<number>[0-9]+)").number' <<< "$pr_json")"
+          printf 'issue_number=%s\n' "$issue_number" >> "$GITHUB_OUTPUT"
+
+      - name: Record merged checkpoint on its issue
+        env:
+          ISSUE_NUMBER: ${{ steps.verify.outputs.issue_number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          body_file="$RUNNER_TEMP/merged-checkpoint.md"
+          cat > "$body_file" <<EOF
+          Verified merged checkpoint.
+
+          - PR: #$PR_NUMBER
+          - Exact PR head: $PR_HEAD_SHA
+          - Merge commit: $PR_MERGE_SHA
+          - Required CI: Python 3.11 and Python 3.12 passed
+          - Next: run the task finalizer; preserve the task until merge and worktree cleanup are confirmed.
+          EOF
+          gh issue comment "$ISSUE_NUMBER" --body-file "$body_file"

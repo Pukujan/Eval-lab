@@ -1,5 +1,28 @@
 # Current Repository Checkpoint
 
+## 2026-09-23 — TASK-0051 GitHub checkpoint automation
+
+GitHub issue #40 tracks automation for the repository's checkpoint-to-PR
+workflow. The task branch contains a publisher that validates task context and
+explicit files, scans staged content for credential/private-data indicators,
+runs repository gates, commits and pushes only the task branch, upserts the PR,
+and requests auto-merge. A finalizer confirms the PR merged before it cleans a
+linked worktree or fast-forwards the canonical checkout. Publishing returns
+while GitHub CI runs; merge confirmation remains a separate required step.
+Final local gates pass: 157 tests, Ruff, mypy, repository/workspace guards,
+package build, lock validation, and diff check.
+
+The repository, D: workspace, and GitHub templates use GitHub Issues as the
+durable task log. Issue #40 remains standalone; only independently deliverable
+work should become sub-issues. The Eval Lab temporary worktree location is
+`D:\\claude\\eval-lab\\worktrees\\<task-id>`. The repository has no
+independent collaborator who can approve this account's code-owner PRs, so the
+CODEOWNERS approval requirement remains disabled pending that reviewer.
+
+Repository auto-merge is enabled and verified. Next atomic action: publish this
+branch and let required CI/auto-merge proceed asynchronously.
+Keep the checkpoint active until the PR merge is confirmed.
+
 ## 2026-09-23 — TASK-0050 temporary-worktree lifecycle correction
 
 The user clarified that temporary Git linked worktrees are allowed when an

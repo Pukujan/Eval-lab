@@ -32,6 +32,7 @@ PR body must identify:
 - whether schemas/protocols changed
 - checkpoint/handoff state
 - known limitations
+- the linked GitHub issue (leave it open until merge verification and finalization)
 
 A PR modifying evaluation logic must add or update tests.
 
@@ -46,13 +47,25 @@ must not switch to another task, while its completed checkpoint remains only
 local or its required PR is unmerged. Pushes make intermediate work durable;
 merges promote reviewed checkpoints to the canonical branch.
 
+Create or update the GitHub issue before implementation. Use
+`scripts/publish_checkpoint.py` to validate and commit explicitly selected
+files, push the task branch, create/update its PR, and request auto-merge. The
+publisher returns without waiting for CI. Keep the issue open until
+`scripts/finalize_checkpoint.py` verifies the exact merged PR head, merge SHA,
+required checks, and clean worktree cleanup; it records the outcome and closes
+the issue. The `Task merge record` workflow independently records the verified
+head and merge SHA on the linked issue after GitHub merges the PR.
+
 GitHub branch protection on `main` enforces pull requests, the Python 3.11 and
 3.12 CI status checks, and up-to-date branches. Direct pushes, force-pushes,
-branch deletion, and administrator bypass are disabled. A solo-maintainer
-approval count of zero is intentional: the PR and required CI remain mandatory
-without creating an impossible self-review requirement. Use squash merge for
-one coherent commit per checkpoint; delete remote task branches only after
-their useful review/handoff history is preserved.
+branch deletion, and administrator bypass are disabled. Required approval
+count remains zero. Sensitive paths are listed in `CODEOWNERS`. This repository
+currently has no independent code owner who can review this account's PRs, so
+required code-owner review is not enabled; add an independent reviewer before
+turning it on, so protected changes do not become permanently unmergeable. Use
+squash merge for one coherent
+commit per checkpoint. Keep the issue and worktree open until the finalizer
+records post-merge cleanup.
 
 Configure/verify the protection rule as part of repository setup; documenting a
 merge requirement is not an adequate substitute for an enforced GitHub rule.
