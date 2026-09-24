@@ -7,36 +7,43 @@ owner's Windows machine. GitHub is the durable source of committed history;
 this directory is the only local working copy. A branch is a Git reference,
 not a reason to create another directory.
 
-Do not create another Eval Lab clone or Git worktree, whether beside the
-repository or under `.worktrees`. Do not make a task-specific project folder.
-Work is sequential in the canonical checkout, with one task branch active at a
-time. If the checkout or GitHub is unavailable, stop and report the blocker.
+Do not create another Eval Lab clone or task-specific project folder. Work in
+the canonical checkout by default. A temporary linked worktree is allowed
+only when genuine isolation or parallel work requires it, and only at
+`D:\claude\eval-lab\worktrees\<task-id>`. Keep one active task per worktree;
+if the checkout or GitHub is unavailable, stop and report the blocker.
 
 ## Branch and checkpoint workflow
 
-1. Confirm the repository root is the canonical path and run the workspace
-   guard before editing.
-2. Fetch `origin`; use the current `main` tip as the base for a new task branch
-   in this same checkout.
-3. Work on one task branch. At each meaningful stopping point, run relevant
-   validation, commit a coherent checkpoint, and push that branch to GitHub.
-   Open or update its PR to `main`; a completed checkpoint is not closed out
-   until all required CI checks pass and the PR is merged.
-4. Before switching tasks, confirm the checkpoint is pushed and the working
-   tree is clean. Do not create a worktree or stash a second task to work in
-   parallel.
-5. `main` is protected by a required-PR rule and required Python 3.11/3.12 CI
-   checks. Direct pushes and bypasses are disabled; no approval is required for
-   the solo maintainer. After merge, fast-forward this checkout to `origin/main`.
-   Preserve task branches remotely only when they contain useful review or
-   handoff history; local branches do not require extra working folders.
-6. Before any cleanup, inspect tracked changes, untracked and ignored files,
-   branch-only commits, and artifacts. Preserve unique work before removing a
-   directory. Never use forced cleanup to bypass that review.
+1. Create or update a GitHub issue with the requested change and acceptance
+   criteria before implementation. Record the issue number in its task file.
+   Use sub-issues only to split independently deliverable work.
+2. Confirm the repository root is canonical and run the workspace guard.
+   Fetch `origin`; use current `main` as the task branch base.
+3. At a checkpoint, update the task file and `checkpoints/CURRENT.md` when the
+   repository-wide next action changes. Use `scripts/publish_checkpoint.py`
+   with explicit paths to run the same lock, contract, workspace, lint,
+   formatting, type, test, and build gates as CI; it scans staged paths/content
+   for likely secrets/private benchmark data, commits, pushes the task branch,
+   upserts the PR, and requests auto-merge. It returns while GitHub CI runs.
+4. The PR states `Task issue: #<number>`. Keep the issue open until the
+   finalizer verifies the exact PR head, merge SHA, required CI checks, and any
+   worktree cleanup; then it records the outcome and closes the issue.
+5. `main` requires a PR, up-to-date branch, and the Python 3.11/3.12 checks.
+   `CODEOWNERS` identifies sensitive benchmark methodology/data, paid-run
+   scripts, credentials, workflow permissions, dependencies, and releases.
+   GitHub currently has no independent code owner who can review this account's
+   PRs; add an independent reviewer before requiring code-owner approvals.
+   Routine reversible changes can auto-merge after CI.
+6. Before switching tasks, ensure the task branch is pushed and the working
+   tree is clean. Use `D:\claude\eval-lab\worktrees\<task-id>` for genuine
+   parallel work. Before cleanup, inspect tracked, untracked, and ignored state;
+   preserve unique work. Never use forced cleanup.
 
 Pushes are the normal durability boundary. Never push secrets, private
-benchmark material, or user data. If a coherent checkpoint cannot safely be
-pushed, record why and ask before switching tasks or cleaning its files.
+benchmark material, or user data. If a checkpoint scanner flags content or a
+coherent checkpoint cannot safely be pushed, record why and stop before
+switching tasks or cleaning files.
 
 ## One dependency environment
 

@@ -10,6 +10,11 @@ body:
       placeholder: TASK-0002
     validations:
       required: true
+  - type: input
+    id: issue_scope
+    attributes:
+      label: Related issues / parent issue
+      description: Use sub-issues only when the parent has independently deliverable work.
   - type: textarea
     id: goal
     attributes:
@@ -22,6 +27,13 @@ body:
     attributes:
       label: Acceptance criteria
       description: Objective conditions for completion.
+    validations:
+      required: true
+  - type: textarea
+    id: risk
+    attributes:
+      label: Risk and approval needs
+      description: Identify benchmark methodology/data, paid runs, credentials, releases, or other sensitive paths.
     validations:
       required: true
   - type: textarea
@@ -38,3 +50,10 @@ body:
     attributes:
       label: Initial handoff
       description: Exact first action for the receiving agent.
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation and merge conditions
+      description: Required local gates and GitHub checks; note any human approval gate.
+    validations:
+      required: true

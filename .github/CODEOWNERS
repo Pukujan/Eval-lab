@@ -1,0 +1,15 @@
+# Sensitive evaluation, execution, release, and repository-control changes need
+# the maintainer's approval. Ordinary code changes may auto-merge after CI.
+/experiments/ @Pukujan
+/src/eval_lab/ @Pukujan
+/docs/EXPERIMENT_PROTOCOL.md @Pukujan
+/docs/RESEARCH_ARTIFACT_STANDARD.md @Pukujan
+/scripts/build_* @Pukujan
+/scripts/freeze_* @Pukujan
+/scripts/run_* @Pukujan
+/scripts/merge_* @Pukujan
+/pyproject.toml @Pukujan
+/uv.lock @Pukujan
+/.github/workflows/ @Pukujan
+/.github/ISSUE_TEMPLATE/experiment.yml @Pukujan
+/.github/CODEOWNERS @Pukujan
