@@ -70,6 +70,11 @@ def summarize_predictions(
 
     aligned = [(record, by_id[record["record_id"]]) for record in records]
     counts = Counter(prediction["execution_status"] for _, prediction in aligned)
+    unresolved_reasons = Counter(
+        str((prediction.get("error") or {}).get("kind") or "unspecified")
+        for _, prediction in aligned
+        if prediction.get("execution_status") != "ok"
+    )
     resolved = [
         (record, prediction)
         for record, prediction in aligned
@@ -131,6 +136,7 @@ def summarize_predictions(
         "accuracy": correct / len(resolved) if resolved else None,
         "accuracy_95_wilson": _wilson(correct, len(resolved)),
         "status_counts": dict(sorted(counts.items())),
+        "unresolved_reason_counts": dict(sorted(unresolved_reasons.items())),
         "by_mode": by_mode,
         "probability_count": sum(item["probability_count"] for item in by_mode.values()),
         "latency_ms": {"p50": _percentile(latencies, 0.5), "p95": _percentile(latencies, 0.95)},
@@ -177,8 +183,8 @@ def _markdown(
             [
                 f"## {partition.replace('_', ' ').title()}",
                 "",
-                "| Arm | Resolved | Coverage | Accuracy | 95% Wilson interval | Calibration by mode | p50 ms | p95 ms | Status counts |",
-                "| --- | ---: | ---: | ---: | --- | --- | ---: | ---: | --- |",
+                "| Arm | Resolved | Coverage | Accuracy | 95% Wilson interval | Calibration by mode | p50 ms | p95 ms | Status counts | Unresolved reasons |",
+                "| --- | ---: | ---: | ---: | --- | --- | ---: | ---: | --- | --- |",
             ]
         )
         for arm_id, result in sorted(arms.items()):
@@ -195,7 +201,7 @@ def _markdown(
                 f"| `{arm_id}` | {result['resolved_count']}/{result['record_count']} | "
                 f"{result['resolved_coverage']:.4f} | {result['accuracy']} | `{interval}` | `{calibration}` | "
                 f"{result['latency_ms']['p50']} | {result['latency_ms']['p95']} | "
-                f"`{result['status_counts']}` |"
+                f"`{result['status_counts']}` | `{result['unresolved_reason_counts']}` |"
             )
         if not arms:
             lines.append("No prediction runs are recorded yet.")
@@ -234,6 +240,19 @@ def _markdown(
     return "\n".join(lines)
 
 
+def _model_notes(model_arms: dict[str, dict[str, Any]]) -> dict[str, str]:
+    notes: dict[str, str] = {}
+    for arm_id, model in model_arms.items():
+        details = [
+            str(model[key])
+            for key in ("probability_calibration_note", "probability_semantics_note")
+            if model.get(key)
+        ]
+        if details:
+            notes[arm_id] = " ".join(details)
+    return notes
+
+
 def report(experiment_root: Path, legalbench_root: Path) -> dict[str, Any]:
     pool_rows = _jsonl(Path("experiments") / EXP015 / "records.jsonl")
     pool_fingerprint = json.loads(
@@ -269,11 +288,7 @@ def report(experiment_root: Path, legalbench_root: Path) -> dict[str, Any]:
         _markdown(
             experiment_root.name,
             partitions,
-            {
-                arm_id: str(model_arms[arm_id]["probability_calibration_note"])
-                for arm_id in model_arms
-                if model_arms[arm_id].get("probability_calibration_note")
-            },
+            _model_notes(model_arms),
         ),
         encoding="utf-8",
     )
@@ -311,11 +326,7 @@ def report(experiment_root: Path, legalbench_root: Path) -> dict[str, Any]:
         _markdown(
             legalbench_root.name,
             {"test": legal_predictions},
-            {
-                arm_id: str(model["probability_calibration_note"])
-                for arm_id, model in legal_model_metadata.items()
-                if model.get("probability_calibration_note")
-            },
+            _model_notes(legal_model_metadata),
         ),
         encoding="utf-8",
     )

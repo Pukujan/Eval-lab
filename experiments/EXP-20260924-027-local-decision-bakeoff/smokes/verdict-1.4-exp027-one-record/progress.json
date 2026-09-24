@@ -1,0 +1,10 @@
+{
+  "arm_id": "verdict-1.4",
+  "selected_count": 1,
+  "completed_count": 1,
+  "status_counts": {
+    "skipped": 1
+  },
+  "last_record_id": "arc-single:Mercury_SC_400156:correct",
+  "updated_at_utc": "2026-09-24T07:45:47Z"
+}

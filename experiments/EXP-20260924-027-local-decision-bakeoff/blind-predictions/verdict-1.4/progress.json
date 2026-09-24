@@ -1,0 +1,11 @@
+{
+  "arm_id": "verdict-1.4",
+  "selected_count": 760,
+  "completed_count": 760,
+  "status_counts": {
+    "ok": 569,
+    "skipped": 191
+  },
+  "last_record_id": "single-synthetic-structured-06-correct",
+  "updated_at_utc": "2026-09-24T07:49:59Z"
+}

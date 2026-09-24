@@ -140,6 +140,8 @@ artifacts:
   - model-revisions.json
   - kev-runtime-freeze.txt
   - laya-runtime-freeze.txt
+  - verdict-1.4-runtime-freeze.txt
+  - verdict-original-runtime-freeze.txt
   - smokes/
   - public-predictions/
   - blind-predictions/
@@ -149,12 +151,16 @@ notes: >-
   EXP-014, EXP-015, and EXP-025 are complete and immutable. The local Mac
   runner is reachable. Model and upstream code revisions are frozen in
   model-revisions.json. Kev-0.8B has completed both frozen partitions and the
-  94-item Hearsay set with all outputs preserved. Laya and
-  Laya and Verdict have shorter per-arm context caps than the 4096-token
-  comparison ceiling; over-limit examples remain explicit unresolved statuses.
+  94-item Hearsay set with all outputs preserved. Laya and Verdict 1.4 have
+  shorter per-arm context caps than the 4096-token comparison ceiling;
+  over-limit examples remain explicit unresolved statuses. Verdict's
+  abstention probability is preserved in raw metadata; its accuracy and
+  standard class-probability metrics describe non-abstaining records, with
+  coverage reported separately. Verdict 1.4 and the pre-v1.4 configuration
+  were run sequentially with the same weights; their upstream code revisions,
+  context caps, calibration behavior, and package freezes remain distinct.
   Laya's checkpoint also emitted an invalid-temperature warning; treat its
   confidence metrics as diagnostic. The Kev-4B load smoke exited before a
-  prediction; its status and logs are preserved. Nimble's
-  upstream unquantized weights exceed the Mac's unified memory. Jev 1.13 on
-  the same blind records is a cached reference if protocol compatibility is
-  confirmed.
+  prediction; its status and logs are preserved. Nimble's upstream
+  unquantized weights exceed the Mac's unified memory. Jev 1.13 on the same
+  blind records is a cached reference if protocol compatibility is confirmed.

@@ -1,0 +1,13 @@
+{
+  "model_runtime": {
+    "device": "cpu",
+    "max_length": 512,
+    "snapshot": "/Users/teresaguajardo/.cache/huggingface/hub/models--heman10x--rlcd-modernbert-151m/snapshots/8af2496eb63c7fa66d7d234e1f62629380030eb4"
+  },
+  "package_versions": {
+    "onnxruntime": "1.30.0",
+    "rlcd": "0.1.0",
+    "torch": "2.14.0",
+    "transformers": "5.17.0"
+  }
+}

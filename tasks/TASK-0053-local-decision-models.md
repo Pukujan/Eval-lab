@@ -3,14 +3,17 @@
 ## Status
 
 Active — tracked by GitHub issue #47. EXP-027 and EXP-028 are in progress.
-The MacBook Pro is reachable over Tailscale SSH. Kev-0.8B and Laya-421M have
-finished EXP-027 public and blind partitions and EXP-028 Hearsay. Laya has
-explicit 512-token skips and an upstream calibration warning. Kev-4B failed
-its load smoke before inference. Other model arms remain. Hardware is a 2020 MacBook
-Pro (MacBookPro17,1), Apple M1, 16 GiB unified memory, macOS 26.4.1. The
-fixed-choice adapters and resumable sequential runner are merged; the
-string-state correction merged in PR #51. The pinned Kev runtime is installed
-externally and passes package checks.
+The MacBook Pro is reachable over Tailscale SSH. Kev-0.8B, Laya-421M, Verdict
+1.4, and the pre-v1.4 Verdict configuration have finished all three partitions.
+Laya has context-limit skips and an upstream calibration warning; Verdict
+abstentions and context-limit skips are separately reported. Kev-4B failed its
+load smoke before inference. SemIf-4B has not yet run. Nimble-9B and Kev-9B are
+not feasible under their pinned, unquantized/32-GiB configurations on this
+16-GiB host. Current free disk after Verdict was 1.4 GiB. Hardware is a 2020
+MacBook Pro (MacBookPro17,1), Apple M1, 16 GiB unified memory, macOS 26.4.1.
+The fixed-choice adapters and resumable sequential runner are merged; the
+string-state correction merged in PR #51. The pinned runtimes are installed
+externally and pass package checks.
 
 ## Objective
 
@@ -425,6 +428,65 @@ compatible smoke is available.
 
 Next atomic action: checkpoint Laya outputs and the Kev-4B load failure, then
 install the pinned Verdict runtime and run one-record feasibility probes.
+
+### 2026-09-24 — Verdict 1.4 and original configuration runs
+
+Status: Both pinned Verdict code revisions completed EXP-027 public-selection
+(648 records), blind holdout (760 records), and EXP-028 Hearsay (94 records).
+EXP-027 and EXP-028 remain in progress while other model arms are unresolved.
+
+Completed work: installed the pinned Verdict 1.4 source revision and the
+pre-v1.4 inference revision sequentially in one external Mac environment,
+reusing the same immutable 151M checkpoint. `uv pip check` passed for both
+revisions. Both one-record smokes loaded and returned explicit abstentions.
+Full outputs match each frozen partition's exact IDs. Verdict 1.4 resolved
+472/648 public and 569/760 blind records; 1.4 skipped 164 public and 179 blind
+for abstention and another 12 in each partition for its 512-token limit. Its
+public accuracy is 0.4894 and blind accuracy is 0.5149 at 74.87% blind
+coverage. The pre-v1.4 configuration resolved 454/648 public and 526/760
+blind; its skips are abstentions. Its public accuracy is 0.5022 and blind
+accuracy is 0.5038 at 69.21% blind coverage. Both configurations resolved all
+94 Hearsay records and reached 0.4362 accuracy. Their upstream code changes
+affect context handling, calibration loading, and hypothesis templating.
+Raw output preserves the full choice distribution including abstention;
+reported accuracy and standard class-probability metrics apply only to
+non-abstaining decisions. The reporter now breaks unresolved counts down by
+reason.
+
+Files changed: this task file, `checkpoints/CURRENT.md`, EXP-027
+`model-revisions.json`, `hardware-and-runtime.json`, `experiment.yaml`,
+`verdict-1.4-runtime-freeze.txt`, `verdict-original-runtime-freeze.txt`,
+both smokes, all public and blind Verdict predictions and run metadata,
+EXP-027 `results.json` and `report.md`, EXP-028 Verdict predictions and run
+metadata, EXP-028 `results.json` and `report.md`,
+`scripts/report_local_decision_bakeoff.py`, and
+`tests/test_local_decision_report.py`.
+
+Commands run: installed each pinned runtime source sequentially; `uv pip check`
+passed for each; ran two one-record smokes, two 648-record public runs, two
+760-record blind runs, and two 94-record Hearsay runs; reporter exact-ID checks
+passed; focused reporter tests (`3 passed`), Ruff check, Ruff format check,
+and experiment metadata JSON parsing passed.
+
+Decisions: use a single Verdict dependency environment because both upstream
+revisions have the same declared dependencies; only the `rlcd` package was
+replaced between runs. Retain each revision's package freeze and run metadata.
+Treat abstention as unresolved coverage, keep its raw option probabilities,
+and calculate standard metrics on accepted predictions only. Do not pool
+single and pairwise labels. Keep EXP-027 and EXP-028 in progress.
+
+Unresolved: SemIf Qwen3.5-4B has not run; the Mac had 1.4 GiB free disk after
+Verdict and an active ComfyUI process, so recheck feasibility before a model
+download. Kev-4B's prior load smoke exited without a prediction; do not infer
+the cause. Nimble-9B's unquantized weights are approximately 18 GB and upstream
+lists 32 GB host sizing for Kev-9B, so they remain blocked by the pinned
+hardware configuration. Consider whether to retry Kev-4B after confirming the
+Mac's current memory/disk state.
+
+Next atomic action: publish the Verdict predictions, run metadata, metric
+reason breakdown, and task log through the required PR/CI/merge gate; then
+recheck Mac disk and memory before deciding whether SemIf-4B or Kev-4B can
+run safely.
 
 ## Handoff
 
