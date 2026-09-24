@@ -1,5 +1,19 @@
 # Current Repository Checkpoint
 
+## 2026-09-24 — TASK-0053 Mac model caches cleaned
+
+Removed five unrelated Ollama models, the Qwen Image/Z-Image/Z-Image Turbo
+caches, and the ComfyUI SDXL checkpoint. Preserved TASK-0053 model caches and
+runtime, every LoRA, and Flux. The 27B HF entry had metadata only and no
+weights. The Mac now has 66 GiB free; Ollama has no installed models. No
+inference ran during cleanup. Issue #47 is updated; the repository checkpoint
+is pending PR/CI/merge.
+
+Next atomic action: merge the cleanup checkpoint, then run frozen SemIf-4B
+partitions on the Mac and reassess Kev-4B loading one model at a time. Nimble-9B
+and Kev-9B remain constrained by pinned memory requirements.
+
+
 ## 2026-09-24 — TASK-0053 Mac resource limits recorded
 
 PR #54 merged the Verdict 1.4 and pre-v1.4 runs and reports; issue #47 remains
