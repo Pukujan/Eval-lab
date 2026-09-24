@@ -1,0 +1,92 @@
+{
+  "arms": {
+    "kev-0.8b": {
+      "accuracy": 0.5425531914893617,
+      "accuracy_95_wilson": [
+        0.44215447666238733,
+        0.6396104530149279
+      ],
+      "by_mode": {
+        "all": {
+          "accuracy": 0.5425531914893617,
+          "balanced_accuracy": 0.5694891854578923,
+          "macro_f1": 0.5336333217953155,
+          "probability_count": 94,
+          "probability_metrics": {
+            "accuracy": 0.5425531914893617,
+            "balanced_accuracy": 0.5694891854578923,
+            "brier": 0.5008392885106383,
+            "ece": 0.09382765957446812,
+            "macro_f1": 0.5336333217953155,
+            "nll": 0.6928847656932487
+          },
+          "record_count": 94
+        }
+      },
+      "latency_ms": {
+        "p50": 282.76960399671225,
+        "p95": 317.94871240199427
+      },
+      "prediction_sha256": "19ab6730c34a478950cf1a04375e3e067236f7fbdc78cbc3bf3b85f7b5637e6d",
+      "probability_count": 94,
+      "record_count": 94,
+      "resolved_count": 94,
+      "resolved_coverage": 1.0,
+      "runner_revision": "4d1d9a5fe9c1719fd190e757ff4134f043f3fb16",
+      "status_counts": {
+        "ok": 94
+      },
+      "unresolved_count": 0
+    }
+  },
+  "dataset_source": {
+    "attribution": "Neel Guha; LegalBench task authors as identified by the project",
+    "canonical_records_sha256": "4b516314fd01454972e975d4da11c4f843841e5e20427f95a4bdeb8c67a18650",
+    "dataset": "LegalBench Hearsay",
+    "dataset_repository": "https://huggingface.co/datasets/nguha/legalbench",
+    "dataset_revision": "daec8237410aa23e3faf4bc41ad8b3a7e1696826",
+    "discrepancy": "Pinned machine-readable source contains one fewer test row than the task page reports; preserve source data as distributed and do not fabricate a missing item.",
+    "files": [
+      {
+        "bytes": 760,
+        "local_cache_path": "outputs/EXP-20260924-028-legalbench-hearsay/source/train.tsv",
+        "path": "data/hearsay/train.tsv",
+        "repository_path": "experiments/EXP-20260924-028-legalbench-hearsay/source/train.tsv",
+        "rows_excluding_header": 5,
+        "sha256": "f93ce532ada8a9ea8b2027b649e6db3126e1bbceaf198692a742813b0314008f",
+        "url": "https://huggingface.co/datasets/nguha/legalbench/resolve/daec8237410aa23e3faf4bc41ad8b3a7e1696826/data/hearsay/train.tsv"
+      },
+      {
+        "bytes": 16108,
+        "local_cache_path": "outputs/EXP-20260924-028-legalbench-hearsay/source/test.tsv",
+        "path": "data/hearsay/test.tsv",
+        "repository_path": "experiments/EXP-20260924-028-legalbench-hearsay/source/test.tsv",
+        "rows_excluding_header": 94,
+        "sha256": "f6ce5ed63ba93768eafa611610312a42a1b4d70ae57addf2e04bf87cf2bd4be9",
+        "url": "https://huggingface.co/datasets/nguha/legalbench/resolve/daec8237410aa23e3faf4bc41ad8b3a7e1696826/data/hearsay/test.tsv"
+      },
+      {
+        "bytes": 855,
+        "path": "tasks/hearsay/base_prompt.txt",
+        "repository_path": "experiments/EXP-20260924-028-legalbench-hearsay/source/base_prompt.txt",
+        "sha256": "a0dc84db3aff09d9390813347257ed3abe1d7502c2461034bccb8da493431990",
+        "url": "https://raw.githubusercontent.com/HazyResearch/legalbench/b46bf4ffae90524b2b72aaa30e7745fe9db64481/tasks/hearsay/base_prompt.txt"
+      }
+    ],
+    "license": "CC BY 4.0",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "observed_source_test_rows": 94,
+    "observed_source_train_rows": 5,
+    "published_task_size": 100,
+    "published_test_size": 95,
+    "retrieved_date": "2026-09-24",
+    "task": "hearsay",
+    "task_documentation_repository": "https://github.com/HazyResearch/legalbench",
+    "task_documentation_revision": "b46bf4ffae90524b2b72aaa30e7745fe9db64481",
+    "task_page": "https://hazyresearch.stanford.edu/legalbench/tasks/hearsay.html"
+  },
+  "experiment_id": "EXP-20260924-028-legalbench-hearsay",
+  "gold_provenance": "benchmark answer key",
+  "interpretation_limit": "one fixed-label hearsay classification task; not general legal reasoning",
+  "split": "test"
+}
