@@ -9,9 +9,11 @@ Laya has context-limit skips and an upstream calibration warning; Verdict
 abstentions and context-limit skips are separately reported. Kev-4B failed its
 load smoke before inference, and its retry was interrupted during model load
 after free memory dropped to 10%; no Kev-4B prediction was made. SemIf-4B has
-not yet run because its pinned checkpoint is about 9 GB and only 343 MiB disk
-space remains. Nimble-9B and Kev-9B are not feasible under their pinned,
-unquantized/32-GiB configurations on this 16-GiB host. Hardware is a 2020
+not yet run; its pinned checkpoint is about 9 GB, and a Mac model-cache cleanup
+restored 66 GiB of disk space. Kev-4B remains unrun after its previous load
+attempt exhausted most free unified memory. Nimble-9B and Kev-9B are not
+feasible under their pinned, unquantized/32-GiB configurations on this 16-GiB
+host. Hardware is a 2020
 MacBook Pro (MacBookPro17,1), Apple M1, 16 GiB unified memory, macOS 26.4.1.
 The fixed-choice adapters and resumable sequential runner are merged; the
 string-state correction merged in PR #51. The pinned runtimes are installed
@@ -532,6 +534,43 @@ Next atomic action: checkpoint this feasibility update through issue #47 and
 required CI. After that, ask for the Mac to be made available with adequate
 free disk and closed/idle inference applications before resuming SemIf or
 Kev-4B. Preserve the open issue and existing immutable result files.
+
+### 2026-09-24 — Mac model-cache cleanup
+
+Status: the Mac's unrelated local model weights were removed; TASK-0053 model
+caches and runtimes, all LoRA files, and Flux directories were preserved. Issue
+#47 remains open. No benchmark inference ran during cleanup.
+
+Completed work: removed five unrelated Ollama models (Prometheus 7B, Qwen3 4B,
+Llama 3.1 8B, Qwen2.5-Coder 1.5B, and Qwen3 8B); removed the Qwen Image,
+Z-Image, and Z-Image Turbo Hugging Face caches; and removed the ComfyUI SDXL
+checkpoint. The 27B Hugging Face repository entry contained only metadata and
+lock files, with no model weights. Remaining experiment caches include Kev
+0.8B/4B, Qwen3.5 0.8B/4B, Laya, and Verdict. Kept
+`~/.cache/eval-lab/TASK-0053` intact. All files in `~/Models/loras` and the
+Flux.1-dev/Flux.1-schnell cache entries remain present. Mac free disk increased
+from 174 MiB to 66 GiB; Ollama now lists no installed models.
+
+Files changed: this task file and `checkpoints/CURRENT.md`; Mac-side deletion
+was limited to the named model caches, Ollama model tags, and SDXL checkpoint.
+
+Commands run: Tailscale SSH inventory and post-cleanup verification; five
+`ollama rm` operations; removal of the three named Hugging Face model-cache
+directories and one SDXL checkpoint; verified retained experiment/LoRA/Flux
+paths, empty Ollama inventory, and 66 GiB free disk. No inference or tests ran.
+
+Decisions: preserve every TASK-0053 model/runtime cache, all LoRAs, and Flux;
+remove all other inventoried model weights. Do not count the metadata-only 27B
+repo entry as an installed model. Resume remaining eligible experiment arms
+only after this repository checkpoint is merged, one model at a time.
+
+Unresolved: SemIf Qwen3.5-4B and Kev-4B remain unrun; Nimble-9B and Kev-9B
+remain constrained by the Mac's 16 GiB unified memory and pinned runtime
+requirements.
+
+Next atomic action: publish this cache-cleanup checkpoint through issue #47
+and required CI; then run SemIf-4B on its frozen benchmark partitions and
+reassess Kev-4B loading separately with the restored disk headroom.
 
 ## Handoff
 
