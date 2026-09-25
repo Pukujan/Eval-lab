@@ -116,10 +116,15 @@ class Layout:
     wrap: int  # title wrap width in characters
     note_wrap: int  # wrap width for text drawn inside the axes
     label_frac: float  # share of the figure width reserved for row names
+    row_step: float  # vertical distance between bars in row units
 
 
-WIDE = Layout("wide", width=10.0, base=14, title=20, wrap=56, note_wrap=64, label_frac=0.34)
-TALL = Layout("tall", width=4.4, base=14, title=18, wrap=26, note_wrap=38, label_frac=0.04)
+WIDE = Layout(
+    "wide", width=10.0, base=14, title=20, wrap=56, note_wrap=64, label_frac=0.34, row_step=1.0
+)
+TALL = Layout(
+    "tall", width=4.4, base=14, title=18, wrap=26, note_wrap=38, label_frac=0.04, row_step=1.5
+)
 LAYOUTS = (WIDE, TALL)
 
 
@@ -243,26 +248,30 @@ def wrap_note(text: str, layout: Layout) -> list[str]:
 
 def row_step(layout: Layout) -> float:
     """Vertical distance between bars; tall layouts leave room for the name above each bar."""
-    return 1.5 if layout.name == "tall" else 1.0
+    return layout.row_step
 
 
 def row_positions(count: int, layout: Layout) -> np.ndarray:
     return np.arange(count) * row_step(layout)
 
 
-def axes_rect(layout: Layout, top: float, bottom: float) -> tuple[float, float, float, float]:
-    """Plot area: row names on the left when wide, above the bars when tall."""
-    left = layout.label_frac
-    return (left, bottom, 0.96 - left, top - bottom)
+def row_names(
+    ax: plt.Axes,
+    rows: list[dict[str, Any]],
+    theme: Theme,
+    layout: Layout,
+    coverage_rows: set[str] | None = None,
+) -> None:
+    """Judge names beside the bars (wide) or above them (tall).
 
-
-def row_labels(ax: plt.Axes, rows: list[dict[str, Any]], theme: Theme, layout: Layout) -> None:
-    """Judge names beside the bars (wide) or above them (tall)."""
+    ``coverage_rows`` names the rows whose share answered is spelled out with the
+    name, which is what the tall layout does instead of a second label column.
+    """
     if layout.name == "tall":
         ax.set_yticks([])
         for index, row in enumerate(rows):
             label = row["label"]
-            if row.get("coverage", 1.0) < 0.99:
+            if coverage_rows and row["key"] in coverage_rows:
                 label += f", {row['coverage'] * 100:.0f}% answered"
             ax.text(
                 0,
@@ -276,6 +285,12 @@ def row_labels(ax: plt.Axes, rows: list[dict[str, Any]], theme: Theme, layout: L
     else:
         ax.set_yticks(np.arange(len(rows)), [row["label"] for row in rows])
         ax.tick_params(axis="y", labelcolor=theme.ink, labelsize=layout.base, pad=6)
+
+
+def axes_rect(layout: Layout, top: float, bottom: float) -> tuple[float, float, float, float]:
+    """Plot area: row names on the left when wide, above the bars when tall."""
+    left = layout.label_frac
+    return (left, bottom, 0.96 - left, top - bottom)
 
 
 def floor_line(
@@ -401,9 +416,7 @@ def skipped_data(analysis: dict[str, Any]) -> dict[str, Any]:
             "value": arms["majority_exp014"]["all_record_accuracy"],
         },
         "annotations": [
-            {"key": key, "text": text}
-            for key, text in SKIP_NOTES.items()
-            if key in set(keys)
+            {"key": key, "text": text} for key, text in SKIP_NOTES.items() if key in set(keys)
         ],
         "rows": rows,
     }
@@ -448,15 +461,26 @@ def draw_skipped(data: dict[str, Any], theme: Theme, layout: Layout) -> plt.Figu
                 color=theme.ink,
                 linespacing=1.3,
             )
-    row_labels(ax, rows, theme, layout)
-    floor_line(ax, theme, layout, data["floor"]["value"] * 100, -1.7, data["floor"]["value"] * 100, len(rows))
+    row_names(ax, rows, theme, layout)
+    floor_line(
+        ax,
+        theme,
+        layout,
+        data["floor"]["value"] * 100,
+        -1.7,
+        data["floor"]["value"] * 100,
+        len(rows),
+    )
     lowest = note_block(
         ax,
         theme,
         layout,
         notes,
         rows,
-        [values[next(i for i, r in enumerate(rows) if r["key"] == note["key"])] + 1 for note in notes],
+        [
+            values[next(i for i, r in enumerate(rows) if r["key"] == note["key"])] + 1
+            for note in notes
+        ],
     )
     ax.set_xlim(0, 100)
     ax.set_ylim(lowest + 0.2, -2.9 * row_step(layout))
@@ -543,7 +567,7 @@ def draw_range(data: dict[str, Any], theme: Theme, layout: Layout) -> plt.Figure
             color=theme.ink if row["tied_with_leader"] else theme.bg,
             fontweight="bold",
         )
-    row_labels(ax, rows, theme, layout)
+    row_names(ax, rows, theme, layout)
     floor_line(ax, theme, layout, floor, -1.7, floor, len(rows))
     note = data["annotations"][0]
     note_index = next(i for i, row in enumerate(rows) if row["key"] == note["key"])
@@ -721,7 +745,7 @@ def draw_ranked(data: dict[str, Any], theme: Theme, layout: Layout) -> plt.Figur
                 fontsize=layout.base * 0.85,
                 color=theme.bad,
             )
-    row_labels(ax, rows, theme, layout)
+    row_names(ax, rows, theme, layout)
     floor_line(ax, theme, layout, floor, -1.7, floor, len(rows))
     ax.set_xlim(0, 130)
     ax.set_ylim((len(rows) - 1) * row_step(layout) + 0.6, -2.9 * row_step(layout))
@@ -747,8 +771,7 @@ def grok_data(payload: dict[str, Any]) -> dict[str, Any]:
         "title": "No request format fixed Grok Build's failure",
         "source": "EXP-025",
         "source_note": (
-            "Source: Eval Lab request-format test on 64 public questions. "
-            f"Data: {DATA_LINK}"
+            f"Source: Eval Lab request-format test on 64 public questions. Data: {DATA_LINK}"
         ),
         "subtitle": f"EXP-025 public diagnostic ({payload['public']['record_count']} questions)",
         "rows": [
@@ -862,10 +885,7 @@ def calibration_data(payload: dict[str, Any]) -> dict[str, Any]:
     return {
         "title": "Calibration made confidence more honest; answers stayed the same",
         "source": "EXP-019",
-        "source_note": (
-            "Source: Eval Lab local grader confidence study. "
-            f"Data: {DATA_LINK}"
-        ),
+        "source_note": (f"Source: Eval Lab local grader confidence study. Data: {DATA_LINK}"),
         "subtitle": (
             f"Local Qwen3-4B, blind set (accuracy {float(calibrated['accuracy']) * 100:.2f}% "
             "before and after) · lower is better"
