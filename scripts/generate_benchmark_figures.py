@@ -10,6 +10,13 @@ Sources: the EXP-029 consolidated analysis (``scripts/analyze_judge_comparison.p
 EXP-025 (Grok ablation) and EXP-019 (calibration).  Files the paper no longer uses
 are deleted so the directory mirrors the paper.  SVG output is byte-stable.
 
+Chart style follows the writing guide: plain bars for counts and shares, no
+whiskers, direct labels instead of legends, a takeaway title, and a source line a
+reader can use.  TASK-0061 replaced the dumbbell chart with a stacked bar per
+judge (right / wrong / skipped out of 760), the interval chart with plain bars
+that grey out the judges tied with the leader, and the settings chart with two
+bars for the same model under two setups.
+
 Usage:
     uv run --locked python scripts/generate_benchmark_figures.py
 """
@@ -49,6 +56,12 @@ SOURCES = {
 plt.rcParams["svg.hashsalt"] = "eval-lab-benchmark-figures"
 plt.rcParams["font.family"] = "DejaVu Sans"
 
+DATA_LINK = "github.com/Pukujan/Eval-lab/tree/main/paper/data"
+BENCHMARK_NOTE = (
+    "Source: Eval Lab benchmark of 25 AI graders on 760 questions with known "
+    f"answers. Data: {DATA_LINK}"
+)
+
 
 @dataclass(frozen=True)
 class Theme:
@@ -57,11 +70,12 @@ class Theme:
     ink: str
     muted: str
     grid: str
-    top: str  # highlighted "good" series
+    top: str  # right answers / clearly above the floor
     other: str  # neutral series
     local: str
-    bad: str  # below baseline / lost
-    accent: str  # secondary series
+    bad: str  # wrong answers / below the floor
+    skip: str  # questions the grader never answered
+    tied: str  # too close to the leader to call
 
 
 LIGHT = Theme(
@@ -74,7 +88,8 @@ LIGHT = Theme(
     other="#9AA9B8",
     local="#6F5BD6",
     bad="#D9534F",
-    accent="#6F5BD6",
+    skip="#CFC9BC",
+    tied="#B4B0A6",
 )
 DARK = Theme(
     "dark",
@@ -86,7 +101,8 @@ DARK = Theme(
     other="#6F8296",
     local="#A99BFF",
     bad="#FF8A7A",
-    accent="#A99BFF",
+    skip="#4A4A48",
+    tied="#6E6A62",
 )
 THEMES = (LIGHT, DARK)
 
@@ -98,10 +114,12 @@ class Layout:
     base: float  # tick/label font size in points
     title: float
     wrap: int  # title wrap width in characters
+    note_wrap: int  # wrap width for text drawn inside the axes
+    label_frac: float  # share of the figure width reserved for row names
 
 
-WIDE = Layout("wide", width=10.0, base=14, title=20, wrap=56)
-TALL = Layout("tall", width=4.4, base=14, title=18, wrap=26)
+WIDE = Layout("wide", width=10.0, base=14, title=20, wrap=56, note_wrap=64, label_frac=0.34)
+TALL = Layout("tall", width=4.4, base=14, title=18, wrap=26, note_wrap=38, label_frac=0.04)
 LAYOUTS = (WIDE, TALL)
 
 
@@ -114,25 +132,27 @@ PLAIN = {
     "ali_glm52_exp024": "GLM 5.2",
     "jev_exp014": "Jev 1.13 (run 1)",
     "jev_exp022": "Jev 1.13",
-    "qwen_flash_exp013": "Qwen3.8 Flash, thinking off",
-    "qwen_flash_exp015": "Qwen3.8 Flash, one pass",
-    "qwen_flash_exp015_016": "Qwen3.8 Flash + retry",
-    "qwen_flash_exp022": "Qwen3.8 Flash (defaults)",
+    "qwen_flash_exp013": "Qwen3.8 Flash (thinking off)",
+    "qwen_flash_exp015": "Qwen3.8 Flash (317 refused)",
+    "qwen_flash_exp015_016": "Qwen3.8 Flash (retried)",
+    "qwen_flash_exp022": "Qwen3.8 Flash (provider defaults)",
     "cb_deepseek_v41_flash_exp024": "DeepSeek V4.1 Flash",
     "cbcn_deepseek_v4_flash_exp024": "DeepSeek V4 Flash",
-    "kev_4b_exp027": "Kev-4B (local)",
-    "semif_qwen35_4b_exp027": "SemIf 4B (local)",
-    "kev_08b_exp027": "Kev-0.8B (local)",
-    "laya_421m_exp027": "Laya 421M (local)",
-    "qwen3_4b_exp017": "Qwen3-4B (local)",
+    "kev_4b_exp027": "Kev-4B (on our computer)",
+    "semif_qwen35_4b_exp027": "SemIf 4B (on our computer)",
+    "kev_08b_exp027": "Kev-0.8B (on our computer)",
+    "laya_421m_exp027": "Laya 421M (on our computer)",
+    "qwen3_4b_exp017": "Qwen3-4B (on our computer)",
     "grok46_exp015": "Grok 4.6 Build (run 1)",
     "grok46_exp022": "Grok 4.6 Build",
-    "grok46_exp025": "Grok 4.6 Build (rerun)",
+    "grok46_exp025": "Grok 4.6 Build (format test)",
     "grok47_exp022": "Grok 4.7 Build",
-    "verdict_14_exp027": "Verdict 1.4 (local)",
-    "verdict_original_exp027": "Verdict pre-v1.4 (local)",
-    "majority_exp014": "Always-same-answer baseline",
+    "verdict_14_exp027": "Our grader 1.4",
+    "verdict_original_exp027": "Our grader, older version",
+    "majority_exp014": "Always the same answer",
 }
+
+FLOOR_SENTENCE = "A grader that always gives the same answer scores {value:.1f}%."
 
 
 def read_json(path: Path) -> dict[str, Any]:
@@ -151,12 +171,7 @@ def sha256(path: Path) -> str:
 def new_figure(theme: Theme, layout: Layout, height: float, data: dict[str, Any]):
     """Create a figure with a wrapped title block and a source line; return (fig, top, bottom)."""
     title, subtitle = data["title"], data["subtitle"]
-    source = data.get("source", "EXP-029")
-    note = (
-        f"Source: Eval Lab {source}"
-        if layout.name == "tall"
-        else f"Source: Eval Lab {source} results (scripts/generate_benchmark_figures.py)"
-    )
+    note = data.get("source_note", BENCHMARK_NOTE)
     fig = plt.figure(figsize=(layout.width, height))
     fig.patch.set_facecolor(theme.bg)
     title_lines = textwrap.wrap(title, layout.wrap)
@@ -186,17 +201,19 @@ def new_figure(theme: Theme, layout: Layout, height: float, data: dict[str, Any]
             color=theme.muted,
         )
         y -= layout.base / 72 * 1.35
-    fig.text(
-        0.2 / layout.width,
-        0.12 / height,
-        note,
-        ha="left",
-        va="bottom",
-        fontsize=layout.base * 0.72,
-        color=theme.muted,
-    )
+    note_lines = textwrap.wrap(note, int(layout.wrap * 1.75))
+    for offset, line in enumerate(reversed(note_lines)):
+        fig.text(
+            0.2 / layout.width,
+            (0.12 + offset * layout.base * 0.72 / 72 * 1.35) / height,
+            line,
+            ha="left",
+            va="bottom",
+            fontsize=layout.base * 0.72,
+            color=theme.muted,
+        )
     top = (y - 0.25) / height
-    bottom = (0.12 + layout.base * 0.72 / 72 + 0.35) / height
+    bottom = (0.12 + len(note_lines) * layout.base * 0.72 / 72 * 1.35 + 0.35) / height
     return fig, top, bottom
 
 
@@ -220,7 +237,234 @@ def pct(value: float) -> str:
     return f"{value * 100:.1f}%"
 
 
-# --- Figure 1: accuracy range -------------------------------------------------
+def wrap_note(text: str, layout: Layout) -> list[str]:
+    return textwrap.wrap(text, layout.note_wrap)
+
+
+def row_step(layout: Layout) -> float:
+    """Vertical distance between bars; tall layouts leave room for the name above each bar."""
+    return 1.5 if layout.name == "tall" else 1.0
+
+
+def row_positions(count: int, layout: Layout) -> np.ndarray:
+    return np.arange(count) * row_step(layout)
+
+
+def axes_rect(layout: Layout, top: float, bottom: float) -> tuple[float, float, float, float]:
+    """Plot area: row names on the left when wide, above the bars when tall."""
+    left = layout.label_frac
+    return (left, bottom, 0.96 - left, top - bottom)
+
+
+def row_labels(ax: plt.Axes, rows: list[dict[str, Any]], theme: Theme, layout: Layout) -> None:
+    """Judge names beside the bars (wide) or above them (tall)."""
+    if layout.name == "tall":
+        ax.set_yticks([])
+        for index, row in enumerate(rows):
+            label = row["label"]
+            if row.get("coverage", 1.0) < 0.99:
+                label += f", {row['coverage'] * 100:.0f}% answered"
+            ax.text(
+                0,
+                index * row_step(layout) - 0.45,
+                label,
+                fontsize=layout.base,
+                color=theme.ink,
+                va="bottom",
+                ha="left",
+            )
+    else:
+        ax.set_yticks(np.arange(len(rows)), [row["label"] for row in rows])
+        ax.tick_params(axis="y", labelcolor=theme.ink, labelsize=layout.base, pad=6)
+
+
+def floor_line(
+    ax: plt.Axes,
+    theme: Theme,
+    layout: Layout,
+    baseline: float,
+    label_y: float,
+    value: float,
+    rows: int,
+) -> None:
+    """Draw the always-same-answer line over the bars, and label it with a sentence."""
+    ax.plot(
+        [baseline, baseline],
+        [-0.6 * row_step(layout), (rows - 1) * row_step(layout) + 0.6],
+        color=theme.ink,
+        linestyle="--",
+        linewidth=1.3,
+        zorder=1,
+    )
+    lines = textwrap.wrap(FLOOR_SENTENCE.format(value=value), max(16, layout.note_wrap // 2))
+    ax.text(
+        baseline + 2,
+        label_y,
+        "\n".join(lines),
+        fontsize=layout.base * 0.95,
+        color=theme.ink,
+        va="bottom",
+        ha="left",
+        linespacing=1.35,
+    )
+
+
+def note_block(
+    ax: plt.Axes,
+    theme: Theme,
+    layout: Layout,
+    notes: list[dict[str, Any]],
+    rows: list[dict[str, Any]],
+    anchors: list[float],
+) -> float:
+    """Write wrapped annotations below the bars, each with an arrow to its bar.
+
+    Returns the lowest y used, so the caller can size the axis.
+    """
+    y = (len(rows) - 1) * row_step(layout) + 1.3
+    for note, anchor in zip(notes, anchors):
+        lines = wrap_note(note["text"], layout)
+        index = next(i for i, row in enumerate(rows) if row["key"] == note["key"])
+        ax.annotate(
+            "\n".join(lines),
+            xy=(anchor, index * row_step(layout) + 0.5),
+            xytext=(0, y),
+            textcoords="data",
+            fontsize=layout.base * 0.95,
+            color=theme.ink,
+            va="top",
+            ha="left",
+            linespacing=1.35,
+            arrowprops={
+                "arrowstyle": "-|>",
+                "color": theme.muted,
+                "linewidth": 1.2,
+                "shrinkA": 3,
+                "shrinkB": 5,
+            },
+        )
+        y += len(lines) + 0.7
+    return y
+
+
+# --- Figure 1: what each grader did with all 760 questions ---------------------
+
+SKIP_ARMS = (
+    "ali_qwen38_flash_exp024",
+    "ali_qwen38_max_exp024",
+    "ali_kimi_k27_code_exp024",
+    "cbcn_glm53_flash_exp024",
+    "cbcn_minimax_m3_exp024",
+    "ali_glm52_exp024",
+    "jev_exp022",
+    "cb_deepseek_v41_flash_exp024",
+    "cbcn_deepseek_v4_flash_exp024",
+    "qwen_flash_exp015",
+    "verdict_14_exp027",
+    "verdict_original_exp027",
+)
+
+SKIP_NOTES = {
+    "cbcn_deepseek_v4_flash_exp024": (
+        "DeepSeek V4 Flash was right 99.8% of the times it answered, and 80.3% of "
+        "all 760. It skipped 149 questions."
+    ),
+    "qwen_flash_exp015": "The provider refused 317 of the 760 requests in this run.",
+}
+
+
+def skipped_data(analysis: dict[str, Any]) -> dict[str, Any]:
+    arms = analysis["arms"]
+    keys = sorted(SKIP_ARMS, key=lambda k: (-arms[k]["all_record_accuracy"], k))
+    rows = []
+    for key in keys:
+        arm = arms[key]
+        right = arm["all_record_accuracy"]
+        skipped = 1 - arm["coverage"]
+        rows.append(
+            {
+                "key": key,
+                "label": PLAIN[key],
+                "right": right,
+                "wrong": arm["coverage"] - right,
+                "skipped": skipped,
+                "answered": arm["coverage"],
+                "answered_accuracy": arm["conditional_accuracy"],
+            }
+        )
+    return {
+        "title": "Some AI graders look almost perfect until you count the questions they skipped",
+        "subtitle": "Each bar is all 760 questions: green is right, red is wrong, grey is skipped",
+        "unit": "fraction",
+        "floor": {
+            "label": "a grader that always gives the same answer",
+            "value": arms["majority_exp014"]["all_record_accuracy"],
+        },
+        "annotations": [
+            {"key": key, "text": text}
+            for key, text in SKIP_NOTES.items()
+            if key in set(keys)
+        ],
+        "rows": rows,
+    }
+
+
+def draw_skipped(data: dict[str, Any], theme: Theme, layout: Layout) -> plt.Figure:
+    rows = data["rows"]
+    tall = layout.name == "tall"
+    notes = data["annotations"][:1] if tall else data["annotations"]
+    note_lines = sum(len(wrap_note(note["text"], layout)) + 1 for note in notes)
+    row_h = 0.66 if tall else 0.5
+    height = 2.4 + row_h * len(rows) * row_step(layout) + 0.30 * note_lines * row_step(layout) + 0.7
+    fig, top, bottom = new_figure(theme, layout, height, data)
+    ax = fig.add_axes(axes_rect(layout, top, bottom))
+    style_axes(ax, theme, layout)
+    values = [row["right"] * 100 for row in rows]
+    wrong = [row["wrong"] * 100 for row in rows]
+    skipped = [row["skipped"] * 100 for row in rows]
+    y = row_positions(len(rows), layout)
+    ax.barh(y, values, height=0.62, color=theme.top, edgecolor="none")
+    ax.barh(y, wrong, height=0.62, left=values, color=theme.bad, edgecolor="none")
+    ax.barh(y, skipped, height=0.62, left=np.add(values, wrong), color=theme.skip, edgecolor="none")
+    for index, row in enumerate(rows):
+        ax.text(
+            values[index] - 2,
+            y[index],
+            pct(row["right"]),
+            va="center",
+            ha="right",
+            fontsize=layout.base,
+            color=theme.bg,
+            fontweight="bold",
+        )
+        if row["skipped"] > 0.10:
+            ax.text(
+                100 - skipped[index] / 2,
+                y[index],
+                f"skipped\n{pct(row['skipped'])}",
+                va="center",
+                ha="center",
+                fontsize=layout.base * 0.9,
+                color=theme.ink,
+                linespacing=1.3,
+            )
+    row_labels(ax, rows, theme, layout)
+    floor_line(ax, theme, layout, data["floor"]["value"] * 100, -1.7, data["floor"]["value"] * 100, len(rows))
+    lowest = note_block(
+        ax,
+        theme,
+        layout,
+        notes,
+        rows,
+        [values[next(i for i, r in enumerate(rows) if r["key"] == note["key"])] + 1 for note in notes],
+    )
+    ax.set_xlim(0, 100)
+    ax.set_ylim(lowest + 0.2, -2.9 * row_step(layout))
+    ax.set_xticks([0, 25, 50, 75, 100])
+    return fig
+
+
+# --- Figure 2: the top of the field, and who is tied with the leader ------------
 
 RANGE_ARMS = (
     "ali_qwen38_flash_exp024",
@@ -228,236 +472,93 @@ RANGE_ARMS = (
     "ali_kimi_k27_code_exp024",
     "cbcn_glm53_flash_exp024",
     "cbcn_minimax_m3_exp024",
+    "ali_glm52_exp024",
     "jev_exp022",
-    "cbcn_deepseek_v4_flash_exp024",
     "kev_4b_exp027",
-    "semif_qwen35_4b_exp027",
     "grok46_exp022",
-    "verdict_14_exp027",
 )
 
 
 def range_data(analysis: dict[str, Any]) -> dict[str, Any]:
     arms = analysis["arms"]
-    majority = arms["majority_exp014"]["all_record_accuracy"]
+    ranks = analysis["shared_ranks_all_record"]
+    floor = arms["majority_exp014"]["all_record_accuracy"]
     keys = sorted(RANGE_ARMS, key=lambda k: (-arms[k]["all_record_accuracy"], k))
     rows = []
     for key in keys:
-        arm = arms[key]
-        value = arm["all_record_accuracy"]
-        group = (
-            "below_baseline"
-            if value < majority
-            else "local"
-            if arm["family"] == "local"
-            else "top_api"
-            if value >= 0.98
-            else "other_api"
+        value = arms[key]["all_record_accuracy"]
+        tied = ranks[key] == 1
+        rows.append(
+            {
+                "key": key,
+                "label": PLAIN[key],
+                "value": value,
+                "tied_with_leader": tied,
+                "below_floor": value < floor,
+                "coverage": arms[key]["coverage"],
+            }
         )
-        rows.append({"key": key, "label": PLAIN[key], "value": value, "group": group})
     return {
-        "title": "Top judges get about 99% right; some do worse than a constant guess",
-        "subtitle": "Share of all 760 questions answered correctly (skipped = wrong)",
+        "title": "Four graders are too close to call a winner",
+        "subtitle": (
+            "Right answers out of all 760 questions. Grey bars are too close to the "
+            "leader to separate; red is below the line"
+        ),
         "unit": "fraction",
-        "baseline": {"label": "always-same-answer baseline", "value": majority},
+        "floor": {"label": "always the same answer", "value": floor},
+        "annotations": [
+            {
+                "key": "kev_4b_exp027",
+                "text": "Kev-4B was the best grader that ran on our own computer.",
+            }
+        ],
         "rows": rows,
     }
 
 
 def draw_range(data: dict[str, Any], theme: Theme, layout: Layout) -> plt.Figure:
     rows = data["rows"]
-    colors = {
-        "top_api": theme.top,
-        "other_api": theme.other,
-        "local": theme.local,
-        "below_baseline": theme.bad,
-    }
     tall = layout.name == "tall"
-    row_h = 0.62 if tall else 0.46
-    height = 2.2 + row_h * len(rows) + (1.2 if tall else 0.9)
+    row_h = 0.66 if tall else 0.5
+    height = 2.4 + row_h * len(rows) * row_step(layout) + 1.1
     fig, top, bottom = new_figure(theme, layout, height, data)
-    legend_h = 0.9 / height if tall else 0
-    ax = fig.add_axes(
-        (0.02 if tall else 0.25, bottom + legend_h, 0.9 if tall else 0.7, top - bottom - legend_h)
-    )
+    ax = fig.add_axes(axes_rect(layout, top, bottom))
     style_axes(ax, theme, layout)
-    baseline = data["baseline"]["value"] * 100
-    y = np.arange(len(rows))
+    floor = data["floor"]["value"] * 100
+    y = row_positions(len(rows), layout)
     values = [row["value"] * 100 for row in rows]
-    bar_h = 0.34 if tall else 0.68
-    ax.barh(y, values, height=bar_h, color=[colors[r["group"]] for r in rows], edgecolor="none")
-    for index, (row, value) in enumerate(zip(rows, values)):
-        if tall:
-            ax.text(
-                0,
-                index - 0.3,
-                row["label"],
-                fontsize=layout.base,
-                color=theme.ink,
-                va="bottom",
-                ha="left",
-            )
-        inside = value < baseline
-        ax.text(
-            value - 1 if inside else value + 1,
-            index,
-            f"{value:.1f}%",
-            va="center",
-            ha="right" if inside else "left",
-            fontsize=layout.base,
-            color=theme.bg if inside else theme.ink,
-            fontweight="bold" if inside else "normal",
-        )
-    ax.axvline(baseline, color=theme.ink, linestyle="--", linewidth=1.3)
-    ax.text(
-        baseline + 1,
-        -0.95 if not tall else -1.05,
-        f"baseline {baseline:.1f}%",
-        fontsize=layout.base * 0.92,
-        color=theme.ink,
-        va="center",
-    )
-    ax.set_xlim(0, 118)
-    ax.set_ylim(len(rows) - 0.4, -1.4)
-    ax.set_xticks([0, 25, 50, 75, 100])
-    if tall:
-        ax.set_yticks([])
-    else:
-        ax.set_yticks(y, [row["label"] for row in rows])
-        ax.tick_params(axis="y", labelcolor=theme.ink, labelsize=layout.base, pad=6)
-    handles = [
-        plt.Rectangle((0, 0), 1, 1, color=colors[key], label=text)
-        for key, text in (
-            ("top_api", "API, 98% or more"),
-            ("other_api", "other API"),
-            ("local", "local, above baseline"),
-            ("below_baseline", "below baseline"),
-        )
+    colors = [
+        theme.tied if row["tied_with_leader"] else theme.bad if row["below_floor"] else theme.top
+        for row in rows
     ]
-    if tall:
-        fig.legend(
-            handles=handles,
-            loc="lower left",
-            bbox_to_anchor=(0.02, bottom - 0.02),
-            ncol=2,
-            frameon=False,
-            fontsize=layout.base * 0.9,
-            labelcolor=theme.ink,
-        )
-    else:
-        ax.legend(
-            handles=handles,
-            loc="lower right",
-            frameon=True,
-            facecolor=theme.bg,
-            edgecolor=theme.grid,
-            fontsize=layout.base * 0.92,
-            labelcolor=theme.ink,
-        )
-    return fig
-
-
-# --- Figure 2: skipped questions ----------------------------------------------
-
-SKIP_ARMS = (
-    "cbcn_deepseek_v4_flash_exp024",
-    "ali_glm52_exp024",
-    "qwen_flash_exp015",
-    "verdict_14_exp027",
-    "verdict_original_exp027",
-)
-
-
-def skipped_data(analysis: dict[str, Any]) -> dict[str, Any]:
-    arms = analysis["arms"]
-    return {
-        "title": "Scores on answered questions hide skipped ones",
-        "subtitle": "Hollow: correct when it answered · filled: correct over all 760",
-        "unit": "fraction",
-        "baseline": {
-            "label": "always-same-answer baseline",
-            "value": arms["majority_exp014"]["all_record_accuracy"],
-        },
-        "rows": [
-            {
-                "key": key,
-                "label": PLAIN[key],
-                "answered_accuracy": arms[key]["conditional_accuracy"],
-                "all_record_accuracy": arms[key]["all_record_accuracy"],
-                "coverage": arms[key]["coverage"],
-            }
-            for key in SKIP_ARMS
-        ],
-    }
-
-
-def draw_skipped(data: dict[str, Any], theme: Theme, layout: Layout) -> plt.Figure:
-    rows = data["rows"]
-    tall = layout.name == "tall"
-    row_h = 0.95 if tall else 0.62
-    height = 2.2 + row_h * len(rows) + 0.8
-    fig, top, bottom = new_figure(theme, layout, height, data)
-    ax = fig.add_axes((0.04 if tall else 0.3, bottom, 0.9 if tall else 0.66, top - bottom))
-    style_axes(ax, theme, layout)
-    baseline = data["baseline"]["value"] * 100
-    for index, row in enumerate(rows):
-        cond = row["answered_accuracy"] * 100
-        allr = row["all_record_accuracy"] * 100
-        ax.plot(
-            [allr, cond],
-            [index, index],
-            color=theme.grid,
-            linewidth=6,
-            zorder=1,
-            solid_capstyle="round",
-        )
-        ax.scatter(
-            cond, index, s=170, facecolor=theme.bg, edgecolor=theme.top, linewidth=2.6, zorder=3
-        )
-        ax.scatter(allr, index, s=170, color=theme.bad, zorder=4)
+    ax.barh(y, values, height=0.62, color=colors, edgecolor="none")
+    for index, (row, value) in enumerate(zip(rows, values)):
         ax.text(
-            cond + 3, index, f"{cond:.1f}%", va="center", fontsize=layout.base, color=theme.muted
-        )
-        ax.text(
-            allr - 3,
-            index,
-            f"{allr:.1f}%",
+            value - 2,
+            y[index],
+            f"{value:.1f}%",
             va="center",
             ha="right",
             fontsize=layout.base,
-            color=theme.ink,
+            color=theme.ink if row["tied_with_leader"] else theme.bg,
             fontweight="bold",
         )
-        if tall:
-            ax.text(
-                8, index - 0.42, row["label"], fontsize=layout.base, color=theme.ink, va="bottom"
-            )
-    ax.axvline(baseline, color=theme.muted, linestyle=":", linewidth=1.2, zorder=0)
-    ax.text(
-        baseline,
-        -0.85 if not tall else -1.0,
-        f"baseline {baseline:.1f}%",
-        ha="center",
-        fontsize=layout.base * 0.92,
-        color=theme.muted,
-    )
-    ax.set_xlim(5 if tall else 15, 118)
-    ax.set_ylim(len(rows) - 0.4, -1.25 if tall else -1.1)
-    ax.set_xticks([25, 50, 75, 100])
-    if tall:
-        ax.set_yticks([])
-    else:
-        ax.set_yticks(np.arange(len(rows)), [row["label"] for row in rows])
-        ax.tick_params(axis="y", labelcolor=theme.ink, labelsize=layout.base, pad=6)
+    row_labels(ax, rows, theme, layout)
+    floor_line(ax, theme, layout, floor, -1.7, floor, len(rows))
+    note = data["annotations"][0]
+    note_index = next(i for i, row in enumerate(rows) if row["key"] == note["key"])
+    lowest = note_block(ax, theme, layout, data["annotations"], rows, [values[note_index] - 2])
+    ax.set_xlim(0, 100)
+    ax.set_ylim(lowest + 0.2, -2.9 * row_step(layout))
+    ax.set_xticks([0, 25, 50, 75, 100])
     return fig
 
 
-# --- Figure 3: request settings -----------------------------------------------
+# --- Figure 3: the same model under two setups ---------------------------------
 
 QWEN_RUNS = (
-    ("qwen_flash_exp013", "EXP-013", "128-token cap, thinking off"),
-    ("qwen_flash_exp022", "EXP-022", "provider defaults"),
-    ("ali_qwen38_flash_exp024", "EXP-024", "other route, 1,024-token cap"),
+    ("qwen_flash_exp013", "Capped replies, thinking off"),
+    ("qwen_flash_exp022", "The provider's own settings"),
 )
 
 
@@ -466,22 +567,19 @@ def settings_data(analysis: dict[str, Any]) -> dict[str, Any]:
     first = arms["qwen_flash_exp013"]["conditional_accuracy"]
     second = arms["qwen_flash_exp022"]["conditional_accuracy"]
     return {
-        "title": f"Same model, same questions: {pct(first)} vs {pct(second)}",
-        "subtitle": "Qwen3.8 Flash accuracy when it answered, by request settings",
+        "title": f"The same model scored {pct(first)} and {pct(second)} on the same questions",
+        "subtitle": "Qwen3.8 Flash, right answers when it answered, in two runs we set up differently",
         "unit": "fraction",
-        "series": [
-            {"key": "overall", "label": "All questions"},
-            {"key": "gsm8k", "label": "Math (GSM8K)"},
-        ],
+        "annotations": ["Answers took about nine times longer to arrive in the second run."],
         "rows": [
             {
                 "key": key,
-                "label": run,
-                "settings": settings,
-                "overall": arms[key]["conditional_accuracy"],
-                "gsm8k": arms[key]["by_source"]["GSM8K"]["accuracy"],
+                "label": label,
+                "value": arms[key]["conditional_accuracy"],
+                "answered": arms[key]["coverage"],
+                "median_latency_s": arms[key]["median_resolved_latency_ms"] / 1000,
             }
-            for key, run, settings in QWEN_RUNS
+            for key, label in QWEN_RUNS
         ],
     }
 
@@ -489,87 +587,58 @@ def settings_data(analysis: dict[str, Any]) -> dict[str, Any]:
 def draw_settings(data: dict[str, Any], theme: Theme, layout: Layout) -> plt.Figure:
     rows = data["rows"]
     tall = layout.name == "tall"
-    colors = (theme.top, theme.accent)
+    height = 6.2 if tall else 5.2
+    fig, top, bottom = new_figure(theme, layout, height, data)
+    ax = fig.add_axes(axes_rect(layout, top, bottom - 0.02))
+    style_axes(ax, theme, layout, grid_axis="x")
+    colors = (theme.bad, theme.top)
+    y = row_positions(len(rows), layout)
+    for index, (row, color) in enumerate(zip(rows, colors)):
+        value = row["value"] * 100
+        ax.barh(y[index], value, height=0.55, color=color, edgecolor="none")
+        ax.text(
+            value - 2,
+            y[index],
+            f"{value:.1f}%",
+            va="center",
+            ha="right",
+            fontsize=layout.base,
+            color=theme.bg,
+            fontweight="bold",
+        )
     if tall:
-        height = 2.3 + 1.45 * len(rows) + 0.9
-        fig, top, bottom = new_figure(theme, layout, height, data)
-        legend_h = 0.5 / height
-        ax = fig.add_axes((0.04, bottom, 0.9, top - bottom - legend_h))
-        style_axes(ax, theme, layout)
+        ax.set_yticks([])
         for index, row in enumerate(rows):
-            base = index * 3
             ax.text(
                 0,
-                base - 0.75,
-                f"{row['label']}: {row['settings']}",
+                y[index] - 0.45,
+                row["label"],
                 fontsize=layout.base,
                 color=theme.ink,
                 va="bottom",
+                ha="left",
             )
-            for offset, (series, color) in enumerate(zip(data["series"], colors)):
-                value = row[series["key"]] * 100
-                ax.barh(base + offset * 0.9, value, height=0.8, color=color)
-                ax.text(
-                    value + 1.2,
-                    base + offset * 0.9,
-                    f"{value:.1f}%",
-                    va="center",
-                    fontsize=layout.base,
-                    color=theme.ink,
-                )
-        ax.set_xlim(0, 120)
-        ax.set_ylim(3 * len(rows) - 1.2, -1.4)
-        ax.set_yticks([])
-        ax.set_xticks([0, 25, 50, 75, 100])
-        handles = [
-            plt.Rectangle((0, 0), 1, 1, color=c, label=s["label"])
-            for s, c in zip(data["series"], colors)
-        ]
-        fig.legend(
-            handles=handles,
-            loc="upper left",
-            bbox_to_anchor=(0.02, top + 0.005),
-            ncol=2,
-            frameon=False,
-            fontsize=layout.base,
-            labelcolor=theme.ink,
-        )
-        return fig
-    height = 6.4
-    fig, top, bottom = new_figure(theme, layout, height, data)
-    ax = fig.add_axes((0.08, bottom + 0.16, 0.9, top - bottom - 0.24))
-    style_axes(ax, theme, layout, grid_axis="y")
-    x = np.arange(len(rows))
-    width = 0.36
-    for offset, (series, color) in enumerate(zip(data["series"], colors)):
-        values = [row[series["key"]] * 100 for row in rows]
-        bars = ax.bar(x + (offset - 0.5) * width, values, width, color=color, label=series["label"])
-        for bar in bars:
-            ax.text(
-                bar.get_x() + bar.get_width() / 2,
-                bar.get_height() + 1.2,
-                f"{bar.get_height():.1f}%",
-                ha="center",
-                va="bottom",
-                fontsize=layout.base,
-                color=theme.ink,
-            )
-    ax.set_ylim(0, 112)
-    ax.set_yticks([0, 25, 50, 75, 100])
-    ax.set_xticks(x, [f"{row['label']}\n{row['settings']}" for row in rows])
-    ax.tick_params(axis="x", labelcolor=theme.ink, labelsize=layout.base)
-    ax.legend(
-        loc="upper left",
-        bbox_to_anchor=(0, 1.13),
-        ncol=2,
-        frameon=False,
-        fontsize=layout.base,
-        labelcolor=theme.ink,
+    else:
+        ax.set_yticks(np.arange(len(rows)), [row["label"] for row in rows])
+        ax.tick_params(axis="y", labelcolor=theme.ink, labelsize=layout.base, pad=6)
+    note_lines = wrap_note(data["annotations"][0], layout)
+    ax.text(
+        0,
+        y[-1] + 1.0,
+        "\n".join(note_lines),
+        fontsize=layout.base * 0.95,
+        color=theme.muted,
+        va="top",
+        ha="left",
+        linespacing=1.35,
     )
+    ax.set_xlim(0, 100)
+    ax.set_ylim(y[-1] + 1.0 + len(note_lines) * 0.8 * row_step(layout), -0.9 * row_step(layout))
+    ax.set_xticks([0, 25, 50, 75, 100])
     return fig
 
 
-# --- Figure A1: every judge ranked ----------------------------------------------
+# --- Appendix: every grader, ranked -------------------------------------------
 
 HIGHLIGHT = {
     "ali_qwen38_flash_exp024",
@@ -588,27 +657,28 @@ def ranked_data(analysis: dict[str, Any]) -> dict[str, Any]:
     arms = analysis["arms"]
     ranks = analysis["shared_ranks_all_record"]
     order = analysis["rank_by_all_record_accuracy"]
-    majority = arms["majority_exp014"]["all_record_accuracy"]
+    floor = arms["majority_exp014"]["all_record_accuracy"]
     top_count = sum(1 for key in order if ranks[key] == 1)
-    below = sum(1 for key in order if arms[key]["all_record_accuracy"] < majority)
+    below = sum(1 for key in order if arms[key]["all_record_accuracy"] < floor)
     return {
-        "title": f"{top_count} judges share first place; {below} score below the baseline",
+        "title": f"{top_count} judges share first place; {below} score below a constant guess",
         "subtitle": (
-            "All 25 judges, correct over all 760 questions, with 95% Wilson intervals. "
-            "Shared rank = not separable from the group's top judge (Holm-corrected McNemar)."
+            "Right answers out of all 760 questions. Grey bars are too close to the top "
+            "judge to call a winner"
         ),
         "unit": "fraction",
-        "baseline": {"label": "always-same-answer baseline", "value": majority},
+        "floor": {"label": "always the same answer", "value": floor},
         "rows": [
             {
                 "key": key,
                 "label": PLAIN[key],
                 "rank": ranks[key],
                 "value": arms[key]["all_record_accuracy"],
-                "interval": arms[key]["all_record_accuracy_95_wilson"],
                 "coverage": arms[key]["coverage"],
                 "family": arms[key]["family"],
                 "highlight": key in HIGHLIGHT,
+                "tied_with_leader": ranks[key] == 1,
+                "below_floor": arms[key]["all_record_accuracy"] < floor,
             }
             for key in order
         ],
@@ -618,104 +688,49 @@ def ranked_data(analysis: dict[str, Any]) -> dict[str, Any]:
 def draw_ranked(data: dict[str, Any], theme: Theme, layout: Layout) -> plt.Figure:
     rows = data["rows"]
     tall = layout.name == "tall"
-    row_h = 0.56 if tall else 0.36
-    height = 2.8 + row_h * len(rows) + 0.8
+    row_h = 0.62 if tall else 0.42
+    height = 2.6 + row_h * len(rows) * row_step(layout) + 0.9
     fig, top, bottom = new_figure(theme, layout, height, data)
-    rect = (
-        (0.04, bottom, 0.74, top - bottom - 0.02)
-        if tall
-        else (0.35, bottom, 0.46, top - bottom - 0.02)
-    )
-    ax = fig.add_axes(rect)
+    ax = fig.add_axes(axes_rect(layout, top, bottom))
     style_axes(ax, theme, layout)
-    axis_x = ax.get_yaxis_transform()
-    baseline = data["baseline"]["value"] * 100
-    fs = layout.base * (0.88 if tall else 0.95)
-    for index, row in enumerate(rows):
-        value = row["value"] * 100
-        low, high = (v * 100 for v in row["interval"])
-        color = (theme.bad if value < baseline else theme.top) if row["highlight"] else theme.other
-        ax.plot([low, high], [index, index], color=color, linewidth=2.2, zorder=2)
-        ax.scatter(value, index, s=55 if tall else 70, color=color, zorder=3)
-        label = f"#{row['rank']}  {row['label']}"
-        if tall and row["coverage"] < 0.99:
-            label += f"  ({row['coverage'] * 100:.0f}% answered)"
-        weight = "bold" if row["highlight"] else "normal"
-        text_color = theme.ink if row["highlight"] else theme.muted
-        if tall:
-            ax.text(
-                0.0,
-                index - 0.2,
-                label,
-                transform=axis_x,
-                fontsize=fs * 0.9,
-                color=text_color,
-                fontweight=weight,
-                va="bottom",
-            )
-        else:
-            ax.text(
-                -0.02,
-                index,
-                label,
-                transform=axis_x,
-                fontsize=fs,
-                color=text_color,
-                fontweight=weight,
-                va="center",
-                ha="right",
-            )
+    floor = data["floor"]["value"] * 100
+    y = row_positions(len(rows), layout)
+    values = [row["value"] * 100 for row in rows]
+    colors = [
+        theme.tied if row["tied_with_leader"] else theme.bad if row["below_floor"] else theme.top
+        for row in rows
+    ]
+    ax.barh(y, values, height=0.62, color=colors, edgecolor="none")
+    for index, (row, value) in enumerate(zip(rows, values)):
         ax.text(
-            1.03,
-            index,
+            value - 2,
+            y[index],
             f"{value:.1f}%",
-            transform=axis_x,
-            fontsize=fs,
-            color=text_color,
-            fontweight=weight,
             va="center",
-            ha="left",
+            ha="right",
+            fontsize=layout.base * 0.95,
+            color=theme.ink if row["tied_with_leader"] else theme.bg,
         )
-        if not tall:
-            answered = row["coverage"] * 100
+        if row["coverage"] < 0.99 and not tall:
             ax.text(
-                1.36,
-                index,
-                f"{answered:.0f}%",
-                transform=axis_x,
-                fontsize=fs,
-                color=theme.bad if answered < 99 else theme.muted,
+                103,
+                y[index],
+                f"{row['coverage'] * 100:.0f}% answered",
                 va="center",
-                ha="right",
+                ha="left",
+                fontsize=layout.base * 0.85,
+                color=theme.bad,
             )
-    ax.axvline(baseline, color=theme.muted, linestyle=":", linewidth=1.2, zorder=0)
-    ax.text(
-        baseline,
-        -1.3,
-        f"baseline {baseline:.1f}%",
-        ha="center",
-        fontsize=fs * 0.9,
-        color=theme.muted,
-        va="center",
-    )
-    ax.text(
-        1.03,
-        -1.3,
-        "correct" if tall else "correct   answered",
-        transform=axis_x,
-        fontsize=fs * 0.85,
-        color=theme.muted,
-        va="center",
-        ha="left",
-    )
-    ax.set_xlim(0 if tall else 25, 101)
-    ax.set_ylim(len(rows) - 0.5, -1.9)
-    ax.set_yticks([])
-    ax.set_xticks([25, 50, 75, 100])
+    row_labels(ax, rows, theme, layout)
+    floor_line(ax, theme, layout, floor, -1.7, floor, len(rows))
+    ax.set_xlim(0, 130)
+    ax.set_ylim((len(rows) - 1) * row_step(layout) + 0.6, -2.9 * row_step(layout))
+    ax.set_xticks([0, 25, 50, 75, 100])
     return fig
 
 
 # --- Appendix: Grok ablation ------------------------------------------------------
+
 
 GROK_VARIANTS = (
     ("typed_schema", "Typed schema (baseline)"),
@@ -731,6 +746,10 @@ def grok_data(payload: dict[str, Any]) -> dict[str, Any]:
     return {
         "title": "No request format fixed Grok Build's failure",
         "source": "EXP-025",
+        "source_note": (
+            "Source: Eval Lab request-format test on 64 public questions. "
+            f"Data: {DATA_LINK}"
+        ),
         "subtitle": f"EXP-025 public diagnostic ({payload['public']['record_count']} questions)",
         "rows": [
             {
@@ -829,6 +848,7 @@ def draw_grok(data: dict[str, Any], theme: Theme, layout: Layout) -> plt.Figure:
 
 # --- Appendix: calibration ----------------------------------------------------------
 
+
 CAL_METRICS = (
     ("brier", "Brier score"),
     ("nll", "Negative log likelihood"),
@@ -842,6 +862,10 @@ def calibration_data(payload: dict[str, Any]) -> dict[str, Any]:
     return {
         "title": "Calibration made confidence more honest; answers stayed the same",
         "source": "EXP-019",
+        "source_note": (
+            "Source: Eval Lab local grader confidence study. "
+            f"Data: {DATA_LINK}"
+        ),
         "subtitle": (
             f"Local Qwen3-4B, blind set (accuracy {float(calibrated['accuracy']) * 100:.2f}% "
             "before and after) · lower is better"
@@ -922,8 +946,8 @@ Figure = tuple[str, Callable[[], dict[str, Any]], Callable[[dict[str, Any], Them
 
 def figures(analysis: dict[str, Any], grok: dict[str, Any], calibration: dict[str, Any]):
     return (
-        ("finding_accuracy_range", lambda: range_data(analysis), draw_range),
         ("finding_skipped_questions", lambda: skipped_data(analysis), draw_skipped),
+        ("finding_accuracy_range", lambda: range_data(analysis), draw_range),
         ("finding_request_settings", lambda: settings_data(analysis), draw_settings),
         ("judges_ranked", lambda: ranked_data(analysis), draw_ranked),
         ("grok_protocol_ablation", lambda: grok_data(grok), draw_grok),
@@ -970,13 +994,13 @@ def main() -> None:
         "generator": "scripts/generate_benchmark_figures.py",
         "naming": "NAME.{light,dark}.{wide,tall}.svg plus NAME.data.json (plotted values)",
         "figure_policy": {
-            "accuracy": "conditional accuracy = correct / resolved; all-record accuracy = "
-            "correct / 760 with unresolved earning no credit",
+            "accuracy": "all-record accuracy = correct / 760 with unresolved earning no credit; "
+            "conditional accuracy = correct / resolved",
             "coverage": "resolved fraction of the 760-record blind holdout",
-            "interval": "95% Wilson score interval",
-            "shared_rank": "competition rank by all-record accuracy; an arm shares its group's "
-            "rank when the Holm-corrected all-760 McNemar test gives p >= 0.05 against the "
-            "group's top arm",
+            "floor": "the majority-label reference arm: 50.3% of the 760 questions",
+            "tied_with_leader": "shared rank 1: the Holm-corrected all-760 McNemar test gives "
+            "p >= 0.05 against the top arm",
+            "chart_style": "plain bars, direct labels, no whiskers or confidence intervals",
         },
         "sources": {
             key: {"path": path.relative_to(ROOT).as_posix(), "sha256": sha256(path)}

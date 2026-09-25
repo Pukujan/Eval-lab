@@ -1,77 +1,89 @@
 {
-  "baseline": {
-    "label": "always-same-answer baseline",
+  "annotations": [
+    {
+      "key": "kev_4b_exp027",
+      "text": "Kev-4B was the best grader that ran on our own computer."
+    }
+  ],
+  "floor": {
+    "label": "always the same answer",
     "value": 0.5026315789473684
   },
   "rows": [
     {
-      "group": "top_api",
+      "below_floor": false,
+      "coverage": 1.0,
       "key": "ali_qwen38_flash_exp024",
       "label": "Qwen3.8 Flash",
+      "tied_with_leader": true,
       "value": 0.9921052631578947
     },
     {
-      "group": "top_api",
+      "below_floor": false,
+      "coverage": 1.0,
       "key": "ali_qwen38_max_exp024",
       "label": "Qwen 3.8 Max",
+      "tied_with_leader": true,
       "value": 0.9907894736842106
     },
     {
-      "group": "top_api",
+      "below_floor": false,
+      "coverage": 0.9973684210526316,
       "key": "ali_kimi_k27_code_exp024",
       "label": "Kimi K2.7 Code",
+      "tied_with_leader": true,
       "value": 0.9828947368421053
     },
     {
-      "group": "other_api",
+      "below_floor": false,
+      "coverage": 0.9947368421052631,
       "key": "cbcn_glm53_flash_exp024",
       "label": "GLM 5.3 Flash",
+      "tied_with_leader": true,
       "value": 0.9736842105263158
     },
     {
-      "group": "other_api",
+      "below_floor": false,
+      "coverage": 0.9789473684210527,
       "key": "cbcn_minimax_m3_exp024",
       "label": "MiniMax M3",
+      "tied_with_leader": false,
       "value": 0.9592105263157895
     },
     {
-      "group": "other_api",
+      "below_floor": false,
+      "coverage": 0.9565789473684211,
+      "key": "ali_glm52_exp024",
+      "label": "GLM 5.2",
+      "tied_with_leader": false,
+      "value": 0.9486842105263158
+    },
+    {
+      "below_floor": false,
+      "coverage": 1.0,
       "key": "jev_exp022",
       "label": "Jev 1.13",
+      "tied_with_leader": false,
       "value": 0.8986842105263158
     },
     {
-      "group": "other_api",
-      "key": "cbcn_deepseek_v4_flash_exp024",
-      "label": "DeepSeek V4 Flash",
-      "value": 0.8026315789473685
-    },
-    {
-      "group": "local",
+      "below_floor": false,
+      "coverage": 1.0,
       "key": "kev_4b_exp027",
-      "label": "Kev-4B (local)",
+      "label": "Kev-4B (on our computer)",
+      "tied_with_leader": false,
       "value": 0.6434210526315789
     },
     {
-      "group": "local",
-      "key": "semif_qwen35_4b_exp027",
-      "label": "SemIf 4B (local)",
-      "value": 0.5473684210526316
-    },
-    {
-      "group": "below_baseline",
+      "below_floor": true,
+      "coverage": 0.9960526315789474,
       "key": "grok46_exp022",
       "label": "Grok 4.6 Build",
+      "tied_with_leader": false,
       "value": 0.4328947368421053
-    },
-    {
-      "group": "below_baseline",
-      "key": "verdict_14_exp027",
-      "label": "Verdict 1.4 (local)",
-      "value": 0.38552631578947366
     }
   ],
-  "subtitle": "Share of all 760 questions answered correctly (skipped = wrong)",
-  "title": "Top judges get about 99% right; some do worse than a constant guess",
+  "subtitle": "Right answers out of all 760 questions. Grey bars are too close to the leader to separate; red is below the line",
+  "title": "Four graders are too close to call a winner",
   "unit": "fraction"
 }

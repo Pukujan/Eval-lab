@@ -2,10 +2,11 @@
   "generator": "scripts/generate_benchmark_figures.py",
   "naming": "NAME.{light,dark}.{wide,tall}.svg plus NAME.data.json (plotted values)",
   "figure_policy": {
-    "accuracy": "conditional accuracy = correct / resolved; all-record accuracy = correct / 760 with unresolved earning no credit",
+    "accuracy": "all-record accuracy = correct / 760 with unresolved earning no credit; conditional accuracy = correct / resolved",
     "coverage": "resolved fraction of the 760-record blind holdout",
-    "interval": "95% Wilson score interval",
-    "shared_rank": "competition rank by all-record accuracy; an arm shares its group's rank when the Holm-corrected all-760 McNemar test gives p >= 0.05 against the group's top arm"
+    "floor": "the majority-label reference arm: 50.3% of the 760 questions",
+    "tied_with_leader": "shared rank 1: the Holm-corrected all-760 McNemar test gives p >= 0.05 against the top arm",
+    "chart_style": "plain bars, direct labels, no whiskers or confidence intervals"
   },
   "sources": {
     "analysis": {
@@ -22,18 +23,8 @@
     }
   },
   "figures": {
-    "finding_accuracy_range": {
-      "title": "Top judges get about 99% right; some do worse than a constant guess",
-      "data": "paper/figures/benchmark/finding_accuracy_range.data.json",
-      "variants": {
-        "light.wide": "paper/figures/benchmark/finding_accuracy_range.light.wide.svg",
-        "light.tall": "paper/figures/benchmark/finding_accuracy_range.light.tall.svg",
-        "dark.wide": "paper/figures/benchmark/finding_accuracy_range.dark.wide.svg",
-        "dark.tall": "paper/figures/benchmark/finding_accuracy_range.dark.tall.svg"
-      }
-    },
     "finding_skipped_questions": {
-      "title": "Scores on answered questions hide skipped ones",
+      "title": "Some AI graders look almost perfect until you count the questions they skipped",
       "data": "paper/figures/benchmark/finding_skipped_questions.data.json",
       "variants": {
         "light.wide": "paper/figures/benchmark/finding_skipped_questions.light.wide.svg",
@@ -42,8 +33,18 @@
         "dark.tall": "paper/figures/benchmark/finding_skipped_questions.dark.tall.svg"
       }
     },
+    "finding_accuracy_range": {
+      "title": "Four graders are too close to call a winner",
+      "data": "paper/figures/benchmark/finding_accuracy_range.data.json",
+      "variants": {
+        "light.wide": "paper/figures/benchmark/finding_accuracy_range.light.wide.svg",
+        "light.tall": "paper/figures/benchmark/finding_accuracy_range.light.tall.svg",
+        "dark.wide": "paper/figures/benchmark/finding_accuracy_range.dark.wide.svg",
+        "dark.tall": "paper/figures/benchmark/finding_accuracy_range.dark.tall.svg"
+      }
+    },
     "finding_request_settings": {
-      "title": "Same model, same questions: 84.5% vs 97.4%",
+      "title": "The same model scored 84.5% and 97.4% on the same questions",
       "data": "paper/figures/benchmark/finding_request_settings.data.json",
       "variants": {
         "light.wide": "paper/figures/benchmark/finding_request_settings.light.wide.svg",
@@ -53,7 +54,7 @@
       }
     },
     "judges_ranked": {
-      "title": "4 judges share first place; 8 score below the baseline",
+      "title": "4 judges share first place; 8 score below a constant guess",
       "data": "paper/figures/benchmark/judges_ranked.data.json",
       "variants": {
         "light.wide": "paper/figures/benchmark/judges_ranked.light.wide.svg",

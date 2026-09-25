@@ -20,6 +20,7 @@
     }
   ],
   "source": "EXP-019",
+  "source_note": "Source: Eval Lab local grader confidence study. Data: github.com/Pukujan/Eval-lab/tree/main/paper/data",
   "subtitle": "Local Qwen3-4B, blind set (accuracy 44.61% before and after) \u00b7 lower is better",
   "title": "Calibration made confidence more honest; answers stayed the same"
 }

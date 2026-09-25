@@ -1,46 +1,129 @@
 {
-  "baseline": {
-    "label": "always-same-answer baseline",
+  "annotations": [
+    {
+      "key": "cbcn_deepseek_v4_flash_exp024",
+      "text": "DeepSeek V4 Flash was right 99.8% of the times it answered, and 80.3% of all 760. It skipped 149 questions."
+    },
+    {
+      "key": "qwen_flash_exp015",
+      "text": "The provider refused 317 of the 760 requests in this run."
+    }
+  ],
+  "floor": {
+    "label": "a grader that always gives the same answer",
     "value": 0.5026315789473684
   },
   "rows": [
     {
-      "all_record_accuracy": 0.8026315789473685,
-      "answered_accuracy": 0.9983633387888707,
-      "coverage": 0.8039473684210526,
-      "key": "cbcn_deepseek_v4_flash_exp024",
-      "label": "DeepSeek V4 Flash"
+      "answered": 1.0,
+      "answered_accuracy": 0.9921052631578947,
+      "key": "ali_qwen38_flash_exp024",
+      "label": "Qwen3.8 Flash",
+      "right": 0.9921052631578947,
+      "skipped": 0.0,
+      "wrong": 0.007894736842105288
     },
     {
-      "all_record_accuracy": 0.9486842105263158,
+      "answered": 1.0,
+      "answered_accuracy": 0.9907894736842106,
+      "key": "ali_qwen38_max_exp024",
+      "label": "Qwen 3.8 Max",
+      "right": 0.9907894736842106,
+      "skipped": 0.0,
+      "wrong": 0.009210526315789447
+    },
+    {
+      "answered": 0.9973684210526316,
+      "answered_accuracy": 0.9854881266490765,
+      "key": "ali_kimi_k27_code_exp024",
+      "label": "Kimi K2.7 Code",
+      "right": 0.9828947368421053,
+      "skipped": 0.0026315789473684292,
+      "wrong": 0.014473684210526305
+    },
+    {
+      "answered": 0.9947368421052631,
+      "answered_accuracy": 0.9788359788359788,
+      "key": "cbcn_glm53_flash_exp024",
+      "label": "GLM 5.3 Flash",
+      "right": 0.9736842105263158,
+      "skipped": 0.0052631578947368585,
+      "wrong": 0.021052631578947323
+    },
+    {
+      "answered": 0.9789473684210527,
+      "answered_accuracy": 0.9798387096774194,
+      "key": "cbcn_minimax_m3_exp024",
+      "label": "MiniMax M3",
+      "right": 0.9592105263157895,
+      "skipped": 0.021052631578947323,
+      "wrong": 0.019736842105263164
+    },
+    {
+      "answered": 0.9565789473684211,
       "answered_accuracy": 0.9917469050894085,
-      "coverage": 0.9565789473684211,
       "key": "ali_glm52_exp024",
-      "label": "GLM 5.2"
+      "label": "GLM 5.2",
+      "right": 0.9486842105263158,
+      "skipped": 0.043421052631578916,
+      "wrong": 0.007894736842105288
     },
     {
-      "all_record_accuracy": 0.5763157894736842,
+      "answered": 1.0,
+      "answered_accuracy": 0.8986842105263158,
+      "key": "jev_exp022",
+      "label": "Jev 1.13",
+      "right": 0.8986842105263158,
+      "skipped": 0.0,
+      "wrong": 0.10131578947368425
+    },
+    {
+      "answered": 0.8171052631578948,
+      "answered_accuracy": 0.9871175523349437,
+      "key": "cb_deepseek_v41_flash_exp024",
+      "label": "DeepSeek V4.1 Flash",
+      "right": 0.8065789473684211,
+      "skipped": 0.18289473684210522,
+      "wrong": 0.010526315789473717
+    },
+    {
+      "answered": 0.8039473684210526,
+      "answered_accuracy": 0.9983633387888707,
+      "key": "cbcn_deepseek_v4_flash_exp024",
+      "label": "DeepSeek V4 Flash",
+      "right": 0.8026315789473685,
+      "skipped": 0.19605263157894737,
+      "wrong": 0.001315789473684159
+    },
+    {
+      "answered": 0.5815789473684211,
       "answered_accuracy": 0.9909502262443439,
-      "coverage": 0.5815789473684211,
       "key": "qwen_flash_exp015",
-      "label": "Qwen3.8 Flash, one pass"
+      "label": "Qwen3.8 Flash (317 refused)",
+      "right": 0.5763157894736842,
+      "skipped": 0.4184210526315789,
+      "wrong": 0.0052631578947368585
     },
     {
-      "all_record_accuracy": 0.38552631578947366,
+      "answered": 0.7486842105263158,
       "answered_accuracy": 0.5149384885764499,
-      "coverage": 0.7486842105263158,
       "key": "verdict_14_exp027",
-      "label": "Verdict 1.4 (local)"
+      "label": "Our grader 1.4",
+      "right": 0.38552631578947366,
+      "skipped": 0.25131578947368416,
+      "wrong": 0.3631578947368422
     },
     {
-      "all_record_accuracy": 0.34868421052631576,
+      "answered": 0.6921052631578948,
       "answered_accuracy": 0.5038022813688213,
-      "coverage": 0.6921052631578948,
       "key": "verdict_original_exp027",
-      "label": "Verdict pre-v1.4 (local)"
+      "label": "Our grader, older version",
+      "right": 0.34868421052631576,
+      "skipped": 0.3078947368421052,
+      "wrong": 0.343421052631579
     }
   ],
-  "subtitle": "Hollow: correct when it answered \u00b7 filled: correct over all 760",
-  "title": "Scores on answered questions hide skipped ones",
+  "subtitle": "Each bar is all 760 questions: green is right, red is wrong, grey is skipped",
+  "title": "Some AI graders look almost perfect until you count the questions they skipped",
   "unit": "fraction"
 }
