@@ -177,6 +177,13 @@ class Run(LiveBase):
     __tablename__ = "runs"
 
     run_id: Mapped[str] = mapped_column(String(300), primary_key=True)
+    #: The ``run_id`` the runner wrote, when that value was not unique enough to
+    #: be the row key.  Two committed runs reuse ``canary-cb_deepseek_v41_flash
+    #: -20260922`` and two reuse ``grok_46-typed_schema`` -- a runner id is only
+    #: unique inside its experiment, not across the repository -- so those rows
+    #: are keyed by their run directory instead and the original value is kept
+    #: here rather than dropped.  ``None`` when ``run_id`` *is* the runner's id.
+    source_run_id: Mapped[str | None] = mapped_column(String(300))
     dataset_id: Mapped[str] = mapped_column(ForeignKey("live.datasets.id", ondelete="CASCADE"))
     experiment_id: Mapped[str] = mapped_column(ForeignKey("live.experiments.id"))
     #: The arm this run belongs to, when the run maps 1:1 onto a chart entity.

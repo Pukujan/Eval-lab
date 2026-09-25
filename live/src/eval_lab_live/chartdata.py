@@ -33,6 +33,19 @@ SCHEMA_VERSION = "1.0"
 DOCUMENT_TYPE = ["schema:Dataset", "prov:Entity"]
 
 
+def _arm_experiment_ids(arm: Arm) -> list[str]:
+    """Every experiment an entity belongs to, primary first.
+
+    These are the *short* ids (``EXP-013``) the document's ``experimentIds``
+    array carries -- not the long ``arms.experiment_id`` foreign key.  The
+    fallback covers a row written before ``experiment_ids`` existed.
+    """
+    ids = [str(item) for item in (arm.experiment_ids or [])]
+    if not ids and arm.experiment:
+        ids = [str(arm.experiment)]
+    return ids
+
+
 def entity_document(arm: Arm) -> dict[str, Any]:
     """One chart-data v1 ``entity``."""
     return {
@@ -212,17 +225,29 @@ def build_document(
     comparisons = repo.list_comparisons(session, dataset.id, entity_ids)
     aggregates = repo.list_aggregates(session, dataset.id)
 
-    include_runs = level in (None, "runs", "table")
+    # The ``table`` level is "all observations; one row per arm/slice/metric",
+    # so it drops the per-run provenance array and is the cheapest view.  Every
+    # other level keeps it: ``runs`` is *about* those entries, and ``experiments``
+    # is the same document grouped by experiment.
+    include_runs = level in (None, "runs", "experiments")
     run_links: list[repo.RunLink] = []
     if include_runs:
         run_links = repo.list_runs_for_entities(session, dataset.id, entity_ids, limit=max_runs)
 
-    experiments = repo.list_experiments_by_ids(session, sorted({arm.experiment_id for arm in arms}))
-    experiments_by_id = {experiment.id: experiment for experiment in experiments}
-    experiment_order = [arm.experiment_id for arm in arms if arm.experiment_id in experiments_by_id]
-    ordered_experiment_ids = list(dict.fromkeys(experiment_order))
-    ordered_experiment_ids += [
-        experiment.id for experiment in experiments if experiment.id not in ordered_experiment_ids
+    # A merged entity belongs to more than one experiment (``qwen_flash_exp015_
+    # 016`` was run in EXP-015 and EXP-016), and the document lists it under
+    # both, so membership comes from ``experiment_ids`` and not from the arm's
+    # single primary ``experiment_id``.  The export script emits the block in
+    # ``sorted(short_id)`` order and leaves out an experiment with no member
+    # entity, so both of those come from here rather than from the arm order.
+    membership = [(arm.id, _arm_experiment_ids(arm)) for arm in arms]
+    member_short_ids = sorted({short_id for _, ids in membership for short_id in ids})
+    experiments_by_short_id = {
+        experiment.short_id: experiment
+        for experiment in repo.list_experiments_by_short_ids(session, member_short_ids)
+    }
+    member_short_ids = [
+        short_id for short_id in member_short_ids if short_id in experiments_by_short_id
     ]
 
     document: dict[str, Any] = {
@@ -249,10 +274,10 @@ def build_document(
         "comparisons": [comparison_document(item) for item in comparisons],
         "experiments": [
             experiment_document(
-                experiments_by_id[experiment_id],
-                [arm.id for arm in arms if arm.experiment_id == experiment_id],
+                experiments_by_short_id[short_id],
+                [arm_id for arm_id, ids in membership if short_id in ids],
             )
-            for experiment_id in ordered_experiment_ids
+            for short_id in member_short_ids
         ],
         "runs": [run_document(link) for link in run_links],
         "notes": dict(dataset.notes or {}),

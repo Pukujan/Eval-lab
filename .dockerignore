@@ -1,0 +1,22 @@
+# Build context for `live/docker/Dockerfile`.
+#
+# The image only needs the install inputs (`pyproject.toml`, `uv.lock`, `src/`,
+# `live/`) and copies exactly those.  Everything below is either large or only
+# needed at run time, where `live/docker-compose.yml` bind-mounts the checkout
+# so the loader can read `experiments/` and `paper/data/` -- the same committed
+# artifacts the research scripts read.
+.git
+.venv
+worktrees
+**/__pycache__
+*.pyc
+.pytest_cache
+.mypy_cache
+.ruff_cache
+experiments
+paper
+data
+benchmark
+assets
+manifests
+.content-system

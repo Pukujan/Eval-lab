@@ -278,14 +278,21 @@ def list_runs_for_entities(
     ]
 
 
-def list_experiments_by_ids(session: Session, ids: list[str]) -> list[Experiment]:
-    if not ids:
+def list_experiments_by_short_ids(session: Session, short_ids: list[str]) -> list[Experiment]:
+    """Experiments by their ``EXP-013`` short id, in document order.
+
+    ``arms.experiment_ids`` carries short ids -- that is what the chart-data
+    ``entity.experimentIds`` array holds -- while ``arms.experiment_id`` is the
+    foreign key to the long ``Experiment.id``.  Grouping by the short id is what
+    lets a merged entity appear under every experiment it ran in.
+    """
+    if not short_ids:
         return []
     return list(
         session.scalars(
             select(Experiment)
-            .where(Experiment.id.in_(ids))
-            .order_by(Experiment.position, Experiment.id)
+            .where(Experiment.short_id.in_(short_ids))
+            .order_by(Experiment.short_id)
         )
     )
 
@@ -378,7 +385,7 @@ __all__ = [
     "list_datasets",
     "list_dimensions",
     "list_experiments",
-    "list_experiments_by_ids",
+    "list_experiments_by_short_ids",
     "list_judges",
     "list_levels",
     "list_metrics",

@@ -8,8 +8,9 @@ from typing import Any
 
 import pytest
 from eval_lab_live import repository as repo
+from eval_lab_live.api import create_app
 from eval_lab_live.config import IMMUTABLE_CACHE_CONTROL, LIVE_CACHE_CONTROL
-from eval_lab_live.models import Dataset, Experiment, Observation, Run, RunEntity
+from eval_lab_live.models import Artifact, Dataset, Experiment, Observation, Run, RunEntity
 from eval_lab_live.sanitize import assert_no_denylisted_keys
 from fastapi.testclient import TestClient
 from sqlalchemy import func, select
@@ -76,12 +77,9 @@ def test_status_counts_the_loaded_runs(client: TestClient, load_report: Any) -> 
 
 def test_status_survives_an_unreachable_database(settings: Any) -> None:
     """The frontend's offline banner needs a 200, not a 500."""
-    from eval_lab_live.api import create_app
-    from fastapi.testclient import TestClient as Client
-
     # No session factory and no schema: the app builds an engine it cannot use.
     app = create_app(settings)
-    with Client(app) as offline:
+    with TestClient(app) as offline:
         body = offline.get("/api/v1/status").json()
     assert body["ok"] is False and body["db"] is False
 
@@ -251,18 +249,19 @@ def test_min_slice_suppression_drops_small_slices(session: Session) -> None:
     per-observation ``n`` is a per-entity resolved count and cannot be used for
     this.  The frozen paper dataset opts out (see the test below), so the rule is
     checked by asking the repository for a suppressed view directly.
+
+    The smallest slice in the paper is "Eval Lab synthetic (4 families)" at 20
+    records, which the default threshold of 20 keeps, so this drives the rule at
+    21: the population, not the entity, is what decides.
     """
     from eval_lab_live.models import Observation
 
-    rows = session.execute(
-        select(Observation.slice_dim, Observation.slice_value, Observation.slice_records).where(
-            Observation.dataset_id == DATASET_ID, Observation.slice_dim != "overall"
-        )
-    ).all()
-    assert rows
-    small = {(dim, value) for dim, value, records in rows if records < 20}
-    big = {(dim, value) for dim, value, records in rows if records >= 20}
-    assert small, "the dataset has no small slice, so the suppression rule is untested"
+    populations = _slice_populations(session)
+    assert min(populations.values()) == 20
+    threshold = 21
+    kept = {cell for cell, records in populations.items() if records >= threshold}
+    dropped = set(populations) - kept
+    assert dropped == {("taskSource", "Eval Lab synthetic (4 families)")}
 
     entity_ids = list(
         session.scalars(select(Observation.entity_id).where(Observation.dataset_id == DATASET_ID))
@@ -272,24 +271,51 @@ def test_min_slice_suppression_drops_small_slices(session: Session) -> None:
         DATASET_ID,
         sorted(set(entity_ids)),
         repo.DocumentFilters(level="breakdown"),
-        min_slice_records=20,
+        min_slice_records=threshold,
         level="breakdown",
         limit=20000,
     )
     cells = {(observation.slice_dim, observation.slice_value) for observation in filtered}
-    assert cells == big
-    assert not (cells & small)
+    assert cells == kept
+
+
+def _slice_populations(session: Session) -> dict[tuple[str, str], int]:
+    """The population of every non-overall slice, and the invariant behind it.
+
+    ``slice_records`` describes the *cell*, not the row, so every observation of
+    one (slice, sliceValue) pair must carry the same value -- otherwise the rule
+    would keep a cell for its accuracy row and drop it for its coverage row.
+    """
+    from eval_lab_live.models import Observation
+
+    by_cell: dict[tuple[str, str], set[int]] = {}
+    for dim, value, records in session.execute(
+        select(Observation.slice_dim, Observation.slice_value, Observation.slice_records).where(
+            Observation.dataset_id == DATASET_ID, Observation.slice_dim != "overall"
+        )
+    ).all():
+        by_cell.setdefault((dim, value), set()).add(records)
+    assert by_cell
+    inconsistent = {cell: seen for cell, seen in by_cell.items() if len(seen) != 1}
+    assert inconsistent == {}, f"slice_records is not a property of the cell: {inconsistent}"
+    return {cell: next(iter(seen)) for cell, seen in by_cell.items()}
 
 
 def test_the_published_dataset_opts_out_of_suppression(
-    client: TestClient, session: Session, committed: dict[str, Any]
+    client: TestClient,
+    session: Session,
+    settings: Any,
+    session_factory: Any,
+    committed: dict[str, Any],
 ) -> None:
     """The 760-record holdout is served in full, exactly as the paper publishes it.
 
     All 760 records and their gold labels are in this public repository, so the
-    min-slice rule protects nothing here and would hide slices the paper shows
-    (the "Eval Lab synthetic" family holds 8 and 12 records).  The dataset row
-    records that decision explicitly rather than relying on a default.
+    min-slice rule protects nothing here, and a raised threshold would start
+    hiding slices the paper prints.  The dataset row records that decision
+    explicitly rather than relying on the configured default, so the served
+    document keeps matching the paper whatever ``EVALLAB_LIVE_MIN_SLICE_RECORDS``
+    is set to.
     """
     dataset = session.get(Dataset, DATASET_ID)
     assert dataset is not None
@@ -297,28 +323,29 @@ def test_the_published_dataset_opts_out_of_suppression(
 
     served = client.get(f"/api/v1/datasets/{DATASET_ID}").json()
     assert len(served["observations"]) == len(committed["observations"])
-    populations = session.scalars(
-        select(Observation.slice_records).where(
-            Observation.dataset_id == DATASET_ID, Observation.slice_dim != "overall"
-        )
-    ).all()
-    assert min(populations) < 20, "the paper publishes a slice smaller than the threshold"
+
+    # The same database, served by an app whose configured threshold would
+    # suppress a published slice.  The override is the only reason it does not.
+    strict = create_app(
+        settings.model_copy(update={"min_slice_records": 21}), session_factory=session_factory
+    )
+    with TestClient(strict) as strict_client:
+        under_a_strict_threshold = strict_client.get(f"/api/v1/datasets/{DATASET_ID}").json()
+    assert under_a_strict_threshold == served
+    assert min(_slice_populations(session).values()) < 21
 
 
-def test_a_dataset_without_an_override_uses_the_configured_threshold(
-    session: Session, settings: Any
-) -> None:
-    """The mechanism is live for future datasets: NULL means 'use the setting'."""
+def test_a_dataset_without_an_override_uses_the_configured_threshold(settings: Any) -> None:
+    """The mechanism is live for future datasets: NULL means 'use the setting'.
+
+    Built as a throwaway row rather than by mutating the loaded one, so this
+    cannot leak into the other tests that share the session.
+    """
     from eval_lab_live.api import _min_slice_records
 
-    dataset = session.get(Dataset, DATASET_ID)
-    assert dataset is not None
-    dataset.min_slice_records = None
-    try:
-        assert _min_slice_records(dataset, settings) == settings.min_slice_records == 20
-    finally:
-        dataset.min_slice_records = 0
-        session.rollback()
+    assert _min_slice_records(Dataset(id="x", min_slice_records=None), settings) == 20
+    assert _min_slice_records(Dataset(id="x", min_slice_records=0), settings) == 0
+    assert _min_slice_records(Dataset(id="x", min_slice_records=5), settings) == 5
 
 
 def test_overall_slices_are_never_suppressed(session: Session) -> None:
@@ -367,18 +394,32 @@ def test_runs_are_listed(client: TestClient, load_report: Any) -> None:
 
 
 def test_run_detail_and_provenance(client: TestClient, session: Session) -> None:
-    run_id = session.scalars(select(Run.run_id).order_by(Run.run_id)).first()
-    assert run_id is not None
+    # A run id can be a repository path (runs whose own id was not unique), so
+    # this deliberately exercises both shapes, on runs that carry artifacts.
+    def one_run_id(*conditions: Any) -> str | None:
+        return session.scalars(
+            select(Run.run_id)
+            .join(Artifact, Artifact.run_id == Run.run_id)
+            .where(*conditions)
+            .order_by(Run.run_id)
+        ).first()
 
-    detail = client.get(f"/api/v1/runs/{run_id}").json()
-    assert detail["runId"] == run_id
-    assert detail["resultsSha256"]
-    assert detail["artifacts"]
+    run_ids = [
+        one_run_id(Run.source_run_id.is_(None)),
+        one_run_id(Run.run_id.startswith("experiments/")),
+    ]
+    assert all(run_id is not None for run_id in run_ids)
 
-    graph = client.get(f"/api/v1/runs/{run_id}/provenance.jsonld").json()
-    assert "@context" in graph and "@graph" in graph
-    assert any(node["@id"] == f"urn:eval-lab:run:{run_id}" for node in graph["@graph"])
-    assert any(node["@type"] == "prov:Activity" for node in graph["@graph"])
+    for run_id in run_ids:
+        detail = client.get(f"/api/v1/runs/{run_id}").json()
+        assert detail["runId"] == run_id
+        assert detail["resultsSha256"]
+        assert detail["artifacts"]
+
+        graph = client.get(f"/api/v1/runs/{run_id}/provenance.jsonld").json()
+        assert "@context" in graph and "@graph" in graph
+        assert any(node["@id"] == f"urn:eval-lab:run:{run_id}" for node in graph["@graph"])
+        assert any(node["@type"] == "prov:Activity" for node in graph["@graph"])
 
 
 def test_unknown_run_is_a_404(client: TestClient) -> None:

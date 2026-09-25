@@ -140,15 +140,24 @@ place, and `--reset` empties everything first.
 
 It imports two things:
 
-* **Every run.** Each `experiments/EXP-*/**/results.json` becomes a `runs` row
-  with its partition, per-arm summary, source-pool fingerprints, the SHA-256 of
-  every artifact in `checksums.sha256`, and a `run_entities` link to the chart
-  entity it feeds. 55 of the 140 committed runs predate `run_id` and are keyed
-  by their repository path, so nothing is dropped.
+* **Every run.** All 140 `experiments/EXP-*/**/results.json` files become `runs`
+  rows, with their partition, per-arm summary, source-pool fingerprints, the
+  SHA-256 of every artifact in `checksums.sha256`, and a `run_entities` link to
+  the chart entity they feed. 55 of them predate `run_id` and are keyed by their
+  repository path. Two more share a `run_id` with another committed run —
+  `canary-cb_deepseek_v41_flash-20260922` appears in EXP-023 and EXP-024, and
+  `grok_46-typed_schema` twice inside EXP-025, because a runner id is unique
+  inside its experiment and not across the repository. Those are re-keyed by
+  their run directory too, and the value the runner wrote is kept in
+  `runs.source_run_id`, so no run is dropped and nothing is lost.
 * **The frozen dataset.** `paper/data/judges-blind-760.json` is recomputed
   through the paper's own code path — `scripts/analyze_judge_comparison.py` and
   `scripts/export_chart_data.py` — and decomposed into `arms`, `observations`,
   `comparisons`, `metrics`, `dimensions` and `levels` rows.
+
+A run id is therefore either the runner's own id or a repository path. The
+`/runs/{id}` routes take the whole tail as one path parameter for that reason,
+and `/runs` reports `sourceRunId` whenever the two differ.
 
 ### Why the API cannot disagree with the paper
 
@@ -190,18 +199,24 @@ name mentions `record`, `gold`, `prediction` or `runner_token`.
 ### The min-slice rule
 
 Slices whose population is below `EVALLAB_LIVE_MIN_SLICE_RECORDS` (default 20)
-are dropped from responses on blind partitions, so filters cannot narrow a
-secret blind set down to individual items. The population comes from an
-internal `observations.slice_records` column — the per-observation `n` is a
-per-entity resolved count and cannot be used for this.
+are dropped from responses, so filters cannot narrow a blind set down to
+individual items. The population comes from an internal
+`observations.slice_records` column — the per-observation `n` is a per-entity
+resolved count and cannot be used for this. It is a property of the *cell*, not
+the row, so an accuracy row and a coverage row for one slice are kept or dropped
+together. `overall` slices are never suppressed: the headline numbers are the
+point of the API.
 
 The frozen `judges-blind-760` dataset **opts out** (`datasets.min_slice_records
 = 0`). All 760 records and their gold labels are already in this public
-repository — the architecture doc's Decision 2 records exactly that — and the
-papers publish the small slices themselves (the "Eval Lab synthetic" family
-holds 8 and 12 records). Suppressing them would hide published numbers and make
-the API disagree with the paper. Every other dataset keeps `NULL`, so the
-configured threshold applies; phase 3's ingest sets it per dataset.
+repository — the architecture doc's Decision 2 records exactly that — so the
+rule protects nothing here, while any move of the threshold would start hiding
+slices the paper prints (its smallest, "Eval Lab synthetic (4 families)", is 20
+records — right at the default). The API must keep agreeing with the paper, so
+the opt-out is recorded on the dataset row rather than left to a default: a test
+serves the document through an app configured with a threshold of 21 and asserts
+the bytes are unchanged. Every other dataset keeps `NULL`, so the configured
+threshold applies; phase 3's ingest sets it per dataset.
 
 ## Configuration
 

@@ -184,6 +184,7 @@ def upgrade() -> None:
     op.create_table(
         "runs",
         sa.Column("run_id", sa.String(300), primary_key=True),
+        sa.Column("source_run_id", sa.String(300)),
         sa.Column("dataset_id", sa.String(128), nullable=False),
         sa.Column("experiment_id", sa.String(128), nullable=False),
         sa.Column("arm_id", sa.String(128)),

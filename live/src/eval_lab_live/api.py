@@ -84,6 +84,7 @@ class DatasetSummary(BaseModel):
 
 class RunSummary(BaseModel):
     runId: str
+    sourceRunId: str | None = None
     experimentId: str
     partition: str | None
     status: str | None
@@ -107,8 +108,19 @@ def get_session(request: Request) -> Iterator[Session]:
         session.close()
 
 
+def get_settings_dep(request: Request) -> Settings:
+    """The settings this app was built with, not the process environment.
+
+    ``create_app`` stores them on ``app.state``; reading them back here is what
+    lets a test inject a configuration (a test commit, a fixture database)
+    without mutating the environment every other test shares.
+    """
+    settings: Settings = request.app.state.settings
+    return settings
+
+
 SessionDep = Annotated[Session, Depends(get_session)]
-SettingsDep = Annotated[Settings, Depends(get_settings)]
+SettingsDep = Annotated[Settings, Depends(get_settings_dep)]
 
 
 def _iso(value: Any) -> str | None:
@@ -324,7 +336,65 @@ def build_router() -> APIRouter:
             for metric in repo.list_metrics(session, dataset)
         ]
 
-    @router.get("/datasets/{dataset_id}", tags=["documents"])
+    # Dataset ids contain a slash (`eval-lab/judges-blind-760`), so these routes
+    # take the whole tail as one path parameter.  Starlette matches routes in
+    # registration order and `{dataset_id:path}` is greedy, so every sub-route
+    # has to be declared *before* the bare document route below.
+    @router.get("/datasets/{dataset_id:path}/entities", tags=["documents"])
+    def dataset_entities(
+        dataset_id: str,
+        session: SessionDep,
+        settings: SettingsDep,
+        headline: bool = False,
+    ) -> list[dict[str, Any]]:
+        dataset = repo.get_dataset(session, dataset_id)
+        filters = repo.DocumentFilters(headline_only=headline)
+        arms = repo.list_arms(session, dataset.id, filters, limit=settings.max_entities)
+        return [chartdata.entity_document(arm) for arm in arms]
+
+    @router.get("/datasets/{dataset_id:path}/observations", tags=["documents"])
+    def dataset_observations(
+        dataset_id: str,
+        session: SessionDep,
+        settings: SettingsDep,
+        entity: Annotated[list[str] | None, Query()] = None,
+        metric: Annotated[list[str] | None, Query()] = None,
+        slice: Annotated[list[str] | None, Query()] = None,
+        slice_value: Annotated[list[str] | None, Query()] = None,
+    ) -> list[dict[str, Any]]:
+        dataset = repo.get_dataset(session, dataset_id)
+        filters = _filters(entity, None, None, None, metric, slice, slice_value, False, None)
+        arms = repo.list_arms(session, dataset.id, filters, limit=settings.max_entities)
+        observations = repo.list_observations(
+            session,
+            dataset.id,
+            [arm.id for arm in arms],
+            filters,
+            min_slice_records=_min_slice_records(dataset, settings),
+            level=None,
+            limit=settings.max_observations,
+        )
+        return [chartdata.observation_document(item) for item in observations]
+
+    @router.get("/datasets/{dataset_id:path}/levels", tags=["documents"])
+    def dataset_levels(dataset_id: str, session: SessionDep) -> list[dict[str, Any]]:
+        repo.get_dataset(session, dataset_id)
+        return [chartdata.level_document(level) for level in repo.list_levels(session, dataset_id)]
+
+    @router.get("/datasets/{dataset_id:path}/dimensions", tags=["documents"])
+    def dataset_dimensions(dataset_id: str, session: SessionDep) -> list[dict[str, Any]]:
+        repo.get_dataset(session, dataset_id)
+        return [
+            chartdata.dimension_document(dimension)
+            for dimension in repo.list_dimensions(session, dataset_id)
+        ]
+
+    @router.get("/datasets/{dataset_id:path}/filters", tags=["documents"])
+    def dataset_filters(dataset_id: str, session: SessionDep) -> dict[str, Any]:
+        repo.get_dataset(session, dataset_id)
+        return repo.facets(session, dataset_id).__dict__
+
+    @router.get("/datasets/{dataset_id:path}", tags=["documents"])
     def dataset_document(
         dataset_id: str,
         session: SessionDep,
@@ -358,60 +428,6 @@ def build_router() -> APIRouter:
         response.headers["CDN-Cache-Control"] = LIVE_CDN_CACHE_CONTROL
         response.headers["Vercel-Cache-Tag"] = f"eval-lab-{dataset.id}"
         return document
-
-    @router.get("/datasets/{dataset_id}/entities", tags=["documents"])
-    def dataset_entities(
-        dataset_id: str,
-        session: SessionDep,
-        settings: SettingsDep,
-        headline: bool = False,
-    ) -> list[dict[str, Any]]:
-        dataset = repo.get_dataset(session, dataset_id)
-        filters = repo.DocumentFilters(headline_only=headline)
-        arms = repo.list_arms(session, dataset.id, filters, limit=settings.max_entities)
-        return [chartdata.entity_document(arm) for arm in arms]
-
-    @router.get("/datasets/{dataset_id}/observations", tags=["documents"])
-    def dataset_observations(
-        dataset_id: str,
-        session: SessionDep,
-        settings: SettingsDep,
-        entity: Annotated[list[str] | None, Query()] = None,
-        metric: Annotated[list[str] | None, Query()] = None,
-        slice: Annotated[list[str] | None, Query()] = None,
-        slice_value: Annotated[list[str] | None, Query()] = None,
-    ) -> list[dict[str, Any]]:
-        dataset = repo.get_dataset(session, dataset_id)
-        filters = _filters(entity, None, None, None, metric, slice, slice_value, False, None)
-        arms = repo.list_arms(session, dataset.id, filters, limit=settings.max_entities)
-        observations = repo.list_observations(
-            session,
-            dataset.id,
-            [arm.id for arm in arms],
-            filters,
-            min_slice_records=_min_slice_records(dataset, settings),
-            level=None,
-            limit=settings.max_observations,
-        )
-        return [chartdata.observation_document(item) for item in observations]
-
-    @router.get("/datasets/{dataset_id}/levels", tags=["documents"])
-    def dataset_levels(dataset_id: str, session: SessionDep) -> list[dict[str, Any]]:
-        repo.get_dataset(session, dataset_id)
-        return [chartdata.level_document(level) for level in repo.list_levels(session, dataset_id)]
-
-    @router.get("/datasets/{dataset_id}/dimensions", tags=["documents"])
-    def dataset_dimensions(dataset_id: str, session: SessionDep) -> list[dict[str, Any]]:
-        repo.get_dataset(session, dataset_id)
-        return [
-            chartdata.dimension_document(dimension)
-            for dimension in repo.list_dimensions(session, dataset_id)
-        ]
-
-    @router.get("/datasets/{dataset_id}/filters", tags=["documents"])
-    def dataset_filters(dataset_id: str, session: SessionDep) -> dict[str, Any]:
-        repo.get_dataset(session, dataset_id)
-        return repo.facets(session, dataset_id).__dict__
 
     @router.get("/leaderboard", tags=["documents"])
     def leaderboard(
@@ -470,29 +486,10 @@ def build_router() -> APIRouter:
     def runs(session: SessionDep, dataset: str | None = None) -> list[dict[str, Any]]:
         return [_run_summary(run) for run in repo.list_runs(session, dataset)]
 
-    @router.get("/runs/{run_id}", response_model=RunSummary, tags=["runs"])
-    def run_detail(run_id: str, session: SessionDep) -> RunSummary:
-        run = repo.get_run(session, run_id)
-        summary = _run_summary(run)
-        summary["artifacts"] = [
-            {
-                "path": artifact.path,
-                "sha256": artifact.sha256,
-                "bytes": artifact.bytes,
-                "kind": artifact.kind,
-            }
-            for artifact in repo.list_artifacts(session, run_id)
-        ]
-        summary["entities"] = list(
-            session.scalars(
-                select(RunEntity.entity_id)
-                .where(RunEntity.run_id == run_id)
-                .order_by(RunEntity.merge_order)
-            ).all()
-        )
-        return RunSummary(**summary)
-
-    @router.get("/runs/{run_id}/provenance.jsonld", tags=["runs"])
+    # A run id is either the runner's own id or, for the runs whose id was not
+    # unique in the repository, the run directory's path -- so the tail has to
+    # be one path parameter, and the provenance route must come first.
+    @router.get("/runs/{run_id:path}/provenance.jsonld", tags=["runs"])
     def run_provenance(run_id: str, session: SessionDep, settings: SettingsDep) -> dict[str, Any]:
         """PROV-O JSON-LD for one run: the activity, its software agent and outputs."""
         run = repo.get_run(session, run_id)
@@ -538,6 +535,28 @@ def build_router() -> APIRouter:
         )
         return {"@context": context, "@graph": graph}
 
+    @router.get("/runs/{run_id:path}", response_model=RunSummary, tags=["runs"])
+    def run_detail(run_id: str, session: SessionDep) -> RunSummary:
+        run = repo.get_run(session, run_id)
+        summary = _run_summary(run)
+        summary["artifacts"] = [
+            {
+                "path": artifact.path,
+                "sha256": artifact.sha256,
+                "bytes": artifact.bytes,
+                "kind": artifact.kind,
+            }
+            for artifact in repo.list_artifacts(session, run_id)
+        ]
+        summary["entities"] = list(
+            session.scalars(
+                select(RunEntity.entity_id)
+                .where(RunEntity.run_id == run_id)
+                .order_by(RunEntity.merge_order)
+            ).all()
+        )
+        return RunSummary(**summary)
+
     @router.get("/snapshots", tags=["snapshots"])
     def snapshots(session: SessionDep) -> list[dict[str, Any]]:
         return [
@@ -566,6 +585,9 @@ def build_router() -> APIRouter:
 def _run_summary(run: Run) -> dict[str, Any]:
     return {
         "runId": run.run_id,
+        # Set only when the runner's own ``run_id`` was not unique in the
+        # repository, so the row is keyed by its run directory instead.
+        "sourceRunId": run.source_run_id,
         "experimentId": run.experiment_id,
         "partition": run.partition,
         "status": run.status,

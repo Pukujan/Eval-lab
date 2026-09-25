@@ -48,8 +48,9 @@ def _config(url: str) -> Config:
 def _ensure_roles(engine: Engine, database: str) -> None:
     """Create the two application roles if the connecting user may.
 
-    Mirrors ``live/docker/bootstrap/10-roles.sh``; CI runs that script instead,
-    so this is the local convenience path.
+    Mirrors ``live/docker/bootstrap/10-roles.sh`` so the local path and the
+    compose path agree.  CI's service container connects as its superuser, so
+    this runs there too; a non-superuser role skips it (see the caller).
     """
     with engine.begin() as connection:
         for role, password in TEST_PASSWORDS.items():

@@ -108,6 +108,10 @@ class LoadReport:
     aggregates: int = 0
     runs: int = 0
     runs_without_id: int = 0
+    #: Runs whose ``results.json`` carried a ``run_id`` that another committed
+    #: run already used.  They are imported all the same, keyed by their run
+    #: directory, with the runner's value kept in ``runs.source_run_id``.
+    duplicate_run_ids: int = 0
     run_entities: int = 0
     artifacts: int = 0
     activities: int = 0
@@ -117,7 +121,8 @@ class LoadReport:
         return (
             f"{self.experiments} experiments, {self.judges} judges, {self.arms} arms, "
             f"{self.observations} observations, {self.comparisons} comparisons, "
-            f"{self.runs} runs ({self.runs_without_id} keyed by path), "
+            f"{self.runs} runs ({self.runs_without_id} keyed by path, "
+            f"{self.duplicate_run_ids} re-keyed on a duplicate run_id), "
             f"{self.run_entities} run links, {self.artifacts} artifacts"
         )
 
@@ -308,22 +313,38 @@ def import_runs(
             report.skipped.append(f"{_rel(results_path, repo_root)}: unknown experiment")
             continue
         run_dir = results_path.parent
-        run_id = payload.get("run_id")
-        if not isinstance(run_id, str) or not run_id:
+        #: The value the runner wrote, when it is not the row key.
+        source_run_id: str | None = None
+        reported = payload.get("run_id")
+        if isinstance(reported, str) and reported:
+            run_id = reported
+        else:
             # Older runners wrote a results.json with no run_id.  Key it by its
             # repository path: stable, unique, and traceable back to the file.
             run_id = _rel(run_dir, repo_root)
             report.runs_without_id += 1
         if run_id in seen_run_ids:
-            report.skipped.append(
-                f"{_rel(results_path, repo_root)}: duplicate run_id {run_id} "
-                f"(already seen at {_rel(seen_run_ids[run_id], repo_root)})"
-            )
-            continue
+            # A runner id is unique inside its experiment, not across the
+            # repository: two committed runs reuse one.  Re-key this one by its
+            # run directory -- the same identity a file with no run_id gets --
+            # and keep the runner's value, so no run is dropped and nothing the
+            # runner wrote is lost.
+            source_run_id = run_id
+            run_id = _rel(run_dir, repo_root)
+            report.duplicate_run_ids += 1
         seen_run_ids[run_id] = run_dir
         run_dirs[run_dir] = run_id
         session.merge(
-            _run_row(payload, run_id, results_path, run_dir, experiment.id, dataset_id, repo_root)
+            _run_row(
+                payload,
+                run_id,
+                results_path,
+                run_dir,
+                experiment.id,
+                dataset_id,
+                repo_root,
+                source_run_id=source_run_id,
+            )
         )
         report.runs += 1
 
@@ -364,6 +385,8 @@ def _run_row(
     experiment_id: str,
     dataset_id: str,
     repo_root: Path,
+    *,
+    source_run_id: str | None = None,
 ) -> Run:
     arms_raw: Any = payload.get("arms")
     arms: dict[str, Any] = arms_raw if isinstance(arms_raw, dict) else {}
@@ -392,6 +415,7 @@ def _run_row(
     record_count = payload.get("record_count")
     return Run(
         run_id=run_id,
+        source_run_id=source_run_id,
         dataset_id=dataset_id,
         experiment_id=experiment_id,
         partition=payload.get("partition") if isinstance(payload.get("partition"), str) else None,

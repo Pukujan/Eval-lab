@@ -167,6 +167,9 @@ def test_record_count_is_the_blind_holdout_size(served: dict[str, Any]) -> None:
 def test_no_per_record_endpoint_exists(client: TestClient, committed: dict[str, Any]) -> None:
     """There is deliberately no way to ask the API for a single blind record."""
     dataset_id = committed["datasetId"]
+    # Positive control: the sibling sub-resource does resolve, so the 404s below
+    # are "no such route" rather than the whole prefix being unreachable.
+    assert client.get(f"/api/v1/datasets/{dataset_id}/entities").status_code == 200
     for path in (
         f"/api/v1/datasets/{dataset_id}/records",
         f"/api/v1/datasets/{dataset_id}/records/blind-0001",

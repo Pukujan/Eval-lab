@@ -125,6 +125,11 @@ jobs:
       # The migration and role tests run only when this is set; the rest of the
       # suite is SQLite and needs nothing.
       EVALLAB_LIVE_TEST_DATABASE_URL: postgresql+psycopg://evallab:evallab@localhost:5432/evallab
+      # Migrations run as the owning role (the service container's superuser).
+      # The API's own default is the read-only role, which could not create a
+      # schema; the tests override the URL themselves, so this only affects the
+      # `alembic` step below.
+      EVALLAB_LIVE_DATABASE_URL: postgresql+psycopg://evallab:evallab@localhost:5432/evallab
 
     steps:
       - name: Checkout

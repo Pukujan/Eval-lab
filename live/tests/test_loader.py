@@ -69,12 +69,36 @@ def test_every_committed_experiment_is_imported(counts: dict[str, int], repo_roo
     assert counts["Experiment"] == len(directories)
 
 
-def test_every_committed_run_is_imported(counts: dict[str, int], load_report: Any) -> None:
-    """No ``results.json`` is dropped, including the ones with no ``run_id``."""
-    assert load_report.runs > 100
+def test_every_committed_run_is_imported(
+    counts: dict[str, int], load_report: Any, repo_root: Path
+) -> None:
+    """No ``results.json`` is dropped, including the ones with no ``run_id``.
+
+    Two pairs of committed runs share a ``run_id`` (``canary-cb_deepseek_v41_
+    flash-20260922`` in EXP-023 and EXP-024, ``grok_46-typed_schema`` twice
+    inside EXP-025), because a runner id is unique inside its experiment and not
+    across the repository.  Those are re-keyed by their run directory, not
+    dropped, and the runner's value survives in ``source_run_id``.
+    """
+    committed = list((repo_root / "experiments").glob("EXP-*/**/results.json"))
+    assert len(committed) > 100
+    assert load_report.runs == len(committed)
+    assert counts["Run"] == len(committed)
     assert load_report.runs_without_id > 0, "older runners wrote no run_id; they must still load"
-    assert counts["Run"] == load_report.runs
+    assert load_report.duplicate_run_ids == 2
     assert not [item for item in load_report.skipped if "duplicate run_id" in item]
+
+
+def test_a_duplicate_run_id_is_re_keyed_by_its_directory(session: Session, repo_root: Path) -> None:
+    """The re-keyed row keeps the value the runner wrote, and is reachable."""
+    rekeyed = session.scalars(
+        select(Run).where(Run.source_run_id.is_not(None)).order_by(Run.run_id)
+    ).all()
+    assert len(rekeyed) == 2
+    for run in rekeyed:
+        assert run.run_id.endswith(run.source_run_id or "")
+        assert run.run_id.startswith("experiments/EXP-")
+        assert (repo_root / run.run_id).is_dir()
 
 
 def test_every_chart_run_path_traces_to_an_imported_run(load_report: Any) -> None:
