@@ -94,3 +94,75 @@ jobs:
 
       - name: Build distributions
         run: uv build --out-dir "$RUNNER_TEMP/eval-lab-dist"
+
+  # TASK-0060 phase 2: the live backend under `live/`.  A separate job so the
+  # research install above stays unchanged and the two run in parallel: this one
+  # needs a database, the other must not.
+  live:
+    name: live (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: evallab
+          POSTGRES_PASSWORD: evallab
+          POSTGRES_DB: evallab
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U evallab -d evallab"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    env:
+      # The migration and role tests run only when this is set; the rest of the
+      # suite is SQLite and needs nothing.
+      EVALLAB_LIVE_TEST_DATABASE_URL: postgresql+psycopg://evallab:evallab@localhost:5432/evallab
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.7"
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+          cache-dependency-glob: |
+            pyproject.toml
+            uv.lock
+
+      - name: Install locked dependencies (research + live)
+        run: uv sync --locked --extra dev --extra live
+
+      - name: Lint the live backend
+        run: uv run --locked ruff check live
+
+      - name: Formatting (live)
+        run: uv run --locked ruff format --check live
+
+      - name: Type check the live backend
+        run: uv run --locked mypy live/src/eval_lab_live
+
+      - name: Migrations up and down (Postgres 17)
+        run: |
+          uv run --locked alembic -c live/alembic.ini upgrade head
+          uv run --locked alembic -c live/alembic.ini downgrade base
+
+      # Backfill of every committed run, the paper-match proof, the JSON Schema
+      # contract tests, the leakage tests and the role-separation tests.
+      - name: Live test suite
+        run: uv run --locked python -m pytest live/tests -q
+
+      - name: The live image builds
+        run: docker build -f live/docker/Dockerfile -t eval-lab-live:ci .

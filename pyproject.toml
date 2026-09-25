@@ -27,6 +27,20 @@ local = [
 figures = [
   "matplotlib>=3.9"
 ]
+# TASK-0060 phase 2: the live app backend under `live/`.  Optional on purpose:
+# the research install (`uv sync --extra dev`) stays unchanged and never pulls
+# a web stack or a database driver.
+live = [
+  "fastapi>=0.115",
+  "uvicorn>=0.32",
+  "sqlalchemy>=2.0",
+  "alembic>=1.14",
+  "psycopg[binary]>=3.2",
+  "pydantic-settings>=2.6",
+  # The loader re-runs `scripts/export_chart_data.py`, which reads the arm
+  # metadata YAML; keep the dependency explicit rather than transitive.
+  "pyyaml>=6.0"
+]
 dev = [
   "pytest>=8.3",
   "ruff>=0.6",
@@ -37,7 +51,7 @@ dev = [
 ]
 
 [tool.setuptools.packages.find]
-where = ["src"]
+where = ["src", "live/src"]
 
 [tool.ruff]
 line-length = 100

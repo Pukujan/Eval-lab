@@ -1,0 +1,96 @@
+# Local development stack for the live Eval Lab app (TASK-0060 phase 2).
+#
+#     cd live && docker compose up --build
+#
+# Brings up Postgres 17, applies the migrations, backfills every committed run,
+# and serves the read API on http://localhost:8000/api/v1/status.
+#
+# Deployment to a real server is deliberately out of scope for this phase.
+#
+# The database port is published on 55432, not 5432, so a PostgreSQL already
+# installed on the host does not clash.  Override with EVALLAB_LIVE_DB_PORT.
+name: eval-lab-live
+
+x-image: &image
+  build:
+    context: ..
+    dockerfile: live/docker/Dockerfile
+
+x-repo-mount: &repo-mount
+  # The loader reads experiments/ and paper/data/ from the checkout, exactly as
+  # scripts/export_chart_data.py does.  Read-only: the container never writes to
+  # the repository.
+  - type: bind
+    source: ..
+    target: /app
+    read_only: true
+
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: evallab
+      POSTGRES_PASSWORD: evallab
+      POSTGRES_DB: evallab
+      # Consumed by docker/bootstrap/10-roles.sh on first init.
+      EVALLAB_PUBLIC_RO_PASSWORD: ${EVALLAB_PUBLIC_RO_PASSWORD:-evallab_public_ro}
+      EVALLAB_INGEST_RW_PASSWORD: ${EVALLAB_INGEST_RW_PASSWORD:-evallab_ingest_rw}
+    ports:
+      - "${EVALLAB_LIVE_DB_PORT:-55432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/bootstrap:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U evallab -d evallab"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  # Alembic runs as the owning role: only the owner may create schemas and grant
+  # privileges to the two application roles.
+  migrate:
+    <<: *image
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      EVALLAB_LIVE_DATABASE_URL: postgresql+psycopg://evallab:evallab@db:5432/evallab
+    volumes: *repo-mount
+    command: ["alembic", "-c", "live/alembic.ini", "upgrade", "head"]
+
+  # One-shot backfill of every committed experiment run.  Re-run it after
+  # pulling new runs; the loader is idempotent.
+  loader:
+    <<: *image
+    restart: "no"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      EVALLAB_LIVE_DATABASE_URL: postgresql+psycopg://evallab_ingest_rw:evallab_ingest_rw@db:5432/evallab
+      EVALLAB_LIVE_REPO_ROOT: /app
+    volumes: *repo-mount
+    command: ["python", "-m", "eval_lab_live.loader", "--reset"]
+
+  api:
+    <<: *image
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      # The read-only role.  It has no grant on `private`, so the per-record
+      # tables are unreachable from this process even if a query asked for them.
+      EVALLAB_LIVE_DATABASE_URL: postgresql+psycopg://evallab_public_ro:evallab_public_ro@db:5432/evallab
+      EVALLAB_LIVE_REPO_ROOT: /app
+      EVALLAB_LIVE_BUILD_COMMIT: ${EVALLAB_LIVE_BUILD_COMMIT:-local}
+    ports:
+      - "${EVALLAB_LIVE_API_PORT:-8000}:8000"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request;urllib.request.urlopen('http://localhost:8000/api/v1/health')\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
