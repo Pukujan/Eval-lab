@@ -745,7 +745,13 @@ def draw_ranked(data: dict[str, Any], theme: Theme, layout: Layout) -> plt.Figur
                 fontsize=layout.base * 0.85,
                 color=theme.bad,
             )
-    row_names(ax, rows, theme, layout)
+    row_names(
+        ax,
+        rows,
+        theme,
+        layout,
+        coverage_rows={row["key"] for row in rows if row["coverage"] < 0.99},
+    )
     floor_line(ax, theme, layout, floor, -1.7, floor, len(rows))
     ax.set_xlim(0, 130)
     ax.set_ylim((len(rows) - 1) * row_step(layout) + 0.6, -2.9 * row_step(layout))
