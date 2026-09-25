@@ -16,6 +16,12 @@ blind set, in a human voice, following `writing-guide/GUIDE.md` and
 Build follow-up and calibration into a "Full data and methods" appendix. Redraw
 the headline charts as plain bars.
 
+## Goal
+
+A first-time reader understands the paper in one screen: what the study did,
+what the four findings are, and what to do about them. The charts read as plain
+bars anyone can follow without a legend.
+
 ## Scope
 
 - `paper/paper.md`: short main text (claim title, one-sentence subtitle, real
@@ -53,10 +59,41 @@ the headline charts as plain bars.
 
 ## Checkpoint log
 
-### 2026-09-24 — plain-language rewrite
+### 2026-09-24 — plain-language rewrite, simple charts, previews
 
-Status: in progress.
+Status: in progress; PR/CI/merge pending.
+
+Done:
+
+- `paper/paper.md` rewritten: claim title, one-sentence subtitle, a worked
+  example from blind record `arc-single:Mercury_405804:wrong` (DeepSeek V4 Flash
+  answered 99.8% right but scored 80.3% over all 760 because 149 replies were
+  unreadable), four numbered findings, a one-line "what to do", then "Full data
+  and methods" holding the old sections, generated blocks and tables intact.
+- `scripts/generate_benchmark_figures.py`: Figure 1 is now a stacked
+  right/wrong/skipped bar per judge out of 760 with a labelled 50.3% baseline;
+  Figure 2 is plain accuracy bars with judges tied with the leader greyed;
+  Figure 3 is two bars for the same model under two settings; the ranked chart
+  greys tied judges. All six figures still emit four SVG variants plus
+  `NAME.data.json`; two runs produce identical hashes.
+- `paper/data/` re-exported from the clean tree; `paper/README.md`,
+  `paper/limitations.md`, `paper/reproducibility.md` describe the new charts.
+- `pytest tests`: 189 passed, 1 failed. The failure is
+  `test_repo_contract.py::test_contract_validator_passes` and it is
+  environmental: the workspace-policy check lists the other worktrees
+  registered on this machine (`D:\claude\eval-lab`, `wt-el-live`,
+  `worktrees\TASK-0054-harness-review`), which are outside this worktree. The
+  two task-file findings it reported were real and are fixed here.
+- PNG previews in `D:\claude\agent-runs\el-paper-shots\`: six figures x
+  light wide and light tall, plus `paper-top.light.wide.png` for the new main
+  text.
+
+## Handoff
+
+The Design Bakery mirror (design-bakery #48) consumes `paper/data/` and the
+four SVG variants per figure; the chart data was re-exported for this rewrite.
 
 ## Next atomic action
 
-Rewrite `paper/paper.md`, then the figure script, then regenerate and test.
+Commit in steps, push `task/TASK-0061-plain-paper`, open the PR, wait for CI,
+then squash-merge.

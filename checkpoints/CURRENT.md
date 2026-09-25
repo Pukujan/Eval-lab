@@ -1,5 +1,25 @@
 # Current Repository Checkpoint
 
+## 2026-09-24 — TASK-0061 plain-language paper and simple charts
+
+GitHub issue #74. Owner feedback was that the paper read as AI-written, was too
+verbose, and that its charts made no sense. `paper/paper.md` now opens with a
+claim title, a one-sentence subtitle, and one real question from the 760-item
+blind set (which resource is renewable, answer key `fail`), then four numbered
+findings and one line on what to do. Methods, statistics, per-run tables, the
+Grok Build follow-up and calibration moved intact into a "Full data and methods"
+appendix, with the generated blocks and deep-dive details unchanged. Figure 1 is
+a stacked right/wrong/skipped bar per judge out of 760 with the 50.3%
+always-same-answer line labelled; Figure 2 is plain accuracy bars with judges
+tied with the leader greyed; Figure 3 compares one model under two settings;
+the ranked chart greys tied judges. Six figures still emit four SVG variants
+plus `NAME.data.json`, deterministically, and `paper/data/` was re-exported.
+No new runs and no new numbers; the drift and prose-number tests pass. Full
+`pytest tests` is 189 passed and 1 failed, the failure being the workspace-policy
+test that sees this machine's other registered worktrees.
+
+Next atomic action: merge the TASK-0061 PR after required CI, then close #74.
+
 ## 2026-09-24 — TASK-0058 follow-up: two-layer paper
 
 Issue #67 reopened. `paper/paper.md` now opens with a claim title, a
