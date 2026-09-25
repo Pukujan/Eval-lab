@@ -123,7 +123,7 @@ WIDE = Layout(
     "wide", width=10.0, base=14, title=20, wrap=56, note_wrap=64, label_frac=0.34, row_step=1.0
 )
 TALL = Layout(
-    "tall", width=4.4, base=14, title=18, wrap=26, note_wrap=38, label_frac=0.04, row_step=1.5
+    "tall", width=5.0, base=14, title=18, wrap=30, note_wrap=42, label_frac=0.04, row_step=1.35
 )
 LAYOUTS = (WIDE, TALL)
 
@@ -275,7 +275,7 @@ def row_names(
                 label += f", {row['coverage'] * 100:.0f}% answered"
             ax.text(
                 0,
-                index * row_step(layout) - 0.45,
+                index * row_step(layout) - 0.5,
                 label,
                 fontsize=layout.base,
                 color=theme.ink,
@@ -858,7 +858,7 @@ def draw_grok(data: dict[str, Any], theme: Theme, layout: Layout) -> plt.Figure:
             if tall:
                 ax.text(
                     0,
-                    index - 0.3,
+                    index - 0.42,
                     row["label"],
                     fontsize=layout.base * 0.92,
                     color=theme.muted,
