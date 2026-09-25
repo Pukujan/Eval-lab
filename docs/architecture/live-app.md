@@ -17,14 +17,14 @@ Inputs: Eval-lab @ `0b996a5`, design-bakery @ `1ed2f63`, and the research report
   - Public reads: Vercel rewrite → `evallab-api.design-bakery.com` (Cloudflare Tunnel, no open ports). The design-bakery.com zone is already on Cloudflare (NS `mack`/`raquel.ns.cloudflare.com`, orange-clouded in front of Vercel).
   - Admin: `evallab-admin.design-bakery.com`, behind Cloudflare Access.
   - Ingest: **Tailscale only**. It's never on the tunnel.
-- **gravebuster facts:** it is **not a registered machine**, so its specs and runtimes are unknown. It is on Alex's tailnet (Linux, active, reached through a DERP relay rather than a direct connection). The node is **owned by a different Tailscale account** and shared into the tailnet.
+- **gravebuster facts:** still **not a registered machine** (registration is an Alex-side admin action), but it is reachable from the workstation over the pre-existing Tailscale SSH alias, and its specs are now verified: Linux x86_64, 16 cores, 30 GiB RAM, ~150 GB free disk, Docker 29.6.1 + Compose v5.2.0. The node is **owned by a different Tailscale account** and shared into the tailnet; it already runs the study-os and design-bakery stacks.
 - **Blocking finding:** the 760-record "blind holdout", gold labels included, is committed in the **public** Eval-lab repo. Example: `experiments/EXP-20260921-014-independent-jev-benchmark/records.jsonl`, added 2026-09-21 in `108a80e`. The live app must not make this worse, but it can't undo it. See Decisions.
 
 ## 1. Facts gathered
 | Item | Finding |
 |---|---|
 | Registered machines | `Teresa-Pujan` (Windows, connected) and `Teresas-Air.lan` (offline). **No `gravebuster`.** |
-| gravebuster (via `tailscale status` on Alex's workstation) | Linux, active, DERP-relayed, owned by another Tailscale account and shared in. OS details, CPU/RAM/disk, docker/node/python/cloudflared/tailscale versions: **unknown**, because the machine isn't registered and I didn't SSH in. |
+| gravebuster (verified over Tailscale SSH, 2026-09-25) | Linux x86_64, 16 cores, 30 GiB RAM (~10 GiB available), ~150 GB free disk, Docker 29.6.1 + Compose v5.2.0. Reachable from the workstation through the pre-existing SSH alias (key auth); formal machine registration is still pending on Alex's side. Already hosts the study-os stack (incl. the token-based cloudflared tunnel), the loopback-only `design-bakery-web` container (design-bakery#54) and other stacks (~54 containers); the eval-lab live stack fits comfortably. Credentials/identifiers are deliberately not recorded here. |
 | Teresa-Pujan (current runner host, `D:\claude\eval-lab`) | docker 29.5.3, node (nvm4w), Python 3.12, cloudflared 2026.5.2, Tailscale 1.102.2 |
 | Cloudflare credentials | An existing local config file with the Cloudflare token exists on Alex's workstation. **Not opened or read.** A fresh tunnel token is recommended (§10). |
 | DNS | design-bakery.com NS is on Cloudflare. `www` is proxied by Cloudflare → Vercel (`server: cloudflare`, `x-vercel-id`). So a tunnel hostname can be added to the same zone. |
@@ -214,11 +214,21 @@ gravebuster never clones a repo. It pulls a **pinned image** (`ghcr.io/pukujan/e
 | **Total** | | | **~11–17 d** after Pukujan/design-bakery#49 + Pukujan/Eval-lab#69 |
 
 ## 14. Decisions that need Alex
+
+Status 2026-09-24: decisions 1-4 answered by Alex; decision 5 is still open and
+is needed before phase 4 (backups).
+
 1. **gravebuster ownership/access.** The node belongs to another Tailscale account (shared in). Is it OK to host there? Register it as a machine (or allow Tailscale SSH) so specs, docker and disk can be checked.
+   - **Decided: yes, host on gravebuster with full agent access.** Alex chose "register + SSH": gravebuster gets registered as a machine on the tailnet (or Tailscale SSH is allowed) so specs, Docker and disk can be checked directly. The registration itself is an admin-console action on Alex's side; phases that need host access (4) wait until it is done.
+   - **Verified 2026-09-25:** SSH through the pre-existing alias already works from the workstation, and the read-only capacity checks in §1 passed. Formal registration remains the only outstanding Alex-side action.
 2. **Blind holdout is already public.** All 760 blind records and their gold labels are in the public repo. Options: (a) accept, and describe it as "held out from selection/tuning" rather than secret; (b) create a new private blind set for future runs, kept out of git (e.g. encrypted, or stored only on gravebuster/private storage). Recommended: **(b) for future live leaderboards**, plus a disclosure note.
+   - **Decided: option (b).** The existing public blind set stays as-is but is described as "held out from selection/tuning", with a disclosure note. All future blind sets for the live leaderboard are kept private (out of git; encrypted or gravebuster/private storage only). The DB keeps `private.*` unserved and the denylist/min-slice rules of §11 apply unchanged.
 3. **Hostnames:** `evallab-api.design-bakery.com` and `evallab-admin.design-bakery.com` OK?
+   - **Decided: yes, use the proposed hostnames.**
 4. **Show uncommitted runs live?** Recommended: yes, badged "provisional". Snapshots for papers require committed runs.
+   - **Decided: yes.** Uncommitted runs are shown live badged "provisional" (`visibility=provisional`); paper snapshots still require `all_runs_committed: true`.
 5. **Offsite backup target** (R2 / B2 / other).
+   - **Open.** Needed before phase 4.
 
 ## 15. Risks
 - **Home-hosted availability:** power/network/sleep, and the relayed (not direct) Tailscale path. Mitigated by the Vercel-hosted shell, snapshot fallback, outbox and backups.

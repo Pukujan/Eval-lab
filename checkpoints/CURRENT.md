@@ -1,5 +1,25 @@
 # Current Repository Checkpoint
 
+## 2026-09-25 — TASK-0060 decisions 1-4 settled; phase 2 unblocked
+
+GitHub issue #71. Alex settled the live-app decisions recorded in
+`docs/architecture/live-app.md` §14: host on gravebuster with the node
+registered (or Tailscale SSH allowed) for direct access; option (b) for blind
+data — the existing public blind set stays with a disclosure note and all
+future blind sets stay private, out of git; hostnames
+`evallab-api.design-bakery.com` / `evallab-admin.design-bakery.com` approved;
+uncommitted runs are shown live badged "provisional" while paper snapshots
+still require committed runs. Decision 5 (offsite backup target) stays open
+and is needed before phase 4. Same session: design-bakery PR #54
+(self-host deploy files for gravebuster, container verified on loopback, no
+DNS/tunnel/Vercel change) merged at `24dbcab`; the cutover remains a separate
+authorized step in design-bakery#52. The #69 chart-data schema is merged, so
+phase 2 (`live/` backend: models, Alembic, read API, backfill, tests) is
+unblocked.
+
+Next atomic action: open the phase-2 `live/` backend issue and start its
+implementation; ask Alex for decision 5 before phase 4.
+
 ## 2026-09-24 — TASK-0058 follow-up: two-layer paper
 
 Issue #67 reopened. `paper/paper.md` now opens with a claim title, a
