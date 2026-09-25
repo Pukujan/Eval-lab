@@ -25,24 +25,25 @@ reporting hide?
 
 `paper.md` has two layers.
 
-- **Quick read (about two minutes):** a claim title, a one-sentence
-  subtitle (`<p class="paper-subtitle">`), a plain-language **short version**
-  (3–5 bullets, no jargon, at most two numbers each) and one summary chart.
-  A reader can stop there.
-- **Full read:** The problem → Setup → What happened → What we found → What it
-  means → Limitations → Future work. Each finding has a question as its
-  heading, then a one-line bold takeaway, a short paragraph and at most one
-  chart. Method nuances, per-experiment tables and statistics sit in
-  `<details class="deep-dive">` blocks whose summary starts with "Details for
-  deep divers". Full tables and paired tests are in collapsed appendices.
+- **Quick read (about one screen):** a claim title, a one-sentence subtitle
+  (`<p class="paper-subtitle">`), what we did told around one real question from
+  the blind set, four numbered findings with two charts, and one line on what to
+  do. No internal IDs, statistics or file paths. A reader can stop there.
+- **Full data and methods:** everything behind those numbers, in the same page:
+  how we scored, what each run lost, the leaders, what the skipped questions
+  hide, local models, request settings, every judge in full, paired tests, the
+  Grok Build follow-up, calibration, limitations, future work and
+  reproducibility. Method nuances sit in `<details class="deep-dive">` blocks
+  whose summary starts with "Details for deep divers"; the rest is in collapsed
+  `<details>` tables.
 
-Jargon is defined on first use. Body tables are small (≤ ~8 rows).
+Jargon is defined on first use, and only in the appendix. Body tables are small
+(≤ ~8 rows).
 
 Markdown conventions (render on GitHub and are mirrored on the Design Bakery
 site):
 
-- Callouts use GitHub alert syntax: `> [!IMPORTANT]` for the short-version box,
-  `> [!NOTE]` for side notes.
+- Callouts use GitHub alert syntax: `> [!NOTE]` for side notes.
 - Every figure has four SVG variants from one script run:
   `NAME.{light,dark}.{wide,tall}.svg` (wide for desktop, tall for screens
   under ~700px), plus `NAME.data.json` with the plotted numbers so a site can
@@ -51,12 +52,15 @@ site):
   dark/tall (`prefers-color-scheme`, `max-width: 700px`) and an
   `<img src="figures/benchmark/NAME.light.wide.svg">` fallback, followed by a
   `<figcaption>` whose first sentence (after the figure label) is the
-  takeaway. Chart titles state the
-  finding.
-- Figure A1 (`judges_ranked`) uses shared ranks: a judge shares the rank of the
-  top judge of its group when the Holm-corrected McNemar p-value over all 760
-  questions is at least 0.05 (`shared_ranks_all_record` in EXP-029
-  `results.json`).
+  takeaway. Chart titles state the finding.
+- Charts are plain bars with direct labels, a takeaway title and a source line:
+  the headline chart is a stacked bar of right / wrong / skipped per grader out
+  of all 760 questions, the accuracy charts are plain bars, and the tied judges
+  are greyed. No dumbbell, whisker or error-bar charts. See
+  `writing-guide/GUIDE.md` section 4 for the rules these follow.
+- Figure A1 (`judges_ranked`) greys out judges tied with the leader: a judge
+  shares rank 1 when the Holm-corrected McNemar p-value over all 760 questions
+  is at least 0.05 (`shared_ranks_all_record` in EXP-029 `results.json`).
 - Appendix tables sit inside `<details><summary>…</summary>` with blank lines
   around the generated block so Markdown tables render.
 
