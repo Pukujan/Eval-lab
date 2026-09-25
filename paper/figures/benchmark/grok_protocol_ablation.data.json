@@ -32,6 +32,7 @@
     }
   ],
   "source": "EXP-025",
+  "source_note": "Source: Eval Lab request-format test on 64 public questions. Data: github.com/Pukujan/Eval-lab/tree/main/paper/data",
   "subtitle": "EXP-025 public diagnostic (64 questions)",
   "title": "No request format fixed Grok Build's failure"
 }

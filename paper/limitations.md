@@ -1,7 +1,7 @@
 # Limitations of the canonical paper
 
-This file mirrors Section 6 of [`paper.md`](paper.md). If the two differ,
-`paper.md` wins.
+This file mirrors the Limitations list under "Full data and methods" in
+[`paper.md`](paper.md). If the two differ, `paper.md` wins.
 
 - **One question pool.** It is objective and typed, and dominated by MMLU and
   GSM8K. There are only 108 two-answer questions and no ties. Results may not

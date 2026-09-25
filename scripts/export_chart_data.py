@@ -57,7 +57,7 @@ INDEX_PATH = OUT_DIR / "index.json"
 ARM_METADATA = OUT_DIR / "sources" / "arm-metadata.yaml"
 ANALYSIS = Path("experiments/EXP-20260924-029-consolidated-judge-analysis/results.json")
 FIGURE_MANIFEST = Path("paper/figures/benchmark/manifest.json")
-HEADLINE_FIGURE = "finding_accuracy_range"  # the paper's first body chart defines "headline"
+HEADLINE_FIGURE = "finding_accuracy_range"  # the paper's accuracy bar chart selects the body judges
 SCHEMA_FILES = (
     Path("schemas/research-chart-data.v1.schema.json"),
     Path("schemas/chart-provenance.shapes.ttl"),

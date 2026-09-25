@@ -1,66 +1,122 @@
-# Accuracy is not enough: AI judges should also be scored on the questions they skip
+# Some AI graders skip up to 4 in 10 questions, and their scores don't show it
 
-<p class="paper-subtitle"><em>We gave 25 AI judges the same 760 questions with known answers and found that one accuracy number hides skipped questions and request settings that change the score.</em></p>
+<p class="paper-subtitle"><em>We gave 25 AI graders the same 760 questions, where we already knew the right answer, and counted every skipped question as a wrong grade.</em></p>
 
-> [!IMPORTANT]
-> **The short version**
->
-> - An **AI judge** is an AI model used to grade answers. The best ones we tested got about 99% of our questions right.
-> - Some judges looked just as good but quietly skipped up to 4 in 10 questions. Counting a skipped question as a miss reshuffles the ranking.
-> - The same model scored 84.5% or 97.4% on the same questions, depending only on how it was asked.
-> - Most small models that run on a laptop did no better than always giving the same answer.
-> - When you choose a judge, ask how many questions it answered and how it was set up, not only for its score.
+## What we did
+
+One of the 760 questions is this one. "Which resource is renewable?" with the
+choices oil, coal, natural gas and water. We show a grader the question and a
+proposed answer, "A) oil", and ask it to say pass or fail. Our answer key says
+fail, so "fail" is the right grade here and "pass" is the wrong one. Then we
+count how often each grader agrees with the key.
+
+DeepSeek V4 Flash agreed 99.8% of the time when it answered. Over all 760
+questions it got 80.3%, because 149 of its replies came back in a form our
+program could not read. That gap is what this paper is about.
+
+Every question has one right answer, which is the only way to grade the graders
+without a human in the loop. So the results say how these 25 graders did on
+this set of questions. They do not say which AI company is best in general.
 
 <figure data-figure="finding_skipped_questions">
   <picture>
     <source media="(prefers-color-scheme: dark) and (max-width: 700px)" srcset="figures/benchmark/finding_skipped_questions.dark.tall.svg" />
     <source media="(max-width: 700px)" srcset="figures/benchmark/finding_skipped_questions.light.tall.svg" />
     <source media="(prefers-color-scheme: dark)" srcset="figures/benchmark/finding_skipped_questions.dark.wide.svg" />
-    <img src="figures/benchmark/finding_skipped_questions.light.wide.svg" alt="Dumbbell chart comparing accuracy when answered with accuracy over all questions" />
+    <img src="figures/benchmark/finding_skipped_questions.light.wide.svg" alt="Stacked bar chart of 12 AI graders, each bar showing right, wrong and skipped questions out of 760" />
   </picture>
-  <figcaption>Figure 1. A judge's score depends on whether skipped questions count. Hollow dot: share right among the questions the judge answered. Filled dot: share right out of all 760, with skipped questions counted as misses.</figcaption>
+  <figcaption>Figure 1. Every bar is all 760 questions for one grader: green is a right grade, red is a wrong grade and grey is a question the grader never answered. We counted a skipped question as a wrong grade, because in real use a skipped grade is still a question someone has to check by hand. DeepSeek V4 Flash was right 99.8% of the time when it answered, and still ended up below eight graders that answered everything.</figcaption>
 </figure>
 
 **Status:** working paper; pending owner review<br />
-**Evidence:** EXP-013 to EXP-027 prediction files, consolidated by the offline analysis EXP-029<br />
 **Repository:** [Eval Lab](https://github.com/Pukujan/Eval-lab/tree/main)
 
-## 1. The problem
+## What we found
 
-Teams increasingly use one AI model to grade another model's work. They pick
-that judge by looking at a single accuracy number.
+1. The best graders are close to perfect, and the top four are too close to
+   separate. Qwen3.8 Flash got 99.2% of the 760 questions right, Qwen 3.8 Max
+   99.1%, Kimi K2.7 Code 98.3% and GLM 5.3 Flash 97.4%. All four answered nearly
+   every question, and the gaps between them are small enough that we cannot
+   call a winner on 760 questions.
 
-That number is usually computed only over the questions the judge answered. A
-judge can be refused by the provider for sending too many requests (a *rate
-limit*), return text nobody can read, or decline to answer, and none of that
-shows up in its accuracy.
+2. Counting skipped questions moves graders a long way. DeepSeek V4 Flash was
+   first on the questions it answered and thirteenth over all 760. GLM 5.2 fell
+   from 99.2% to 94.9% in the same way. One Qwen3.8 Flash run gave an answer to
+   58.2% of the questions and was right 99.1% of the time on those, which put it
+   near the top of the answered-only list while the provider refused 317 of its
+   requests.
+
+3. How you set a model up changes its score as much as which model you pick.
+   Qwen3.8 Flash scored 84.5% in a run where we capped each reply at 128 tokens
+   (word pieces) and switched its thinking off, and 97.4% in a run with the
+   provider's own settings, on the same 760 questions. Answers came back about
+   nine times slower in the second run.
+
+4. Small models that run on a laptop were no better than a constant guess. A
+   grader that always gives the same answer scores 50.3% here. Kev-4B, the best
+   local model, got 64.3%. SemIf 4B got 54.7%, Kev-0.8B 50.3%, Laya 421M 47.8%
+   and Qwen3-4B 44.6%. Grok 4.6 Build, an online grader, got 43.3%, and on the
+   108 "which answer is better" questions it agreed with the key just once.
+
+<figure data-figure="finding_accuracy_range">
+  <picture>
+    <source media="(prefers-color-scheme: dark) and (max-width: 700px)" srcset="figures/benchmark/finding_accuracy_range.dark.tall.svg" />
+    <source media="(max-width: 700px)" srcset="figures/benchmark/finding_accuracy_range.light.tall.svg" />
+    <source media="(prefers-color-scheme: dark)" srcset="figures/benchmark/finding_accuracy_range.dark.wide.svg" />
+    <img src="figures/benchmark/finding_accuracy_range.light.wide.svg" alt="Bar chart of right answers out of all 760 questions for nine AI graders" />
+  </picture>
+  <figcaption>Figure 2. Share of all 760 questions each grader got right. The four grey bars are too close to the leader for us to call a winner, because gaps this small are within what luck could produce on 760 questions. The line is what a grader scores by always giving the same answer.</figcaption>
+</figure>
+
+<figure data-figure="finding_request_settings">
+  <picture>
+    <source media="(prefers-color-scheme: dark) and (max-width: 700px)" srcset="figures/benchmark/finding_request_settings.dark.tall.svg" />
+    <source media="(max-width: 700px)" srcset="figures/benchmark/finding_request_settings.light.tall.svg" />
+    <source media="(prefers-color-scheme: dark)" srcset="figures/benchmark/finding_request_settings.dark.wide.svg" />
+    <img src="figures/benchmark/finding_request_settings.light.wide.svg" alt="Two bars comparing the same model's score with short capped replies and with the provider's own settings" />
+  </picture>
+  <figcaption>Figure 3. The same model on the same 760 questions, in two runs that differed only in the settings we sent. The second run's answers took about nine times longer to arrive, which suggests the model was reasoning before it answered.</figcaption>
+</figure>
+
+## What to do
+
+If you pick an AI grader, ask two things besides its score: how many questions
+did it actually answer, and what settings was it run with?
+
+## Full data and methods
+
+The rest of this page is the detail behind those numbers: how the questions were
+built, how each score is defined, the statistics, and the full tables for every
+run. Every table and chart here is generated from committed results files, and a
+test fails if this paper drifts from them.
+
+### How we scored
+
+Teams pick an AI grader by looking at a single accuracy number, and that number
+is usually computed only over the questions the grader answered. A grader can be
+refused by the provider for sending too many requests (a *rate limit*), return
+text nobody can read, or decline to answer, and none of that shows up in its
+accuracy.
 
 > **Research question.** When independent judges, from small local models to
 > frontier APIs, receive identical typed decisions with objective gold labels,
 > how do their accuracy and coverage differ, and what does accuracy-only
 > reporting hide?
 
-This is a measurement study of questions with one right answer. It does not
-rank providers in general, and it does not cover open-ended or subjective
-grading.
-
-## 2. Setup
-
-Every judge saw the same 760 questions, kept hidden from all tuning (the
-*blind set*). Most ask whether a proposed answer is correct (`pass` or
-`fail`). The rest show two answers and ask which is better (`A` or `B`). The
-right answer always comes from an answer key or an automatic checker, never
-from a model.
+Every grader saw the same 760 questions, kept hidden from all tuning (the
+*blind set*). Most ask whether a proposed answer is correct (`pass` or `fail`).
+The rest show two answers and ask which is better (`A` or `B`). The right answer
+always comes from an answer key or an automatic checker, never from a model.
 
 A "judge" here means one recorded run of one model over all 760 questions.
-*API* judges are models called over the internet from a provider; *local*
-judges ran on the author's own computer.
+*API* judges are models called over the internet from a provider; *local* judges
+ran on the author's own computer.
 
 We track two numbers for each judge. **Coverage** is the share of the 760
-questions it answered with an allowed label. **Accuracy over all 760** counts
-a skipped question as wrong, as it would be in a pipeline that needs a verdict
-for every item. Most leaderboards instead report **accuracy when it
-answered**, which ignores skipped questions.
+questions it answered with an allowed label. **Accuracy over all 760** counts a
+skipped question as wrong, as it would be in a pipeline that needs a verdict for
+every item. Most leaderboards instead report **accuracy when it answered**,
+which ignores skipped questions.
 
 <details class="deep-dive">
 <summary>Details for deep divers: question sources, harnesses and statistics</summary>
@@ -94,13 +150,12 @@ and a test fails if the paper drifts from their output.
 
 </details>
 
-## 3. What happened
+### What each run lost
 
 Most API judges ran cleanly, but several runs lost questions along the way:
-rate limits, answers our program could not read, and local models that
-declined to answer. We report these as results, not as footnotes. One model,
-Grok Build, answered almost everything but was mostly wrong, and changing how
-we asked did not help.
+rate limits, answers our program could not read, and local models that declined
+to answer. One model, Grok Build, answered almost everything but was mostly
+wrong, and changing how we asked did not help.
 
 <details class="deep-dive">
 <summary>Details for deep divers: what each run lost, and the Grok Build follow-up</summary>
@@ -123,30 +178,7 @@ in our text decoding on Windows, but no format improved the score
 
 </details>
 
-## 4. What we found
-
-### Finding 1: How good are the best judges?
-
-**The best judges are nearly perfect, and four of them are statistically tied
-for first place.**
-
-Qwen3.8 Flash and Qwen 3.8 Max answered every question and got 99.2% and
-99.1% right. Kimi K2.7 Code and GLM 5.3 Flash were close enough that the
-difference could be chance. Jev also answered everything but got 89.9% right,
-a clear step down.
-
-<figure data-figure="finding_accuracy_range">
-  <picture>
-    <source media="(prefers-color-scheme: dark) and (max-width: 700px)" srcset="figures/benchmark/finding_accuracy_range.dark.tall.svg" />
-    <source media="(max-width: 700px)" srcset="figures/benchmark/finding_accuracy_range.light.tall.svg" />
-    <source media="(prefers-color-scheme: dark)" srcset="figures/benchmark/finding_accuracy_range.dark.wide.svg" />
-    <img src="figures/benchmark/finding_accuracy_range.light.wide.svg" alt="Bar chart of accuracy over all 760 questions for selected judges" />
-  </picture>
-  <figcaption>Figure 2. A few judges come close to perfect, and two score below a constant guess. Share of all 760 questions each judge got right; skipped questions count as wrong. The dashed line is the always-same-answer baseline.</figcaption>
-</figure>
-
-<details class="deep-dive">
-<summary>Details for deep divers: ties, shared ranks and the leaders table</summary>
+### The leaders
 
 On only seven questions was one of the two Qwen judges right and the other
 wrong, so their difference is not meaningful. Kimi K2.7 Code and GLM 5.3
@@ -166,19 +198,7 @@ over all 760 questions), so four judges share first place in the full ranking
 | Grok 4.6 Build | API | 99.6% | 43.3% |
 <!-- /generated -->
 
-</details>
-
-### Finding 2: What does one accuracy number hide?
-
-**A judge can look best on the questions it answered and still miss a fifth
-of the work.**
-
-DeepSeek V4 Flash had the highest accuracy of any judge on the questions it
-answered, 99.8%. But it answered only 80.4% of them, so it falls from first
-place to thirteenth once skipped questions count (Figure 1).
-
-<details class="deep-dive">
-<summary>Details for deep divers: rate limits, abstentions and the full comparison</summary>
+### What the skipped questions hide
 
 The same pattern appears with rate limits and abstentions. A rate-limited
 Qwen run looked excellent on paper while answering barely more than half the
@@ -195,26 +215,31 @@ abstentions count they fall below the always-same-answer baseline.
 | Verdict pre-v1.4 (local) | 69.2% | 50.4% | 34.9% | 234 abstained |
 <!-- /generated -->
 
-</details>
+### Local models
 
-### Finding 3: Does it matter how you ask?
+Kev-4B was strongest on the two-answer questions (93.5%) and only modestly
+above the baseline on the rest (59.5%). SemIf and Kev-0.8B were not
+meaningfully different from the baseline, and the rest scored below it. Grok
+Build's best run got 43.6% right, significantly below the baseline.
 
-**How you ask matters as much as which model you ask.**
+<!-- generated:body_local -->
+| Model | Answered | Correct, all 760 |
+|---|---:|---:|
+| Kev-4B (best local model) | 100.0% | 64.3% |
+| SemIf 4B | 100.0% | 54.7% |
+| Kev-0.8B | 100.0% | 50.3% |
+| Laya 421M | 98.4% | 47.8% |
+| Qwen3-4B | 100.0% | 44.6% |
+| Verdict 1.4 (local) | 74.9% | 38.6% |
+| Verdict pre-v1.4 (local) | 69.2% | 34.9% |
+| Always-same-answer baseline | 100.0% | 50.3% |
+<!-- /generated -->
+
+### Request settings
 
 Qwen3.8 Flash scored 84.5% in its first run and 97.4% in a later run on the
 exact same questions, with the same model name and request format. Only the
-request settings differed. That gap is larger than the gap between Qwen and
-Jev.
-
-<figure data-figure="finding_request_settings">
-  <picture>
-    <source media="(prefers-color-scheme: dark) and (max-width: 700px)" srcset="figures/benchmark/finding_request_settings.dark.tall.svg" />
-    <source media="(max-width: 700px)" srcset="figures/benchmark/finding_request_settings.light.tall.svg" />
-    <source media="(prefers-color-scheme: dark)" srcset="figures/benchmark/finding_request_settings.dark.wide.svg" />
-    <img src="figures/benchmark/finding_request_settings.light.wide.svg" alt="Bar chart of Qwen3.8 Flash accuracy under different request settings" />
-  </picture>
-  <figcaption>Figure 3. Request settings alone moved one model by more than the gap between models. Qwen3.8 Flash on the same questions under three request settings, overall and on GSM8K math.</figcaption>
-</figure>
+request settings differed.
 
 <details class="deep-dive">
 <summary>Details for deep divers: which settings changed, and why it matters</summary>
@@ -237,92 +262,47 @@ record token counts. The question files are byte-identical across runs.
 
 </details>
 
-### Finding 4: Can small local models do the job?
+### Qwen request settings in detail
 
-**Most small models that run on a laptop were no better than a constant
-guess.**
+- **EXP-013** used `run_qwen_streaming_retry._prompt`, which sets
+  `max_tokens=128` and `chat_template_kwargs={"enable_thinking": false}`.
+  EXP-014's Qwen arm is the same prediction file, not a separate run.
+- **EXP-015, EXP-016 and EXP-022** used
+  `run_grok_luna_qwen_bakeoff._qwen_payload`: the same system message and
+  payload at temperature 0, with no token limit and no thinking flag. Git
+  history shows neither field was ever present in that runner.
+- **EXP-024** used InferHub (`ali/qwen3.8-flash`) with a user-only prompt
+  (`run_inferhub_arm.build_prompt`) and `max_tokens=1024`.
 
-A judge that always gives the same answer (`fail`, or `B` for two-answer
-questions) is right 50.3% of the time here; we call this the
-*always-same-answer baseline*. Kev-4B was the only local model clearly above
-it, at 64.3%. Grok Build, an API judge, landed with this group.
+<details>
+<summary>All Qwen3.8 Flash runs (5 rows)</summary>
 
-<details class="deep-dive">
-<summary>Details for deep divers: local models by question type, and Grok Build</summary>
-
-Kev-4B was strongest on the two-answer questions (93.5%) and only modestly
-above the baseline on the rest (59.5%). SemIf and Kev-0.8B were not
-meaningfully different from the baseline, and the rest scored below it. Grok
-Build's best run got 43.6% right, significantly below the baseline.
-
-<!-- generated:body_local -->
-| Model | Answered | Correct, all 760 |
-|---|---:|---:|
-| Kev-4B (best local model) | 100.0% | 64.3% |
-| SemIf 4B | 100.0% | 54.7% |
-| Kev-0.8B | 100.0% | 50.3% |
-| Laya 421M | 98.4% | 47.8% |
-| Qwen3-4B | 100.0% | 44.6% |
-| Verdict 1.4 (local) | 74.9% | 38.6% |
-| Verdict pre-v1.4 (local) | 69.2% | 34.9% |
-| Always-same-answer baseline | 100.0% | 50.3% |
+<!-- generated:qwen -->
+| Run | Request configuration | Median latency (resolved) | Coverage | Conditional accuracy | GSM8K accuracy |
+|---|---|---:|---:|---:|---:|
+| Qwen3.8 Flash, thinking off (EXP-013/014) | run_qwen_streaming_retry._prompt: max_tokens=128, enable_thinking=False | 0.47 s | 99.21% | 84.48% | 65.5% (131/200) |
+| Qwen3.8 Flash, one pass (EXP-015) | run_grok_luna_qwen_bakeoff._qwen_payload: no max_tokens, no thinking flag | 4.22 s | 58.16% | 99.10% | 98.5% (196/199) |
+| Qwen3.8 Flash, EXP-015 + EXP-016 retry (declared merge) | as EXP-015; rate-limited records filled from the EXP-016 retry | 4.16 s | 99.87% | 97.50% | 98.5% (196/199) |
+| Qwen3.8 Flash (EXP-022) | run_grok_luna_qwen_bakeoff._qwen_payload: no max_tokens, no thinking flag | 4.34 s | 99.87% | 97.36% | 99.5% (199/200) |
+| Qwen3.8 Flash (EXP-024) | run_inferhub_arm.build_prompt: user-only prompt, max_tokens=1024 | 5.52 s | 100.00% | 99.21% | 99.0% (198/200) |
 <!-- /generated -->
 
 </details>
 
-## 5. What it means
-
-On objective questions with known answers, judges really do differ, from
-near-perfect to worse than a constant guess. But the ranking depends on what
-you count. Three reporting rules follow:
-
-1. **Always report coverage next to accuracy**, with a breakdown of why
-   questions were lost: rate limits, errors, unreadable answers, abstentions.
-2. **Report accuracy over all questions**, or state exactly what happens to a
-   skipped one (retried, sent to another judge, or counted as a miss).
-3. **Report the request settings**: token caps, thinking flags, prompt and
-   route. Without them a judge score cannot be reproduced.
-
-## 6. Limitations
-
-- **One question pool.** It is objective and typed, and dominated by MMLU and
-  GSM8K. There are only 108 two-answer questions and no ties. Results may not
-  carry over to open-ended or subjective grading.
-- **Runs, not models.** Each judge is usually a single run on a single date,
-  through a specific route. Only Jev (two runs), Grok 4.6 (three) and Qwen
-  Flash (four setups) were repeated. Providers can change behaviour over time.
-- **Local models used a different harness** and different length limits.
-  Two 9B models were not run.
-- **The Qwen explanation is inferred.** It rests on the recorded settings and
-  answer times; token counts were not recorded. The InferHub run also changed
-  the prompt and route, so its gain cannot be pinned on one factor.
-- **Unreadable answers** were recorded, but the raw text was not kept, so we
-  cannot tell whether the model, its length, or our parser was at fault.
-- **Many comparisons.** Correcting for 325 pairwise tests is conservative.
-- **Exclusions.** Luna is excluded by project policy.
-
-## 7. Future work
-
-These topics appeared in earlier drafts and are kept out of this paper
-because they answer different questions or lack finished evidence. Earlier
-drafts are in [`paper/archive/`](https://github.com/Pukujan/Eval-lab/tree/main/paper/archive/).
-
-- **Routing and selective escalation** (EXP-009 to EXP-012): in the completed
-  replay, every routing policy kept almost nothing local. No positive evidence
-  yet.
-- **Domain pilots:** LegalBench Hearsay (EXP-028); GLEIF (EXP-026,
-  preregistered, not run); SEC EDGAR/XBRL, CourtListener and HumanEval
-  (EXP-020, planning only).
-- **Provider selection and price** (EXP-023/024): an operational question.
-- **Training a small judge:** TF-IDF student (EXP-008) and teacher-assisted
-  hard negatives (EXP-004/007).
-- **Confidence calibration** for local models and a confidence interface for
-  API judges.
-
-## Appendix A. Every judge, in full
+### Every judge, in full
 
 All 25 judges and the reference, ordered by accuracy over all 760 questions.
 Intervals are 95% Wilson intervals.
+
+<figure data-figure="judges_ranked">
+  <picture>
+    <source media="(prefers-color-scheme: dark) and (max-width: 700px)" srcset="figures/benchmark/judges_ranked.dark.tall.svg" />
+    <source media="(max-width: 700px)" srcset="figures/benchmark/judges_ranked.light.tall.svg" />
+    <source media="(prefers-color-scheme: dark)" srcset="figures/benchmark/judges_ranked.dark.wide.svg" />
+    <img src="figures/benchmark/judges_ranked.light.wide.svg" alt="Bar chart of all 25 judges by right answers out of all 760 questions, with tied judges in grey" />
+  </picture>
+  <figcaption>Figure A1. Every judge, sorted by right answers out of all 760 questions. Grey bars are too close to the top judge to call a winner; the line is what a grader scores by always giving the same answer.</figcaption>
+</figure>
 
 <details>
 <summary>Full results table (26 rows)</summary>
@@ -462,17 +442,7 @@ It is the same 760-question blind pool, split by source.
 
 </details>
 
-<figure data-figure="judges_ranked">
-  <picture>
-    <source media="(prefers-color-scheme: dark) and (max-width: 700px)" srcset="figures/benchmark/judges_ranked.dark.tall.svg" />
-    <source media="(max-width: 700px)" srcset="figures/benchmark/judges_ranked.light.tall.svg" />
-    <source media="(prefers-color-scheme: dark)" srcset="figures/benchmark/judges_ranked.dark.wide.svg" />
-    <img src="figures/benchmark/judges_ranked.light.wide.svg" alt="Ranked chart of all 25 judges by accuracy over all 760 questions, with 95% intervals and share answered" />
-  </picture>
-  <figcaption>Figure A1. Four judges share first place, and eight score below the always-same-answer baseline. Judges share a rank when a Holm-corrected McNemar test over all 760 questions cannot separate them from the top judge of their group; red percentages mark judges that answered fewer than 99% of questions.</figcaption>
-</figure>
-
-## Appendix B. Paired tests
+### Paired tests
 
 Exact two-sided McNemar tests on (a) questions both judges answered and (b)
 all 760 questions with skipped counted as wrong. Holm correction is applied
@@ -504,34 +474,7 @@ counts questions where exactly one judge was right.
 
 </details>
 
-## Appendix C. Qwen request settings in detail
-
-- **EXP-013** used `run_qwen_streaming_retry._prompt`, which sets
-  `max_tokens=128` and `chat_template_kwargs={"enable_thinking": false}`.
-  EXP-014's Qwen arm is the same prediction file, not a separate run.
-- **EXP-015, EXP-016 and EXP-022** used
-  `run_grok_luna_qwen_bakeoff._qwen_payload`: the same system message and
-  payload at temperature 0, with no token limit and no thinking flag. Git
-  history shows neither field was ever present in that runner.
-- **EXP-024** used InferHub (`ali/qwen3.8-flash`) with a user-only prompt
-  (`run_inferhub_arm.build_prompt`) and `max_tokens=1024`.
-
-<details>
-<summary>All Qwen3.8 Flash runs (5 rows)</summary>
-
-<!-- generated:qwen -->
-| Run | Request configuration | Median latency (resolved) | Coverage | Conditional accuracy | GSM8K accuracy |
-|---|---|---:|---:|---:|---:|
-| Qwen3.8 Flash, thinking off (EXP-013/014) | run_qwen_streaming_retry._prompt: max_tokens=128, enable_thinking=False | 0.47 s | 99.21% | 84.48% | 65.5% (131/200) |
-| Qwen3.8 Flash, one pass (EXP-015) | run_grok_luna_qwen_bakeoff._qwen_payload: no max_tokens, no thinking flag | 4.22 s | 58.16% | 99.10% | 98.5% (196/199) |
-| Qwen3.8 Flash, EXP-015 + EXP-016 retry (declared merge) | as EXP-015; rate-limited records filled from the EXP-016 retry | 4.16 s | 99.87% | 97.50% | 98.5% (196/199) |
-| Qwen3.8 Flash (EXP-022) | run_grok_luna_qwen_bakeoff._qwen_payload: no max_tokens, no thinking flag | 4.34 s | 99.87% | 97.36% | 99.5% (199/200) |
-| Qwen3.8 Flash (EXP-024) | run_inferhub_arm.build_prompt: user-only prompt, max_tokens=1024 | 5.52 s | 100.00% | 99.21% | 99.0% (198/200) |
-<!-- /generated -->
-
-</details>
-
-## Appendix D. Grok Build protocol ablation
+### Grok Build protocol ablation
 
 EXP-025 compared four request formats on a 64-question public diagnostic. To
 replace the baseline, a format had to keep at least 95% coverage and improve
@@ -559,7 +502,7 @@ the baseline matched the earlier runs (Appendix B).
 
 Source: [EXP-025](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260922-025-grok-protocol-ablation/).
 
-## Appendix E. Calibration (outside the research question)
+### Calibration (outside the research question)
 
 No API judge exposed usable probabilities. For the local Qwen3-4B scorer
 (EXP-017/019), temperature scaling was fit on public questions only and
@@ -579,7 +522,43 @@ fell from 0.7037 to 0.5160, NLL from 1.0767 to 0.7430 and ECE from 0.3411 to
 
 Source: [EXP-019](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260921-019-calibrated-judge-study/).
 
-## Appendix F. Reproducibility
+### Limitations
+
+- **One question pool.** It is objective and typed, and dominated by MMLU and
+  GSM8K. There are only 108 two-answer questions and no ties. Results may not
+  carry over to open-ended or subjective grading.
+- **Runs, not models.** Each judge is usually a single run on a single date,
+  through a specific route. Only Jev (two runs), Grok 4.6 (three) and Qwen
+  Flash (four setups) were repeated. Providers can change behaviour over time.
+- **Local models used a different harness** and different length limits.
+  Two 9B models were not run.
+- **The Qwen explanation is inferred.** It rests on the recorded settings and
+  answer times; token counts were not recorded. The InferHub run also changed
+  the prompt and route, so its gain cannot be pinned on one factor.
+- **Unreadable answers** were recorded, but the raw text was not kept, so we
+  cannot tell whether the model, its length, or our parser was at fault.
+- **Many comparisons.** Correcting for 325 pairwise tests is conservative.
+- **Exclusions.** Luna is excluded by project policy.
+
+### Future work
+
+These topics appeared in earlier drafts and are kept out of this paper
+because they answer different questions or lack finished evidence. Earlier
+drafts are in [`paper/archive/`](https://github.com/Pukujan/Eval-lab/tree/main/paper/archive/).
+
+- **Routing and selective escalation** (EXP-009 to EXP-012): in the completed
+  replay, every routing policy kept almost nothing local. No positive evidence
+  yet.
+- **Domain pilots:** LegalBench Hearsay (EXP-028); GLEIF (EXP-026,
+  preregistered, not run); SEC EDGAR/XBRL, CourtListener and HumanEval
+  (EXP-020, planning only).
+- **Provider selection and price** (EXP-023/024): an operational question.
+- **Training a small judge:** TF-IDF student (EXP-008) and teacher-assisted
+  hard negatives (EXP-004/007).
+- **Confidence calibration** for local models and a confidence interface for
+  API judges.
+
+### Reproducibility
 
 Everything regenerates offline, with no provider credentials:
 
@@ -595,7 +574,7 @@ Every source prediction file is listed with an LF-normalized SHA-256 in
 
 Chart data for the interactive versions of these figures is exported by
 `scripts/export_chart_data.py` to
-[`paper/data/`](https://github.com/Pukujan/Eval-lab/tree/main/paper/data/). It has
+[`paper/data/`](https://github.com/Pukujan/Eval-lab/tree/main/paper/data). It has
 one row per judge run and no individual questions or answer keys. Each file
 records the exporter's commit and the SHA-256 of every input, as W3C PROV-O terms
 in JSON-LD. CI checks each file against a JSON Schema and SHACL shapes, and
