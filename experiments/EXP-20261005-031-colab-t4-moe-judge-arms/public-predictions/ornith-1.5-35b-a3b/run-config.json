@@ -1,0 +1,12 @@
+{
+  "arm_id": "ornith-1.5-35b-a3b",
+  "backend": "CUDA 12.8 prebuilt Linux release",
+  "grammar": "GBNF, exactly the legal labels",
+  "max_tokens": 8,
+  "model_id": "bartowski/Ornith-1.5-35B-A3B-GGUF",
+  "model_sha256": "14963c6830ae8287ad42a53c0fd87ca9fc67a8de8da1d18e3a076a348e96a32f",
+  "one_pass_per_record": true,
+  "runner": "scripts/run_colab_moe_judge.py",
+  "runner_revision": "llama.cpp b11399 (2ca15f540)",
+  "temperature": 0.0
+}

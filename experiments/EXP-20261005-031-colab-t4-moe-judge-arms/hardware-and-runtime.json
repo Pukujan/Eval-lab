@@ -1,0 +1,37 @@
+{
+  "captured_at": "2026-10-05",
+  "host": {
+    "provider": "Google Colab",
+    "tier": "free",
+    "runtime": "Ubuntu 24.04.4 LTS",
+    "kernel": "Linux 6.6.122+",
+    "vcpus": 2,
+    "memory_kib": 13286936,
+    "accelerator": "Tesla T4",
+    "accelerator_memory_mib": 15360,
+    "driver_version": "580.82.07",
+    "disk_free_gib_after_setup": 54
+  },
+  "inference_runtime": {
+    "family": "llama.cpp",
+    "version": "0.5.0-dev",
+    "build": "11399",
+    "commit": "2ca15f540",
+    "distribution": "prebuilt Linux CUDA 12.8 x64 release",
+    "server": "llama-server -ngl 99 -t 2 -np 1",
+    "grammar_decoding": "GBNF grammar admitting exactly the legal labels",
+    "temperature": 0.0,
+    "max_tokens": 8,
+    "thinking": "disabled via chat_template_kwargs enable_thinking=false; reasoning_content fallback when content is empty"
+  },
+  "driving_client": {
+    "cli": "google-colab-cli (colab)",
+    "install": "uv tool install google-colab-cli, in WSL distro Ubuntu-22.04 on the Windows workstation",
+    "transport": "colab exec / upload / download; no ssh, console, or tunnels (free-tier ToS)"
+  },
+  "notes": [
+    "Free-tier runtimes are time-limited and can be killed without warning; the runner appends and fsyncs every prediction and resumes by skipping record IDs already present.",
+    "The requantized Maple file (maple-q2_0.gguf) is not stored on the VM and is regenerated each fresh session by scripts/../requant_maple.py (outside the repo, under C:\\work\\scratch\\colab).",
+    "One session at a time; the session was stopped with 'colab stop -s moe' after the runs."
+  ]
+}

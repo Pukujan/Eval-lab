@@ -1,0 +1,204 @@
+{
+  "calibration_policy": "label-only arm; no probabilities, so Brier/NLL/ECE are unavailable",
+  "compute": {
+    "accelerator": "Tesla T4 (15,360 MiB, driver 580.82.07)",
+    "host": "Google Colab free tier",
+    "runtime": "Ubuntu 24.04.4 LTS, 2 vCPU, 13.2 GB RAM",
+    "server": "llama.cpp b11399 (2ca15f540), llama-server -ngl 99 -t 2"
+  },
+  "dataset_fingerprint": "b7edd61269f0f7757e734bc7e3f665ac2bcd6d908a1e56f73f0b0291d55b64d8",
+  "experiment_id": "EXP-20261005-031-colab-t4-moe-judge-arms",
+  "model_arms": {
+    "maple-preview-20b-a1b": {
+      "architecture": "maple",
+      "arm_id": "maple-preview-20b-a1b",
+      "file": "maple-preview-TQ2_0-head-Q4_K.gguf",
+      "model_id": "deepgrove/maple-preview-GGUF",
+      "quant": "requantized TQ2_0 -> Q2_0 (Q4_K output head)",
+      "sha256": "b8a69726d35af6d5ed9e161cf4fc86d851969bb15b49a374594b807fe5739ad8",
+      "size_bytes": 5913366048,
+      "size_note": "MoE, 20B total / ~1B active (A1B)",
+      "source_file_bytes": 5901782560,
+      "source_file_sha256": "221f792cc9760d27a34f449b4229e258fa968a63bd4213993e45d9c0bb477a9e",
+      "thinking": "n/a (no reasoning channel)"
+    },
+    "ornith-1.5-35b-a3b": {
+      "architecture": "qwen35moe",
+      "arm_id": "ornith-1.5-35b-a3b",
+      "file": "Ornith-1.5-35B-A3B-IQ2_XXS.gguf",
+      "model_id": "bartowski/Ornith-1.5-35B-A3B-GGUF",
+      "quant": "IQ2_XXS",
+      "sha256": "14963c6830ae8287ad42a53c0fd87ca9fc67a8de8da1d18e3a076a348e96a32f",
+      "size_bytes": 10255140512,
+      "size_note": "MoE, 35B total / ~3B active (A3B)",
+      "thinking": "disabled (chat_template_kwargs enable_thinking=false)"
+    }
+  },
+  "partitions": {
+    "blind": {
+      "maple-preview-20b-a1b": {
+        "accuracy": 0.48947368421052634,
+        "accuracy_95_wilson": [
+          0.45407625814660774,
+          0.5249769867182329
+        ],
+        "by_mode": {
+          "pairwise": {
+            "accuracy": 0.4444444444444444,
+            "balanced_accuracy": 0.4444444444444444,
+            "macro_f1": 0.24193888303477343,
+            "probability_count": 0,
+            "probability_metrics": null,
+            "record_count": 108
+          },
+          "single": {
+            "accuracy": 0.49693251533742333,
+            "balanced_accuracy": 0.4997929840409515,
+            "macro_f1": 0.3595208146151542,
+            "probability_count": 0,
+            "probability_metrics": null,
+            "record_count": 652
+          }
+        },
+        "latency_ms": {
+          "p50": 262.4,
+          "p95": 375.22499999999997
+        },
+        "prediction_sha256": "13b6e01af6bcd6994a194ba3fb799366e311acb22ac31162b08c8ac6f73a0f32",
+        "probability_count": 0,
+        "record_count": 760,
+        "resolved_count": 760,
+        "resolved_coverage": 1.0,
+        "runner_revision": "llama.cpp b11399 (2ca15f540)",
+        "status_counts": {
+          "ok": 760
+        },
+        "unresolved_count": 0,
+        "unresolved_reason_counts": {}
+      },
+      "ornith-1.5-35b-a3b": {
+        "accuracy": 0.5539473684210526,
+        "accuracy_95_wilson": [
+          0.5184238259953757,
+          0.588928294072316
+        ],
+        "by_mode": {
+          "pairwise": {
+            "accuracy": 0.6759259259259259,
+            "balanced_accuracy": 0.6759259259259259,
+            "macro_f1": 0.4407359863072315,
+            "probability_count": 0,
+            "probability_metrics": null,
+            "record_count": 108
+          },
+          "single": {
+            "accuracy": 0.5337423312883436,
+            "balanced_accuracy": 0.5363407106293285,
+            "macro_f1": 0.43373672963305787,
+            "probability_count": 0,
+            "probability_metrics": null,
+            "record_count": 652
+          }
+        },
+        "latency_ms": {
+          "p50": 704.75,
+          "p95": 952.0599999999998
+        },
+        "prediction_sha256": "755c4839663415d94cf69e04f71aa68e83989cf113faf58072c4e0429a364169",
+        "probability_count": 0,
+        "record_count": 760,
+        "resolved_count": 760,
+        "resolved_coverage": 1.0,
+        "runner_revision": "llama.cpp b11399 (2ca15f540)",
+        "status_counts": {
+          "ok": 760
+        },
+        "unresolved_count": 0,
+        "unresolved_reason_counts": {}
+      }
+    },
+    "public": {
+      "maple-preview-20b-a1b": {
+        "accuracy": 0.49537037037037035,
+        "accuracy_95_wilson": [
+          0.4570155658101348,
+          0.5337797419770454
+        ],
+        "by_mode": {
+          "pairwise": {
+            "accuracy": 0.5277777777777778,
+            "balanced_accuracy": 0.5415276232851316,
+            "macro_f1": 0.2965127749827365,
+            "probability_count": 0,
+            "probability_metrics": null,
+            "record_count": 180
+          },
+          "single": {
+            "accuracy": 0.4829059829059829,
+            "balanced_accuracy": 0.4974134937028168,
+            "macro_f1": 0.3362246811702926,
+            "probability_count": 0,
+            "probability_metrics": null,
+            "record_count": 468
+          }
+        },
+        "latency_ms": {
+          "p50": 252.64999999999998,
+          "p95": 349.74499999999983
+        },
+        "prediction_sha256": "00bdf8217182b6a4f44b8889357633c6ac010344f1e41dd8bef557d7dfe0f7e7",
+        "probability_count": 0,
+        "record_count": 648,
+        "resolved_count": 648,
+        "resolved_coverage": 1.0,
+        "runner_revision": "llama.cpp b11399 (2ca15f540)",
+        "status_counts": {
+          "ok": 648
+        },
+        "unresolved_count": 0,
+        "unresolved_reason_counts": {}
+      },
+      "ornith-1.5-35b-a3b": {
+        "accuracy": 0.5817901234567902,
+        "accuracy_95_wilson": [
+          0.5434383506421256,
+          0.6191778784510258
+        ],
+        "by_mode": {
+          "pairwise": {
+            "accuracy": 0.7166666666666667,
+            "balanced_accuracy": 0.7228401928068224,
+            "macro_f1": 0.47421584263689526,
+            "probability_count": 0,
+            "probability_metrics": null,
+            "record_count": 180
+          },
+          "single": {
+            "accuracy": 0.5299145299145299,
+            "balanced_accuracy": 0.5425448297292851,
+            "macro_f1": 0.4371432944829547,
+            "probability_count": 0,
+            "probability_metrics": null,
+            "record_count": 468
+          }
+        },
+        "latency_ms": {
+          "p50": 687.05,
+          "p95": 888.4399999999999
+        },
+        "prediction_sha256": "aa67e7e04ee015a32f12cc1c6bc97a30dc60a054fdbb050c198091606c533d78",
+        "probability_count": 0,
+        "record_count": 648,
+        "resolved_count": 648,
+        "resolved_coverage": 1.0,
+        "runner_revision": "llama.cpp b11399 (2ca15f540)",
+        "status_counts": {
+          "ok": 648
+        },
+        "unresolved_count": 0,
+        "unresolved_reason_counts": {}
+      }
+    }
+  },
+  "primary_partition": "blind"
+}

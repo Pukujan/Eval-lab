@@ -1,0 +1,95 @@
+id: EXP-20261005-031-colab-t4-moe-judge-arms
+status: completed
+hypothesis: >-
+  Recent small-active-parameter mixture-of-experts models, run as label-only
+  typed-choice judges on a free-tier GPU, produce honest but weak accuracy on
+  the frozen Eval Lab decision pool, with pairwise judgments behaving
+  differently from single judgments.
+created_at: 2026-10-05
+code_commit: pending_task_checkpoint
+seed: 20261005
+context_limit: 8192
+runner_host:
+  machine: Google Colab free-tier VM
+  accelerator: Tesla T4 (15360 MiB, driver 580.82.07)
+  os: Ubuntu 24.04.4 LTS
+  vcpus: 2
+  memory_kib: 13286936
+  disk_free_gib_after_setup: 54
+dataset:
+  name: independent Eval Lab objective pool copied from EXP-014
+  version: EXP-20260921-015 exact source freeze
+  fingerprint: b7edd61269f0f7757e734bc7e3f665ac2bcd6d908a1e56f73f0b0291d55b64d8
+  public_record_count: 648
+  blind_record_count: 760
+  split_policy: source-problem disjoint public selection and blind holdout; blind is primary
+typed_protocol:
+  spec_id: eval-lab-system-one
+  spec_version: 0.1.0
+  protocol_version: eval-lab-local-decision-v1
+  fingerprint: 0d07bd8b8b60bd7f0b5b7a5f5819b7d329ea121f686b240e465695b6f6eca1e4
+  legal_single_labels: [pass, fail]
+  legal_pairwise_labels: [A, B, TIE]
+  request_builder: scripts/build_colab_moe_requests.py
+  request_files:
+    public_selection: requests/public.jsonl
+    blind_holdout: requests/blind.jsonl
+arms:
+  - arm_id: ornith-1.5-35b-a3b
+    model: bartowski/Ornith-1.5-35B-A3B-GGUF
+    file: Ornith-1.5-35B-A3B-IQ2_XXS.gguf
+    architecture: qwen35moe
+    type: MoE (35B total, ~3B active)
+    quant: IQ2_XXS
+    sha256: 14963c6830ae8287ad42a53c0fd87ca9fc67a8de8da1d18e3a076a348e96a32f
+    backend: llama.cpp 0.5.0-dev build 11399 (commit 2ca15f540), CUDA 12.8, -ngl 99
+    thinking: disabled for the run; reasoning_content fallback in the runner
+  - arm_id: maple-preview-20b-a1b
+    model: deepgrove/maple-preview-GGUF
+    file: maple-preview-TQ2_0-head-Q4_K.gguf
+    architecture: maple
+    type: MoE (20B total, ~1B active)
+    quant: requantized TQ2_0 -> Q2_0, Q4_K output head
+    sha256: b8a69726d35af6d5ed9e161cf4fc86d851969bb15b49a374594b807fe5739ad8
+    source_sha256: 221f792cc9760d27a34f449b4229e258fa968a63bd4213993e45d9c0bb477a9e
+    backend: llama.cpp 0.5.0-dev build 11399 (commit 2ca15f540), CUDA 12.8, -ngl 99
+    note: >-
+      The official ternary TQ2_0 file has no CUDA kernel in stock llama.cpp, so
+      it was requantized to Q2_0 (keeping the Q4_K output head) to run on the T4.
+evaluation:
+  primary_partition: blind_holdout
+  public_partition_role: descriptive_only
+  one_pass_per_record: true
+  missingness_rule: runtime and parse failures remain statuses and are excluded from resolved accuracy
+  probability_rule: label-only arms; no probabilities, so Brier/NLL/ECE are unavailable
+  confidence_level: 0.95
+metrics:
+  - accuracy
+  - balanced_accuracy
+  - macro_f1
+  - resolved_coverage
+  - unresolved_rate
+  - latency_p50
+  - latency_p95
+  - status_counts
+artifacts:
+  - README.md
+  - experiment.yaml
+  - source-pool-fingerprint.json
+  - hardware-and-runtime.json
+  - model-revisions.json
+  - requests/
+  - raw/
+  - public-predictions/
+  - blind-predictions/
+  - results.json
+  - report.md
+notes: >-
+  EXP-015 and its records are immutable; this experiment reads them by
+  reference. The compute path is a free-tier Google Colab T4 driven by the
+  official colab CLI from WSL; see docs/compute/colab-cli.md. No gold label is
+  uploaded to the compute host: the request files contain only record_id, mode,
+  state, question, options, and labels. Both arms resolved every record
+  (coverage 1.0000) and produced varied labels, so the results are honest and
+  non-degenerate. Ornith is the strongest arm here (blind 0.5539) and Maple is
+  near chance (blind 0.4895); both remain far below the API leaders in EXP-029.
