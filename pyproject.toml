@@ -41,6 +41,9 @@ where = ["src"]
 
 [tool.ruff]
 line-length = 100
+# OIO-managed files are vendored verbatim and hash-checked by .oio/install-manifest.json.
+extend-exclude = [".github/scripts/oio_installer.py", ".github/scripts/oio_triage.py"]
+force-exclude = true
 
 [tool.mypy]
 python_version = "3.12"

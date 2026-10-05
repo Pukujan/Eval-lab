@@ -18,9 +18,9 @@ Do not redesign the project. Follow repository contracts.
 
 From a parent directory:
 
-```bash
-git clone https://github.com/Pukujan/Eval-lab.git
-cd Eval-lab
+```powershell
+git clone https://github.com/Pukujan/Eval-lab.git D:\development\eval-lab
+cd D:\development\eval-lab
 git fetch --all --prune
 git switch main
 ```
@@ -36,39 +36,35 @@ Remove only obsolete worktrees the user no longer needs.
 
 Create task worktree:
 
-```bash
-git worktree add ../eval-lab-TASK-0001 -b task/TASK-0001-bootstrap-lab origin/main
-cd ../eval-lab-TASK-0001
+```powershell
+git worktree add D:\development\eval-lab-wt\TASK-0001-bootstrap-lab -b task/TASK-0001-bootstrap-lab origin/main
+cd D:\development\eval-lab-wt\TASK-0001-bootstrap-lab
 ```
 
-Create environment:
+The worktree reuses the canonical root `.venv`; never create a second environment in it.
 
-```bash
-python -m venv .venv
-```
+Create or synchronize the one project environment from the canonical checkout
+(`uv sync` builds the root `.venv` from `pyproject.toml` and `uv.lock`; do not use pip):
 
-Activate it using the platform-appropriate command, then:
-
-```bash
-python -m pip install --upgrade pip
-pip install -e ".[dev]"
-python scripts/check_repo_contract.py
-ruff check .
-pytest -q
+```powershell
+uv sync --extra dev
+uv run python scripts/check_repo_contract.py
+uv run ruff check .
+uv run pytest -q
 ```
 
 If an OpenCode key is available locally:
 
 ```bash
 export OPENCODE_API_KEY=...
-python scripts/jev_smoke.py
+uv run python scripts/jev_smoke.py
 ```
 
 On PowerShell use:
 
 ```powershell
 $env:OPENCODE_API_KEY="..."
-python scripts/jev_smoke.py
+uv run python scripts/jev_smoke.py
 ```
 
 Never print or commit the key.

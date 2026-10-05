@@ -43,9 +43,9 @@ def test_worktree_outside_canonical_worktrees_is_rejected(tmp_path: Path) -> Non
     )
 
 
-def test_active_in_root_temporary_worktree_is_allowed(tmp_path: Path) -> None:
+def test_active_sibling_temporary_worktree_is_allowed(tmp_path: Path) -> None:
     root = tmp_path / "eval-lab"
-    temporary = root / "worktrees" / "TASK-0050-temporary-worktree-lifecycle"
+    temporary = tmp_path / "eval-lab-wt" / "TASK-0050-temporary-worktree-lifecycle"
     temporary.mkdir(parents=True)
 
     assert (
@@ -60,7 +60,7 @@ def test_active_in_root_temporary_worktree_is_allowed(tmp_path: Path) -> None:
 
 def test_temporary_worktree_name_must_contain_task_id(tmp_path: Path) -> None:
     root = tmp_path / "eval-lab"
-    temporary = root / "worktrees" / "scratch"
+    temporary = tmp_path / "eval-lab-wt" / "scratch"
     temporary.mkdir(parents=True)
 
     violations = workspace_violations(
@@ -73,7 +73,7 @@ def test_temporary_worktree_name_must_contain_task_id(tmp_path: Path) -> None:
 
 def test_nested_temporary_worktree_location_is_rejected(tmp_path: Path) -> None:
     root = tmp_path / "eval-lab"
-    nested = root / "worktrees" / "TASK-0050" / "nested"
+    nested = tmp_path / "eval-lab-wt" / "TASK-0050" / "nested"
     nested.mkdir(parents=True)
 
     violations = workspace_violations(
@@ -89,7 +89,7 @@ def test_nested_temporary_worktree_location_is_rejected(tmp_path: Path) -> None:
 def test_missing_registered_worktree_path_is_rejected(tmp_path: Path) -> None:
     root = tmp_path / "eval-lab"
     root.mkdir()
-    missing = root / "worktrees" / "TASK-0050"
+    missing = tmp_path / "eval-lab-wt" / "TASK-0050"
 
     violations = workspace_violations(
         root,
@@ -102,7 +102,7 @@ def test_missing_registered_worktree_path_is_rejected(tmp_path: Path) -> None:
 def test_missing_canonical_checkout_registration_is_rejected(tmp_path: Path) -> None:
     root = tmp_path / "eval-lab"
     root.mkdir()
-    another = root / "worktrees" / "TASK-0050"
+    another = tmp_path / "eval-lab-wt" / "TASK-0050"
     another.mkdir(parents=True)
 
     violations = workspace_violations(

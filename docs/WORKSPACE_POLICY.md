@@ -2,7 +2,7 @@
 
 ## Ownership
 
-`D:\claude\eval-lab` is the sole local checkout for this project on the
+`D:\development\eval-lab` is the sole local checkout for this project on the
 owner's Windows machine. GitHub is the durable source of committed history;
 this directory is the only local working copy. A branch is a Git reference,
 not a reason to create another directory.
@@ -10,7 +10,7 @@ not a reason to create another directory.
 Do not create another Eval Lab clone or task-specific project folder. Work in
 the canonical checkout by default. A temporary linked worktree is allowed
 only when genuine isolation or parallel work requires it, and only at
-`D:\claude\eval-lab\worktrees\<task-id>`. Keep one active task per worktree;
+`D:\development\eval-lab-wt\<task-id>`. Keep one active task per worktree;
 if the checkout or GitHub is unavailable, stop and report the blocker.
 
 ## Branch and checkpoint workflow
@@ -32,7 +32,7 @@ if the checkout or GitHub is unavailable, stop and report the blocker.
 5. `main` requires a PR, up-to-date branch, and the Python 3.11/3.12 checks.
    Task PRs auto-merge when both required checks pass.
 6. Before switching tasks, ensure the task branch is pushed and the working
-   tree is clean. Use `D:\claude\eval-lab\worktrees\<task-id>` for genuine
+   tree is clean. Use `D:\development\eval-lab-wt\<task-id>` for genuine
    parallel work. Before cleanup, inspect tracked, untracked, and ignored state;
    preserve unique work. Never use forced cleanup.
 
@@ -42,7 +42,7 @@ Pushes are the normal durability boundary.
 
 - Install `uv` once as a machine-level tool; do not install a separate copy per
   task or checkout.
-- Keep one project environment at `D:\claude\eval-lab\.venv`, created and
+- Keep one project environment at `D:\development\eval-lab\.venv`, created and
   synchronized from the root `pyproject.toml` and committed `uv.lock`.
 - Use `uv sync --extra dev` to synchronize the canonical environment and
   `.venv\Scripts\python.exe` to run Python checks on Windows.
@@ -50,6 +50,8 @@ Pushes are the normal durability boundary.
   This repository is Python-only; do not create `node_modules`. If an approved
   change adds a Node package, keep exactly one root `node_modules` and manage
   it from the root lockfile.
+- `D:` is NTFS (it was exFAT before October 2026). No copy-mode, hoisted-linker,
+  or virtual-store workarounds are needed or allowed in package-manager config.
 - Reuse uv's machine-level package cache for downloads. Do not copy installed
   packages between folders to simulate sharing.
 - Because the one environment is mutable, synchronize dependencies
@@ -62,9 +64,9 @@ Pushes are the normal durability boundary.
 ## Enforcement and incident handling
 
 Run `python scripts/check_workspace_policy.py --canonical-root
-D:\claude\eval-lab` before work and after cleanup. `scripts/check_repo_contract.py`
-also rejects additional registered worktrees and dependency directories below
-the root. The explicit canonical-root argument additionally catches running
+D:\development\eval-lab` before work and after cleanup. `scripts/check_repo_contract.py`
+also rejects registered worktrees outside the sibling `eval-lab-wt` directory and
+dependency directories below the root. The explicit canonical-root argument additionally catches running
 from a second independent clone. The guard is read-only; it reports violations
 and never deletes files.
 

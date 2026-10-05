@@ -28,8 +28,11 @@ def normalize(path: Path) -> str:
 def validate_worktree_path(root: Path, path: Path) -> Path:
     root = root.resolve()
     path = path.resolve()
-    if path.parent != (root / "worktrees").resolve() or not TASK_DIRECTORY.fullmatch(path.name):
-        raise ValueError(f"refusing to remove a path outside worktrees/<task-id>: {path}")
+    worktrees_root = root.parent / f"{root.name}-wt"
+    if path.parent != worktrees_root or not TASK_DIRECTORY.fullmatch(path.name):
+        raise ValueError(
+            f"refusing to remove a path outside the worktrees directory {worktrees_root}/<task-id>: {path}"
+        )
     return path
 
 
@@ -151,7 +154,9 @@ def main() -> int:
     parser.add_argument("--issue", type=int, required=True)
     parser.add_argument("--canonical-root", type=Path, required=True)
     parser.add_argument(
-        "--worktree", type=Path, help="merged task worktree under canonical-root/worktrees"
+        "--worktree",
+        type=Path,
+        help="merged task worktree under the sibling <canonical-root>-wt directory",
     )
     args = parser.parse_args()
     try:

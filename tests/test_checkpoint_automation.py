@@ -55,12 +55,12 @@ def test_task_worktree_names_are_validated() -> None:
 
 def test_finalizer_path_must_be_canonical_worktrees_child(tmp_path: Path) -> None:
     root = tmp_path / "eval-lab"
-    valid = root / "worktrees" / "TASK-0051"
-    invalid = root / ".worktrees" / "TASK-0051"
+    valid = tmp_path / "eval-lab-wt" / "TASK-0051"
+    invalid = root / "worktrees" / "TASK-0051"
     valid.parent.mkdir(parents=True)
-    invalid.parent.mkdir()
+    invalid.parent.mkdir(parents=True)
     assert validate_worktree_path(root, valid) == valid.resolve()
-    with pytest.raises(ValueError, match="outside worktrees"):
+    with pytest.raises(ValueError, match="outside the worktrees directory"):
         validate_worktree_path(root, invalid)
 
 
@@ -95,7 +95,7 @@ def test_finalizer_preserves_worktree_when_canonical_checkout_is_dirty(
                 '"body":"Task issue: #40"}'
             )
         if command[:3] == ["git", "worktree", "list"]:
-            return f"worktree {root}\nworktree {root / 'worktrees' / 'TASK-0051'}"
+            return f"worktree {root}\nworktree {root.parent / 'eval-lab-wt' / 'TASK-0051'}"
         if command == ["git", "branch", "--show-current"]:
             return "task/TASK-0051-github-checkpoint-automation"
         if command == ["git", "rev-parse", "HEAD"]:
@@ -107,7 +107,7 @@ def test_finalizer_preserves_worktree_when_canonical_checkout_is_dirty(
     monkeypatch.setattr(finalize_checkpoint, "run", fake_run)
     root = tmp_path / "eval-lab"
     with pytest.raises(ValueError, match="canonical checkout has local changes"):
-        finalize_checkpoint.finalize(42, 40, root, root / "worktrees" / "TASK-0051")
+        finalize_checkpoint.finalize(42, 40, root, root.parent / "eval-lab-wt" / "TASK-0051")
 
     assert not any(command[:3] == ["git", "worktree", "remove"] for command in calls)
 

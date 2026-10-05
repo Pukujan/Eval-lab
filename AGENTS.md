@@ -18,13 +18,13 @@ Before doing work, read only:
 
 Do not scan unrelated historical files or experiments unless the task explicitly requires them.
 
-## One canonical checkout; temporary in-root task worktrees
+## One canonical checkout; temporary sibling task worktrees
 
-The sole durable local Eval Lab checkout is `D:\claude\eval-lab`. Do not
+The sole durable local Eval Lab checkout is `D:\development\eval-lab`. Do not
 create another clone, copied project directory, or task-named sibling
 checkout. Work in the canonical folder by default. A temporary linked
 worktree is allowed when a task genuinely needs isolation or parallel work;
-create it only at `D:\claude\eval-lab\worktrees\<task-id>`. Keep worktrees
+create it only at `D:\development\eval-lab-wt\<task-id>`. Keep worktrees
 limited to active tasks and remove them after their work is durably checkpointed
 and complete.
 
@@ -36,14 +36,14 @@ task/TASK-0001-short-name
 
 Before switching task branches in the canonical checkout, finish a coherent
 checkpoint, commit it, push it to GitHub, and confirm the working tree is clean.
-Use a separate in-root worktree when parallel tasks need independent working
+Use a separate task worktree when parallel tasks need independent working
 trees; do not stash work to make parallel tasks appear safe. Each task branch
 uses the `task/TASK-0001-short-name` format. When idle on `main`, fetch and
 fast-forward the canonical checkout to `origin/main`; do not create a second
 directory to preserve an old branch.
 
 Never run `git clone` for Eval Lab. Never create a linked worktree outside
-`D:\claude\eval-lab\worktrees`. If GitHub or the current checkout is
+`D:\development\eval-lab-wt`. If GitHub or the current checkout is
 unavailable, stop and report the blocker rather than creating another local
 copy.
 
@@ -92,9 +92,9 @@ retain or remove runtime state only as documented in the task checkpoint. This
 exception is for model inference only and does not create another project
 dependency environment.
 
-Run `python scripts/check_workspace_policy.py --canonical-root D:\claude\eval-lab`
+Run `python scripts/check_workspace_policy.py --canonical-root D:\development\eval-lab`
 before task work and after cleanup. The repository contract check also enforces
-the canonical path, in-root temporary-worktree placement, and one-environment
+the canonical path, sibling `eval-lab-wt` temporary-worktree placement, and one-environment
 rules.
 
 ## GitHub issue and checkpoint policy
@@ -167,3 +167,15 @@ Gold labels must identify their provenance:
 - executable test
 - human adjudication
 - explicitly marked weak/model supervision
+
+<!-- pcm:issue-log-format:start -->
+## Issue log format (issue-log-format 1.2.0)
+
+<!-- pcm:policy {"id":"issue-log-format","policy_version":"1.2.0","protocol_version":"0.1.0-draft"} -->
+
+Write issue logs, progress updates, and pull requests in one plain-language shape a newcomer can follow. Pick the tier by the kind of issue, not by preference. **Core tier (every issue log):** title states the problem and intended direction; a 1-3 paragraph summary naming who/what is affected, the consequence, and what this proposes; identity and lineage (leaf owning issue, parent ancestry or none, task ID, primary writer, branch); observed facts vs interpretation, with inferences labelled *inferred*; acceptance criteria with numeric thresholds marked *(proposed)* when untested; boundaries/non-goals and one next action. **Investigation tier (incidents, failures, research, design issues):** numbered symptoms; hypotheses with Status, confirm/refute, and experiment; evidence with provenance; a **Counter-signal** entry when one exists; honest caveat; problems-vs-gaps; a **Proposal** labelled *(proposal)* stating none of it exists unless named as existing. **Pull requests open reader-first:** problem and consequence, what changes, how to verify, and what stays unchanged; lineage links; evidence and one next action; long logs collapsed or linked; reference issues with "Refs #<number>" and use closing keywords only when closing at merge is intended. **Diagrams (mermaid):** when a record describes a flow with 4+ ordered steps or 2+ branches, add a fenced mermaid diagram *and* keep an adjacent text list or table so the record survives render failure; default to `graph TD` (vertical) because wide `LR` flows shrink to illegible strips on phones — reserve `LR` for 4 or fewer short nodes; cap 8 nodes and 6-word labels; wrap diagrams that may exceed the container width inside `<details>` (GitHub mounts the renderer lazily on expand); preview the rendered diagram before publishing (broken syntax shows a visible parse error) and never cite renderer URLs as standalone sources. No private absolute paths or secrets; link rather than paste long logs. See `docs/ISSUE_LOG_FORMAT.md` for the full format, exemplar, and examples.
+<!-- pcm:issue-log-format:end -->
+
+<!-- oio:issue-log-guidance:start -->
+Before filing an observational or operational issue log, read `.oio/ontology/ISSUE_LOG_ONTOLOGY.md`, `.oio/ontology/project.json`, and `.oio/ontology/AGENT_GUIDE.md`. Confirm the exact destination and filing action are authorized. On OIO, ACS, CGM, and PCM, do not submit an issue or write files without explicit human direction for that destination and action. A proposal can remain a local draft until directed. Never treat adoption as permission to write to an adopter or sibling repository.
+<!-- oio:issue-log-guidance:end -->

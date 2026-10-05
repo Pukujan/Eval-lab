@@ -1,0 +1,43 @@
+# AGENT-LESS boss-seat watchdog, adapted from the ACS multi-agent-hotload v0.1.0
+# workflow-stubs/watchdog.yml (agent-custom-setup e1d7732). No secrets.
+# Watchdog != failover. Lease TTL is in minutes (.coord/assignment.json
+# boss_failover.lease_ttl_minutes = 30). This job only reports liveness; it runs
+# with --dry-run and read-only permissions, so it never writes the claim file or
+# pushes to main. After a vacancy, agents enqueue on the GitHub-canonical
+# claim_queue through a normal PR; this job does not appoint a boss.
+
+name: boss-seat-watchdog
+
+on:
+  schedule:
+    # ~every 10 minutes (GitHub may delay cron slightly)
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  watchdog:
+    runs-on: ubuntu-latest
+    env:
+      ACS_COMMIT: e1d7732be4cb4683df218ea3f999338053612d8d
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+
+      - name: Fetch pinned ACS module
+        run: |
+          set -euo pipefail
+          git init --quiet "$RUNNER_TEMP/acs"
+          git -C "$RUNNER_TEMP/acs" fetch --quiet --depth 1 https://github.com/Pukujan/agent-custom-setup.git "$ACS_COMMIT"
+          git -C "$RUNNER_TEMP/acs" checkout --quiet FETCH_HEAD
+
+      - name: Run agent-less watchdog (report only)
+        run: |
+          python "$RUNNER_TEMP/acs/modules/coordination/multi-agent-hotload/v0.1.0/scripts/watchdog_check.py" \
+            --assignment .coord/assignment.json \
+            --dry-run
