@@ -143,6 +143,12 @@ Every experiment must have a directory under `experiments/` and follow `docs/EXP
 
 Never overwrite completed experiment results. Create a new experiment ID for a changed dataset, rubric, model, prompt, seed, calibration method, or evaluation protocol.
 
+## Run telemetry rule
+
+Every eval run appears in the committed telemetry ledger at `telemetry/runs.v1.jsonl`, one record per run unit keyed by `run_path`, with findings in `telemetry/FINDINGS.md`. Both are derived from the `experiments/` artifacts by `scripts/run_telemetry.py` and checked in CI with `--check`.
+
+When a change adds, removes, or alters a `results.json` under `experiments/`, regenerate with `uv run --locked python scripts/run_telemetry.py rebuild` in the same checkpoint. Never hand-edit the ledger or findings. A run directory without a `results.json` is still recorded (`partial`/`quarantined`), never dropped.
+
 ## Ground-truth rule
 
 Model judgments are never promoted to objective gold merely because the model is strong.

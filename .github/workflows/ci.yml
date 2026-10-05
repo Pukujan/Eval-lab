@@ -89,6 +89,9 @@ jobs:
       - name: Chart data export is current (TASK-0059)
         run: uv run --locked python scripts/export_chart_data.py --check
 
+      - name: Run telemetry ledger is current (TASK-0062)
+        run: uv run --locked python scripts/run_telemetry.py --check
+
       - name: Archived v0.1.0 release validates (RO-Crate, PROV-O, SHACL)
         run: uv run --locked python scripts/validate_research_artifacts.py --benchmark benchmark/eval-lab-select-v0.1.0
 

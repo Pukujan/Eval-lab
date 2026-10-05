@@ -4,6 +4,23 @@
 
 > Continuity v1 overlay (TASK-0063): this human checkpoint stays authoritative for Eval Lab program and task state. The legacy `tasks/TASK-*.md` histories predate PCM v1 and are preserved as-is; the v1 machine task namespace is `.continuity/tasks`, so `active_task` stays null until a legacy-task migration is authorized. GitHub issues own task progression.
 
+## 2026-10-04 - TASK-0062 run telemetry ledger
+
+GitHub issue #78. `telemetry/runs.v1.jsonl` holds one uniform record per eval
+run unit (150 rows: 140 with `results.json`, 10 without), keyed uniquely by
+repo-relative `run_path` across all five directory conventions and pinned by
+`schemas/run-telemetry.v1.schema.json`. `scripts/run_telemetry.py` derives it
+offline from `experiments/` only (`rebuild` / `verify` / `findings` / `--check`),
+and `telemetry/FINDINGS.md` is computed from the ledger with no hand-typed
+numbers. Nullable metrics stay null; `results_sha256` hashes LF-normalized
+content so the ledger is byte-identical on Windows and Linux. CI runs `--check`.
+A new `main` ruleset requires a `gates` check that only TASK-0063's workflow
+provides, so PR #80 was merged first (`c944ee0`) and this branch was updated onto
+it (`d5adbd2`). Local gates pass: repo contract, workspace policy, Ruff, mypy,
+telemetry `--check`, and `pytest tests` (198 passed).
+
+Next atomic action: merge the TASK-0062 PR after required CI, then close #78.
+
 ## 2026-10-04 - TASK-0063 fresh NTFS clone and stack install
 
 GitHub issue #77. `D:\development\eval-lab` is the single checkout; no Git
