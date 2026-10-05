@@ -30,8 +30,10 @@ unavailable, stop and report the blocker.
 4. The PR states `Task issue: #<number>`. Keep the issue open until the
    finalizer verifies the exact PR head, merge SHA, and required CI checks;
    then it records the outcome and closes the issue.
-5. `main` requires a PR, up-to-date branch, and the Python 3.11/3.12 checks.
-   Task PRs auto-merge when both required checks pass.
+5. `main` requires a PR, an up-to-date branch, the Python 3.11/3.12 `quality`
+   checks (branch protection) and the aggregate `gates` check (ruleset `main
+   protection`); force-pushes and deletion are blocked. Task PRs auto-merge only
+   when all required checks pass.
 6. Before switching tasks, ensure the task branch is pushed and the working
    tree is clean. Before cleanup, inspect tracked, untracked, and ignored state;
    preserve unique work. Never use forced cleanup.

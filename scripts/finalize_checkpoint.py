@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 TASK_DIRECTORY = re.compile(r"TASK-\d{4}(?:-[a-z0-9]+(?:-[a-z0-9]+)*)?\Z", re.IGNORECASE)
-REQUIRED_CHECKS = {"quality (Python 3.11)", "quality (Python 3.12)"}
+REQUIRED_CHECKS = {"quality (Python 3.11)", "quality (Python 3.12)", "gates"}
 
 
 def run(command: list[str], *, cwd: Path) -> str:
@@ -67,7 +67,7 @@ def finalize(pr_number: int, issue_number: int, canonical_root: Path, worktree: 
     merge_sha = merge.get("oid") if isinstance(merge, dict) else None
     if not head_sha or not merge_sha or not passing_required_checks(pr):
         raise ValueError(
-            "exact PR head, merge SHA, or required Python checks are missing/unsuccessful"
+            "exact PR head, merge SHA, or required checks (quality, gates) are missing/unsuccessful"
         )
     if not re.search(rf"(?im)^Task issue:\s*#{issue_number}\b", str(pr.get("body") or "")):
         raise ValueError(f"PR #{pr_number} does not link task issue #{issue_number}")

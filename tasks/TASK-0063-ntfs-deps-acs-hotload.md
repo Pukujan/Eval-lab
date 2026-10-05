@@ -78,5 +78,14 @@ CGM 0.5.12 `6831f91e` (all eight modules), OIO 0.1.0 and ACS multi-agent-hotload
 
 ## Handoff
 
-Next atomic action: owner reviews the PR, then applies the repository settings
-listed in the PR (ruleset requiring `gates`, auto-merge) if wanted.
+### 2026-10-04 - repository settings (owner-approved)
+
+- Ruleset `main protection` (id 24474341) on `refs/heads/main`: active, no bypass
+  actors, pull request with 0 approvals (no extra approval for unattributed
+  changes), required status check `gates` (GitHub Actions, strict), deletion and
+  non-fast-forward blocked. Classic branch protection (quality 3.11/3.12) stays.
+- `allow_auto_merge` was already `true`.
+- `scripts/finalize_checkpoint.py` now also requires `gates`.
+
+Next atomic action: owner reviews and merges the PR. PR #79 needs main (with the
+`gates` job) merged into its branch before it can satisfy the new required check.
