@@ -10,7 +10,7 @@ Work from a fresh clone at `D:\development\eval-lab` now that `D:` is NTFS
 (it was exFAT), remove leftover exFAT and pip-era setup, and bring the ACS
 multi-agent hotloader install up to the current pins: PCM `4e23854` (CLI 0.6.0),
 CGM 0.5.12 `6831f91e` (all eight modules), OIO 0.1.0 and ACS multi-agent-hotload
-0.1.0 (`agent-custom-setup` `e1d7732`), via release train 2026-10-01.
+0.1.0 (`agent-custom-setup` main `38f8f52`), via release train 2026-10-01.
 
 ## Scope
 
@@ -68,10 +68,31 @@ CGM 0.5.12 `6831f91e` (all eight modules), OIO 0.1.0 and ACS multi-agent-hotload
   `origin` and its output copied in; the managed files are byte-identical to
   OIO `main` `469adf1`.
 
+### 2026-10-05 - ACS revision bumped to current main
+
+- Currency check found the ACS install pinned at `e1d7732` while
+  `agent-custom-setup` main had moved to `38f8f52` (two commits: FSL-1.1-ALv2
+  license `2699ee4`, and dev-root hygiene `38f8f52` adding `dev_root_check.py`,
+  dev-root checks in `hotload_check.py`, and the ACS dev-root boot rule in
+  `PROMPT_INJECT.md`). The module version is unchanged at 0.1.0 and the release
+  train still certifies 0.1.0, so this is a reviewed revision bump, not a
+  version change.
+- `ACS_COMMIT` -> `38f8f52e8d210db3ce258bf911ebb560c6e0fe4c` in
+  `.github/workflows/ci.yml` and `.github/workflows/boss-watchdog.yml`;
+  `.coord/assignment.json` `pins.acs.revision` updated and a `revision_note`
+  added; `.coord/PROMPT_INJECT.md` gained the ACS dev-root addendum.
+- Verified against `38f8f52`: `hotload_check.py` -> `hotload_check: OK` (FULL
+  install, `cgm_validate=VALID`); `check_pins.py` -> `OK (15 projections agree)`.
+- Dev root hygiene: `dev_root_check.py --dev-root D:\development` -> `ok: true`,
+  no findings (one main checkout per repo).
+
 ## Decisions
 
 - PCM workspace mode is `single-checkout`, matching the one-checkout rule.
-- ACS ships no gates workflow stub at `e1d7732`; the `gates` aggregate follows
+- ACS is pinned to `agent-custom-setup` main `38f8f52` (module 0.1.0), the
+  current revision; the earlier `e1d7732` pin predated the dev-root hygiene
+  work that matches this repository's one-checkout rule.
+- ACS ships no gates workflow stub at `38f8f52`; the `gates` aggregate follows
   PCM `docs/adopter-enforcement.md` instead.
 - No auto-merge workflow is added (frontend-bakeoff has one); merging stays with
   the owner.

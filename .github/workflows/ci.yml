@@ -101,7 +101,7 @@ jobs:
     env:
       PCM_COMMIT: 4e2385474b4af9249ca009cbdcb38c4498932475
       CGM_COMMIT: 6831f91e165b62d719c05eb492f7375fa932b560
-      ACS_COMMIT: e1d7732be4cb4683df218ea3f999338053612d8d
+      ACS_COMMIT: 38f8f52e8d210db3ce258bf911ebb560c6e0fe4c
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
