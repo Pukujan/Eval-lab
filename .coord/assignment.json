@@ -2,7 +2,7 @@
   "schema_version": "0.1.0",
   "project": "Eval Lab ACS adopter",
   "recorded_at": "2026-10-04T20:15:00-04:00",
-  "notes": "ACS multi-agent-hotload 0.1.0 adopter state for Pukujan/Eval-lab (TASK-0063, issue #77). FULL PCM (4e23854, CLI 0.6.0) + FULL CGM 0.5.12 (6831f91e, eight modules) + OIO 0.1.0 pinned via stack-manifest.json (release train 2026-10-01). ACS hotload pinned at agent-custom-setup main 38f8f52 (module 0.1.0): revision bumped from e1d7732 to pick up dev-root hygiene (dev_root_check.py plus the ACS dev-root boot rule in PROMPT_INJECT.md) and the FSL-1.1-ALv2 license; module version and the PCM/CGM pins are unchanged. Boss lease is minutes (30; range 15-120); the watchdog is agent-less and liveness-only. The decision-boss seat is vacant until the first live continuer claims it.",
+  "notes": "ACS multi-agent-hotload adopter state for Pukujan/Eval-lab (TASK-0066, issue #88). ACS hotload pinned at agent-custom-setup 0.2.0 (c15e53fc, module 0.1.0), the version the current certified train names. FULL PCM (4e23854, CLI 0.6.0) + FULL CGM 0.5.12 (6831f91e, eight modules) + OIO 0.1.0 remain at the ACS 0.2.0 pack's own pins: the pack still requires these PCM/CGM commits, so PCM 0.7.0 and CGM b487b48c cannot be fetched without failing hotload_check.py (upstream gap recorded in tasks/TASK-0066). stack-manifest.json follows release train 'current'. Boss lease is minutes (30; range 15-120); the watchdog is agent-less and liveness-only. The decision-boss seat is vacant until the first live continuer claims it.",
   "role_fill": {
     "mode": "join_continue_order",
     "seed_is_hint_only": true,

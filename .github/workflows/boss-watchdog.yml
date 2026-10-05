@@ -1,5 +1,5 @@
 # AGENT-LESS boss-seat watchdog, adapted from the ACS multi-agent-hotload v0.1.0
-# workflow-stubs/watchdog.yml (agent-custom-setup 38f8f52). No secrets.
+# workflow-stubs/watchdog.yml (agent-custom-setup c15e53f). No secrets.
 # Watchdog != failover. Lease TTL is in minutes (.coord/assignment.json
 # boss_failover.lease_ttl_minutes = 30). This job only reports liveness; it runs
 # with --dry-run and read-only permissions, so it never writes the claim file or
@@ -21,7 +21,7 @@ jobs:
   watchdog:
     runs-on: ubuntu-latest
     env:
-      ACS_COMMIT: 38f8f52e8d210db3ce258bf911ebb560c6e0fe4c
+      ACS_COMMIT: c15e53fc17e8158e9182709d5d3b6f255bcc11f2
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 

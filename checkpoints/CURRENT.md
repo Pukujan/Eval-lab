@@ -4,6 +4,29 @@
 
 > Continuity v1 overlay (TASK-0063): this human checkpoint stays authoritative for Eval Lab program and task state. The legacy `tasks/TASK-*.md` histories predate PCM v1 and are preserved as-is; the v1 machine task namespace is `.continuity/tasks`, so `active_task` stays null until a legacy-task migration is authorized. GitHub issues own task progression.
 
+## 2026-10-05 - TASK-0066 ACS hotloader moved to the current certified train (ACS 0.2.0)
+
+GitHub issue #88. The CI fetch pins and `.coord/` install were left on an older
+ACS commit while `stack-manifest.json` already followed release train `current`
+(PR #86). This checkpoint bumps ACS only: `ACS_COMMIT` -> `c15e53f` (ACS 0.2.0)
+in `.github/workflows/ci.yml` and `.github/workflows/boss-watchdog.yml`, and
+`.coord/assignment.json` `pins.acs.revision` -> `c15e53f` with a `revision_note`.
+`PCM_COMMIT` (4e23854, 0.6.0) and `CGM_COMMIT` (6831f91e, 0.5.12) stay put.
+
+Verified against ACS 0.2.0: `check_pins.py` -> `OK (15 projections agree)`;
+`hotload_check.py` -> `hotload_check: OK`; `check_manifest.py` -> `OK: eval-lab
+agrees with release train current`.
+
+Blocker (upstream, agent-custom-setup): the certified ACS 0.2.0 pack still
+requires the old PCM `4e23854` and CGM `6831f91e` — its `pins.json` and
+`hotload_check.py` hard-code those revisions — so eval-lab cannot fetch the
+train's PCM 0.7.0 / CGM `b487b48c` without failing `hotload_check.py`. The full
+four-component move waits on agent-custom-setup re-certifying ACS against the new
+train; that is the sibling repo owner's call.
+
+Next atomic action: after this checkpoint merges, await ACS re-certification
+upstream, then move PCM 0.7.0 and CGM `b487b48c` together.
+
 ## 2026-10-05 - TASK-0065 Colab T4 compute path and two MoE judge arms
 
 GitHub issue #83. Eval Lab gains a second, independent compute path — a
