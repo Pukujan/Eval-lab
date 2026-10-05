@@ -1,0 +1,10 @@
+{
+  "schema_version": "eval-lab.boss-claim.v1",
+  "status": "vacant",
+  "who_is_boss_now": null,
+  "last_heartbeat": null,
+  "last_github_activity": null,
+  "claim_queue": [],
+  "recorded_at": "2026-10-04T20:15:00-04:00",
+  "notes": "Fresh ACS adopter: no agent holds the decision-boss seat. The first live continuer fills it under join/continue order and renews the check-in at least every 15 minutes against the 30-minute lease. The agent-less watchdog (~10 min) only flags liveness; it never appoints a boss. A returning old boss joins the end of claim_queue."
+}

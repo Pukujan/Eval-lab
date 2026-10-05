@@ -1,5 +1,19 @@
 # Current Repository Checkpoint
 
+<!-- continuity:current {"active_task":null,"active_task_file":null,"protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
+
+> Continuity v1 overlay (TASK-0063): this human checkpoint stays authoritative for Eval Lab program and task state. The legacy `tasks/TASK-*.md` histories predate PCM v1 and are preserved as-is; the v1 machine task namespace is `.continuity/tasks`, so `active_task` stays null until a legacy-task migration is authorized. GitHub issues own task progression.
+
+## 2026-10-04 - TASK-0063 fresh NTFS clone and stack install
+
+GitHub issue #77. `D:\development\eval-lab` is the single checkout; no Git
+worktrees or sibling clones go under `D:\development`, and scratch or helper
+clones live outside it. Setup is uv-only. The PCM continuity overlay
+(single-checkout), CGM 0.5.12 adapter, OIO 0.1.0 issue intake and ACS
+multi-agent-hotload 0.1.0 runtime (`.coord/`) are installed, pinned by
+`stack-manifest.json` (release train 2026-10-01), and checked by the CI `stack`
+and `gates` jobs. See `tasks/TASK-0063-ntfs-deps-acs-hotload.md`.
+
 ## 2026-09-24 — TASK-0061 plain-language paper and simple charts
 
 GitHub issue #74. Owner feedback was that the paper read as AI-written, was too

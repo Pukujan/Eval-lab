@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 TASK_DIRECTORY = re.compile(r"TASK-\d{4}(?:-[a-z0-9]+(?:-[a-z0-9]+)*)?\Z", re.IGNORECASE)
-REQUIRED_CHECKS = {"quality (Python 3.11)", "quality (Python 3.12)"}
+REQUIRED_CHECKS = {"quality (Python 3.11)", "quality (Python 3.12)", "gates"}
 
 
 def run(command: list[str], *, cwd: Path) -> str:
@@ -26,11 +26,11 @@ def normalize(path: Path) -> str:
 
 
 def validate_worktree_path(root: Path, path: Path) -> Path:
-    root = root.resolve()
-    path = path.resolve()
-    if path.parent != (root / "worktrees").resolve() or not TASK_DIRECTORY.fullmatch(path.name):
-        raise ValueError(f"refusing to remove a path outside worktrees/<task-id>: {path}")
-    return path
+    """Linked worktrees are not used: the canonical checkout is the only checkout."""
+    raise ValueError(
+        "linked worktrees are not used; the canonical checkout "
+        f"{root.resolve()} is the only checkout, refusing to remove {path.resolve()}"
+    )
 
 
 def passing_required_checks(pr: dict[str, object]) -> bool:
@@ -67,7 +67,7 @@ def finalize(pr_number: int, issue_number: int, canonical_root: Path, worktree: 
     merge_sha = merge.get("oid") if isinstance(merge, dict) else None
     if not head_sha or not merge_sha or not passing_required_checks(pr):
         raise ValueError(
-            "exact PR head, merge SHA, or required Python checks are missing/unsuccessful"
+            "exact PR head, merge SHA, or required checks (quality, gates) are missing/unsuccessful"
         )
     if not re.search(rf"(?im)^Task issue:\s*#{issue_number}\b", str(pr.get("body") or "")):
         raise ValueError(f"PR #{pr_number} does not link task issue #{issue_number}")
@@ -151,7 +151,9 @@ def main() -> int:
     parser.add_argument("--issue", type=int, required=True)
     parser.add_argument("--canonical-root", type=Path, required=True)
     parser.add_argument(
-        "--worktree", type=Path, help="merged task worktree under canonical-root/worktrees"
+        "--worktree",
+        type=Path,
+        help="unsupported: linked worktrees are not used (kept so old calls fail closed)",
     )
     args = parser.parse_args()
     try:

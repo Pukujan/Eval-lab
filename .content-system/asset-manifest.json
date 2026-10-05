@@ -1,14 +1,138 @@
 {
   "schema_version": "content-generation.asset-manifest.v1",
-  "system_version": "0.1.2",
+  "system_version": "0.5.12",
   "assets": [
-    {"path": "assets/eval-lab-banner.png", "role": "hero introduction", "orientation": "wide", "dimensions": "1672x941", "text_policy": "exact short title plus subtitle; existing small attribution retained", "prompt_recipe": "human researcher and friendly robot with simple evaluation evidence panel; title Eval Lab; subtitle Build AI judges you can trust", "review": "accepted"},
-    {"path": "assets/eval-lab-problem.png", "role": "problem explanation", "orientation": "wide", "dimensions": "1672x941", "text_policy": "exact short title plus subtitle", "prompt_recipe": "one readable conflict between plausible outputs and evidence; title Plausible is not proven; subtitle A confident answer still needs evidence before it becomes a judgment.", "review": "accepted"},
-    {"path": "assets/eval-lab-system-square.png", "role": "technical system explanation", "orientation": "square", "dimensions": "1254x1254", "text_policy": "exact short title plus subtitle", "prompt_recipe": "calm human and robot review a simple three-step decision path; title Judge the uncertainty; subtitle Compare evidence, measure confidence, and route the hard cases.", "review": "accepted"},
-    {"path": "assets/eval-lab-evidence-portrait.png", "role": "evidence and review detail", "orientation": "portrait", "dimensions": "1024x1536", "text_policy": "exact short title plus subtitle", "prompt_recipe": "vertical research scene with visible evidence and human review; title Keep the trail; subtitle Every verdict should point back to data, rules, and review.", "review": "accepted"},
-    {"path": "assets/icons/objective-truth.svg", "role": "objective evidence icon", "orientation": "svg", "dimensions": "64x64 viewBox", "text_policy": "none", "review": "accepted"},
-    {"path": "assets/icons/calibrated-confidence.svg", "role": "calibration icon", "orientation": "svg", "dimensions": "64x64 viewBox", "text_policy": "none", "review": "accepted"},
-    {"path": "assets/icons/selective-routing.svg", "role": "routing icon", "orientation": "svg", "dimensions": "64x64 viewBox", "text_policy": "none", "review": "accepted"},
-    {"path": "assets/icons/reproducible-evidence.svg", "role": "reproducibility icon", "orientation": "svg", "dimensions": "64x64 viewBox", "text_policy": "none", "review": "accepted"}
+    {
+      "path": "assets/eval-lab-banner.png",
+      "role": "hero introduction",
+      "orientation": "wide",
+      "dimensions": "1672x941",
+      "text_policy": "exact short title plus subtitle; existing small attribution retained",
+      "prompt_recipe": "human researcher and friendly robot with simple evaluation evidence panel; title Eval Lab; subtitle Build AI judges you can trust",
+      "exact_title": "Eval Lab",
+      "exact_subtitle": "Build AI judges you can trust",
+      "alt_text": "Eval Lab - Build AI judges you can trust",
+      "usage": "README hero at the top of README.md",
+      "crop_behavior": "keep the title block and the human/robot pair inside the central safe area; may crop sky and side panels at mobile widths",
+      "rejection_conditions": [
+        "the supporting diagram covers or competes with the human/AI subjects",
+        "the title or subtitle is unreadable",
+        "the image contains many competing panels or unreadable secondary text",
+        "contrast becomes more important than comprehension",
+        "the asset reads like a second hero banner instead of a supporting explanation",
+        "the crop removes the central relationship at mobile or tablet sizes"
+      ],
+      "review_decision": "accepted",
+      "provider": "built-in image_gen",
+      "prompt_record": "assets/README-ASSET-MANIFEST.yaml",
+      "hash": "46b95b5b2de33b2c55eb9149bcf56e9164ecd01b84ca096d718a9ee322e10ee2"
+    },
+    {
+      "path": "assets/eval-lab-problem.png",
+      "role": "problem explanation",
+      "orientation": "wide",
+      "dimensions": "1671x941",
+      "text_policy": "exact short title plus subtitle",
+      "prompt_recipe": "one readable conflict between plausible outputs and evidence; title Plausible is not proven; subtitle A confident answer still needs evidence before it becomes a judgment.",
+      "exact_title": "Plausible is not proven",
+      "exact_subtitle": "A confident answer still needs evidence before it becomes a judgment.",
+      "alt_text": "A researcher and robot sort through conflicting AI outputs with different confidence signals",
+      "usage": "README problem section, full width",
+      "crop_behavior": "keep the title block and the human/robot pair inside the central safe area; may crop sky and side panels at mobile widths",
+      "rejection_conditions": [
+        "the supporting diagram covers or competes with the human/AI subjects",
+        "the title or subtitle is unreadable",
+        "the image contains many competing panels or unreadable secondary text",
+        "contrast becomes more important than comprehension",
+        "the asset reads like a second hero banner instead of a supporting explanation",
+        "the crop removes the central relationship at mobile or tablet sizes"
+      ],
+      "review_decision": "accepted",
+      "provider": "built-in image_gen",
+      "prompt_record": "assets/README-ASSET-MANIFEST.yaml",
+      "hash": "a9e0a60dca9055713053a0c4b0b1fb5dceb6e41e1cef14d9fcfd59cb8a615c0b"
+    },
+    {
+      "path": "assets/eval-lab-system-square.png",
+      "role": "technical system explanation",
+      "orientation": "square",
+      "dimensions": "1254x1254",
+      "text_policy": "exact short title plus subtitle",
+      "prompt_recipe": "calm human and robot review a simple three-step decision path; title Judge the uncertainty; subtitle Compare evidence, measure confidence, and route the hard cases.",
+      "exact_title": "Judge the uncertainty",
+      "exact_subtitle": "Compare evidence, measure confidence, and route the hard cases.",
+      "alt_text": "A calm square illustration of a researcher and robot reviewing a three-step decision path",
+      "usage": "README system section, 520px wide",
+      "crop_behavior": "keep the title, the three-step panel and both subjects; trim only background edges",
+      "rejection_conditions": [
+        "the supporting diagram covers or competes with the human/AI subjects",
+        "the title or subtitle is unreadable",
+        "the image contains many competing panels or unreadable secondary text",
+        "contrast becomes more important than comprehension",
+        "the asset reads like a second hero banner instead of a supporting explanation",
+        "the crop removes the central relationship at mobile or tablet sizes"
+      ],
+      "review_decision": "accepted",
+      "provider": "built-in image_gen",
+      "prompt_record": "assets/README-ASSET-MANIFEST.yaml",
+      "hash": "68b1363374b0cd4ca6b2b38602e7f51403fa1b420c7b81220f3325d1d695f904"
+    },
+    {
+      "path": "assets/eval-lab-evidence-portrait.png",
+      "role": "evidence and review detail",
+      "orientation": "portrait",
+      "dimensions": "1024x1536",
+      "text_policy": "exact short title plus subtitle",
+      "prompt_recipe": "vertical research scene with visible evidence and human review; title Keep the trail; subtitle Every verdict should point back to data, rules, and review.",
+      "exact_title": "Keep the trail",
+      "exact_subtitle": "Every verdict should point back to data, rules, and review.",
+      "alt_text": "A portrait-oriented illustration of a researcher checking answer evidence and confidence calibration",
+      "usage": "README evidence and calibration section, 360px wide",
+      "crop_behavior": "keep the title card and both subjects; trim only the top sky and bottom desk",
+      "rejection_conditions": [
+        "the supporting diagram covers or competes with the human/AI subjects",
+        "the title or subtitle is unreadable",
+        "the image contains many competing panels or unreadable secondary text",
+        "contrast becomes more important than comprehension",
+        "the asset reads like a second hero banner instead of a supporting explanation",
+        "the crop removes the central relationship at mobile or tablet sizes"
+      ],
+      "review_decision": "accepted",
+      "provider": "built-in image_gen",
+      "prompt_record": "assets/README-ASSET-MANIFEST.yaml",
+      "hash": "3d881949077fa264677fa318461f9f8f146a7246c9f498203ec62ee6693c7524"
+    },
+    {
+      "path": "assets/icons/objective-truth.svg",
+      "role": "objective evidence icon",
+      "orientation": "svg",
+      "dimensions": "64x64 viewBox",
+      "text_policy": "none",
+      "review_decision": "accepted"
+    },
+    {
+      "path": "assets/icons/calibrated-confidence.svg",
+      "role": "calibration icon",
+      "orientation": "svg",
+      "dimensions": "64x64 viewBox",
+      "text_policy": "none",
+      "review_decision": "accepted"
+    },
+    {
+      "path": "assets/icons/selective-routing.svg",
+      "role": "routing icon",
+      "orientation": "svg",
+      "dimensions": "64x64 viewBox",
+      "text_policy": "none",
+      "review_decision": "accepted"
+    },
+    {
+      "path": "assets/icons/reproducible-evidence.svg",
+      "role": "reproducibility icon",
+      "orientation": "svg",
+      "dimensions": "64x64 viewBox",
+      "text_policy": "none",
+      "review_decision": "accepted"
+    }
   ]
 }

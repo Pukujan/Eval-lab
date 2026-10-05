@@ -18,15 +18,14 @@ Before doing work, read only:
 
 Do not scan unrelated historical files or experiments unless the task explicitly requires them.
 
-## One canonical checkout; temporary in-root task worktrees
+## One canonical checkout; no worktrees or sibling clones
 
-The sole durable local Eval Lab checkout is `D:\claude\eval-lab`. Do not
-create another clone, copied project directory, or task-named sibling
-checkout. Work in the canonical folder by default. A temporary linked
-worktree is allowed when a task genuinely needs isolation or parallel work;
-create it only at `D:\claude\eval-lab\worktrees\<task-id>`. Keep worktrees
-limited to active tasks and remove them after their work is durably checkpointed
-and complete.
+`D:\development\eval-lab` is the single local Eval Lab checkout. `D:\development`
+holds only the main checkout of each repository: never create a Git worktree,
+a second clone, a copied project directory, or a task-named sibling folder
+under `D:\development`. Scratch files, helper-repository clones (for example
+the pinned PCM, CGM, OIO and ACS checkouts) and temporary output live outside
+`D:\development`, for example under `C:\work` or `%TEMP%`.
 
 Branch format:
 
@@ -34,26 +33,20 @@ Branch format:
 task/TASK-0001-short-name
 ```
 
-Before switching task branches in the canonical checkout, finish a coherent
-checkpoint, commit it, push it to GitHub, and confirm the working tree is clean.
-Use a separate in-root worktree when parallel tasks need independent working
-trees; do not stash work to make parallel tasks appear safe. Each task branch
-uses the `task/TASK-0001-short-name` format. When idle on `main`, fetch and
-fast-forward the canonical checkout to `origin/main`; do not create a second
-directory to preserve an old branch.
+Tasks are serialized in the one checkout. Before switching task branches,
+finish a coherent checkpoint, commit it, push it to GitHub, and confirm the
+working tree is clean; do not stash work to make parallel tasks appear safe.
+When idle on `main`, fetch and fast-forward the checkout to `origin/main`; do
+not create a second directory to preserve an old branch.
 
-Never run `git clone` for Eval Lab. Never create a linked worktree outside
-`D:\claude\eval-lab\worktrees`. If GitHub or the current checkout is
-unavailable, stop and report the blocker rather than creating another local
-copy.
+If GitHub or the checkout is unavailable, stop and report the blocker rather
+than creating another local copy.
 
-When a worktree task is complete, verify its branch and all tracked,
-untracked, and ignored state. Push the checkpoint and open/update its PR; wait
-for required CI and merge the PR before closing the task. Preserve any unique
-state that is not in Git. Remove the clean worktree with a normal, non-forced
-`git worktree remove`, then confirm it is absent from `git worktree list` and
-the canonical checkout is synchronized with `origin/main`. Do not remove an
-active task worktree merely because its branch has been pushed.
+When a task is complete, verify its branch and all tracked, untracked, and
+ignored state. Push the checkpoint and open or update its PR; wait for required
+CI and merge the PR before closing the task. Preserve any unique state that is
+not in Git, then confirm `git worktree list` shows only the one checkout and
+that it is synchronized with `origin/main`.
 
 A task may modify only the files declared in its task file unless the task file is updated first.
 
@@ -62,16 +55,12 @@ A task may modify only the files declared in its task file unless the task file 
 Use the one canonical repository-root `.venv`, managed by the single `uv`
 executable available on `PATH`. Resolve and synchronize from the root
 `pyproject.toml` and `uv.lock` with `uv sync --extra dev`; run Python tools
-through `.venv\Scripts\python.exe` on Windows. A task worktree must reuse this
-environment; do not make task-specific virtual environments or copy `.venv`.
-Verify that tools import the worktree's source, not the canonical checkout's
-source. If that cannot be done without another install, serialize the task in
-the canonical checkout instead.
+through `.venv\Scripts\python.exe` on Windows. Do not make task-specific
+virtual environments or copy `.venv`.
 
 This project is Python-only. Do not create `node_modules` here. If a future,
 approved change adds a Node package, its single `node_modules` must live at the
-repository root and be managed from the root lockfile. A worktree may resolve
-that root install, but must never install dependencies locally. If the task
+repository root and be managed from the root lockfile. If the task
 changes dependency requirements incompatibly, serialize and synchronize the
 canonical environment in place. Use package-manager caches for download reuse,
 not duplicate project installs.
@@ -92,10 +81,9 @@ retain or remove runtime state only as documented in the task checkpoint. This
 exception is for model inference only and does not create another project
 dependency environment.
 
-Run `python scripts/check_workspace_policy.py --canonical-root D:\claude\eval-lab`
+Run `python scripts/check_workspace_policy.py --canonical-root D:\development\eval-lab`
 before task work and after cleanup. The repository contract check also enforces
-the canonical path, in-root temporary-worktree placement, and one-environment
-rules.
+the canonical path, the no-linked-worktree rule, and the one-environment rule.
 
 ## GitHub issue and checkpoint policy
 
@@ -119,9 +107,8 @@ A checkpoint is complete only after GitHub confirms its PR merged with required
 CI successful. Do not leave completed work or handoff state only in chat or a
 local branch. After merge, run
 `scripts/finalize_checkpoint.py` to confirm the merge, audit tracked,
-untracked, and ignored state, remove a clean linked worktree normally, and
-fast-forward the canonical checkout to `origin/main`. Never force-remove a
-worktree or discard unique state.
+untracked, and ignored state, and fast-forward the canonical checkout to
+`origin/main`. Never discard unique state.
 
 ## Required checkpoint behavior
 
@@ -167,3 +154,15 @@ Gold labels must identify their provenance:
 - executable test
 - human adjudication
 - explicitly marked weak/model supervision
+
+<!-- pcm:issue-log-format:start -->
+## Issue log format (issue-log-format 1.2.0)
+
+<!-- pcm:policy {"id":"issue-log-format","policy_version":"1.2.0","protocol_version":"0.1.0-draft"} -->
+
+Write issue logs, progress updates, and pull requests in one plain-language shape a newcomer can follow. Pick the tier by the kind of issue, not by preference. **Core tier (every issue log):** title states the problem and intended direction; a 1-3 paragraph summary naming who/what is affected, the consequence, and what this proposes; identity and lineage (leaf owning issue, parent ancestry or none, task ID, primary writer, branch); observed facts vs interpretation, with inferences labelled *inferred*; acceptance criteria with numeric thresholds marked *(proposed)* when untested; boundaries/non-goals and one next action. **Investigation tier (incidents, failures, research, design issues):** numbered symptoms; hypotheses with Status, confirm/refute, and experiment; evidence with provenance; a **Counter-signal** entry when one exists; honest caveat; problems-vs-gaps; a **Proposal** labelled *(proposal)* stating none of it exists unless named as existing. **Pull requests open reader-first:** problem and consequence, what changes, how to verify, and what stays unchanged; lineage links; evidence and one next action; long logs collapsed or linked; reference issues with "Refs #<number>" and use closing keywords only when closing at merge is intended. **Diagrams (mermaid):** when a record describes a flow with 4+ ordered steps or 2+ branches, add a fenced mermaid diagram *and* keep an adjacent text list or table so the record survives render failure; default to `graph TD` (vertical) because wide `LR` flows shrink to illegible strips on phones — reserve `LR` for 4 or fewer short nodes; cap 8 nodes and 6-word labels; wrap diagrams that may exceed the container width inside `<details>` (GitHub mounts the renderer lazily on expand); preview the rendered diagram before publishing (broken syntax shows a visible parse error) and never cite renderer URLs as standalone sources. No private absolute paths or secrets; link rather than paste long logs. See `docs/ISSUE_LOG_FORMAT.md` for the full format, exemplar, and examples.
+<!-- pcm:issue-log-format:end -->
+
+<!-- oio:issue-log-guidance:start -->
+Before filing an observational or operational issue log, read `.oio/ontology/ISSUE_LOG_ONTOLOGY.md`, `.oio/ontology/project.json`, and `.oio/ontology/AGENT_GUIDE.md`. Confirm the exact destination and filing action are authorized. On OIO, ACS, CGM, and PCM, do not submit an issue or write files without explicit human direction for that destination and action. A proposal can remain a local draft until directed. Never treat adoption as permission to write to an adopter or sibling repository.
+<!-- oio:issue-log-guidance:end -->
