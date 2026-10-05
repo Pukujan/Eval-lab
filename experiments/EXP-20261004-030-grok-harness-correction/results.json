@@ -1,0 +1,134 @@
+{
+  "blind_holdout": {
+    "arms": {
+      "grok": {
+        "accuracy": 0.9907894736842106,
+        "accuracy_wilson_95": {
+          "lower": 0.9811110602091844,
+          "upper": 0.9955313979676212
+        },
+        "correct_count": 753,
+        "error_kinds": {},
+        "provider": "xai-grok-build-cli",
+        "record_count": 760,
+        "requested_model": "grok-4.6",
+        "resolved_count": 760,
+        "resolved_coverage": 1.0,
+        "route": "direct_grok_build_cli_subscription",
+        "status_counts": {
+          "ok": 760
+        },
+        "surfaced_model_ids": [
+          "grok-4.6-build"
+        ],
+        "unresolved_rate": 0.0
+      },
+      "grok_47": {
+        "accuracy": 0.9854881266490765,
+        "accuracy_wilson_95": {
+          "lower": 0.9742024590663243,
+          "upper": 0.9918778080004012
+        },
+        "correct_count": 747,
+        "error_kinds": {
+          "process_exit": 2
+        },
+        "provider": "xai-grok-build-cli",
+        "record_count": 760,
+        "requested_model": "grok-4.7",
+        "resolved_count": 758,
+        "resolved_coverage": 0.9973684210526316,
+        "route": "direct_grok_build_cli_subscription",
+        "status_counts": {
+          "ok": 758,
+          "provider_error": 2
+        },
+        "surfaced_model_ids": [
+          "grok-4.7-build"
+        ],
+        "unresolved_rate": 0.002631578947368421
+      }
+    },
+    "record_count": 760
+  },
+  "blind_record_ids_fingerprint": "409428fc71b447d0114dd7a1929cbed34269a4318ef249c108582b70069d8d61",
+  "code_commit": "pending_task_checkpoint",
+  "experiment_id": "EXP-20261004-030-grok-harness-correction",
+  "method": {
+    "fallback_labels": false,
+    "one_pass_per_record": true,
+    "prompt_delivery": "per-record --prompt-file (never inline argv)",
+    "streaming": true,
+    "supersedes": [
+      "EXP-20260921-015-grok-luna-qwen-bakeoff (Grok arms)"
+    ],
+    "workers_per_arm": 4
+  },
+  "primary_partition": "blind_holdout",
+  "public_selection": {
+    "arms": {
+      "grok": {
+        "accuracy": 0.9861111111111112,
+        "accuracy_wilson_95": {
+          "lower": 0.9738165658316261,
+          "upper": 0.9926761165144625
+        },
+        "correct_count": 639,
+        "error_kinds": {},
+        "provider": "xai-grok-build-cli",
+        "record_count": 648,
+        "requested_model": "grok-4.6",
+        "resolved_count": 648,
+        "resolved_coverage": 1.0,
+        "route": "direct_grok_build_cli_subscription",
+        "status_counts": {
+          "ok": 648
+        },
+        "surfaced_model_ids": [
+          "grok-4.6-build"
+        ],
+        "unresolved_rate": 0.0
+      },
+      "grok_47": {
+        "accuracy": 0.9798449612403101,
+        "accuracy_wilson_95": {
+          "lower": 0.9658239977053485,
+          "upper": 0.9881840909964236
+        },
+        "correct_count": 632,
+        "error_kinds": {
+          "process_exit": 1,
+          "rate_limited": 1,
+          "timeout": 1
+        },
+        "provider": "xai-grok-build-cli",
+        "record_count": 648,
+        "requested_model": "grok-4.7",
+        "resolved_count": 645,
+        "resolved_coverage": 0.9953703703703703,
+        "route": "direct_grok_build_cli_subscription",
+        "status_counts": {
+          "ok": 645,
+          "provider_error": 2,
+          "rate_limited": 1
+        },
+        "surfaced_model_ids": [
+          "Qwen/Qwen3-4B",
+          "grok-4.7-build",
+          "qwen3.8-flash",
+          "typesafe/jev-1.13",
+          "typesafe/jev-1.13-20260917"
+        ],
+        "unresolved_rate": 0.004629629629629629
+      }
+    },
+    "record_count": 648
+  },
+  "runs": {
+    "blind_holdout": "runs/blind-20261004",
+    "public_selection": "runs/public-20261004"
+  },
+  "source_fingerprint": "b7edd61269f0f7757e734bc7e3f665ac2bcd6d908a1e56f73f0b0291d55b64d8",
+  "status": "completed_with_provider_statuses",
+  "typed_protocol_fingerprint": "0d07bd8b8b60bd7f0b5b7a5f5819b7d329ea121f686b240e465695b6f6eca1e4"
+}

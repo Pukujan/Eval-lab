@@ -114,7 +114,10 @@ def _load_pool(
     records = [JudgeRecord.model_validate(row["record"]) for row in selected]
     if len({record.record_id for record in records}) != len(records):
         raise ValueError("selected pool contains duplicate record IDs")
-    domains = {record.record_id: str(row.get("dataset", "unknown")) for row, record in zip(selected, records, strict=True)}
+    domains = {
+        record.record_id: str(row.get("dataset", "unknown"))
+        for row, record in zip(selected, records, strict=True)
+    }
     if requested_ids is not None and {record.record_id for record in records} != requested_ids:
         raise ValueError("record ID file contains an ID outside the selected partition")
     return selected, records, domains
@@ -166,17 +169,25 @@ def parse_label(text: str, record: JudgeRecord) -> str | None:
                 value = mapping.get(key)
                 if isinstance(value, Mapping):
                     value = next(
-                        (value.get(candidate) for candidate in ("label", "choice", "value") if candidate in value),
+                        (
+                            value.get(candidate)
+                            for candidate in ("label", "choice", "value")
+                            if candidate in value
+                        ),
                         None,
                     )
                 if value is None:
                     continue
                 candidate = str(value).strip()
-                normalized = candidate.upper() if record.mode is JudgmentMode.PAIRWISE else candidate.lower()
+                normalized = (
+                    candidate.upper() if record.mode is JudgmentMode.PAIRWISE else candidate.lower()
+                )
                 if normalized in legal:
                     return normalized
     normalized = text.upper() if record.mode is JudgmentMode.PAIRWISE else text.lower()
-    token_pattern = r"\b(?:A|B|TIE)\b" if record.mode is JudgmentMode.PAIRWISE else r"\b(?:PASS|FAIL)\b"
+    token_pattern = (
+        r"\b(?:A|B|TIE)\b" if record.mode is JudgmentMode.PAIRWISE else r"\b(?:PASS|FAIL)\b"
+    )
     tokens = re.findall(token_pattern, normalized)
     for token in reversed(tokens):
         candidate = token if record.mode is JudgmentMode.PAIRWISE else token.lower()
@@ -274,7 +285,9 @@ def _with_stream_metadata(
     return prediction
 
 
-def _stream_reader(pipe: Any, stream_name: str, events: queue.Queue[tuple[str, str | None]]) -> None:
+def _stream_reader(
+    pipe: Any, stream_name: str, events: queue.Queue[tuple[str, str | None]]
+) -> None:
     try:
         for line in iter(pipe.readline, ""):
             events.put((stream_name, line))
@@ -319,8 +332,12 @@ def _run_streaming_process(
 
     events: queue.Queue[tuple[str, str | None]] = queue.Queue()
     readers = [
-        threading.Thread(target=_stream_reader, args=(process.stdout, "stdout", events), daemon=True),
-        threading.Thread(target=_stream_reader, args=(process.stderr, "stderr", events), daemon=True),
+        threading.Thread(
+            target=_stream_reader, args=(process.stdout, "stdout", events), daemon=True
+        ),
+        threading.Thread(
+            target=_stream_reader, args=(process.stderr, "stderr", events), daemon=True
+        ),
     ]
     for reader in readers:
         reader.start()
@@ -374,7 +391,17 @@ def _run_streaming_process(
 
 
 def _isolated_grok_leader_socket() -> Path:
-    return Path(tempfile.gettempdir()) / f"eval-lab-grok-{os.getpid()}-{threading.get_ident()}-{uuid.uuid4().hex}.sock"
+    return (
+        Path(tempfile.gettempdir())
+        / f"eval-lab-grok-{os.getpid()}-{threading.get_ident()}-{uuid.uuid4().hex}.sock"
+    )
+
+
+def _isolated_grok_prompt_file() -> Path:
+    return (
+        Path(tempfile.gettempdir())
+        / f"eval-lab-grok-prompt-{os.getpid()}-{threading.get_ident()}-{uuid.uuid4().hex}.txt"
+    )
 
 
 def _run_codex_one(
@@ -450,10 +477,16 @@ def _run_codex_one(
             continue
         if event.get("type") == "thread.started" and isinstance(event.get("thread_id"), str):
             thread_id = event["thread_id"]
-    metadata = {"codex_cli": "codex", "thread_id": thread_id} if thread_id else {"codex_cli": "codex"}
+    metadata = (
+        {"codex_cli": "codex", "thread_id": thread_id} if thread_id else {"codex_cli": "codex"}
+    )
     if returncode != 0:
         lower = output.lower()
-        status = ExecutionStatus.RATE_LIMITED if "429" in lower or "rate limit" in lower else ExecutionStatus.PROVIDER_ERROR
+        status = (
+            ExecutionStatus.RATE_LIMITED
+            if "429" in lower or "rate limit" in lower
+            else ExecutionStatus.PROVIDER_ERROR
+        )
         kind = "rate_limited" if status is ExecutionStatus.RATE_LIMITED else "process_exit"
         prediction = _prediction(
             record,
@@ -467,7 +500,9 @@ def _run_codex_one(
             surfaced_model_ids=surfaced,
         )
         prediction.provider_metadata.update(metadata)
-        return _with_stream_metadata(prediction, stream_format="codex-jsonl", event_count=event_count)
+        return _with_stream_metadata(
+            prediction, stream_format="codex-jsonl", event_count=event_count
+        )
     label = parse_label(output, record)
     if label is None:
         prediction = _prediction(
@@ -482,7 +517,9 @@ def _run_codex_one(
             surfaced_model_ids=surfaced,
         )
         prediction.provider_metadata.update(metadata)
-        return _with_stream_metadata(prediction, stream_format="codex-jsonl", event_count=event_count)
+        return _with_stream_metadata(
+            prediction, stream_format="codex-jsonl", event_count=event_count
+        )
     prediction = _prediction(
         record,
         arm_id=arm_id,
@@ -512,6 +549,12 @@ def _run_grok_build_one(
     started = time.perf_counter()
     executable = environment.get("GROK_EXE") or shutil.which("grok") or "grok"
     leader_socket = _isolated_grok_leader_socket()
+    # The prompt is two lines (instruction + JSON payload). Passing it inline as
+    # `--single=<prompt>` on Windows goes through the grok.CMD shim, where cmd.exe
+    # truncates the command line at the embedded newline, so the model only sees
+    # the instruction and defaults to `fail`/`TIE`. A per-record prompt file keeps
+    # the full prompt intact on every platform.
+    prompt_file = _isolated_grok_prompt_file()
     command = [
         executable,
         "--no-auto-update",
@@ -533,9 +576,11 @@ def _run_grok_build_one(
         "dontAsk",
         "--leader-socket",
         str(leader_socket),
-        f"--single={_prompt(record)}",
+        "--prompt-file",
+        str(prompt_file),
     ]
     try:
+        prompt_file.write_text(_prompt(record), encoding="utf-8")
         returncode, stdout, stderr, timed_out, event_count = _run_streaming_process(
             command,
             environment=environment,
@@ -555,6 +600,7 @@ def _run_grok_build_one(
         return _with_stream_metadata(prediction, stream_format="grok-streaming-json", event_count=0)
     finally:
         leader_socket.unlink(missing_ok=True)
+        prompt_file.unlink(missing_ok=True)
     if timed_out:
         prediction = _prediction(
             record,
@@ -566,12 +612,18 @@ def _run_grok_build_one(
             started=started,
             error={"kind": "timeout"},
         )
-        return _with_stream_metadata(prediction, stream_format="grok-streaming-json", event_count=event_count)
+        return _with_stream_metadata(
+            prediction, stream_format="grok-streaming-json", event_count=event_count
+        )
     output = stdout + "\n" + stderr
     surfaced = _surfaced_models(output)
     if returncode != 0:
         lower = output.lower()
-        status = ExecutionStatus.RATE_LIMITED if "429" in lower or "rate limit" in lower else ExecutionStatus.PROVIDER_ERROR
+        status = (
+            ExecutionStatus.RATE_LIMITED
+            if "429" in lower or "rate limit" in lower
+            else ExecutionStatus.PROVIDER_ERROR
+        )
         kind = "rate_limited" if status is ExecutionStatus.RATE_LIMITED else "process_exit"
         prediction = _prediction(
             record,
@@ -584,7 +636,9 @@ def _run_grok_build_one(
             error={"kind": kind, "returncode": returncode},
             surfaced_model_ids=surfaced,
         )
-        return _with_stream_metadata(prediction, stream_format="grok-streaming-json", event_count=event_count)
+        return _with_stream_metadata(
+            prediction, stream_format="grok-streaming-json", event_count=event_count
+        )
     label = parse_label(output, record)
     if label is None:
         prediction = _prediction(
@@ -598,7 +652,9 @@ def _run_grok_build_one(
             error={"kind": "label_not_found"},
             surfaced_model_ids=surfaced,
         )
-        return _with_stream_metadata(prediction, stream_format="grok-streaming-json", event_count=event_count)
+        return _with_stream_metadata(
+            prediction, stream_format="grok-streaming-json", event_count=event_count
+        )
     prediction = _prediction(
         record,
         arm_id=arm_id,
@@ -610,7 +666,9 @@ def _run_grok_build_one(
         label=label,
         surfaced_model_ids=surfaced,
     )
-    return _with_stream_metadata(prediction, stream_format="grok-streaming-json", event_count=event_count)
+    return _with_stream_metadata(
+        prediction, stream_format="grok-streaming-json", event_count=event_count
+    )
 
 
 def _run_grok_build_arm(
@@ -703,7 +761,13 @@ def _run_parallel_arm(
                     "workers": workers,
                     "record_count": len(records),
                     "completed_count": len(by_record_id),
-                    "status_counts": dict(sorted(Counter(item.execution_status.value for item in by_record_id.values()).items())),
+                    "status_counts": dict(
+                        sorted(
+                            Counter(
+                                item.execution_status.value for item in by_record_id.values()
+                            ).items()
+                        )
+                    ),
                     "last_record_id": prediction.record_id,
                     "updated_at_utc": datetime.now(UTC).isoformat(),
                 },
@@ -721,7 +785,10 @@ def _run_parallel_arm(
                 checkpoint(safe_evaluate(record), handle)
         else:
             with ThreadPoolExecutor(max_workers=workers) as executor:
-                futures = {executor.submit(safe_evaluate, record): record.record_id for record in pending_records}
+                futures = {
+                    executor.submit(safe_evaluate, record): record.record_id
+                    for record in pending_records
+                }
                 for future in as_completed(futures):
                     checkpoint(future.result(), handle)
 
@@ -910,7 +977,9 @@ def _run_qwen_one(
                 "surfaced_model_ids": surfaced,
             }
         )
-        return _with_stream_metadata(prediction, stream_format="openai-sse", event_count=event_count)
+        return _with_stream_metadata(
+            prediction, stream_format="openai-sse", event_count=event_count
+        )
     except httpx.TimeoutException:
         prediction = _prediction(
             record,
@@ -930,9 +999,16 @@ def _run_qwen_one(
             provider="yolo-auto",
             model=model,
             route=route,
-            status=ExecutionStatus.PARSE_ERROR if isinstance(exc, (TypeError, ValueError, json.JSONDecodeError)) else ExecutionStatus.PROVIDER_ERROR,
+            status=ExecutionStatus.PARSE_ERROR
+            if isinstance(exc, (TypeError, ValueError, json.JSONDecodeError))
+            else ExecutionStatus.PROVIDER_ERROR,
             started=started,
-            error={"kind": "parse_error" if isinstance(exc, (TypeError, ValueError, json.JSONDecodeError)) else "adapter_error", "type": type(exc).__name__},
+            error={
+                "kind": "parse_error"
+                if isinstance(exc, (TypeError, ValueError, json.JSONDecodeError))
+                else "adapter_error",
+                "type": type(exc).__name__,
+            },
         )
         return _with_stream_metadata(prediction, stream_format="openai-sse", event_count=0)
 
@@ -950,8 +1026,16 @@ def _run_qwen_arm(
     progress_path: Path,
     existing_predictions: list[JudgePrediction] | None = None,
 ) -> list[JudgePrediction]:
-    api_key = environment.get("YOLO_AUTO_API_KEY") or environment.get("YOLO_API_KEY") or environment.get("QWEN_API_KEY")
-    base_url = environment.get("YOLO_AUTO_BASE_URL") or environment.get("QWEN_API_URL") or "https://api.yolo-auto.com/v1"
+    api_key = (
+        environment.get("YOLO_AUTO_API_KEY")
+        or environment.get("YOLO_API_KEY")
+        or environment.get("QWEN_API_KEY")
+    )
+    base_url = (
+        environment.get("YOLO_AUTO_BASE_URL")
+        or environment.get("QWEN_API_URL")
+        or "https://api.yolo-auto.com/v1"
+    )
     clients: list[httpx.Client] = []
     clients_lock = threading.Lock()
     thread_state = threading.local()
@@ -999,7 +1083,11 @@ def _wilson(successes: int, trials: int) -> dict[str, float] | None:
     estimate = successes / trials
     denominator = 1 + z * z / trials
     center = (estimate + z * z / (2 * trials)) / denominator
-    margin = z * (estimate * (1 - estimate) / trials + z * z / (4 * trials * trials)) ** 0.5 / denominator
+    margin = (
+        z
+        * (estimate * (1 - estimate) / trials + z * z / (4 * trials * trials)) ** 0.5
+        / denominator
+    )
     return {"lower": max(0.0, center - margin), "upper": min(1.0, center + margin)}
 
 
@@ -1023,7 +1111,11 @@ def _arm_summary(
         }
     )
     error_kinds = Counter(
-        str((prediction.error or {}).get("kind") or (prediction.error or {}).get("type") or "unknown")
+        str(
+            (prediction.error or {}).get("kind")
+            or (prediction.error or {}).get("type")
+            or "unknown"
+        )
         for prediction in predictions
         if prediction.execution_status is not ExecutionStatus.OK
     )
@@ -1045,9 +1137,13 @@ def _arm_summary(
         "unresolved_rate": (len(records) - len(resolved)) / len(records) if records else 0.0,
         "accuracy": correct / len(resolved) if resolved else None,
         "accuracy_wilson_95": _wilson(correct, len(resolved)),
-        "native_probability_count": sum(prediction.probabilities is not None for prediction in predictions),
+        "native_probability_count": sum(
+            prediction.probabilities is not None for prediction in predictions
+        ),
         "usage_metadata_count": len(usage),
-        "status_counts": dict(sorted(Counter(prediction.execution_status.value for prediction in predictions).items())),
+        "status_counts": dict(
+            sorted(Counter(prediction.execution_status.value for prediction in predictions).items())
+        ),
         "error_kinds": dict(sorted(error_kinds.items())),
         "metrics": report,
     }
@@ -1090,7 +1186,9 @@ def _checksums(root: Path) -> None:
     for path in sorted(root.rglob("*")):
         if not path.is_file() or path.name == "checksums.sha256":
             continue
-        entries.append(f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.relative_to(root).as_posix()}")
+        entries.append(
+            f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.relative_to(root).as_posix()}"
+        )
     (root / "checksums.sha256").write_text("\n".join(entries) + "\n", encoding="utf-8")
 
 
@@ -1126,7 +1224,9 @@ def _run(args: argparse.Namespace) -> dict[str, Any]:
     progress_dir = output / "progress"
     progress_dir.mkdir(exist_ok=True)
     pool = Path(args.pool)
-    selected_rows, records, domains = _load_pool(pool, args.partition, args.limit, args.record_ids_file)
+    selected_rows, records, domains = _load_pool(
+        pool, args.partition, args.limit, args.record_ids_file
+    )
     environment = {**_load_dotenv(Path(args.env_file) if args.env_file else None), **os.environ}
     selected_arms = tuple(args.models.split(",")) if args.models else ("grok", "luna", "qwen_flash")
     unknown = sorted(set(selected_arms) - set(ARMS))
@@ -1223,7 +1323,9 @@ def _run(args: argparse.Namespace) -> dict[str, Any]:
         "environment": {"platform": platform.platform(), "python": platform.python_version()},
         "created_at_utc": datetime.now(UTC).isoformat(),
     }
-    (output / "results.json").write_text(json.dumps(results, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    (output / "results.json").write_text(
+        json.dumps(results, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     (output / "differential.json").write_text(
         json.dumps(results["differential"], indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
@@ -1284,7 +1386,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--pool", type=Path, default=POOL)
     parser.add_argument("--experiment-id", default=EXPERIMENT_ID)
-    parser.add_argument("--partition", choices=("public_selection", "blind_holdout", "all"), required=True)
+    parser.add_argument(
+        "--partition", choices=("public_selection", "blind_holdout", "all"), required=True
+    )
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--record-ids-file", type=Path)
     parser.add_argument("--env-file", type=Path)
@@ -1292,7 +1396,11 @@ def main() -> None:
     parser.add_argument("--timeout", type=float, default=120.0)
     parser.add_argument("--workers", type=int, default=1)
     parser.add_argument("--models", help="comma-separated arm IDs; default: grok,luna,qwen_flash")
-    parser.add_argument("--resume", action="store_true", help="resume normalized per-arm checkpoints in an existing run directory")
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="resume normalized per-arm checkpoints in an existing run directory",
+    )
     args = parser.parse_args()
     if args.limit < 0 or args.workers <= 0:
         raise SystemExit("--limit must be non-negative and --workers must be positive")

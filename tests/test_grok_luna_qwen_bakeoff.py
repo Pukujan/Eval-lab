@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import httpx
 
 from eval_lab.schema import GoldLabel, GoldProvenance, JudgeRecord, JudgmentMode, Split
+from scripts import run_grok_luna_qwen_bakeoff as runner
 from scripts.run_grok_luna_qwen_bakeoff import (
     ARMS,
     _differential,
@@ -74,6 +76,49 @@ def test_grok_47_is_a_separate_direct_cli_arm() -> None:
     assert ARMS["grok"]["route"] == ARMS["grok_47"]["route"]
 
 
+def test_grok_prompt_is_passed_by_file_not_argv(monkeypatch) -> None:
+    """The multi-line prompt must never travel through argv.
+
+    On Windows `grok` resolves to `grok.CMD`, and cmd.exe truncates an argument
+    at an embedded newline; an inline `--single=<prompt>` therefore loses the
+    record payload and the model collapses to `fail`/`TIE`. The prompt must go
+    through `--prompt-file` and the temp file must be cleaned up.
+    """
+
+    record = _record()
+    captured: dict[str, object] = {}
+
+    def fake_run(command, **kwargs):
+        captured["command"] = list(command)
+        prompt_path = Path(command[command.index("--prompt-file") + 1])
+        captured["existed"] = prompt_path.exists()
+        captured["prompt"] = prompt_path.read_text(encoding="utf-8")
+        captured["path"] = prompt_path
+        return 0, '{"structuredOutput":{"label":"pass"}}', "", False, 1
+
+    monkeypatch.setattr(runner, "_run_streaming_process", fake_run)
+
+    prediction = runner._run_grok_build_one(
+        record,
+        arm_id="grok",
+        model="grok-4.6",
+        route="direct_grok_build_cli_subscription",
+        environment={},
+        timeout=10.0,
+    )
+
+    prompt = runner._prompt(record)
+    command = captured["command"]
+    assert "\n" in prompt  # the defect only manifests because the prompt is multi-line
+    assert "--prompt-file" in command
+    assert not any(token.startswith("--single") for token in command)
+    assert all(prompt not in token for token in command)
+    assert captured["existed"] is True
+    assert captured["prompt"] == prompt
+    assert prediction.label == "pass"
+    assert not Path(captured["path"]).exists()  # temp prompt file removed in finally
+
+
 def test_qwen_sse_stream_reassembles_typed_content() -> None:
     body = "\n\n".join(
         [
@@ -82,14 +127,14 @@ def test_qwen_sse_stream_reassembles_typed_content() -> None:
                 {"model": "qwen3.8-flash", "choices": [{"delta": {"content": '{"label":"'}}]}
             ),
             "data: "
-            + json.dumps(
-                {"model": "qwen3.8-flash", "choices": [{"delta": {"content": 'pass"}'}}]}
-            ),
+            + json.dumps({"model": "qwen3.8-flash", "choices": [{"delta": {"content": 'pass"}'}}]}),
             'data: {"usage":{"prompt_tokens":3,"completion_tokens":2}}',
             "data: [DONE]",
         ]
     ).encode()
-    response = httpx.Response(200, content=body, request=httpx.Request("POST", "https://example.test"))
+    response = httpx.Response(
+        200, content=body, request=httpx.Request("POST", "https://example.test")
+    )
     content, surfaced, usage, event_count = _qwen_stream_response(response, record=_record())
     assert content == '{"label":"pass"}'
     assert surfaced == ["qwen3.8-flash"]

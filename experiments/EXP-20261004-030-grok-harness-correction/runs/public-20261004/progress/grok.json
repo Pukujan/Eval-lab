@@ -1,0 +1,15 @@
+{
+  "arm_id": "grok",
+  "completed_count": 648,
+  "last_record_id": "single-synthetic-structured-01-subtle",
+  "provider": "xai-grok-build-cli",
+  "record_count": 648,
+  "requested_model": "grok-4.6",
+  "route": "direct_grok_build_cli_subscription",
+  "status_counts": {
+    "ok": 648
+  },
+  "streaming": true,
+  "updated_at_utc": "2026-10-05T04:29:03.390804+00:00",
+  "workers": 4
+}

@@ -55,8 +55,10 @@ this set of questions. They do not say which AI company is best in general.
 4. Small models that run on a laptop were no better than a constant guess. A
    grader that always gives the same answer scores 50.3% here. Kev-4B, the best
    local model, got 64.3%. SemIf 4B got 54.7%, Kev-0.8B 50.3%, Laya 421M 47.8%
-   and Qwen3-4B 44.6%. Grok 4.6 Build, an online grader, got 43.3%, and on the
-   108 "which answer is better" questions it agreed with the key just once.
+   and Qwen3-4B 44.6%. Grok 4.6 Build, an online grader, first looked like it
+   got only 43.3%, but that score was a bug in our own harness, not the model;
+   with the bug fixed it answered 99.1% of the same questions correctly (see
+   "A bug in our own harness" below).
 
 <figure data-figure="finding_accuracy_range">
   <picture>
@@ -154,8 +156,8 @@ and a test fails if the paper drifts from their output.
 
 Most API judges ran cleanly, but several runs lost questions along the way:
 rate limits, answers our program could not read, and local models that declined
-to answer. One model, Grok Build, answered almost everything but was mostly
-wrong, and changing how we asked did not help.
+to answer. One model, Grok Build, looked like it answered almost everything but
+was mostly wrong; that turned out to be a bug in our own harness, not the model.
 
 <details class="deep-dive">
 <summary>Details for deep divers: what each run lost, and the Grok Build follow-up</summary>
@@ -168,15 +170,35 @@ the time. MiMo V2.5 was refused with a payment error (HTTP 402) before it
 answered anything, and two 9-billion-parameter local models did not fit in the
 16 GB test machine.
 
-**Grok Build failed, and fixing the format did not help.** Grok Build
-answered nearly every question but was right only about four times in ten. It
-almost always chose the wrong answer on "which is better" questions. A
-follow-up whose plan was fixed in advance (a *preregistered* experiment,
-EXP-025) tried four different request formats. It found and fixed a real bug
-in our text decoding on Windows, but no format improved the score
-(Appendix D).
+**Grok Build's low scores were our bug, not the model's.** As originally run,
+Grok Build answered nearly every question but was right only about four times
+in ten, and it almost always chose the wrong answer on "which is better"
+questions. That was our fault: on Windows our test harness handed the question
+to the command-line tool in a way that cut it off after its first line, so the
+model never saw the record and fell back to a constant answer. Delivering the
+question through a file instead fixed it, and Grok 4.6 then answered 99.1% of
+the same 760 questions correctly (EXP-030). An earlier follow-up (EXP-025, a
+*preregistered* experiment) had tried four request formats and found that none
+improved the score; it was measuring the bug, so its "no format helped"
+conclusion is void (Appendix D).
 
 </details>
+
+### A bug in our own harness
+
+Our first Grok Build runs looked like a real result: the model answered almost
+every question but was right only about four times in ten. It was not real. On
+Windows, our harness handed the question to the `grok` command-line tool as part
+of the command line, and Windows cut that line off at the first line break, so
+the model received only the instruction ("answer pass or fail") and none of the
+question. With nothing to grade, it fell back to a single constant answer.
+
+The fix was to hand the question to the tool through a file instead of the
+command line. EXP-030 re-ran both Grok models on the same frozen 760 questions
+with that fix: Grok 4.6 answered 99.1% correctly and Grok 4.7 answered 98.5%,
+up from near chance. The Grok numbers in the tables above are the old, broken
+runs; the corrected run is the one to use. EXP-022 and EXP-025 are unchanged on
+disk, but their Grok results are void.
 
 ### The leaders
 
@@ -220,7 +242,8 @@ abstentions count they fall below the always-same-answer baseline.
 Kev-4B was strongest on the two-answer questions (93.5%) and only modestly
 above the baseline on the rest (59.5%). SemIf and Kev-0.8B were not
 meaningfully different from the baseline, and the rest scored below it. Grok
-Build's best run got 43.6% right, significantly below the baseline.
+Build's best run looked like 43.6%, but that was the same harness bug; corrected,
+it is one of the strongest graders here (EXP-030).
 
 <!-- generated:body_local -->
 | Model | Answered | Correct, all 760 |
@@ -306,6 +329,11 @@ Intervals are 95% Wilson intervals.
 
 <details>
 <summary>Full results table (26 rows)</summary>
+
+**The Grok Build rows below are void.** They were produced with the Windows
+harness bug described in "A bug in our own harness" and are not measurements of
+the model. The corrected Grok results are in EXP-030 (Grok 4.6 answers 99.1% of
+the blind questions correctly).
 
 <!-- generated:main -->
 | Arm | Family | Resolved | Coverage | Conditional accuracy (95% CI) | All-record accuracy (95% CI) | Unresolved |
@@ -474,12 +502,16 @@ counts questions where exactly one judge was right.
 
 </details>
 
-### Grok Build protocol ablation
+### Grok Build protocol ablation (void — superseded by EXP-030)
 
-EXP-025 compared four request formats on a 64-question public diagnostic. To
-replace the baseline, a format had to keep at least 95% coverage and improve
-the mode-balanced score by at least 0.10. None did, and the blind rerun of
-the baseline matched the earlier runs (Appendix B).
+**This section is void.** EXP-025 compared four request formats on a 64-question
+public diagnostic and concluded that none beat the typed baseline. That
+conclusion is an artifact of the Windows prompt-truncation bug described in "A
+bug in our own harness": every format delivered the prompt the same broken way,
+so every format scored the same low, mode-collapsed number. The table and figure
+below are the original EXP-025 numbers, kept for the record; they are not a
+measurement of the model. The corrected re-run is EXP-030, where Grok 4.6
+answers 99.1% of the 760 blind questions correctly under the typed baseline.
 
 <!-- generated:grok_ablation -->
 | Request format | Public answered | Mode-balanced score |
@@ -497,10 +529,10 @@ the baseline matched the earlier runs (Appendix B).
     <source media="(prefers-color-scheme: dark)" srcset="figures/benchmark/grok_protocol_ablation.dark.wide.svg" />
     <img src="figures/benchmark/grok_protocol_ablation.light.wide.svg" alt="Bar chart of Grok Build scores under four request formats" />
   </picture>
-  <figcaption>Figure D1. No request format beat the typed baseline on the EXP-025 public diagnostic.</figcaption>
+  <figcaption>Figure D1 (void). The EXP-025 request formats all scored the same low number because the prompt was truncated before reaching the model; this is a harness artifact, not a model result. See EXP-030 for the corrected score.</figcaption>
 </figure>
 
-Source: [EXP-025](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260922-025-grok-protocol-ablation/).
+Source: [EXP-025](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20260922-025-grok-protocol-ablation/) (void); corrected: [EXP-030](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-20261004-030-grok-harness-correction/).
 
 ### Calibration (outside the research question)
 
@@ -530,6 +562,11 @@ Source: [EXP-019](https://github.com/Pukujan/Eval-lab/tree/main/experiments/EXP-
 - **Runs, not models.** Each judge is usually a single run on a single date,
   through a specific route. Only Jev (two runs), Grok 4.6 (three) and Qwen
   Flash (four setups) were repeated. Providers can change behaviour over time.
+- **The Grok rows were a harness bug.** Grok 4.6's original runs (EXP-015,
+  EXP-022) and the EXP-025 ablation scored near chance because our Windows
+  harness truncated the prompt before it reached the model. Those numbers are
+  void and are superseded by EXP-030; they still appear in the tables above,
+  marked as void.
 - **Local models used a different harness** and different length limits.
   Two 9B models were not run.
 - **The Qwen explanation is inferred.** It rests on the recorded settings and

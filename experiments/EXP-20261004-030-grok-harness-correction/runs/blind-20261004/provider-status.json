@@ -1,0 +1,34 @@
+{
+  "arms": {
+    "grok": {
+      "error_kinds": {},
+      "provider": "xai-grok-build-cli",
+      "requested_model": "grok-4.6",
+      "route": "direct_grok_build_cli_subscription",
+      "status_counts": {
+        "ok": 760
+      },
+      "surfaced_model_ids": [
+        "grok-4.6-build"
+      ]
+    },
+    "grok_47": {
+      "error_kinds": {
+        "process_exit": 2
+      },
+      "provider": "xai-grok-build-cli",
+      "requested_model": "grok-4.7",
+      "route": "direct_grok_build_cli_subscription",
+      "status_counts": {
+        "ok": 758,
+        "provider_error": 2
+      },
+      "surfaced_model_ids": [
+        "grok-4.7-build"
+      ]
+    }
+  },
+  "experiment_id": "EXP-20261004-030-grok-harness-correction",
+  "partition": "blind_holdout",
+  "run_id": "blind-20261004"
+}
