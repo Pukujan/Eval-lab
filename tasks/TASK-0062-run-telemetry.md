@@ -53,6 +53,8 @@ Changed:
 - `.github/workflows/ci.yml` — one `run_telemetry.py --check` step in the
   `quality` job.
 - `AGENTS.md` — a managed block recording the run-telemetry ledger rule.
+- `checkpoints/CURRENT.md` — a checkpoint entry for the ledger and the `gates`
+  dependency resolution.
 
 ## Acceptance criteria
 
@@ -95,7 +97,7 @@ Changed:
 
 ## Checkpoint log
 
-### 2026-10-05 — task opened, design fixed
+### 2026-10-04 — task opened, design fixed
 
 - Enumerated all 140 `results.json` under `experiments/` and grouped them by
   directory convention; found 10 run directories without `results.json`
@@ -106,7 +108,7 @@ Changed:
   risk to address.
 - Files changed: `tasks/TASK-0062-run-telemetry.md` (this file).
 
-### 2026-10-05 — implemented, generated, and verified
+### 2026-10-04 — implemented, generated, and verified
 
 - Added `src/eval_lab/telemetry.py` (derivation + findings), `scripts/run_telemetry.py`
   (rebuild/findings/verify/--check), `schemas/run-telemetry.v1.schema.json`,
@@ -126,7 +128,7 @@ Changed:
   and findings.
 - Files changed: the ten files listed under Outputs.
 
-### 2026-10-05 — CI caught a cross-platform hash bug; fixed
+### 2026-10-04 — CI caught a cross-platform hash bug; fixed
 
 - PR #79 CI failed `test_committed_ledger_is_current`: every `results_sha256`
   differed. Root cause: git checks `results.json` out with CRLF on a Windows
@@ -141,8 +143,30 @@ Changed:
   `--check` (current), `ruff check`/`format --check` clean, `mypy` clean,
   `pytest tests -q` → **202 passed**.
 
+### 2026-10-04 — branch updated onto main for the required `gates` check
+
+- PR #79 reported `mergeStateStatus: BLOCKED` even though both required
+  `quality (Python 3.11/3.12)` checks passed on head `ce0743a`. Cause: a new
+  `main` ruleset ("main protection", created 2026-10-04T20:10) requires a single
+  status check named `gates`, which is produced only by the TASK-0063 workflow
+  change (`gates` job: `needs: [quality, stack]`). PR #79 branched before that
+  job existed, so it could never satisfy the ruleset.
+- Resolution: PR #80 (TASK-0063, issue #77) was `CLEAN` with `gates` passing, so
+  it was auto-merged (squash) as `c944ee0`; `origin/main` was then merged into
+  this branch as `d5adbd2`, bringing the `stack` and `gates` jobs into
+  `.github/workflows/ci.yml`.
+- Local gates after the merge: repo contract OK; workspace policy OK; `ruff
+  check .` clean; `ruff format --check` clean; `mypy src/eval_lab` clean;
+  `run_telemetry.py --check` current (150 records, schema valid, keys unique);
+  `pytest tests -q` → **198 passed** (TASK-0063 rewrote the workspace-policy and
+  checkpoint-automation tests, so the count differs from the pre-merge 202).
+- Files changed: `.github/workflows/ci.yml` and `AGENTS.md` (merge), the
+  TASK-0063 tree, and this task file.
+
 ## Handoff
 
-Next atomic action: publish the checkpoint (commit + PR for issue #78) via
-`scripts/publish_checkpoint.py` with the ten explicit paths, then let CI confirm
-`run_telemetry.py --check` in the quality job. No unresolved questions.
+Next atomic action: push `d5adbd2` so CI re-runs on the merged head with the
+`gates` job present; the existing auto-merge (squash) on PR #79 then merges once
+`quality` and `gates` pass. After merge, run `scripts/finalize_checkpoint.py` to
+confirm the merge and fast-forward the canonical checkout. No unresolved
+questions.
