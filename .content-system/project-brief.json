@@ -1,5 +1,5 @@
 {
-  "schema_version": "content-generation.project-brief.v1",
+  "schema_version": "content-generation.project-brief.v2",
   "project": "Eval Lab",
   "audience": [
     "researchers comparing AI judge systems",
@@ -16,10 +16,78 @@
     "keep an experiment and evidence trail"
   ],
   "evidence": [
-    {"claim": "The repository defines objective-first gold provenance and split discipline.", "source": "PROJECT.md; docs/PDD.md; docs/SDD.md", "status": "shipped"},
-    {"claim": "The repository contains deterministic tests and experiment artifacts.", "source": "tests/; experiments/", "status": "shipped"},
-    {"claim": "The current local test suite passes.", "source": "TASK-0013 checkpoint and CI run 35542482242", "status": "shipped"},
-    {"claim": "Selective routing can improve operational reliability.", "source": "docs/PDD.md; docs/SDD.md; selective escalation artifacts", "status": "experimentally_supported"}
+    {
+      "claim": "The repository defines objective-first gold provenance and split discipline.",
+      "source": "PROJECT.md",
+      "supports": "The project contract states that objective benchmarks and deterministic verifiers are the primary source of truth.",
+      "limits": "A written contract does not show that every experiment followed it; check each experiment record.",
+      "status": "shipped",
+      "recorded_at": "2026-10-04T20:00:00-04:00",
+      "cite_in_readme": false,
+      "source_revision": {
+        "kind": "repository_artifact",
+        "reference": "Pukujan/Eval-lab@d16397d:PROJECT.md",
+        "repository": "Pukujan/Eval-lab",
+        "commit": "d16397dcbc6d75be1b15aab8f76d69cd38af1dc6",
+        "path": "PROJECT.md",
+        "locator": "Main goal",
+        "uri": "https://github.com/Pukujan/Eval-lab/blob/d16397dcbc6d75be1b15aab8f76d69cd38af1dc6/PROJECT.md"
+      }
+    },
+    {
+      "claim": "The repository contains deterministic tests and experiment artifacts.",
+      "source": "tests",
+      "supports": "The test suite and committed experiment directories exist at this commit.",
+      "limits": "Presence of tests does not say how much behaviour they cover.",
+      "status": "shipped",
+      "recorded_at": "2026-10-04T20:00:00-04:00",
+      "cite_in_readme": false,
+      "source_revision": {
+        "kind": "repository_artifact",
+        "reference": "Pukujan/Eval-lab@d16397d:tests",
+        "repository": "Pukujan/Eval-lab",
+        "commit": "d16397dcbc6d75be1b15aab8f76d69cd38af1dc6",
+        "path": "tests",
+        "locator": "tests/ directory",
+        "uri": "https://github.com/Pukujan/Eval-lab/blob/d16397dcbc6d75be1b15aab8f76d69cd38af1dc6/tests"
+      }
+    },
+    {
+      "claim": "Every pull request runs the contract, lint, type and unit-test gates in CI.",
+      "source": ".github/workflows/ci.yml",
+      "supports": "The CI workflow runs the repository contract, Ruff, mypy, pytest and artifact validation on Python 3.11 and 3.12.",
+      "limits": "The workflow existing does not mean a given run passed; check the run for the commit in question.",
+      "status": "shipped",
+      "recorded_at": "2026-10-04T20:00:00-04:00",
+      "cite_in_readme": false,
+      "source_revision": {
+        "kind": "repository_artifact",
+        "reference": "Pukujan/Eval-lab@d16397d:.github/workflows/ci.yml",
+        "repository": "Pukujan/Eval-lab",
+        "commit": "d16397dcbc6d75be1b15aab8f76d69cd38af1dc6",
+        "path": ".github/workflows/ci.yml",
+        "locator": "jobs.quality",
+        "uri": "https://github.com/Pukujan/Eval-lab/blob/d16397dcbc6d75be1b15aab8f76d69cd38af1dc6/.github/workflows/ci.yml"
+      }
+    },
+    {
+      "claim": "Selective routing can improve operational reliability.",
+      "source": "docs/PDD.md",
+      "supports": "The product design and the selective-escalation experiments describe routing uncertain cases to a stronger judge.",
+      "limits": "Results come from the frozen benchmarks in this repository and may not transfer to other domains.",
+      "status": "experimentally_supported",
+      "recorded_at": "2026-10-04T20:00:00-04:00",
+      "cite_in_readme": false,
+      "source_revision": {
+        "kind": "repository_artifact",
+        "reference": "Pukujan/Eval-lab@d16397d:docs/PDD.md",
+        "repository": "Pukujan/Eval-lab",
+        "commit": "d16397dcbc6d75be1b15aab8f76d69cd38af1dc6",
+        "path": "docs/PDD.md",
+        "locator": "selective escalation",
+        "uri": "https://github.com/Pukujan/Eval-lab/blob/d16397dcbc6d75be1b15aab8f76d69cd38af1dc6/docs/PDD.md"
+      }
+    }
   ],
   "boundaries": [
     "A judge model is not automatically ground truth.",

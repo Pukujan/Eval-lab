@@ -97,3 +97,78 @@ jobs:
 
       - name: Build distributions
         run: uv build --out-dir "$RUNNER_TEMP/eval-lab-dist"
+
+  stack:
+    name: stack (PCM + CGM + OIO + ACS hotload)
+    runs-on: ubuntu-latest
+    env:
+      PCM_COMMIT: 4e2385474b4af9249ca009cbdcb38c4498932475
+      CGM_COMMIT: 6831f91e165b62d719c05eb492f7375fa932b560
+      ACS_COMMIT: 38f8f52e8d210db3ce258bf911ebb560c6e0fe4c
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.7"
+          python-version: "3.12"
+
+      - name: Fetch pinned stack helpers
+        shell: bash
+        run: |
+          set -euo pipefail
+          deps="$RUNNER_TEMP/deps"
+          echo "DEPS=$deps" >> "$GITHUB_ENV"
+          fetch() {
+            git init --quiet "$deps/$1"
+            git -C "$deps/$1" fetch --quiet --depth 1 "https://github.com/Pukujan/$2.git" "$3"
+            git -C "$deps/$1" checkout --quiet FETCH_HEAD
+          }
+          fetch pcm project-continuity-modules "$PCM_COMMIT"
+          fetch cgm content-generation-modules "$CGM_COMMIT"
+          fetch acs agent-custom-setup "$ACS_COMMIT"
+          git clone --quiet --depth 1 https://github.com/Pukujan/agent-stack-train.git "$deps/train"
+
+      - name: Stack manifest matches the release train
+        run: uv run --no-project --with jsonschema==4.23.0 python "$DEPS/train/scripts/check_manifest.py" --manifest stack-manifest.json --train "$DEPS/train/stack-releases.json"
+
+      - name: PCM continuity validate and preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv run --project "$DEPS/pcm" continuity validate --root "$GITHUB_WORKSPACE"
+          uv run --project "$DEPS/pcm" continuity preflight --root "$GITHUB_WORKSPACE"
+
+      - name: CGM adapter is VALID
+        run: uv run --no-project python "$DEPS/cgm/scripts/validate_content_system.py" --root "$DEPS/cgm" --adapter .content-system --project-root .
+
+      - name: OIO managed files match
+        run: uv run --no-project --with-requirements .oio/requirements.txt python .github/scripts/oio_installer.py --target "$GITHUB_WORKSPACE" --check
+
+      - name: ACS hotload check
+        shell: bash
+        run: |
+          set -euo pipefail
+          module="$DEPS/acs/modules/coordination/multi-agent-hotload/v0.1.0"
+          uv run --no-project --with jsonschema==4.23.0 python "$module/scripts/hotload_check.py" \
+            --root "$module" \
+            --assignment "$GITHUB_WORKSPACE/.coord/assignment.json" \
+            --cgm-root "$DEPS/cgm" \
+            --adopter-root "$GITHUB_WORKSPACE"
+
+  gates:
+    name: gates
+    if: always()
+    needs: [quality, stack]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every upstream job to succeed
+        env:
+          QUALITY: ${{ needs.quality.result }}
+          STACK: ${{ needs.stack.result }}
+        run: |
+          set -euo pipefail
+          test "$QUALITY" = "success"
+          test "$STACK" = "success"

@@ -246,21 +246,20 @@ For the reusable writing and visual-generation recipe behind this README, see [`
 
 The **core contract and tests do not require paid provider access**.
 
-```bash
-python -m venv .venv
-# activate the environment
-python -m pip install --upgrade pip
-pip install -e "[dev]"
+```powershell
+uv sync --extra dev
 
-python scripts/check_repo_contract.py
-ruff check .
-pytest -q
+uv run python scripts/check_repo_contract.py
+uv run ruff check .
+uv run pytest -q
 ```
+
+`uv sync` creates the one project `.venv` at the repository root from `pyproject.toml` and `uv.lock`. Do not use `pip install` or `python -m venv`.
 
 For an optional Jev smoke test, configure the required local credential and run:
 
-```bash
-python scripts/jev_smoke.py
+```powershell
+uv run python scripts/jev_smoke.py
 ```
 
 Keep credentials in local environment variables or ignored `.env` files. **Never commit keys, tokens, private benchmark material, model weights, or caches.**
@@ -293,12 +292,8 @@ Keep credentials in local environment variables or ignored `.env` files. **Never
 
 Because a judge that **knows when it is likely to be wrong** can be more useful operationally than a judge with a similar average accuracy but no reliable sense of uncertainty.
 
-## Content and visual contract
-
-This README follows the pinned [`content-generation-modules` v0.1.2](https://github.com/Pukujan/content-generation-modules/releases/tag/v0.1.2) adapter in [`.content-system/`](.content-system/). **Narrative raster images carry a short title and subtitle** so each visual can introduce one idea without replacing the explanation; SVG research icons remain text-free. The responsive review and prompt record are in [`docs/content-system-preview.md`](docs/content-system-preview.md) and [`docs/content-system-preview.html`](docs/content-system-preview.html).
-
 ## Contributing
 
-Please read [`AGENTS.md`](AGENTS.md) and [`docs/HANDOFF_PROTOCOL.md`](docs/HANDOFF_PROTOCOL.md) before starting work. Use **one task file, one branch, and one worktree**. Record the exact files changed, commands run, validation results, decisions, unresolved questions, and next atomic action before handing work off.
+Please read [`AGENTS.md`](AGENTS.md) and [`docs/HANDOFF_PROTOCOL.md`](docs/HANDOFF_PROTOCOL.md) before starting work. Use **one task file and one branch** in the single checkout. Record the exact files changed, commands run, validation results, decisions, unresolved questions, and next atomic action before handing work off.
 
 The project is early on purpose. A careful negative result, a reproducible provider failure, or a smaller-than-expected safe coverage number is still useful evidence.

@@ -41,9 +41,11 @@ assets:
   - path: assets/eval-lab-problem.png
     role: problem_story_illustration
     orientation: landscape
-    dimensions: "1672x941"
-    text_policy: no_readable_text
-    on_image_text: []
+    dimensions: "1671x941"
+    text_policy: exact_title_and_subtitle
+    on_image_text:
+      - "Plausible is not proven"
+      - "A confident answer still needs evidence before it becomes a judgment."
     reference: assets/eval-lab-banner.png
     prompt_recipe: body-problem-v1
     review: approved
@@ -55,8 +57,10 @@ assets:
     role: system_explainer
     orientation: square
     dimensions: "1254x1254"
-    text_policy: no_readable_text
-    on_image_text: []
+    text_policy: exact_title_and_subtitle
+    on_image_text:
+      - "Judge the uncertainty"
+      - "Compare evidence, measure confidence, and route the hard cases."
     reference: assets/eval-lab-banner.png
     prompt_recipe: body-system-square-v2
     review: approved_after_revision
@@ -71,8 +75,10 @@ assets:
     role: evidence_and_calibration_illustration
     orientation: portrait
     dimensions: "1024x1536"
-    text_policy: no_readable_text
-    on_image_text: []
+    text_policy: exact_title_and_subtitle
+    on_image_text:
+      - "Keep the trail"
+      - "Every verdict should point back to data, rules, and review."
     reference: assets/eval-lab-banner.png
     prompt_recipe: body-evidence-portrait-v1
     review: approved

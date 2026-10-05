@@ -53,27 +53,26 @@ def test_task_worktree_names_are_validated() -> None:
     assert not TASK_DIRECTORY.fullmatch("scratch")
 
 
-def test_finalizer_path_must_be_canonical_worktrees_child(tmp_path: Path) -> None:
+def test_finalizer_refuses_linked_worktree_cleanup(tmp_path: Path) -> None:
     root = tmp_path / "eval-lab"
-    valid = root / "worktrees" / "TASK-0051"
-    invalid = root / ".worktrees" / "TASK-0051"
-    valid.parent.mkdir(parents=True)
-    invalid.parent.mkdir()
-    assert validate_worktree_path(root, valid) == valid.resolve()
-    with pytest.raises(ValueError, match="outside worktrees"):
-        validate_worktree_path(root, invalid)
+    for candidate in (root / "worktrees" / "TASK-0051", tmp_path / "other" / "TASK-0051"):
+        with pytest.raises(ValueError, match="linked worktrees are not used"):
+            validate_worktree_path(root, candidate)
 
 
-def test_finalizer_requires_both_ci_matrix_checks() -> None:
+def test_finalizer_requires_ci_matrix_and_gates_checks() -> None:
     passing = {
         "statusCheckRollup": [
             {"name": "quality (Python 3.11)", "conclusion": "SUCCESS"},
             {"name": "quality (Python 3.12)", "conclusion": "SUCCESS"},
+            {"name": "gates", "conclusion": "SUCCESS"},
         ]
     }
     failing = {"statusCheckRollup": [{"name": "quality (Python 3.11)", "conclusion": "SUCCESS"}]}
+    no_gates = {"statusCheckRollup": passing["statusCheckRollup"][:2]}
     assert passing_required_checks(passing)
     assert not passing_required_checks(failing)
+    assert not passing_required_checks(no_gates)
 
 
 def test_finalizer_preserves_worktree_when_canonical_checkout_is_dirty(
@@ -91,7 +90,8 @@ def test_finalizer_preserves_worktree_when_canonical_checkout_is_dirty(
                 '"mergeCommit":{"oid":"def456"},'
                 '"statusCheckRollup":['
                 '{"name":"quality (Python 3.11)","conclusion":"SUCCESS"},'
-                '{"name":"quality (Python 3.12)","conclusion":"SUCCESS"}],'
+                '{"name":"quality (Python 3.12)","conclusion":"SUCCESS"},'
+                '{"name":"gates","conclusion":"SUCCESS"}],'
                 '"body":"Task issue: #40"}'
             )
         if command[:3] == ["git", "worktree", "list"]:
@@ -127,7 +127,8 @@ def test_finalizer_updates_remote_tracking_ref_before_comparing_main(
                 '"baseRefName":"main","mergeCommit":{"oid":"def456"},'
                 '"statusCheckRollup":['
                 '{"name":"quality (Python 3.11)","conclusion":"SUCCESS"},'
-                '{"name":"quality (Python 3.12)","conclusion":"SUCCESS"}],'
+                '{"name":"quality (Python 3.12)","conclusion":"SUCCESS"},'
+                '{"name":"gates","conclusion":"SUCCESS"}],'
                 '"body":"Task issue: #40"}'
             )
         if command == ["git", "status", "--porcelain=v1", "--untracked-files=all"]:
