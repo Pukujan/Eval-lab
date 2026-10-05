@@ -6,13 +6,13 @@
 
 ## 2026-10-04 - TASK-0063 fresh NTFS clone and stack install
 
-GitHub issue #77. The canonical checkout is now `D:\development\eval-lab` with
-sibling task worktrees in `D:\development\eval-lab-wt\<task-id>`. Setup is
-uv-only. The PCM continuity overlay, CGM 0.5.12 adapter, OIO 0.1.0 issue intake
-and ACS multi-agent-hotload 0.1.0 runtime (`.coord/`) are installed, pinned by
+GitHub issue #77. `D:\development\eval-lab` is the single checkout; no Git
+worktrees or sibling clones go under `D:\development`, and scratch or helper
+clones live outside it. Setup is uv-only. The PCM continuity overlay
+(single-checkout), CGM 0.5.12 adapter, OIO 0.1.0 issue intake and ACS
+multi-agent-hotload 0.1.0 runtime (`.coord/`) are installed, pinned by
 `stack-manifest.json` (release train 2026-10-01), and checked by the CI `stack`
-and `gates` jobs. Open owner decision: PCM worktree mode versus the sibling
-worktree layout. See `tasks/TASK-0063-ntfs-deps-acs-hotload.md`.
+and `gates` jobs. See `tasks/TASK-0063-ntfs-deps-acs-hotload.md`.
 
 ## 2026-09-24 — TASK-0061 plain-language paper and simple charts
 

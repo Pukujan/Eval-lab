@@ -294,6 +294,6 @@ Because a judge that **knows when it is likely to be wrong** can be more useful 
 
 ## Contributing
 
-Please read [`AGENTS.md`](AGENTS.md) and [`docs/HANDOFF_PROTOCOL.md`](docs/HANDOFF_PROTOCOL.md) before starting work. Use **one task file, one branch, and one worktree**. Record the exact files changed, commands run, validation results, decisions, unresolved questions, and next atomic action before handing work off.
+Please read [`AGENTS.md`](AGENTS.md) and [`docs/HANDOFF_PROTOCOL.md`](docs/HANDOFF_PROTOCOL.md) before starting work. Use **one task file and one branch** in the single checkout. Record the exact files changed, commands run, validation results, decisions, unresolved questions, and next atomic action before handing work off.
 
 The project is early on purpose. A careful negative result, a reproducible provider failure, or a smaller-than-expected safe coverage number is still useful evidence.

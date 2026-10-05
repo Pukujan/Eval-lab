@@ -14,13 +14,12 @@ CGM 0.5.12 `6831f91e` (all eight modules), OIO 0.1.0 and ACS multi-agent-hotload
 
 ## Scope
 
-- Docs: uv-only setup in `README.md` and `docs/LOCAL_BOOTSTRAP_LUNA.md`; canonical
-  checkout `D:\development\eval-lab` and sibling worktrees
-  `D:\development\eval-lab-wt\<task-id>` in `AGENTS.md`,
-  `docs/WORKSPACE_POLICY.md` and `docs/architecture/live-app.md`.
-- Workspace guard: `scripts/check_workspace_policy.py`,
-  `scripts/finalize_checkpoint.py` and their tests accept worktrees only under
-  the sibling `<root>-wt` directory.
+- Docs: uv-only setup in `README.md` and `docs/LOCAL_BOOTSTRAP_LUNA.md`;
+  `D:\development\eval-lab` as the single checkout, with no worktrees or sibling
+  clones under `D:\development` and scratch outside it, in `AGENTS.md`,
+  `docs/WORKSPACE_POLICY.md`, `docs/architecture/live-app.md` and `tasks/README.md`.
+- Workspace guard: `scripts/check_workspace_policy.py` rejects every linked
+  worktree; `scripts/finalize_checkpoint.py` refuses worktree cleanup; tests updated.
 - PCM overlay: `.continuity/config.json` (single-checkout), `.continuity/tasks/`,
   `schemas/v1/**` copied from the PCM pin, `continuity:project` /
   `continuity:current` markers, issue-log-format block in `AGENTS.md` and the PR
@@ -58,10 +57,12 @@ CGM 0.5.12 `6831f91e` (all eight modules), OIO 0.1.0 and ACS multi-agent-hotload
 - `hotload_check.py --assignment .coord/assignment.json` -> `hotload_check: OK`.
 - `watchdog_check.py --dry-run` -> `vacant` (no boss has claimed the seat).
 - `check_manifest.py` -> `OK: eval-lab agrees with release train 2026-10-01 (4 components)`.
-- Local `continuity validate` and the workspace guard fail only because another
-  agent's linked worktree `D:\development\eval-lab-wt\run-ledger` is registered
-  on this checkout (not a `TASK-####` name, and PCM single-checkout mode allows
-  no linked worktrees). CI runs on a clean single checkout.
+- Owner rule (2026-10-04 20:01 ET): `D:\development` holds only main checkouts.
+  The TASK-0062 linked worktree (`task/TASK-0062-run-telemetry`, clean, HEAD
+  `56dd1dd` = PR #79 head) was removed with a normal `git worktree remove` and
+  pruned; helper clones moved to `C:\work\_deps`.
+- After that: `continuity validate` -> `VALID`; `continuity preflight` ->
+  `MODE: TARGET_VALID`; repository contract OK; workspace guard OK; `186 passed`.
 - OIO installer refuses to run on Windows (no descriptor-relative no-follow
   operations), so it was run on Linux against a scratch Git repo with the same
   `origin` and its output copied in; the managed files are byte-identical to
@@ -69,10 +70,7 @@ CGM 0.5.12 `6831f91e` (all eight modules), OIO 0.1.0 and ACS multi-agent-hotload
 
 ## Decisions
 
-- PCM workspace mode is `single-checkout`. PCM's `managed-worktrees` mode wants
-  worktrees inside the checkout at `pcm/worktree/<TASK-ID>`, which conflicts with
-  the owner's sibling `eval-lab-wt` layout; neither PCM mode accepts sibling
-  worktrees. Reported for an owner decision.
+- PCM workspace mode is `single-checkout`, matching the one-checkout rule.
 - ACS ships no gates workflow stub at `e1d7732`; the `gates` aggregate follows
   PCM `docs/adopter-enforcement.md` instead.
 - No auto-merge workflow is added (frontend-bakeoff has one); merging stays with
@@ -80,6 +78,5 @@ CGM 0.5.12 `6831f91e` (all eight modules), OIO 0.1.0 and ACS multi-agent-hotload
 
 ## Handoff
 
-Next atomic action: owner reviews the PR; then decide the PCM worktree-mode
-conflict and apply the repository settings listed in the PR (ruleset requiring
-`gates`, auto-merge) if wanted.
+Next atomic action: owner reviews the PR, then applies the repository settings
+listed in the PR (ruleset requiring `gates`, auto-merge) if wanted.

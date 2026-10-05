@@ -26,14 +26,11 @@ def normalize(path: Path) -> str:
 
 
 def validate_worktree_path(root: Path, path: Path) -> Path:
-    root = root.resolve()
-    path = path.resolve()
-    worktrees_root = root.parent / f"{root.name}-wt"
-    if path.parent != worktrees_root or not TASK_DIRECTORY.fullmatch(path.name):
-        raise ValueError(
-            f"refusing to remove a path outside the worktrees directory {worktrees_root}/<task-id>: {path}"
-        )
-    return path
+    """Linked worktrees are not used: the canonical checkout is the only checkout."""
+    raise ValueError(
+        "linked worktrees are not used; the canonical checkout "
+        f"{root.resolve()} is the only checkout, refusing to remove {path.resolve()}"
+    )
 
 
 def passing_required_checks(pr: dict[str, object]) -> bool:
@@ -156,7 +153,7 @@ def main() -> int:
     parser.add_argument(
         "--worktree",
         type=Path,
-        help="merged task worktree under the sibling <canonical-root>-wt directory",
+        help="unsupported: linked worktrees are not used (kept so old calls fail closed)",
     )
     args = parser.parse_args()
     try:

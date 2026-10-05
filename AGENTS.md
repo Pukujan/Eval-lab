@@ -18,15 +18,14 @@ Before doing work, read only:
 
 Do not scan unrelated historical files or experiments unless the task explicitly requires them.
 
-## One canonical checkout; temporary sibling task worktrees
+## One canonical checkout; no worktrees or sibling clones
 
-The sole durable local Eval Lab checkout is `D:\development\eval-lab`. Do not
-create another clone, copied project directory, or task-named sibling
-checkout. Work in the canonical folder by default. A temporary linked
-worktree is allowed when a task genuinely needs isolation or parallel work;
-create it only at `D:\development\eval-lab-wt\<task-id>`. Keep worktrees
-limited to active tasks and remove them after their work is durably checkpointed
-and complete.
+`D:\development\eval-lab` is the single local Eval Lab checkout. `D:\development`
+holds only the main checkout of each repository: never create a Git worktree,
+a second clone, a copied project directory, or a task-named sibling folder
+under `D:\development`. Scratch files, helper-repository clones (for example
+the pinned PCM, CGM, OIO and ACS checkouts) and temporary output live outside
+`D:\development`, for example under `C:\work` or `%TEMP%`.
 
 Branch format:
 
@@ -34,26 +33,20 @@ Branch format:
 task/TASK-0001-short-name
 ```
 
-Before switching task branches in the canonical checkout, finish a coherent
-checkpoint, commit it, push it to GitHub, and confirm the working tree is clean.
-Use a separate task worktree when parallel tasks need independent working
-trees; do not stash work to make parallel tasks appear safe. Each task branch
-uses the `task/TASK-0001-short-name` format. When idle on `main`, fetch and
-fast-forward the canonical checkout to `origin/main`; do not create a second
-directory to preserve an old branch.
+Tasks are serialized in the one checkout. Before switching task branches,
+finish a coherent checkpoint, commit it, push it to GitHub, and confirm the
+working tree is clean; do not stash work to make parallel tasks appear safe.
+When idle on `main`, fetch and fast-forward the checkout to `origin/main`; do
+not create a second directory to preserve an old branch.
 
-Never run `git clone` for Eval Lab. Never create a linked worktree outside
-`D:\development\eval-lab-wt`. If GitHub or the current checkout is
-unavailable, stop and report the blocker rather than creating another local
-copy.
+If GitHub or the checkout is unavailable, stop and report the blocker rather
+than creating another local copy.
 
-When a worktree task is complete, verify its branch and all tracked,
-untracked, and ignored state. Push the checkpoint and open/update its PR; wait
-for required CI and merge the PR before closing the task. Preserve any unique
-state that is not in Git. Remove the clean worktree with a normal, non-forced
-`git worktree remove`, then confirm it is absent from `git worktree list` and
-the canonical checkout is synchronized with `origin/main`. Do not remove an
-active task worktree merely because its branch has been pushed.
+When a task is complete, verify its branch and all tracked, untracked, and
+ignored state. Push the checkpoint and open or update its PR; wait for required
+CI and merge the PR before closing the task. Preserve any unique state that is
+not in Git, then confirm `git worktree list` shows only the one checkout and
+that it is synchronized with `origin/main`.
 
 A task may modify only the files declared in its task file unless the task file is updated first.
 
@@ -62,16 +55,12 @@ A task may modify only the files declared in its task file unless the task file 
 Use the one canonical repository-root `.venv`, managed by the single `uv`
 executable available on `PATH`. Resolve and synchronize from the root
 `pyproject.toml` and `uv.lock` with `uv sync --extra dev`; run Python tools
-through `.venv\Scripts\python.exe` on Windows. A task worktree must reuse this
-environment; do not make task-specific virtual environments or copy `.venv`.
-Verify that tools import the worktree's source, not the canonical checkout's
-source. If that cannot be done without another install, serialize the task in
-the canonical checkout instead.
+through `.venv\Scripts\python.exe` on Windows. Do not make task-specific
+virtual environments or copy `.venv`.
 
 This project is Python-only. Do not create `node_modules` here. If a future,
 approved change adds a Node package, its single `node_modules` must live at the
-repository root and be managed from the root lockfile. A worktree may resolve
-that root install, but must never install dependencies locally. If the task
+repository root and be managed from the root lockfile. If the task
 changes dependency requirements incompatibly, serialize and synchronize the
 canonical environment in place. Use package-manager caches for download reuse,
 not duplicate project installs.
@@ -94,8 +83,7 @@ dependency environment.
 
 Run `python scripts/check_workspace_policy.py --canonical-root D:\development\eval-lab`
 before task work and after cleanup. The repository contract check also enforces
-the canonical path, sibling `eval-lab-wt` temporary-worktree placement, and one-environment
-rules.
+the canonical path, the no-linked-worktree rule, and the one-environment rule.
 
 ## GitHub issue and checkpoint policy
 
@@ -119,9 +107,8 @@ A checkpoint is complete only after GitHub confirms its PR merged with required
 CI successful. Do not leave completed work or handoff state only in chat or a
 local branch. After merge, run
 `scripts/finalize_checkpoint.py` to confirm the merge, audit tracked,
-untracked, and ignored state, remove a clean linked worktree normally, and
-fast-forward the canonical checkout to `origin/main`. Never force-remove a
-worktree or discard unique state.
+untracked, and ignored state, and fast-forward the canonical checkout to
+`origin/main`. Never discard unique state.
 
 ## Required checkpoint behavior
 

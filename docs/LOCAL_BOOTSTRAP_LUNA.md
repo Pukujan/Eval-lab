@@ -25,23 +25,15 @@ git fetch --all --prune
 git switch main
 ```
 
-If obsolete local worktrees exist from an older clone:
+`D:\development\eval-lab` is the single checkout; never add a Git worktree or a
+second clone under `D:\development`. If obsolete worktrees are registered from an
+older setup, check `git worktree list`, preserve any unique work, and remove them.
 
-```bash
-git worktree list
-git worktree prune
-```
-
-Remove only obsolete worktrees the user no longer needs.
-
-Create task worktree:
+Create the task branch in the checkout:
 
 ```powershell
-git worktree add D:\development\eval-lab-wt\TASK-0001-bootstrap-lab -b task/TASK-0001-bootstrap-lab origin/main
-cd D:\development\eval-lab-wt\TASK-0001-bootstrap-lab
+git switch -c task/TASK-0001-bootstrap-lab origin/main
 ```
-
-The worktree reuses the canonical root `.venv`; never create a second environment in it.
 
 Create or synchronize the one project environment from the canonical checkout
 (`uv sync` builds the root `.venv` from `pyproject.toml` and `uv.lock`; do not use pip):

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import argparse
 import os
-import re
 import subprocess
 import sys
 from collections.abc import Iterable
@@ -11,13 +10,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 ENVIRONMENT_DIRS = {".venv", "node_modules"}
 NODE_LOCKFILES = ("pnpm-lock.yaml", "package-lock.json", "yarn.lock", "bun.lock", "bun.lockb")
-TASK_WORKTREE_NAME = re.compile(r"TASK-\d{4}(?:-[a-z0-9]+(?:-[a-z0-9]+)*)?\Z", re.IGNORECASE)
-WORKTREES_SUFFIX = "-wt"
-
-
-def worktrees_directory(root: Path) -> Path:
-    """Temporary task worktrees live in a sibling directory, e.g. eval-lab-wt/<task-id>."""
-    return root.resolve().parent / f"{root.resolve().name}{WORKTREES_SUFFIX}"
 
 
 def _normalized(path: Path) -> str:
@@ -59,7 +51,6 @@ def _check_worktrees(
             f"canonical checkout is missing from its Git worktree list: {root.resolve()}"
         )
 
-    worktrees_root = worktrees_directory(root)
     seen: set[str] = set()
     for path in paths:
         path_key = _normalized(path)
@@ -70,19 +61,10 @@ def _check_worktrees(
         if path_key == root_key:
             continue
 
-        resolved = path.resolve()
-        if resolved.parent != worktrees_root:
-            violations.append(
-                "temporary worktrees must be direct children of the canonical "
-                f"worktrees directory {worktrees_root}: {resolved}"
-            )
-        if not TASK_WORKTREE_NAME.fullmatch(resolved.name):
-            violations.append(
-                "temporary worktree directory must use the repository task ID "
-                f"format TASK-####[-short-name]: {resolved}"
-            )
-        if not resolved.is_dir():
-            violations.append(f"registered temporary worktree path is missing: {resolved}")
+        violations.append(
+            "linked worktrees are not allowed; the canonical checkout is the only "
+            f"checkout: {path.resolve()}"
+        )
     return violations
 
 
@@ -166,7 +148,7 @@ def main() -> int:
         return 1
 
     print(
-        "Workspace policy OK: canonical checkout, sibling temporary worktrees, "
+        "Workspace policy OK: one canonical checkout, no linked worktrees, "
         "and one dependency environment"
     )
     return 0

@@ -7,11 +7,12 @@ owner's Windows machine. GitHub is the durable source of committed history;
 this directory is the only local working copy. A branch is a Git reference,
 not a reason to create another directory.
 
-Do not create another Eval Lab clone or task-specific project folder. Work in
-the canonical checkout by default. A temporary linked worktree is allowed
-only when genuine isolation or parallel work requires it, and only at
-`D:\development\eval-lab-wt\<task-id>`. Keep one active task per worktree;
-if the checkout or GitHub is unavailable, stop and report the blocker.
+`D:\development` holds only the main checkout of each repository. Do not
+create a Git worktree, another Eval Lab clone, or a task-specific project folder
+under `D:\development`. Scratch files, helper-repository clones and temporary
+output live outside `D:\development` (for example `C:\work` or `%TEMP%`).
+Tasks are serialized in the one checkout. If the checkout or GitHub is
+unavailable, stop and report the blocker.
 
 ## Branch and checkpoint workflow
 
@@ -27,13 +28,12 @@ if the checkout or GitHub is unavailable, stop and report the blocker.
    branch, upserts the PR, and requests auto-merge. It returns while GitHub CI
    runs.
 4. The PR states `Task issue: #<number>`. Keep the issue open until the
-   finalizer verifies the exact PR head, merge SHA, required CI checks, and any
-   worktree cleanup; then it records the outcome and closes the issue.
+   finalizer verifies the exact PR head, merge SHA, and required CI checks;
+   then it records the outcome and closes the issue.
 5. `main` requires a PR, up-to-date branch, and the Python 3.11/3.12 checks.
    Task PRs auto-merge when both required checks pass.
 6. Before switching tasks, ensure the task branch is pushed and the working
-   tree is clean. Use `D:\development\eval-lab-wt\<task-id>` for genuine
-   parallel work. Before cleanup, inspect tracked, untracked, and ignored state;
+   tree is clean. Before cleanup, inspect tracked, untracked, and ignored state;
    preserve unique work. Never use forced cleanup.
 
 Pushes are the normal durability boundary.
@@ -46,7 +46,7 @@ Pushes are the normal durability boundary.
   synchronized from the root `pyproject.toml` and committed `uv.lock`.
 - Use `uv sync --extra dev` to synchronize the canonical environment and
   `.venv\Scripts\python.exe` to run Python checks on Windows.
-- Never create or copy `.venv` under a task directory, branch, or worktree.
+- Never create or copy `.venv` under a task directory or branch.
   This repository is Python-only; do not create `node_modules`. If an approved
   change adds a Node package, keep exactly one root `node_modules` and manage
   it from the root lockfile.
@@ -65,8 +65,8 @@ Pushes are the normal durability boundary.
 
 Run `python scripts/check_workspace_policy.py --canonical-root
 D:\development\eval-lab` before work and after cleanup. `scripts/check_repo_contract.py`
-also rejects registered worktrees outside the sibling `eval-lab-wt` directory and
-dependency directories below the root. The explicit canonical-root argument additionally catches running
+also rejects any registered linked worktree and nested dependency directories
+below the root. The explicit canonical-root argument additionally catches running
 from a second independent clone. The guard is read-only; it reports violations
 and never deletes files.
 
