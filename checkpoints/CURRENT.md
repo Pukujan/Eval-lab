@@ -4,6 +4,24 @@
 
 > Continuity v1 overlay (TASK-0063): this human checkpoint stays authoritative for Eval Lab program and task state. The legacy `tasks/TASK-*.md` histories predate PCM v1 and are preserved as-is; the v1 machine task namespace is `.continuity/tasks`, so `active_task` stays null until a legacy-task migration is authorized. GitHub issues own task progression.
 
+## 2026-10-05 - TASK-0065 Colab T4 compute path and two MoE judge arms
+
+GitHub issue #83. Eval Lab gains a second, independent compute path — a
+free-tier Google Colab T4 VM driven by the official `colab` CLI — used to grade
+two small-active-parameter MoE models as label-only typed-choice judges on the
+frozen EXP-015 records under the `eval-lab-local-decision-v1` protocol. Ornith
+1.5 35B-A3B (IQ2_XXS) blind 0.5539 (single 0.5337, pairwise 0.6759); Maple
+Preview 20B-A1B (TQ2_0 requantized to Q2_0, Q4_K head) blind 0.4895 (single
+0.4969, pairwise 0.4444). Both arms cover all 760 blind records with legal,
+varied labels; Maple is near the 50.26% majority baseline. New append-only
+experiment EXP-20261005-031 with requests, raw output, canonical predictions,
+`results.json`, and `report.md`; no completed experiment is modified. `AGENTS.md`
+documents a bounded free-tier Colab T4 compute exception. Telemetry regenerated
+(155 records, `--check` green).
+
+Next atomic action: publish the TASK-0065 checkpoint against issue #83, then
+finalize and close the issue.
+
 ## 2026-10-05 - TASK-0064 Grok harness correction
 
 GitHub issue #81. Every Grok Build number in EXP-022 and EXP-025 was a harness

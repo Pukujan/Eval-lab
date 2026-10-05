@@ -1,0 +1,28 @@
+{
+  "models": [
+    {
+      "architecture": "qwen35moe",
+      "arm_id": "ornith-1.5-35b-a3b",
+      "file": "Ornith-1.5-35B-A3B-IQ2_XXS.gguf",
+      "model_id": "bartowski/Ornith-1.5-35B-A3B-GGUF",
+      "quant": "IQ2_XXS",
+      "sha256": "14963c6830ae8287ad42a53c0fd87ca9fc67a8de8da1d18e3a076a348e96a32f",
+      "size_bytes": 10255140512,
+      "size_note": "MoE, 35B total / ~3B active (A3B)",
+      "thinking": "disabled (chat_template_kwargs enable_thinking=false)"
+    },
+    {
+      "architecture": "maple",
+      "arm_id": "maple-preview-20b-a1b",
+      "file": "maple-preview-TQ2_0-head-Q4_K.gguf",
+      "model_id": "deepgrove/maple-preview-GGUF",
+      "quant": "requantized TQ2_0 -> Q2_0 (Q4_K output head)",
+      "sha256": "b8a69726d35af6d5ed9e161cf4fc86d851969bb15b49a374594b807fe5739ad8",
+      "size_bytes": 5913366048,
+      "size_note": "MoE, 20B total / ~1B active (A1B)",
+      "source_file_bytes": 5901782560,
+      "source_file_sha256": "221f792cc9760d27a34f449b4229e258fa968a63bd4213993e45d9c0bb477a9e",
+      "thinking": "n/a (no reasoning channel)"
+    }
+  ]
+}

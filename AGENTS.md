@@ -81,6 +81,20 @@ retain or remove runtime state only as documented in the task checkpoint. This
 exception is for model inference only and does not create another project
 dependency environment.
 
+### TASK-0065 free-tier Colab compute exception
+
+For TASK-0065 only, model inference may run on a free-tier Google Colab T4 VM
+driven by the official `colab` CLI from WSL, because the MoE judge arms are too
+large for the canonical machine. The repository is never cloned or copied to
+the VM; only gold-free request files are served there, and scoring happens
+offline in the repo. This is a compute path, not a dependency environment: the
+canonical `.venv` stays the only project environment. Bound the path to the
+free tier and the official CLI — no ssh, console, repl, auth, or Drive mount,
+one session at a time, always `colab stop` when done, and no tunnels, proxies,
+or long-running services. Never upload, commit, or print a gold label, a token,
+or a credential. See `docs/compute/colab-cli.md` and the TASK-0065 checkpoint
+for the exact invocation and revisions.
+
 Run `python scripts/check_workspace_policy.py --canonical-root D:\development\eval-lab`
 before task work and after cleanup. The repository contract check also enforces
 the canonical path, the no-linked-worktree rule, and the one-environment rule.
