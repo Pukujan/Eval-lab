@@ -4,6 +4,25 @@
 
 > Continuity v1 overlay (TASK-0063): this human checkpoint stays authoritative for Eval Lab program and task state. The legacy `tasks/TASK-*.md` histories predate PCM v1 and are preserved as-is; the v1 machine task namespace is `.continuity/tasks`, so `active_task` stays null until a legacy-task migration is authorized. GitHub issues own task progression.
 
+## 2026-10-05 - TASK-0064 Grok harness correction
+
+GitHub issue #81. Every Grok Build number in EXP-022 and EXP-025 was a harness
+artifact: on Windows the runner passed the two-line judge prompt inline as
+`--single=<prompt>`, and the `grok.CMD` shim truncated the command line at the
+embedded newline, so the model never saw the record and collapsed to a constant
+answer (`fail` in single mode, `TIE` in pairwise). Both runners now deliver the
+prompt through a per-record `--prompt-file`, with a focused test that asserts no
+prompt travels through argv. EXP-030 re-ran Grok 4.6 and 4.7 on the frozen
+EXP-015 public and blind partitions: public 0.9861 / 0.9798, blind 0.9908 /
+0.9855 (versus the void ~0.50 / ~0.02). EXP-022 and EXP-025 are byte-identical.
+The paper's Grok prose is corrected, a new "A bug in our own harness" subsection
+cites EXP-030, and the EXP-025 ablation is marked void/superseded; the frozen
+EXP-029 tables are unchanged and carry a void caveat. Telemetry regenerated
+(154 records, `--check` green).
+
+Next atomic action: publish the TASK-0064 checkpoint, then land the Colab T4 MoE
+experiment (TASK-0065, issue #83) on its own branch.
+
 ## 2026-10-04 - TASK-0062 run telemetry ledger
 
 GitHub issue #78. `telemetry/runs.v1.jsonl` holds one uniform record per eval

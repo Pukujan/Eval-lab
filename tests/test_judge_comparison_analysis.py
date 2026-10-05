@@ -76,6 +76,7 @@ def test_paper_prose_numbers_trace_to_committed_results() -> None:
         ROOT / "experiments/EXP-20260924-029-consolidated-judge-analysis/results.json",
         ROOT / "experiments/EXP-20260922-025-grok-protocol-ablation/results.json",
         ROOT / "experiments/EXP-20260921-019-calibrated-judge-study/results.json",
+        ROOT / "experiments/EXP-20261004-030-grok-harness-correction/results.json",
     ]
     leaves = [x for path in sources for x in _numeric_leaves(json.loads(path.read_text("utf-8")))]
     allowed = set()

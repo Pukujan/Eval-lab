@@ -26,6 +26,7 @@ from eval_lab.schema import (
 try:
     from scripts.run_grok_luna_qwen_bakeoff import (
         _isolated_grok_leader_socket,
+        _isolated_grok_prompt_file,
         _json_fragments,
         _load_dotenv,
         _load_pool,
@@ -36,6 +37,7 @@ try:
 except ModuleNotFoundError:  # Direct ``python scripts/...`` execution.
     from run_grok_luna_qwen_bakeoff import (
         _isolated_grok_leader_socket,
+        _isolated_grok_prompt_file,
         _json_fragments,
         _load_dotenv,
         _load_pool,
@@ -92,7 +94,9 @@ def _explicit_prompt(record: JudgeRecord, variant: str) -> str:
         semantics = "A_BETTER means A is better or more correct; B_BETTER means B is better or more correct; EQUIVALENT means they are objectively equivalent."
         labels = _semantic_labels(record) if variant == "semantic_schema" else _legal_labels(record)
         label_instruction = f"The only legal labels are {', '.join(labels)}; {semantics}"
-    candidate_b = f"\n\nCANDIDATE B:\n{record.candidate_b}" if record.candidate_b is not None else ""
+    candidate_b = (
+        f"\n\nCANDIDATE B:\n{record.candidate_b}" if record.candidate_b is not None else ""
+    )
     return (
         "You are an objective evaluation judge. Do not use tools, web search, or outside knowledge beyond the record.\n"
         f"{task} {label_instruction}\n"
@@ -146,7 +150,9 @@ def parse_provider_label(text: str, record: JudgeRecord, variant: str) -> tuple[
             for key in ("label", "verdict", "prediction", "choice", "class", "value"):
                 value = mapping.get(key)
                 if isinstance(value, Mapping):
-                    value = next((value.get(k) for k in ("label", "choice", "value") if k in value), None)
+                    value = next(
+                        (value.get(k) for k in ("label", "choice", "value") if k in value), None
+                    )
                 if value is None:
                     continue
                 canonical = canonicalize_label(str(value), record, variant)
@@ -216,6 +222,10 @@ def run_one(
     started = time.perf_counter()
     executable = environment.get("GROK_EXE") or shutil.which("grok") or "grok"
     leader_socket = _isolated_grok_leader_socket()
+    # See scripts/run_grok_luna_qwen_bakeoff.py: the multi-line prompt must not
+    # travel through argv on Windows (cmd.exe truncates the grok.CMD line at the
+    # embedded newline), so it is delivered through a per-record prompt file.
+    prompt_file = _isolated_grok_prompt_file()
     command = [
         executable,
         "--no-auto-update",
@@ -241,10 +251,12 @@ def run_one(
             "dontAsk",
             "--leader-socket",
             str(leader_socket),
-            f"--single={build_prompt(record, variant)}",
+            "--prompt-file",
+            str(prompt_file),
         ]
     )
     try:
+        prompt_file.write_text(build_prompt(record, variant), encoding="utf-8")
         returncode, stdout, stderr, timed_out, event_count = _run_streaming_process(
             command, environment=dict(environment), input_text=None, timeout=timeout
         )
@@ -260,6 +272,7 @@ def run_one(
         )
     finally:
         leader_socket.unlink(missing_ok=True)
+        prompt_file.unlink(missing_ok=True)
     surfaced = _surfaced_models(stdout + "\n" + stderr)
     if timed_out:
         return _prediction(
@@ -275,7 +288,11 @@ def run_one(
         )
     if returncode != 0:
         lower = (stdout + "\n" + stderr).lower()
-        status = ExecutionStatus.RATE_LIMITED if "429" in lower or "rate limit" in lower else ExecutionStatus.PROVIDER_ERROR
+        status = (
+            ExecutionStatus.RATE_LIMITED
+            if "429" in lower or "rate limit" in lower
+            else ExecutionStatus.PROVIDER_ERROR
+        )
         kind = "rate_limited" if status is ExecutionStatus.RATE_LIMITED else "process_exit"
         return _prediction(
             record,
@@ -333,7 +350,9 @@ def _load_predictions(path: Path) -> dict[str, JudgePrediction]:
     return result
 
 
-def _summarize(records: list[JudgeRecord], predictions: Mapping[str, JudgePrediction]) -> dict[str, Any]:
+def _summarize(
+    records: list[JudgeRecord], predictions: Mapping[str, JudgePrediction]
+) -> dict[str, Any]:
     mode_metrics: dict[str, dict[str, float | int | None]] = {}
     status_counts: dict[str, int] = {}
     for mode in ("single", "pairwise"):
@@ -351,13 +370,19 @@ def _summarize(records: list[JudgeRecord], predictions: Mapping[str, JudgePredic
             "accuracy": correct / len(resolved_pairs) if resolved_pairs else None,
         }
     for prediction in predictions.values():
-        status_counts[prediction.execution_status.value] = status_counts.get(prediction.execution_status.value, 0) + 1
-    latencies = sorted(pred.latency_ms for pred in predictions.values() if pred.latency_ms is not None)
+        status_counts[prediction.execution_status.value] = (
+            status_counts.get(prediction.execution_status.value, 0) + 1
+        )
+    latencies = sorted(
+        pred.latency_ms for pred in predictions.values() if pred.latency_ms is not None
+    )
     p95 = latencies[min(len(latencies) - 1, int(len(latencies) * 0.95))] if latencies else None
     return {
         "record_count": len(records),
         "resolved_count": sum(pred.label is not None for pred in predictions.values()),
-        "coverage": sum(pred.label is not None for pred in predictions.values()) / len(records) if records else None,
+        "coverage": sum(pred.label is not None for pred in predictions.values()) / len(records)
+        if records
+        else None,
         "mode_metrics": mode_metrics,
         "selection_score": selection_score(mode_metrics),
         "status_counts": status_counts,
@@ -385,29 +410,33 @@ def run_arm(
         raise ValueError("checkpoint contains IDs outside the selected pool")
     pending = [record for record in records if record.record_id not in predictions]
     checkpoint = output / "progress.jsonl"
-    with checkpoint.open("a", encoding="utf-8") as handle, ThreadPoolExecutor(max_workers=workers) as executor:
-            futures = {
-                executor.submit(
-                    run_one,
-                    record,
-                    arm_id=arm_id,
-                    model=model,
-                    variant=variant,
-                    environment=environment,
-                    timeout=timeout,
-                ): record
-                for record in pending
-            }
-            for future in as_completed(futures):
-                prediction = future.result()
-                predictions[prediction.record_id] = prediction
-                handle.write(prediction.model_dump_json() + "\n")
-                handle.flush()
-                os.fsync(handle.fileno())
+    with (
+        checkpoint.open("a", encoding="utf-8") as handle,
+        ThreadPoolExecutor(max_workers=workers) as executor,
+    ):
+        futures = {
+            executor.submit(
+                run_one,
+                record,
+                arm_id=arm_id,
+                model=model,
+                variant=variant,
+                environment=environment,
+                timeout=timeout,
+            ): record
+            for record in pending
+        }
+        for future in as_completed(futures):
+            prediction = future.result()
+            predictions[prediction.record_id] = prediction
+            handle.write(prediction.model_dump_json() + "\n")
+            handle.flush()
+            os.fsync(handle.fileno())
     if set(predictions) != {record.record_id for record in records}:
         raise RuntimeError("arm did not produce terminal status for every selected record")
     prediction_path.write_text(
-        "".join(predictions[record.record_id].model_dump_json() + "\n" for record in records), encoding="utf-8"
+        "".join(predictions[record.record_id].model_dump_json() + "\n" for record in records),
+        encoding="utf-8",
     )
     summary = _summarize(records, predictions)
     results = {
@@ -420,7 +449,9 @@ def run_arm(
         "streaming": True,
         "summary": summary,
     }
-    (output / "results.json").write_text(json.dumps(results, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    (output / "results.json").write_text(
+        json.dumps(results, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     return results
 
 
@@ -442,9 +473,13 @@ def main() -> None:
     unknown_variants = sorted(set(variants) - set(VARIANTS))
     unknown_models = sorted(set(models) - set(MODELS))
     if unknown_variants or unknown_models or args.workers <= 0:
-        raise SystemExit(f"unknown variants={unknown_variants}, models={unknown_models}; workers must be positive")
+        raise SystemExit(
+            f"unknown variants={unknown_variants}, models={unknown_models}; workers must be positive"
+        )
     _, records, _ = _load_pool(args.pool, args.partition, 0, args.record_ids_file)
-    environment = {**_load_dotenv(args.env_file), **os.environ} if args.env_file else dict(os.environ)
+    environment = (
+        {**_load_dotenv(args.env_file), **os.environ} if args.env_file else dict(os.environ)
+    )
     all_results = []
     for model_id in models:
         for variant in variants:

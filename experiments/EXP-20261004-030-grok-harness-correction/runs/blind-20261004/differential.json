@@ -1,0 +1,13 @@
+{
+  "arms": [
+    "grok",
+    "grok_47"
+  ],
+  "pairs": {
+    "grok__vs__grok_47": {
+      "agreement_count": 746,
+      "agreement_rate": 0.9841688654353562,
+      "comparable_count": 758
+    }
+  }
+}

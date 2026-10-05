@@ -42,14 +42,18 @@ the requested ID.
 
 ## One headless structured-output request
 
-`--single`/`-p` makes one non-interactive request. `streaming-json` is the
+`--single`/`-p` makes one non-interactive request; `--prompt-file <PATH>` is the
+equivalent route that reads the prompt from a file. `streaming-json` is the
 CLI's newline-delimited JSON event format. `--json-schema` constrains the
 model's structured result. Use a very small schema for label-only judging:
 
 ```powershell
 $sessionId = [guid]::NewGuid().ToString()
 $socket = Join-Path $env:TEMP ("eval-lab-grok-$sessionId.sock")
+$promptFile = Join-Path $env:TEMP ("eval-lab-grok-$sessionId.txt")
 $schema = '{"type":"object","properties":{"label":{"type":"string","enum":["fail","pass"]}},"required":["label"],"additionalProperties":false}'
+
+Set-Content -Path $promptFile -Value "Return exactly one JSON object with a legal label." -Encoding utf8
 
 grok `
   --no-auto-update `
@@ -64,8 +68,24 @@ grok `
   --no-plan `
   --permission-mode dontAsk `
   --leader-socket $socket `
-  --single 'Return exactly one JSON object with a legal label.'
+  --prompt-file $promptFile
 ```
+
+### Deliver the prompt by file, never inline on Windows
+
+Do **not** pass the prompt as `--single=<prompt>` when it can contain a newline.
+On Windows `grok` resolves to the `grok.CMD` shim, and `subprocess.Popen` runs a
+`.CMD` through `cmd.exe`, which **truncates the command line at the first
+embedded newline**. A multi-line prompt therefore reaches the model with only
+its first line intact — in the judge runner that meant the instruction arrived
+without the record payload, so the model answered `fail` for every single-mode
+record and `TIE` for every pairwise record. This defect voided the Grok results
+in EXP-015, EXP-022, and EXP-025 and was corrected in EXP-20261004-030.
+
+`--prompt-file` is immune: the argument is a short path with no newline. The
+inline JSON schema is safe because it is a single line; verify that assumption
+if a schema ever becomes multi-line.
+
 
 The installed Eval Lab binary (`grok 1.0.40`) accepts `--no-auto-update`; this
 prevents background update checks from competing with a scripted request. The
@@ -107,7 +127,8 @@ requires a new run/experiment identity.
 The runner's current command construction is in
 [`scripts/run_grok_luna_qwen_bakeoff.py`](../scripts/run_grok_luna_qwen_bakeoff.py).
 It uses streaming JSON, native schema constraints, unique UUID sessions,
-isolated leader sockets, and per-record fsynced checkpoints.
+isolated leader sockets, a per-record prompt file, and per-record fsynced
+checkpoints.
 
 ## Benchmark parsing contract
 

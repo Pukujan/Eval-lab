@@ -1,0 +1,41 @@
+{
+  "arms": {
+    "grok": {
+      "error_kinds": {},
+      "provider": "xai-grok-build-cli",
+      "requested_model": "grok-4.6",
+      "route": "direct_grok_build_cli_subscription",
+      "status_counts": {
+        "ok": 648
+      },
+      "surfaced_model_ids": [
+        "grok-4.6-build"
+      ]
+    },
+    "grok_47": {
+      "error_kinds": {
+        "process_exit": 1,
+        "rate_limited": 1,
+        "timeout": 1
+      },
+      "provider": "xai-grok-build-cli",
+      "requested_model": "grok-4.7",
+      "route": "direct_grok_build_cli_subscription",
+      "status_counts": {
+        "ok": 645,
+        "provider_error": 2,
+        "rate_limited": 1
+      },
+      "surfaced_model_ids": [
+        "Qwen/Qwen3-4B",
+        "grok-4.7-build",
+        "qwen3.8-flash",
+        "typesafe/jev-1.13",
+        "typesafe/jev-1.13-20260917"
+      ]
+    }
+  },
+  "experiment_id": "EXP-20261004-030-grok-harness-correction",
+  "partition": "public_selection",
+  "run_id": "public-20261004"
+}
