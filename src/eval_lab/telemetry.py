@@ -14,7 +14,8 @@ Design rules (see ``tasks/TASK-0062-run-telemetry.md`` for the rationale):
   copied verbatim. Non-finite numbers are treated as absent.
 * Deterministic: records are sorted by ``run_path`` and serialized with sorted
   keys, ``\\n`` line endings, and no generated timestamp, so regenerating the
-  ledger produces identical bytes on any platform.
+  ledger produces identical bytes on any platform. Hashes are taken over
+  LF-normalized content (see :func:`sha256_file`).
 * Derivation is offline and reads committed artifacts only; it makes no model or
   provider calls and hand-types no numbers.
 * Compute/Colab telemetry (accelerator, tokens/s, VRAM) is out of scope here and
@@ -54,11 +55,16 @@ STRUCTURE_KEYS = (
 
 
 def sha256_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(65536), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
+    """SHA-256 of the file content with CRLF normalized to LF.
+
+    Git checks text files out with the platform's line endings (CRLF on a
+    Windows checkout with ``core.autocrlf=true``), so hashing raw working-tree
+    bytes would make the ledger differ between a Windows and a Linux checkout of
+    the same commit. Normalizing to LF makes the hash equal to the hash of the
+    committed blob content, so it is stable across platforms.
+    """
+    data = path.read_bytes().replace(b"\r\n", b"\n")
+    return hashlib.sha256(data).hexdigest()
 
 
 def _number(value: object) -> float | None:

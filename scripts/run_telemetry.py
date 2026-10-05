@@ -94,13 +94,18 @@ def _write(path: Path, text: str) -> None:
     print(f"wrote {path}")
 
 
+def _read_normalized(path: Path) -> str | None:
+    if not path.is_file():
+        return None
+    # Git may check text files out with platform line endings; compare on LF.
+    return path.read_text(encoding="utf-8").replace("\r\n", "\n")
+
+
 def check() -> int:
     ledger_text, findings_text = _expected()
     stale: list[str] = []
     for path, expected in ((LEDGER_PATH, ledger_text), (FINDINGS_PATH, findings_text)):
-        target = ROOT / path
-        actual = target.read_text(encoding="utf-8") if target.is_file() else None
-        if actual != expected:
+        if _read_normalized(ROOT / path) != expected:
             stale.append(str(path))
     if stale:
         print("Run telemetry is stale: " + ", ".join(stale))

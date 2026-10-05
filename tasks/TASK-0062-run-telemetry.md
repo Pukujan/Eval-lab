@@ -126,6 +126,21 @@ Changed:
   and findings.
 - Files changed: the ten files listed under Outputs.
 
+### 2026-10-05 — CI caught a cross-platform hash bug; fixed
+
+- PR #79 CI failed `test_committed_ledger_is_current`: every `results_sha256`
+  differed. Root cause: git checks `results.json` out with CRLF on a Windows
+  checkout but LF on Linux, and the first version hashed raw working-tree bytes,
+  so the ledger was platform-dependent.
+- Fix: `sha256_file` now hashes LF-normalized content (equal to the committed
+  blob hash), and both `run_telemetry.py --check` and the currency test compare
+  text with CRLF normalized to LF. Added
+  `test_sha256_file_is_line_ending_insensitive`.
+- Regenerated the ledger; verified a record's `results_sha256` equals
+  `git cat-file -p HEAD:<path> | sha256`. Commands: `run_telemetry.py rebuild`,
+  `--check` (current), `ruff check`/`format --check` clean, `mypy` clean,
+  `pytest tests -q` → **202 passed**.
+
 ## Handoff
 
 Next atomic action: publish the checkpoint (commit + PR for issue #78) via

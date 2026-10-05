@@ -40,6 +40,10 @@ Run directories without a `results.json` are still recorded: `completeness` is
 `results.json` that does not parse). Nullable fields stay `null`; a metric is
 never coerced to `0`.
 
+`results_sha256` is the SHA-256 of the file content with line endings normalized
+to LF, so it is stable across Windows and Linux checkouts and equals the hash of
+the committed blob.
+
 ## Out of scope
 
 Compute telemetry — accelerator, tokens/s, peak VRAM, llama.cpp build, flags —

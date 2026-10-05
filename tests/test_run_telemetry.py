@@ -18,7 +18,13 @@ from typing import Any
 
 from jsonschema import Draft202012Validator
 
-from eval_lab.telemetry import build_records, compute_findings, dumps_jsonl, render_findings
+from eval_lab.telemetry import (
+    build_records,
+    compute_findings,
+    dumps_jsonl,
+    render_findings,
+    sha256_file,
+)
 from scripts.run_telemetry import FINDINGS_PATH, LEDGER_PATH, ROOT, SCHEMA_PATH, _expected
 
 
@@ -171,10 +177,20 @@ def test_findings_are_derived_from_records(tmp_path: Path) -> None:
     assert f"| run units | {len(rows)} |" in markdown
 
 
+def test_sha256_file_is_line_ending_insensitive(tmp_path: Path) -> None:
+    lf = tmp_path / "lf.json"
+    crlf = tmp_path / "crlf.json"
+    lf.write_bytes(b'{"a": 1}\n')
+    crlf.write_bytes(b'{"a": 1}\r\n')
+    assert sha256_file(lf) == sha256_file(crlf)
+
+
 def test_committed_ledger_is_current() -> None:
     expected_ledger, expected_findings = _expected()
-    assert (ROOT / LEDGER_PATH).read_text(encoding="utf-8") == expected_ledger
-    assert (ROOT / FINDINGS_PATH).read_text(encoding="utf-8") == expected_findings
+    ledger = (ROOT / LEDGER_PATH).read_text(encoding="utf-8").replace("\r\n", "\n")
+    findings = (ROOT / FINDINGS_PATH).read_text(encoding="utf-8").replace("\r\n", "\n")
+    assert ledger == expected_ledger
+    assert findings == expected_findings
 
 
 def test_committed_ledger_validates_against_schema() -> None:
