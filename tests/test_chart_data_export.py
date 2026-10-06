@@ -206,9 +206,9 @@ def test_classifier_exports_leak_no_blind_record_ids_or_gold_labels() -> None:
 def test_classifier_dataset_families_match_results() -> None:
     doc = _load(ROOT / CLASSIFIER_DATASET_PATH)
     results = json.loads(
-        (
-            ROOT / "experiments/EXP-20261005-032-gleif-classifier/results.json"
-        ).read_text(encoding="utf-8")
+        (ROOT / "experiments/EXP-20261005-032-gleif-classifier/results.json").read_text(
+            encoding="utf-8"
+        )
     )
     entities = {e["id"]: e for e in doc["entities"]}
     for family, report in results["families"].items():
