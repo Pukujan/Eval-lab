@@ -1,0 +1,82 @@
+{
+  "case_counts": {
+    "calibration": 1842,
+    "test": 1944
+  },
+  "case_normalization": "text collapsed on Unicode whitespace: ' '.join(text.split())",
+  "experiment_id": "EXP-20261006-033-legalbench-answer-key-subset",
+  "per_task": {
+    "citation_prediction_classification": {
+      "distinct_cases": 55,
+      "gold_label_distribution": {
+        "No": 54,
+        "Yes": 54
+      },
+      "majority_baseline": {
+        "accuracy": 0.5,
+        "counts": {
+          "No": 54,
+          "Yes": 54
+        },
+        "label": "No",
+        "tie": true
+      },
+      "record_counts": {
+        "calibration": 58,
+        "test": 50
+      },
+      "test_rows": 108
+    },
+    "definition_classification": {
+      "distinct_cases": 1337,
+      "gold_label_distribution": {
+        "No": 646,
+        "Yes": 691
+      },
+      "majority_baseline": {
+        "accuracy": 0.5168287210172027,
+        "counts": {
+          "No": 646,
+          "Yes": 691
+        },
+        "label": "Yes",
+        "tie": false
+      },
+      "record_counts": {
+        "calibration": 632,
+        "test": 705
+      },
+      "test_rows": 1337
+    },
+    "overruling": {
+      "distinct_cases": 2394,
+      "gold_label_distribution": {
+        "No": 1178,
+        "Yes": 1216
+      },
+      "majority_baseline": {
+        "accuracy": 0.5079365079365079,
+        "counts": {
+          "No": 1178,
+          "Yes": 1216
+        },
+        "label": "Yes",
+        "tie": false
+      },
+      "record_counts": {
+        "calibration": 1180,
+        "test": 1214
+      },
+      "test_rows": 2394
+    }
+  },
+  "record_counts": {
+    "calibration": 1870,
+    "dev": 0,
+    "test": 1969,
+    "train": 0
+  },
+  "record_ids_fingerprint": "e3a069d3dcd6f5d107dd367a73a5f3cdcf2247b4abec9558b6cd6c951e431f6d",
+  "seed": 261006,
+  "split_policy": "case-disjoint calibration/test on the SHA-256 of the normalized text; all rows sharing a text share a split"
+}

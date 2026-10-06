@@ -4,6 +4,10 @@ experiments/EXP-20260920-010-multi-subscription-bakeoff/* text eol=lf
 experiments/EXP-20260920-011-openrouter-multi-subscription-bakeoff/* text eol=lf
 experiments/EXP-20260920-012-selective-escalation-qwen-streaming/* text eol=lf
 
+# EXP-033 pins source and canonical bytes by SHA-256; normalize on both sides so
+# the pinned hashes hold on any OS.
+experiments/EXP-20261006-033-legalbench-answer-key-subset/** text eol=lf
+
 # OIO managed files are hash-checked by .oio/install-manifest.json.
 .oio/** text eol=lf
 .github/scripts/oio_*.py text eol=lf

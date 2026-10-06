@@ -1,0 +1,42 @@
+{
+  "confidence_definition": "native normalized provider probabilities only; label-only responses have no confidence metric",
+  "context_limit": 4096,
+  "per_task": {
+    "citation_prediction_classification": {
+      "legal_labels": [
+        "Yes",
+        "No"
+      ],
+      "prompt_version": "legalbench-citation-prediction-classification-base-prompt-v1",
+      "verifier_id": "legalbench-citation-prediction-classification-answer-key-v1"
+    },
+    "definition_classification": {
+      "legal_labels": [
+        "Yes",
+        "No"
+      ],
+      "prompt_version": "legalbench-definition-classification-base-prompt-v1",
+      "verifier_id": "legalbench-definition-classification-answer-key-v1"
+    },
+    "overruling": {
+      "legal_labels": [
+        "Yes",
+        "No"
+      ],
+      "prompt_version": "legalbench-overruling-base-prompt-v1",
+      "verifier_id": "legalbench-overruling-answer-key-v1"
+    }
+  },
+  "question_type": "choice",
+  "single_legal_labels": [
+    "Yes",
+    "No"
+  ],
+  "spec_id": "legalbench-answer-key-subset-v1",
+  "spec_version": "legalbench-answer-key-subset-v1",
+  "target_error_rates": [
+    0.01,
+    0.02,
+    0.05
+  ]
+}

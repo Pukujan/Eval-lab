@@ -1,0 +1,39 @@
+LegalBench answer-key subset — source attribution and license notice
+====================================================================
+
+Source: LegalBench, dataset revision
+daec8237410aa23e3faf4bc41ad8b3a7e1696826
+(https://huggingface.co/datasets/nguha/legalbench), task documentation
+revision b46bf4ffae90524b2b72aaa30e7745fe9db64481
+(https://github.com/HazyResearch/legalbench). Attribution: Neel Guha;
+LegalBench task authors as identified by the project.
+
+The verbatim task files under source/<task>/ are redistributed here for
+reproducible objective evaluation. Per-task licenses:
+
+- overruling/train.tsv, overruling/test.tsv, overruling/base_prompt.txt
+    CC BY 4.0 (CaseHOLD). https://creativecommons.org/licenses/by/4.0/
+- definition_classification/train.tsv, definition_classification/test.tsv,
+  definition_classification/base_prompt.txt
+    CC BY-SA 4.0 (Kevin Tobia).
+    https://creativecommons.org/licenses/by-sa/4.0/
+    This material is distributed under the same CC BY-SA 4.0 license; no
+    license restriction is added to it here.
+- citation_prediction_classification/train.tsv,
+  citation_prediction_classification/test.tsv,
+  citation_prediction_classification/base_prompt.txt
+    CC BY 4.0 (Livermore & Rockmore).
+    https://creativecommons.org/licenses/by/4.0/
+
+The files are unmodified copies of the pinned revision. Row counts and
+SHA-256 hashes are recorded in ../source-manifest.json.
+
+Derived artifacts
+-----------------
+
+The generated files in the experiment root (`canonical-records.jsonl`,
+`records.jsonl`, `split-manifest.json`, `typed-question-spec.json`,
+`pool-manifest.json`, `pool-checksums.sha256`, and `report.md`) are derived from
+these source files and carry the same per-task licenses. In particular, any part
+derived from `definition_classification` is redistributed under CC BY-SA 4.0.
+The repository's own license does not supersede those terms.

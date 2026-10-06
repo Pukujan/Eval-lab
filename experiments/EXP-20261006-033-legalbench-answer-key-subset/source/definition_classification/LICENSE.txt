@@ -1,0 +1,15 @@
+Source: LegalBench, task `definition_classification`
+Dataset revision: daec8237410aa23e3faf4bc41ad8b3a7e1696826
+(https://huggingface.co/datasets/nguha/legalbench)
+Task documentation revision: b46bf4ffae90524b2b72aaa30e7745fe9db64481
+(https://github.com/HazyResearch/legalbench)
+
+This task's data is authored by Kevin Tobia and distributed under
+Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0):
+https://creativecommons.org/licenses/by-sa/4.0/
+
+The files in this directory (`train.tsv`, `test.tsv`, `base_prompt.txt`) are
+verbatim copies of the pinned machine-readable source and are redistributed
+under CC BY-SA 4.0. No additional restrictions are placed on them. The
+repository's own license does not supersede the CC BY-SA 4.0 terms of these
+source files.

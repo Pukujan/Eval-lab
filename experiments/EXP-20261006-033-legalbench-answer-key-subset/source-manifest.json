@@ -1,0 +1,139 @@
+{
+  "dataset": "LegalBench answer-key subset",
+  "dataset_repository": "https://huggingface.co/datasets/nguha/legalbench",
+  "dataset_revision": "daec8237410aa23e3faf4bc41ad8b3a7e1696826",
+  "task_documentation_repository": "https://github.com/HazyResearch/legalbench",
+  "task_documentation_revision": "b46bf4ffae90524b2b72aaa30e7745fe9db64481",
+  "retrieved_date": "2026-10-06",
+  "attribution": "Neel Guha; LegalBench task authors as identified by the project",
+  "tasks": {
+    "overruling": {
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "verifier_id": "legalbench-overruling-answer-key-v1",
+      "prompt_version": "legalbench-overruling-base-prompt-v1",
+      "columns": [
+        "answer",
+        "index",
+        "text"
+      ],
+      "observed_source_train_rows": 6,
+      "observed_source_test_rows": 2394,
+      "published_test_size": 2400,
+      "test_row_discrepancy": "task page reports 2400 test examples; the pinned machine-readable source contains 2394; preserve the source as distributed and do not fabricate a missing item."
+    },
+    "definition_classification": {
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "verifier_id": "legalbench-definition-classification-answer-key-v1",
+      "prompt_version": "legalbench-definition-classification-base-prompt-v1",
+      "columns": [
+        "answer",
+        "index",
+        "text"
+      ],
+      "observed_source_train_rows": 8,
+      "observed_source_test_rows": 1337,
+      "published_test_size": 1346,
+      "test_row_discrepancy": "task page reports 1346 test examples; the pinned machine-readable source contains 1337; preserve the source as distributed and do not fabricate a missing item."
+    },
+    "citation_prediction_classification": {
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "verifier_id": "legalbench-citation-prediction-classification-answer-key-v1",
+      "prompt_version": "legalbench-citation-prediction-classification-base-prompt-v1",
+      "columns": [
+        "answer",
+        "citation",
+        "index",
+        "text"
+      ],
+      "observed_source_train_rows": 2,
+      "observed_source_test_rows": 108,
+      "published_test_size": 110,
+      "test_row_discrepancy": "task page reports 110 test examples; the pinned machine-readable source contains 108; preserve the source as distributed and do not fabricate a missing item."
+    }
+  },
+  "files": [
+    {
+      "task": "overruling",
+      "path": "data/overruling/train.tsv",
+      "url": "https://huggingface.co/datasets/nguha/legalbench/resolve/daec8237410aa23e3faf4bc41ad8b3a7e1696826/data/overruling/train.tsv",
+      "bytes": 599,
+      "sha256": "783d532cbee2f830dc933b49cc55408ddc8f65f3c69cc5e8b4eb866711ccbf30",
+      "repository_path": "experiments/EXP-20261006-033-legalbench-answer-key-subset/source/overruling/train.tsv",
+      "rows_excluding_header": 6
+    },
+    {
+      "task": "overruling",
+      "path": "data/overruling/test.tsv",
+      "url": "https://huggingface.co/datasets/nguha/legalbench/resolve/daec8237410aa23e3faf4bc41ad8b3a7e1696826/data/overruling/test.tsv",
+      "bytes": 424122,
+      "sha256": "49dfa6ee1221f4a810df0334629859d4ad5d44b8f6b182f037b6c83a3e9e8661",
+      "repository_path": "experiments/EXP-20261006-033-legalbench-answer-key-subset/source/overruling/test.tsv",
+      "rows_excluding_header": 2394
+    },
+    {
+      "task": "overruling",
+      "path": "tasks/overruling/base_prompt.txt",
+      "url": "https://raw.githubusercontent.com/HazyResearch/legalbench/b46bf4ffae90524b2b72aaa30e7745fe9db64481/tasks/overruling/base_prompt.txt",
+      "bytes": 1051,
+      "sha256": "824f131502fb251ec21e457f02cfb90efd0e2afdea28495d9ac527a6f3bae357",
+      "repository_path": "experiments/EXP-20261006-033-legalbench-answer-key-subset/source/overruling/base_prompt.txt"
+    },
+    {
+      "task": "definition_classification",
+      "path": "data/definition_classification/train.tsv",
+      "url": "https://huggingface.co/datasets/nguha/legalbench/resolve/daec8237410aa23e3faf4bc41ad8b3a7e1696826/data/definition_classification/train.tsv",
+      "bytes": 1772,
+      "sha256": "9375082e81c47c3c46db40f11cdc33ff8fefa83886876fc6de72affcfcb090f4",
+      "repository_path": "experiments/EXP-20261006-033-legalbench-answer-key-subset/source/definition_classification/train.tsv",
+      "rows_excluding_header": 8
+    },
+    {
+      "task": "definition_classification",
+      "path": "data/definition_classification/test.tsv",
+      "url": "https://huggingface.co/datasets/nguha/legalbench/resolve/daec8237410aa23e3faf4bc41ad8b3a7e1696826/data/definition_classification/test.tsv",
+      "bytes": 360417,
+      "sha256": "2508d4943b2b0d67b8ab5cefa732a4802c3201820e448a73697deb8fdbbde832",
+      "repository_path": "experiments/EXP-20261006-033-legalbench-answer-key-subset/source/definition_classification/test.tsv",
+      "rows_excluding_header": 1337
+    },
+    {
+      "task": "definition_classification",
+      "path": "tasks/definition_classification/base_prompt.txt",
+      "url": "https://raw.githubusercontent.com/HazyResearch/legalbench/b46bf4ffae90524b2b72aaa30e7745fe9db64481/tasks/definition_classification/base_prompt.txt",
+      "bytes": 1949,
+      "sha256": "74b5c52694643d3cfc0c3aa41ea0a1c51091ecdf36e0053443159ea736c0fa59",
+      "repository_path": "experiments/EXP-20261006-033-legalbench-answer-key-subset/source/definition_classification/base_prompt.txt"
+    },
+    {
+      "task": "citation_prediction_classification",
+      "path": "data/citation_prediction_classification/train.tsv",
+      "url": "https://huggingface.co/datasets/nguha/legalbench/resolve/daec8237410aa23e3faf4bc41ad8b3a7e1696826/data/citation_prediction_classification/train.tsv",
+      "bytes": 667,
+      "sha256": "9d0ae10b646b2425f50f5697cfc98328d5cf1135c9785b8adc07f77cd04587ce",
+      "repository_path": "experiments/EXP-20261006-033-legalbench-answer-key-subset/source/citation_prediction_classification/train.tsv",
+      "rows_excluding_header": 2
+    },
+    {
+      "task": "citation_prediction_classification",
+      "path": "data/citation_prediction_classification/test.tsv",
+      "url": "https://huggingface.co/datasets/nguha/legalbench/resolve/daec8237410aa23e3faf4bc41ad8b3a7e1696826/data/citation_prediction_classification/test.tsv",
+      "bytes": 25201,
+      "sha256": "6a932fbbb5d78a1c7d80ac1b2a453e42906d215d3ccbca391f472ea0f0df7884",
+      "repository_path": "experiments/EXP-20261006-033-legalbench-answer-key-subset/source/citation_prediction_classification/test.tsv",
+      "rows_excluding_header": 108
+    },
+    {
+      "task": "citation_prediction_classification",
+      "path": "tasks/citation_prediction_classification/base_prompt.txt",
+      "url": "https://raw.githubusercontent.com/HazyResearch/legalbench/b46bf4ffae90524b2b72aaa30e7745fe9db64481/tasks/citation_prediction_classification/base_prompt.txt",
+      "bytes": 802,
+      "sha256": "c043607b3aef22f140c67382f3202cd58061aa05b3279613f4f0b946a6314253",
+      "repository_path": "experiments/EXP-20261006-033-legalbench-answer-key-subset/source/citation_prediction_classification/base_prompt.txt"
+    }
+  ],
+  "canonical_records_sha256": "e756b17bbbe301d53f43ab3cd0e3bea72812b6c30db354698a1a545d636cb3d7",
+  "notes": "Each task's rows are the pinned LegalBench machine-readable source. Per-task licenses differ: overruling and citation_prediction_classification are CC BY 4.0; definition_classification is CC BY-SA 4.0 (see source/LICENSE-NOTICE.txt). Published task-page sizes may exceed the pinned row counts; each task records its own observed-vs-published row counts and discrepancy note, and no record is fabricated."
+}

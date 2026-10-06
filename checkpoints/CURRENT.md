@@ -4,6 +4,37 @@
 
 > Continuity v1 overlay (TASK-0063): this human checkpoint stays authoritative for Eval Lab program and task state. The legacy `tasks/TASK-*.md` histories predate PCM v1 and are preserved as-is; the v1 machine task namespace is `.continuity/tasks`, so `active_task` stays null until a legacy-task migration is authorized. GitHub issues own task progression.
 
+## 2026-10-06 - TASK-0069 LegalBench answer-key subset frozen (EXP-033)
+
+GitHub issue #94. The legal objective axis widens beyond the single LegalBench
+Hearsay task (EXP-028, unchanged) with a pinned answer-key subset of three
+subtasks: `overruling`, `definition_classification`, and
+`citation_prediction_classification`, from LegalBench revision
+`daec8237410aa23e3faf4bc41ad8b3a7e1696826`. `src/eval_lab/datasets/legalbench.py`
+gains a `SUBTASK_SPECS` registry, a SHA-256 `case_split`, `assign_case_splits`,
+and `canonicalize_subtask_rows`, which validates the per-task header and fails
+closed on a mismatch. `scripts/build_legalbench_subset.py` freezes the source
+(9 files verified by SHA-256 and byte count), samples cases by normalized text,
+and emits 3839 records over 3786 cases; `scripts/report_legalbench_subset.py`
+writes the gold-only `report.md`. Gold is the pinned LegalBench answer key
+(`answer_key` provenance, per-task verifier ids). The split unit is the case, so
+no case crosses the calibration/test boundary — load-bearing because
+`citation_prediction_classification` repeats the same text with opposite answers
+(108 rows, 55 cases, exact 54/54 tie). Canonical fingerprint
+`sha256:e756b17bbbe301d53f43ab3cd0e3bea72812b6c30db354698a1a545d636cb3d7`. The
+blind partition is unscored.
+
+Because that fingerprint is a raw-byte SHA-256, the experiment tree is pinned to
+`eol=lf` in `.gitattributes` (joining the three EXP-010/011/012 bakeoffs and the
+`benchmark/` release) and every generated artifact is written with
+`newline="\n"`, so the hash holds on any OS instead of only on a CRLF checkout.
+
+Verified: `tests/test_legalbench_subset.py` 23 passed; ruff and mypy clean.
+
+Next atomic action: score the public selection through the typed-spec path with
+`label_set ["Yes","No"]`, then the blind holdout, gated by the EXP-033 stopping
+rule.
+
 ## 2026-10-06 - TASK-0071 viewer API contract and dynamic-update path
 
 GitHub issue #99. The EXP-032 classifier viewer now has a versioned read API and
