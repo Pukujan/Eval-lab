@@ -4,6 +4,59 @@
 
 > Continuity v1 overlay (TASK-0063): this human checkpoint stays authoritative for Eval Lab program and task state. The legacy `tasks/TASK-*.md` histories predate PCM v1 and are preserved as-is; the v1 machine task namespace is `.continuity/tasks`, so `active_task` stays null until a legacy-task migration is authorized. GitHub issues own task progression.
 
+## 2026-10-06 - TASK-0071 viewer API contract and dynamic-update path
+
+GitHub issue #99. The EXP-032 classifier viewer now has a versioned read API and
+a polling path, which closes the gap the TASK-0070 delivery left: the viewer
+previously fetched committed JSON once and never updated, so it went stale
+silently when a new eval run landed.
+
+The API is a **subset of `docs/architecture/live-app.md` (TASK-0060) that runs
+today against committed artifacts**, not a parallel design. It is read-only and
+aggregate-only, and conforms to that document's rule that no per-record endpoint
+exists for a blind partition — EXP-032's is `blind_holdout`. The `live/` backend,
+Postgres, ingest, and the Cloudflare Tunnel remain plan-only.
+
+What ships: pure contract logic in `src/eval_lab/viewer_api.py` (mypy-checked);
+a stdlib-only `scripts/serve_classifier_viewer.py` (no new dependency) serving
+`/api/v1/revision`, `/api/v1/experiments/EXP-20261005-032`, `/api/v1/dataset`,
+and `/api/v1/charts/{id}`, plus the static bundle; JSON Schemas under
+`schemas/viewer-api/`; and `docs/VIEWER_API.md`.
+
+`revision` is derived, never declared: SHA-256 over the literal `"viewer-api.v1"`
+plus the sorted `(path, sha256 of LF-normalized bytes)` of the union of the API
+face (`paper/data/gleif-classifier.json` and the six chart documents) and the
+static-only face (`site/gleif-classifier/data/items.json`, the table's source).
+Hashing the union means a regenerated export with a stale site copy cannot report
+a stable revision; hashing the *upstream* artifacts instead would flip the
+revision while every served byte stayed identical, so those hash separately as
+`inputsRevision` and never drive UI invalidation.
+
+The viewer's frontend (source outside the repo at
+`C:\work\eval-lab-scratch\classifier-viewer-app`) gained a `dataLayer.ts` both
+modes share, a 30 s poll backing off to 5 min, revision-driven query
+invalidation, `?v=<revision>` cache-busting on the static table, and a `live`
+revision chip. Only rebuilt `index.html`/`assets/`/`favicon.ico` were copied into
+`site/gleif-classifier/`; the committed data files were byte-identical under LF
+normalization. No `node_modules`, `package.json`, or lockfile entered the
+checkout.
+
+The dynamic-update claim is demonstrated, not asserted: a Playwright run against
+the live server mutated a served artifact mid-session and the UI moved from
+2,142 to 100 scored records with the revision chip changing `c75b878f` to
+`c3aea141`, with no reload and zero console or page errors. That browser test
+skips in CI (the driver is vendored outside this repo); the deterministic
+equivalent CI does run asserts the revision endpoint reports a change after a
+served byte moves, and a leakage guard asserts no API body contains any of the
+2142 blind record ids or a `"gold"` key.
+
+Verified: 273 tests passed (was 241); workspace policy OK; repository contract
+OK; export `--check` exit 0; run telemetry current at 159 records.
+
+Next atomic action: publish this checkpoint against issue #99, then finalize it
+(confirm the merge, audit tracked/untracked/ignored state, fast-forward the
+canonical checkout to `origin/main`).
+
 ## 2026-10-06 - TASK-0070 EXP-032 Jev closed-set classifier complete
 
 GitHub issue #95. EXP-20261005-032 is complete and scored, and the static viewer

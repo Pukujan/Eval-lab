@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Pukujan/Eval-lab/blob/main/schemas/viewer-api/revision.v1.schema.json",
+  "title": "Eval Lab viewer API revision v1",
+  "description": "Response body of GET /api/v1/revision, implemented by scripts/serve_classifier_viewer.py and derived in src/eval_lab/viewer_api.py. Small and constant-size so an open viewer can poll it; it carries no chart rows and no per-record rows.",
+  "type": "object",
+  "required": [
+    "apiVersion",
+    "revision",
+    "inputsRevision",
+    "experimentId",
+    "datasetId",
+    "partition",
+    "recordCount",
+    "resolvedCount",
+    "families"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "apiVersion": {"const": "viewer-api.v1"},
+    "revision": {
+      "description": "Content hash over every artifact the viewer renders. Changes if and only if a served byte changes.",
+      "$ref": "#/$defs/sha256"
+    },
+    "inputsRevision": {
+      "description": "Content hash over the upstream experiment artifacts. Pipeline visibility only; it never drives UI invalidation.",
+      "$ref": "#/$defs/sha256"
+    },
+    "experimentId": {"type": "string", "pattern": "^EXP-[0-9]{8}-[0-9]{3}-[a-z0-9-]+$"},
+    "datasetId": {"type": "string", "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"},
+    "partition": {"type": "string", "minLength": 1},
+    "recordCount": {"type": "integer", "minimum": 0},
+    "resolvedCount": {"type": "integer", "minimum": 0},
+    "families": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    }
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Pukujan/Eval-lab/blob/main/schemas/viewer-api/experiment-summary.v1.schema.json",
+  "title": "Eval Lab viewer API experiment summary v1",
+  "description": "Response body of GET /api/v1/experiments/{id}, implemented by scripts/serve_classifier_viewer.py and derived in src/eval_lab/viewer_api.py. Aggregate metadata only: it names the experiment, its status and provenance, and its counts, and carries no chart rows and no per-record rows.",
+  "type": "object",
+  "required": [
+    "apiVersion",
+    "experimentId",
+    "datasetId",
+    "status",
+    "hypothesis",
+    "codeCommit",
+    "model",
+    "provider",
+    "route",
+    "partition",
+    "recordCount",
+    "resolvedCount",
+    "statusCounts",
+    "families",
+    "goldProvenance",
+    "revision"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "apiVersion": {"const": "viewer-api.v1"},
+    "experimentId": {"type": "string", "pattern": "^EXP-[0-9]{8}-[0-9]{3}-[a-z0-9-]+$"},
+    "datasetId": {"type": "string", "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"},
+    "status": {"type": ["string", "null"]},
+    "hypothesis": {"type": ["string", "null"]},
+    "codeCommit": {
+      "description": "The code commit the experiment manifest records; null when the manifest has none.",
+      "oneOf": [{"type": "null"}, {"$ref": "#/$defs/commit"}]
+    },
+    "model": {"type": ["string", "null"]},
+    "provider": {"type": ["string", "null"]},
+    "route": {"type": ["string", "null"]},
+    "partition": {"type": "string", "minLength": 1},
+    "recordCount": {"type": "integer", "minimum": 0},
+    "resolvedCount": {"type": "integer", "minimum": 0},
+    "statusCounts": {
+      "type": "object",
+      "additionalProperties": {"type": "integer", "minimum": 0}
+    },
+    "families": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "goldProvenance": {
+      "description": "Where the gold labels come from. A string label such as 'deterministic_verifier', or null when unrecorded.",
+      "type": ["string", "null"]
+    },
+    "revision": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+  }
+}
