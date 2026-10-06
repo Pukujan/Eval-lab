@@ -1,0 +1,24 @@
+{
+  "blind_record_ids_fingerprint": "2758307a4724eae6044780f752358f7e73f6aa2b3ce2b4b5f5e5656e82cc56a7",
+  "entities_scanned": 3440285,
+  "entity_count": 1400,
+  "entity_counts": {
+    "calibration": 686,
+    "test": 714
+  },
+  "experiment_id": "EXP-20261005-032-gleif-classifier",
+  "families": [
+    "entity-category",
+    "registration-status",
+    "legal-jurisdiction"
+  ],
+  "record_counts": {
+    "calibration": 2058,
+    "dev": 0,
+    "test": 2142,
+    "train": 0
+  },
+  "record_ids_fingerprint": "611c32066a883060ca57b8e406e92577f543403343154a00fb12231cac582cc2",
+  "seed": 260922,
+  "split_policy": "entity-disjoint calibration/test on normalized LEI; all families for one entity share its split"
+}

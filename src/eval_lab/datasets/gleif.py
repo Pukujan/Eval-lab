@@ -282,6 +282,124 @@ def parent_claims(
     )
 
 
+CLASSIFIER_VERIFIER_ID = "gleif-registry-classification-v1"
+CLASSIFIER_PROMPT_VERSION = "gleif-registry-classification-v1"
+CLASSIFIER_FAMILIES = ("entity-category", "registration-status", "legal-jurisdiction")
+
+_CLASSIFIER_TARGETS = {
+    "entity-category": "entity_category",
+    "registration-status": "registration_status",
+    "legal-jurisdiction": "legal_jurisdiction",
+}
+_CLASSIFIER_QUESTIONS = {
+    "entity-category": "Which entity category applies to this entity?",
+    "registration-status": "Which registration status applies to this entity?",
+    "legal-jurisdiction": "Which legal jurisdiction applies to this entity?",
+}
+
+
+def _classifier_rubric() -> list[RubricCriterion]:
+    return [
+        RubricCriterion(
+            criterion_id="gleif-closed-set-classification",
+            description="The single option that matches the frozen GLEIF source field.",
+            weight=1.0,
+            aggregation_rule="single_label",
+        )
+    ]
+
+
+def _classifier_context(entity: GleifEntity, *, mask_field: str) -> str:
+    """Render the Level 1 record with the target field removed."""
+
+    lines = ["GLEIF Level 1 record", f"LEI: {normalize_lei(entity.lei)}"]
+    for field, label in (
+        ("legal_name", "Legal name"),
+        ("entity_category", "Entity category"),
+        ("legal_jurisdiction", "Legal jurisdiction"),
+        ("registration_status", "Registration status"),
+        ("initial_registration_date", "Initial registration date"),
+    ):
+        if field != mask_field:
+            lines.append(f"{label}: {getattr(entity, field)}")
+    return "\n".join(lines)
+
+
+def _classification_record(
+    entity: GleifEntity,
+    *,
+    family: str,
+    gold_label: str,
+    vocabulary: Sequence[str],
+    seed: int,
+) -> JudgeRecord:
+    normalized = normalize_lei(entity.lei)
+    if gold_label not in vocabulary:
+        raise ValueError(f"{family}: gold label {gold_label!r} not in the closed vocabulary")
+    target_field = _CLASSIFIER_TARGETS[family]
+    context = _classifier_context(entity, mask_field=target_field)
+    prompt = (
+        f"{context}\n\n"
+        f"Question: {_CLASSIFIER_QUESTIONS[family]}\n"
+        f"Choose exactly one option: {', '.join(vocabulary)}"
+    )
+    return JudgeRecord(
+        record_id=f"{DATASET}:{family}:{normalized}",
+        source_problem_id=f"{family}:{normalized}",
+        mode=JudgmentMode.SINGLE,
+        prompt=prompt,
+        rubric=_classifier_rubric(),
+        candidate_a="Answer with exactly one option from the list.",
+        gold=GoldLabel(
+            label=gold_label,
+            provenance=GoldProvenance.DETERMINISTIC_VERIFIER,
+            evidence={
+                "family": family,
+                "entity_lei": normalized,
+                "field": target_field,
+                "source_field_value": getattr(entity, target_field),
+            },
+            verifier_id=CLASSIFIER_VERIFIER_ID,
+        ),
+        split=entity_split(normalized, seed=seed),
+        perturbation={"kind": "closed_set_classification", "family": family},
+    )
+
+
+def category_item(entity: GleifEntity, *, vocabulary: Sequence[str], seed: int) -> JudgeRecord:
+    return _classification_record(
+        entity,
+        family="entity-category",
+        gold_label=entity.entity_category,
+        vocabulary=vocabulary,
+        seed=seed,
+    )
+
+
+def status_item(entity: GleifEntity, *, vocabulary: Sequence[str], seed: int) -> JudgeRecord:
+    return _classification_record(
+        entity,
+        family="registration-status",
+        gold_label=entity.registration_status,
+        vocabulary=vocabulary,
+        seed=seed,
+    )
+
+
+def jurisdiction_item(
+    entity: GleifEntity, *, vocabulary: Sequence[str], seed: int, other_label: str = "OTHER"
+) -> JudgeRecord:
+    raw = entity.legal_jurisdiction
+    gold_label = raw if raw in vocabulary else other_label
+    return _classification_record(
+        entity,
+        family="legal-jurisdiction",
+        gold_label=gold_label,
+        vocabulary=vocabulary,
+        seed=seed,
+    )
+
+
 def missing_columns(header: Sequence[str], required: Mapping[str, str]) -> list[str]:
     """Return the logical column names whose actual header names are absent."""
 
@@ -325,6 +443,9 @@ def iter_entities(
 
 
 __all__ = [
+    "CLASSIFIER_FAMILIES",
+    "CLASSIFIER_PROMPT_VERSION",
+    "CLASSIFIER_VERIFIER_ID",
     "DATASET",
     "PROMPT_VERSION",
     "SPLIT_FAMILY",
@@ -332,12 +453,15 @@ __all__ = [
     "GleifEntity",
     "alias_claims",
     "category_claims",
+    "category_item",
     "entity_split",
     "iter_entities",
     "jurisdiction_claims",
+    "jurisdiction_item",
     "missing_columns",
     "normalize_lei",
     "parent_claims",
     "registration_date_claims",
     "status_claims",
+    "status_item",
 ]

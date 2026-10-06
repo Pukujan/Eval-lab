@@ -67,8 +67,12 @@ viewable.
 - `scripts/run_gleif_classifier_jev.py`
 - `scripts/report_gleif_classifier.py`
 - `scripts/export_chart_data.py`
+- `scripts/build_classifier_viewer_data.py`
 - `experiments/EXP-20261005-032-gleif-classifier/`
 - `tests/test_gleif_classifier.py`
+- `tests/test_chart_data_export.py`
+- `paper/data/gleif-classifier.json`, `paper/data/classifier-charts/`, `paper/data/index.json` (generated)
+- `telemetry/runs.v1.jsonl`, `telemetry/FINDINGS.md` (regenerated)
 - `site/gleif-classifier/` (built static assets only)
 
 ## Goal

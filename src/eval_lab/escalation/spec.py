@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -102,19 +102,39 @@ def build_decision_spec(
     context_limit: int = 4096,
     label_order: Sequence[str] | None = None,
     instruction_override: str | None = None,
+    label_set: Sequence[str] | None = None,
+    criteria: Mapping[str, str] | None = None,
 ) -> DecisionSpec:
-    """Compile a canonical record into the single typed semantic contract."""
+    """Compile a canonical record into the single typed semantic contract.
+
+    With ``label_set=None`` the historical binary (single) or three-way
+    (pairwise) label space is produced unchanged. A supplied ``label_set``
+    becomes the closed legal label space, with ``criteria`` giving one
+    description per label; this is the multi-class classification path and does
+    not alter the binary wire contract.
+    """
 
     question_id = "verdict"
-    if record.mode is JudgmentMode.SINGLE:
-        labels = ["pass", "fail"]
+    if label_set is not None:
+        labels = list(label_set)
+        if len(labels) < 2 or len(set(labels)) != len(labels):
+            raise ValueError("label_set must contain at least two unique labels")
+        if criteria is not None and set(criteria) != set(labels):
+            raise ValueError("criteria keys must exactly match label_set")
+        label_criteria = {label: (criteria or {}).get(label, label) for label in labels}
     else:
-        labels = [item.value for item in PairwiseLabel]
+        if record.mode is JudgmentMode.SINGLE:
+            labels = ["pass", "fail"]
+        else:
+            labels = [item.value for item in PairwiseLabel]
+        default_criteria = _choice_criteria(record)
+        label_criteria = {label: default_criteria[label] for label in labels}
     if label_order is not None:
         ordered = list(label_order)
         if set(ordered) != set(labels) or len(ordered) != len(labels):
             raise ValueError("label_order must be a permutation of the legal labels")
         labels = ordered
+        label_criteria = {label: label_criteria[label] for label in labels}
     question = TypedQuestion(
         question_id=question_id,
         question_type="choice",
@@ -122,7 +142,7 @@ def build_decision_spec(
         or "Return the single objective verdict for the candidate record.",
         legal_labels=labels,
         score_order=labels,
-        criteria={label: _choice_criteria(record)[label] for label in labels},
+        criteria=label_criteria,
     )
     return DecisionSpec(
         spec_id="eval-lab-system-one",

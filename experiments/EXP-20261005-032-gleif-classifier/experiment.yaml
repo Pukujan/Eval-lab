@@ -73,12 +73,15 @@ artifacts:
   - split-manifest.json
   - pool-manifest.json
   - pool-checksums.sha256
+  - typed-question-spec.json
   - requests/<family>.jsonl
-  - predictions/<family>/predictions.jsonl
+  - runs/<family>/predictions.jsonl
+  - runs/<family>/results.json
   - results.json
   - report.md
   - paper/data/gleif-classifier.json
-  - site/gleif-classifier/ (built static viewer assets)
+  - paper/data/classifier-charts/<chart>.json
+  - site/gleif-classifier/ (built static viewer assets + items.json)
 notes: >-
   Extends the GLEIF objective track to closed-set classification without
   modifying EXP-026. EXP-026 expresses GLEIF facts as binary pass/fail claim
