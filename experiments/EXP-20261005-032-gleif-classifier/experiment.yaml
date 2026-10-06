@@ -1,0 +1,89 @@
+id: EXP-20261005-032-gleif-classifier
+status: preregistered
+hypothesis: >-
+  Jev 1.13 used as a typed closed-set classifier over frozen GLEIF registry
+  fields produces honest multi-class accuracy and usable native-probability
+  confidence on an entity-disjoint blind split, but only when every option
+  carries explicit criteria; families differ systematically and raw accuracy is
+  misleading under class imbalance.
+created_at: 2026-10-05
+code_commit: pending_task_checkpoint
+seed: 260922
+context_limit: 4096
+dataset:
+  name: GLEIF frozen Golden Copy 2026-09-24, multi-class registry fields
+  version: 20260924-0000-gleif-goldencopy
+  fingerprint: pending_classifier_dataset_build
+  split_policy: entity-disjoint public selection and blind holdout on normalized LEI; all families for one entity share its split
+  primary_family: entity-category
+  families:
+    entity-category:
+      legal_labels: [GENERAL, FUND, SOLE_PROPRIETOR, RESIDENT_GOVERNMENT_ENTITY, BRANCH, INTERNATIONAL_ORGANIZATION]
+      note: 6 classes; the primary family; ~92.5% GENERAL in a non-blind sample, so balanced accuracy and macro-F1 are the honest headline
+    registration-status:
+      legal_labels: [ISSUED, LAPSED, RETIRED, DUPLICATE, ANNULLED, PENDING_TRANSFER, PENDING_ARCHIVAL]
+      note: 7 classes; deliberately hard; partly inferable from date fields
+    legal-jurisdiction:
+      legal_labels: [top-N + OTHER]
+      note: long-tailed (180 distinct values in a non-blind sample); truncated to top-N + OTHER; the coverage/abstention family
+typed_protocol:
+  spec_id: gleif-registry-classification
+  spec_version: gleif-registry-classification-v1
+  base_spec_id: eval-lab-system-one
+  base_spec_version: 0.1.0
+  question_type: choice
+  confidence_definition: native normalized provider probabilities only; label-only responses have no confidence metric
+judge:
+  provider: openrouter
+  model: typesafe/jev-1.13
+  route: POST https://openrouter.ai/api/alpha/decisions
+  adapter_version: gleif-classifier-v1
+  prompt_version: gleif-registry-classification-v1
+rubric:
+  version: gleif-registry-classification-v1
+gold:
+  provenance_policy: frozen GLEIF source field value (deterministic_verifier, gleif-registry-classification-v1); no model judgment is promoted to gold
+calibration:
+  method: native probabilities reported raw as the primary readout; optional split-safe temperature scaling fitted on public selection only
+  split: public selection records only; blind holdout untouched
+baseline:
+  primary: majority-class predictor per family, reported beside every arm
+  metrics: accuracy, balanced_accuracy, macro_f1
+metrics:
+  - accuracy
+  - balanced_accuracy
+  - macro_f1
+  - coverage
+  - valid_label_rate
+  - brier
+  - nll
+  - ece
+  - risk_coverage
+  - latency_p95
+  - cost_per_1000
+stopping_rule: >-
+  Do not score the blind split until the task file, this manifest, the classifier
+  dataset, the entity-disjoint split manifest, and the frozen fingerprints are
+  committed. Terminate an arm only after every record has a terminal status or
+  its declared recovery budget is exhausted; provider failures remain execution
+  statuses and are never counted as labels.
+artifacts:
+  - canonical-records.jsonl
+  - records.jsonl
+  - split-manifest.json
+  - pool-manifest.json
+  - pool-checksums.sha256
+  - requests/<family>.jsonl
+  - predictions/<family>/predictions.jsonl
+  - results.json
+  - report.md
+  - paper/data/gleif-classifier.json
+  - site/gleif-classifier/ (built static viewer assets)
+notes: >-
+  Extends the GLEIF objective track to closed-set classification without
+  modifying EXP-026. EXP-026 expresses GLEIF facts as binary pass/fail claim
+  pairs; EXP-032 asks whether Jev's choice primitive over a closed label set is a
+  usable classifier whose confidence supports selective prediction. Gold is only
+  the frozen GLEIF source field; no legal, financial, or investment
+  interpretation is promoted to gold. A changed dataset, label set, prompt, or
+  split requires a new experiment ID.

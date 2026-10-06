@@ -4,6 +4,28 @@
 
 > Continuity v1 overlay (TASK-0063): this human checkpoint stays authoritative for Eval Lab program and task state. The legacy `tasks/TASK-*.md` histories predate PCM v1 and are preserved as-is; the v1 machine task namespace is `.continuity/tasks`, so `active_task` stays null until a legacy-task migration is authorized. GitHub issues own task progression.
 
+## 2026-10-05 - TASK-0070 EXP-032 Jev closed-set classifier preregistered
+
+GitHub issue #95. New append-only experiment EXP-20261005-032 asks whether Jev
+1.13, used as a typed `choice` over an explicit closed label set, is a usable
+multi-class classifier over frozen GLEIF registry fields, and whether its native
+probability vector supports calibrated selective prediction. It is the
+classifier form of the question EXP-026 answers only as binary `pass`/`fail`
+claim pairs; EXP-026 is untouched. Three families: entity category (6 classes,
+primary), registration status (7 classes), legal jurisdiction (top-N + `OTHER`).
+Gold is only the frozen GLEIF source field (`deterministic_verifier`); each
+family is scored against a majority-class baseline because entity category is
+~92.5% GENERAL, so balanced accuracy and macro-F1 are the honest headline.
+`experiment.yaml` and `README.md` are committed with `status: preregistered`; no
+blind split has been scored. This task was renumbered from an initial TASK-0069
+because issues #94 and #95 were both filed as TASK-0069; first-filed #94
+(LegalBench, sibling session) keeps TASK-0069.
+
+Next atomic action: generalize the typed-decision spec to an arbitrary closed
+label set with per-label criteria (backward-compatible), build the classifier
+dataset, and run the smallest end-to-end slice before scaling to >=1000 blind
+items.
+
 ## 2026-10-05 - TASK-0042 EXP-026 GLEIF adapter and dataset frozen
 
 GitHub issue #45. The EXP-026 GLEIF objective track now has a committed
