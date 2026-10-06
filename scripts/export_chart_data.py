@@ -357,9 +357,12 @@ def _read_json(path: Path) -> Any:
 
 
 def _git(*args: str) -> str:
+    # Strip only the trailing newline: a porcelain status line begins with a
+    # two-character code, and the leading space of a worktree-only " M" entry
+    # must survive so the path can be read from a fixed offset.
     return subprocess.run(
         ["git", "-C", str(ROOT), *args], capture_output=True, text=True, check=True
-    ).stdout.strip()
+    ).stdout.rstrip("\n")
 
 
 def git_info() -> dict[str, Any]:
