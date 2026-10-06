@@ -1,0 +1,18 @@
+{
+  "entity_count": 300,
+  "entity_counts": {
+    "calibration": 170,
+    "test": 190
+  },
+  "experiment_id": "EXP-20260922-026-gleif-objective-track",
+  "record_counts": {
+    "calibration": 920,
+    "dev": 0,
+    "test": 1000,
+    "train": 0
+  },
+  "record_ids_fingerprint": "9b763ce2b24f84a3d0c751e48b9d4672f3e708a8f4b6e702c53492d3a24664a6",
+  "seed": 260922,
+  "split_family": "gleif",
+  "split_policy": "entity-disjoint calibration/test on normalized LEI"
+}

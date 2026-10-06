@@ -2,13 +2,15 @@
 
 ## Status
 
-Active — tracked by GitHub issue #45. EXP-026 is preregistered. The 2026-09-24
-GLEIF Golden Copy LEI2 and RR archives have been downloaded to the ignored
-`outputs/` source cache; their hashes and retrieval details are recorded in
-`experiments/EXP-20260922-026-gleif-objective-track/source-manifest.json`.
-The canonical adapter and dataset fingerprint are not yet complete. The Grok
-ablation EXP-025 is complete and will remain immutable. SEC EDGAR/XBRL and
-CourtListener remain subsequent append-only tracks.
+Complete checkpoint — tracked by GitHub issue #45. EXP-026 is preregistered and
+its dataset is now frozen. The 2026-09-24 GLEIF Golden Copy LEI2 and RR archives
+are frozen, verified, and extracted; the canonical adapter and dataset builder
+emit 1920 objective records (1000 blind holdout + 920 public selection) over an
+entity-disjoint 300-entity split. The dataset, split, typed question spec, pool
+manifest, and their SHA-256 fingerprints are committed before any blind scoring,
+and a 10-record public Jev canary passed (10/10 `ok`). The Grok ablation EXP-025
+is complete and remains immutable. SEC EDGAR/XBRL and CourtListener remain
+subsequent append-only tracks.
 
 ## Objective
 
@@ -60,10 +62,12 @@ that require expert interpretation.
 
 Created the cross-domain protocol in docs/OBJECTIVE_DOMAIN_TRACKS.md and the
 GLEIF preregistration in experiments/EXP-20260922-026-gleif-objective-track/.
-GitHub issue #45 tracks the EXP-026 source snapshot and adapter. The dated
-LEI2 and RR archives are now downloaded and recorded in the source manifest;
-canonical extraction, normalization, adapter, and model scoring remain
-unfinished. No model calls have occurred.
+GitHub issue #45 tracks the EXP-026 source snapshot and adapter. The dated LEI2
+and RR archives are frozen, verified, and extracted; `scripts/freeze_gleif_snapshot.py`
+records the snapshot and `scripts/build_gleif_dataset.py` builds the canonical
+dataset and comparison pool from it. The 300-entity split is entity-disjoint
+(170 calibration / 190 test), 1920 records are emitted (920 public / 1000 blind),
+and a 10-record public Jev canary ran clean. The blind split has not been scored.
 
 ## Files in scope
 
@@ -89,16 +93,19 @@ the acceptance criteria for this preparation checkpoint.
 
 ## Checkpoint log
 
-This file and checkpoints/CURRENT.md record the preregistration. Source
-archives have been downloaded but are not yet transformed or frozen as a
-canonical dataset; no model calls have occurred.
+This file and checkpoints/CURRENT.md record the preregistration and the dataset
+freeze. Source archives have been frozen, verified, and transformed into the
+canonical dataset; a 10-record public canary ran clean and no blind split has
+been scored.
 
 ## Handoff
 
-Implement the snapshot freezer and adapter against the downloaded archives,
-record the canonical dataset fingerprint, then run public canaries. Do not
-score a blind split before the source manifest, split, and adapter artifacts
-are committed.
+The freezer, adapter, dataset builder, split, and fingerprints are committed and
+the public canary passed. The next step is to score the public selection and then
+the blind holdout through the shared comparison runner
+(`scripts/run_fast_jev_arm.py --pool experiments/EXP-20260922-026-gleif-objective-track`),
+gated by the EXP-026 stopping rule. Do not modify the completed artifacts; a
+changed dataset, prompt, or split needs a new experiment ID.
 
 ## Checkpoint log
 
@@ -121,3 +128,55 @@ fingerprint, entity-disjoint split, adapter, and public canary results.
 
 Next atomic action: implement snapshot extraction, deterministic
 canonicalization, and entity-disjoint split; then run public canaries only.
+
+### 2026-10-05 — EXP-026 GLEIF adapter and dataset frozen
+
+Status: the canonical GLEIF adapter and dataset are complete and frozen before
+blind evaluation. No blind split has been scored.
+
+Completed work: `scripts/freeze_gleif_snapshot.py` verifies the dated LEI2 and
+RR archives by SHA-256 and byte count, extracts them, and records the snapshot
+in `frozen-snapshot.json` (extracted CSV names, the 338-column LEI2 header, and
+row counts). `src/eval_lab/datasets/gleif.py` provides the canonical adapter:
+`GleifEntity`, `iter_entities`, `normalize_lei`, SHA-256 `entity_split`, and the
+deterministic claim builders (`status_claims`, `jurisdiction_claims`,
+`category_claims`, `registration_date_claims`, `alias_claims`, `parent_claims`).
+`scripts/build_gleif_dataset.py` deterministically samples 300 entities and 60
+relationships and emits 1920 objective records (1000 blind holdout + 920 public
+selection) with `pass`/`fail` gold from the frozen source field
+(`deterministic_verifier` provenance, verifier `gleif-registry-facts-v1`). The
+300-entity split is entity-disjoint (170 calibration / 190 test), so no LEI
+appears on both sides; all families for one entity share its split.
+
+Exact files changed: `experiments/EXP-20260922-026-gleif-objective-track/`
+(`source-manifest.json`, `frozen-snapshot.json`, `canonical-records.jsonl`,
+`records.jsonl`, `split-manifest.json`, `typed-question-spec.json`,
+`pool-manifest.json`, `pool-checksums.sha256`, `experiment.yaml`, `README.md`),
+`scripts/freeze_gleif_snapshot.py`, `scripts/build_gleif_dataset.py`,
+`src/eval_lab/datasets/gleif.py`, `tests/test_gleif.py`, `checkpoints/CURRENT.md`.
+
+Commands run: `scripts/freeze_gleif_snapshot.py`; `scripts/build_gleif_dataset.py`;
+`scripts/run_fast_jev_arm.py --pool experiments/EXP-20260922-026-gleif-objective-track
+--partition public_selection --model typesafe/jev-1.13 --limit 10 --workers 4`;
+`.venv\Scripts\python.exe -m pytest tests/test_gleif.py -q`; full local gates via
+the checkpoint publisher.
+
+Test results: `tests/test_gleif.py` 13 passed; full suite 222 passed; repository
+workspace-policy check passed. Public canary: 10/10 `ok`, 0 provider errors,
+2.24 s, resolved model `typesafe/jev-1.13-20260917`, native probabilities and
+confidence preserved (`gold_not_used_for_provider_request: true`).
+
+Decisions made: sample the frozen snapshot deterministically by seed 260922 and
+selection ratio 0.002; dedupe relationships by start node and entities by LEI so
+`parent:{start}` and per-entity problem IDs are unique; record the canonical
+fingerprint `sha256:1267c92547dc40d9d63c90be241da85361509f812f9cea63246b28f5f4cc8203`
+in both the source manifest and pool manifest; advance `experiment.yaml` status
+from `preregistered` to `frozen` and fill the previously deferred
+`dataset.version`/`fingerprint` (no hypothesis, metric, split, calibration, or
+stopping-rule field changed).
+
+Unresolved questions: the blind holdout has not been scored; the shared
+comparison runner's blind run and the results/report remain.
+
+Next atomic action: score the public selection and then the blind holdout
+through `scripts/run_fast_jev_arm.py`, gated by the EXP-026 stopping rule.

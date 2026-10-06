@@ -4,6 +4,34 @@
 
 > Continuity v1 overlay (TASK-0063): this human checkpoint stays authoritative for Eval Lab program and task state. The legacy `tasks/TASK-*.md` histories predate PCM v1 and are preserved as-is; the v1 machine task namespace is `.continuity/tasks`, so `active_task` stays null until a legacy-task migration is authorized. GitHub issues own task progression.
 
+## 2026-10-05 - TASK-0042 EXP-026 GLEIF adapter and dataset frozen
+
+GitHub issue #45. The EXP-026 GLEIF objective track now has a committed
+canonical adapter and a frozen dataset, built from the verified 2026-09-24 GLEIF
+Golden Copy LEI2 and RR archives. `scripts/freeze_gleif_snapshot.py` verifies
+both archives by SHA-256 and byte count, extracts them, and records the snapshot
+(extracted CSV names, the 338-column LEI2 header, row counts) in
+`frozen-snapshot.json`. `src/eval_lab/datasets/gleif.py` is the canonical
+adapter — `GleifEntity`, `iter_entities`, `normalize_lei`, a SHA-256
+`entity_split`, and the deterministic claim builders. `scripts/build_gleif_dataset.py`
+samples 300 entities and 60 relationships by seed 260922 and emits 1920 objective
+records (1000 blind holdout + 920 public selection); gold is the frozen source
+field (`deterministic_verifier`, verifier `gleif-registry-facts-v1`). The
+300-entity split is entity-disjoint (170 calibration / 190 test). The canonical
+fingerprint is
+`sha256:1267c92547dc40d9d63c90be241da85361509f812f9cea63246b28f5f4cc8203`,
+recorded in the source and pool manifests; `experiment.yaml` moves from
+`preregistered` to `frozen` and its deferred `dataset.version`/`fingerprint` are
+filled. A 10-record public Jev canary ran clean (10/10 `ok`, 2.24 s, resolved
+`typesafe/jev-1.13-20260917`, native probabilities preserved). The blind split
+has not been scored.
+
+Verified: `tests/test_gleif.py` 13 passed; full suite 222 passed; repository
+workspace-policy check passed.
+
+Next atomic action: score the public selection and then the blind holdout
+through `scripts/run_fast_jev_arm.py`, gated by the EXP-026 stopping rule.
+
 ## 2026-10-05 - TASK-0067 four-component stack move (PCM 0.7.0 + CGM 0.5.12 + ACS 0.2.0 + OIO 0.1.0)
 
 GitHub issue #90. The whole stack moves to the current certified train:

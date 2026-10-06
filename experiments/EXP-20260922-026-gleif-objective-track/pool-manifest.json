@@ -1,0 +1,26 @@
+{
+  "blind_record_ids_fingerprint": "7aafc44d0dac1944fef11553d58d5cb98cb2264b46c4bdbfb3bc858198b7a4f9",
+  "experiment_id": "EXP-20260922-026-gleif-objective-track",
+  "frozen_at_utc": "2026-10-06T03:15:47.322219+00:00",
+  "gold_provenance": [
+    "deterministic_verifier"
+  ],
+  "partition_counts": {
+    "blind_holdout": 1000,
+    "public_selection": 920
+  },
+  "primary_partition": "blind_holdout",
+  "record_count": 1920,
+  "records_fingerprint": "65076bc2b28ba9e55c010408ac1e6f0d0dde24ef32af428af5bf7524192bc5cb",
+  "source_experiment": "EXP-20260922-026-gleif-objective-track",
+  "source_files": [
+    "20260924-0000-gleif-goldencopy-lei2-golden-copy.csv",
+    "20260924-0000-gleif-goldencopy-rr-golden-copy.csv"
+  ],
+  "source_problem_id_count": 960,
+  "status": "frozen_before_blind_evaluation",
+  "typed_question_spec_fingerprint": "ce155221bbfe2c09d77115ff04ccb02ceb32489a1359cd920a0575fd1c3d08b8",
+  "typed_spec_id": "gleif-registry-facts",
+  "typed_spec_version": "gleif-registry-facts-v1",
+  "verifier_id": "gleif-registry-facts-v1"
+}
