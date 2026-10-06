@@ -1,0 +1,60 @@
+{
+  "schema": "eval-lab/artifact-fingerprints/v1",
+  "dataset": {
+    "repo": "justicedao/patent-legal-ir-graphrag",
+    "repo_type": "dataset",
+    "revision": "29d510841f112bbe41fb209307a55cd1bdc70ca0",
+    "last_modified": "2026-09-08T11:41:20+00:00",
+    "license": "other",
+    "layout": "publicus-ir-graphrag/v1",
+    "source_file_sha256": {
+      "data/corpus/part-000000.parquet": "c24770ebe3e0930b0122c508a4190705a0647e4f915ea481a803add57f3a3698",
+      "data/vectors/part-000000.parquet": "e81b4c3b03b4bdd1474d6cee76caabb9328e7289c126b4ea7e59bd43cbd5468b",
+      "indexes/bm25_keyword_shards.parquet": "be1768fde38aec1f6246fb93689f6cc9d2cb65d66eb1a116c336f474185b940f"
+    }
+  },
+  "derived": {
+    "corpus.parquet": {
+      "rows": 2174,
+      "sha256": "e67b5fdefbb06469d18d6c8ad3d7bf48c22bfbeae17967ccfe11145180d99014",
+      "note": "binary parquet; byte-stable, not subject to core.autocrlf"
+    },
+    "citations.parquet": {
+      "rows": 8626,
+      "sha256": "e5d6c856c4be3afa757571141ef2d14eb5be8f427cb60b163f9623d92472e16a",
+      "note": "document->document references_authority edges, both endpoints resolved to corpus entry_cid"
+    },
+    "doc_citation_tokens.parquet": {
+      "rows": 12260,
+      "sha256": "f0f4db7624a390a4b19667b0c29398adac73776f438e498fe79ab377e7e40b82",
+      "note": "document->citation-token edges; excluded from traversal (slug normalisation would reconstruct held-out edges)"
+    },
+    "nodes.parquet": {
+      "rows": 37764,
+      "sha256": "de7cd85d819721d93448dbc0f3f6040a6dedfbdf8d9591ecd35aa1ad37462d6e"
+    },
+    "edges.parquet": {
+      "rows": 883628,
+      "sha256": "a76ea137624cd78634bcc71e9d54c3f31c3af9a007f2f75f69f19894de6de7e0"
+    }
+  },
+  "graph_census": {
+    "relations": {
+      "contains_term": 854046,
+      "references_authority": 20886,
+      "other": 6522,
+      "classifies": 2174
+    },
+    "references_authority_endpoints": {
+      "document->document": 8626,
+      "document->citation": 12260
+    },
+    "citation_nodes_participating": 1502,
+    "citation_out_degree_max": 171,
+    "citation_in_degree_max": 221,
+    "self_loops": 0
+  },
+  "join_chain": "citation edge node_cid -> graph node entry_cid -> corpus entry_cid -> document; 8626/8626 edges resolve both ends, 0 unresolved",
+  "measured_at": "2026-10-06",
+  "measured_on": "podman pod eval-graphrag on gravebuster (Linux), python 3.12"
+}

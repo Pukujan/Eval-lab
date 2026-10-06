@@ -1,0 +1,32 @@
+{
+  "citation_edges_sha256": "6e50882cc7b9028c84e5f7840f5d37264e42bcc33bbe1fd053adb2bd967bbe8d",
+  "counts": {
+    "citation_edges": 8626,
+    "corpus_documents": 2174,
+    "held_out_edges": 2296,
+    "queries": 596,
+    "retained_edges": 6330
+  },
+  "dataset_revision": "29d510841f112bbe41fb209307a55cd1bdc70ca0",
+  "duplicate_bodies": {
+    "documents_in_duplicate_groups": 58,
+    "duplicate_body_groups": 15,
+    "gold_pairs": 2296,
+    "gold_pairs_on_duplicated_body": 7,
+    "gold_pairs_sharing_the_source_body": 0,
+    "query_sources_sharing_a_body": 0
+  },
+  "query_set_sha256": "d19f015e406e7c05e7703a62a8578ead20f267acbdc7329336c86ce0c510c7c3",
+  "reachability": {
+    "any_signal_fraction": 0.790268456375839,
+    "co_citation_fraction": 0.4714765100671141,
+    "common_citer_fraction": 0.540268456375839,
+    "sources_measured": 596,
+    "two_hop_fraction": 0.5721476510067114
+  },
+  "schema": "eval-lab/graphrag-freeze/v1",
+  "source_file_sha256": {
+    "data/corpus/part-000000.parquet": "c24770ebe3e0930b0122c508a4190705a0647e4f915ea481a803add57f3a3698"
+  },
+  "split_manifest_sha256": "69f8937bed31e335112e0fa25d8cf2a6116901ee5a566a12a0009e932b51363d"
+}

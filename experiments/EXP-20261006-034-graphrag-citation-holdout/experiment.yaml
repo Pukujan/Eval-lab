@@ -1,0 +1,115 @@
+id: EXP-20261006-034-graphrag-citation-holdout
+status: preregistered
+hypothesis: >-
+  Over one frozen patent-law corpus, retrieval that traverses the shipped
+  document citation graph recovers a held-out citation target more often than
+  neural semantic similarity or BM25 lexical retrieval, when all three arms are
+  given the same source document and the graph arm cannot read the held-out
+  edge.
+created_at: 2026-10-06
+code_commit: pending_task_checkpoint
+seed: 20261006
+context_limit: not_applicable_no_llm
+dataset:
+  name: justicedao/patent-legal-ir-graphrag (Publicus IR GraphRAG, English patent law)
+  version: justicedao/patent-legal-ir-graphrag@29d510841f112bbe41fb209307a55cd1bdc70ca0
+  fingerprint: sha256:5a497c405718729b78e8ff1d9405e2b8a10b67fd72e78ebe9c676f3216d930c4
+  split_policy: >-
+    citation-edge hold-out by source document: for each source with >=3 outgoing
+    document->document citation edges, a seeded 30% of its out-edges are held
+    out (min 1); a source is a query only if it retains at least one held-out
+    and one retained edge; query sources are then split dev/test by SHA-256 of
+    the source identity with salt 20261006; no source document crosses the
+    dev/test boundary
+  license: >-
+    license:other per the release card; the release declares no explicit license
+    identifier, so the frozen revision is pinned and redistribution is limited to
+    derived counts, fingerprints and identifiers
+judge:
+  provider: none
+  model: none
+  adapter_version: graphrag-citation-holdout-v1
+  prompt_version: not_applicable_no_llm
+rubric:
+  version: not_applicable_deterministic_retrieval
+gold:
+  provenance_policy: >-
+    deterministic_verifier: a held-out citation edge is a structural fact of the
+    frozen dataset, resolved to corpus document identity; no model judgment is
+    promoted to gold and no model-generated question text is used
+calibration:
+  method: none
+  split: not_applicable_no_probabilities
+exclusion_rules:
+  - a source with fewer than 3 outgoing document->document citation edges is
+    never a query and all its edges stay retained
+  - a source is a query only if it keeps at least one held-out and one retained
+    edge, so every arm has something to predict from and the graph arm always has
+    retained structure to traverse
+  - self-loop citation edges are dropped
+  - a citation endpoint that does not resolve to exactly one corpus document
+    fails the build rather than being silently pruned
+  - a held-out edge whose reverse survives in the retained graph is demoted to
+    retained, so gold never has a readable edge in either direction
+  - the source document is excluded from every arm's candidate set, because the
+    query text is that document's own text
+  - document->citation-token edges are excluded from the traversal index
+  - any gold target sharing its source document's body fails the build
+stopping_rule: >-
+  No test-split scoring occurs until this preregistration commit has merged. If
+  the reachability diagnostic reports any_signal_fraction < 0.05, the graph arm
+  structurally cannot win and that is reported as a design limitation rather
+  than a model result. Once the test split is scored, no change to the
+  hypothesis, metrics, primary comparison or split policy is permitted; a change
+  would require a new experiment id.
+metrics:
+  - recall_at_5
+  - recall_at_10
+  - recall_at_20
+  - recall_at_50
+  - mrr_at_100
+  - recall_at_10_echo_free_subset
+  - echo_free_macro_query_mean
+  - index_size
+  - index_build_seconds
+  - query_latency_ms_mean
+  - query_latency_ms_p95
+artifacts:
+  - README.md
+  - experiment.yaml
+  - split-manifest.json
+  - artifact-fingerprints.json
+  - queries.jsonl
+  - arm-predictions/
+  - results.json
+  - report.md
+notes: >-
+  Tier 1 is deterministic and self-contained: no judge, no LLM, no provider call,
+  so the Jev integration contract does not apply. The query shape is link
+  prediction, not question answering - both arms are given the source document,
+  so the result must not be described as answering user questions. Gold is keyed
+  on resolved corpus document identity, never on display citation strings. The
+  primary comparison is graph vs semantic on test recall@10; lexical is a
+  secondary baseline and the popularity arm (documents ranked by retained
+  in-degree, ignoring the query) is the sharpest null, because a citation task is
+  naturally friendly to "return the most-cited documents". The semantic arm
+  embeds documents as overlapping windows and scores by maxP (best-chunk cosine),
+  because a mean corpus document is ~2,300 tokens and single-window encoding
+  would represent only the opening of most of the corpus. The preregistered
+  secondary result is recall@10 on the echo-free subset (gold targets whose full
+  normalised citation string does not appear in the query text), because
+  documents frequently name the provisions they cite and a full set win could
+  otherwise be lexical leakage; the secondary is pooled over gold edges rather
+  than averaged per query, because most queries have a single echo-free target.
+  The build also reports a duplicate-body diagnostic: the corpus contains
+  reserved-stub sections whose text is identical across documents, and any gold
+  target sharing its source document's body fails the build, since that would
+  leak to every arm at once. If held-out citations are not structurally reachable
+  the graph arm cannot win, and that is a design limitation to report rather than
+  a model result. No model has been scored at preregistration. An earlier
+  reconnaissance note described the shipped 256-d vectors as a semantic baseline;
+  that is wrong (model_id local-hashed-term-projection) and this experiment
+  embeds the corpus itself. Dev prototypes on a held-out slice (salt 20261006,
+  120 sources) measured recall@10 graph 0.467, semantic 0.183, BM25 0.108; those
+  are prototype numbers, are not results of this experiment, and the split and
+  arms here are re-derived under this frozen manifest.
