@@ -1,0 +1,26 @@
+{
+  "graph": {
+    "index_build_seconds": 0.0,
+    "index_size_bytes": 50640,
+    "query_latency_ms_mean": 0.07353732677348826,
+    "query_latency_ms_p95": 0.3231000155210495
+  },
+  "lexical": {
+    "index_build_seconds": 2.393539900018368,
+    "index_size_bytes": 6064872,
+    "query_latency_ms_mean": 183.586118152574,
+    "query_latency_ms_p95": 274.1142000304535
+  },
+  "popularity": {
+    "index_build_seconds": 0.0,
+    "index_size_bytes": 7584,
+    "query_latency_ms_mean": 0.06750719231068578,
+    "query_latency_ms_p95": 0.08019997039809823
+  },
+  "semantic": {
+    "index_build_seconds": 33.84312780003529,
+    "index_size_bytes": 29587968,
+    "query_latency_ms_mean": 23.415348974570044,
+    "query_latency_ms_p95": 31.484499981161207
+  }
+}

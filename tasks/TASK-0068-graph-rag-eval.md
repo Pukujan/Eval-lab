@@ -2,8 +2,9 @@
 
 ## Status
 
-Preregistration in progress. GitHub issue #92. Branch
-`task/TASK-0068-graph-rag-eval`. No experiment has been scored.
+Complete. GitHub issue #92. Branch `task/TASK-0068-graph-rag-eval`. The
+preregistration merged as PR #102; the test split is scored and the results
+checkpoint is published. Hypothesis **not supported on the primary metric**.
 
 ## Goal
 
@@ -161,6 +162,34 @@ Out of scope:
   this data), so the running dev scoring stays valid; the reachability diagnostic
   moved 2-hop 0.5621 -> 0.5721 and common-citer 0.5268 -> 0.5403. A regression
   test asserts `held | retained == edges` across 59 salts.
+- 2026-10-06: results checkpoint. PR #102 (preregistration) merged with required
+  CI green; test split scored. Result: **hypothesis not supported on the primary
+  metric**. Test recall@10 - graph 0.163, semantic 0.067, lexical 0.063,
+  popularity 0.201; graph - semantic +0.096, graph - lexical +0.101, graph -
+  popularity **-0.038**. The preregistered echo-free secondary inverts the
+  comparison (graph 0.385, popularity 0.128, semantic 0.000, lexical 0.000). A
+  post-hoc in-degree stratification explains the split: popularity scores 0.000
+  on every gold target with retained in-degree <= 7, where the graph arm scores
+  0.042-0.053, and the two are effectively tied on the 8+ bucket (0.219 vs 0.227,
+  718 of 1,051 test gold pairs), so popularity's aggregate lead is a
+  query-independent prior. Echo-free is thin (39 gold pairs over 35 of 292
+  queries; graph wins 15, ties 16, loses 4) and is reported as directional.
+  Regenerated `results.json`, `report.md` and telemetry in the same checkpoint;
+  `report_graphrag_holdout.py --check` and `run_telemetry.py --check` both pass;
+  full suite 329 passed.
+- 2026-10-06: preregistration merged as PR #102 with required CI green; test
+  split scored. Result: **the hypothesis is not supported on the primary
+  metric**. Test recall@10 graph 0.163, semantic 0.067, lexical 0.063,
+  popularity 0.201; graph - semantic +0.096, graph - lexical +0.101, graph -
+  popularity **-0.038**. The preregistered echo-free secondary inverts the
+  comparison (graph 0.385, popularity 0.128, semantic 0.000, lexical 0.000). A
+  post-hoc in-degree stratification explains the split: popularity scores 0.000
+  on every gold target with retained in-degree <= 7 (where the graph arm scores
+  0.042-0.053) and is effectively tied on the 8+ bucket (0.219 vs 0.227, 718 of
+  1,051 gold pairs), so its aggregate lead is a query-independent prior. The
+  echo-free stratum is thin (39 gold pairs over 35 of 292 queries; graph wins 15,
+  ties 16, loses 4), reported as directional. Cost, `results.json`, `report.md`
+  and telemetry regenerated in the same checkpoint.
 
 ## Handoff
 
@@ -172,6 +201,10 @@ script downloads the pinned revision, the arms script writes
 `arm-predictions/*.jsonl`, the report script derives `results.json`/`report.md`,
 and telemetry is regenerated last.
 
-The preregistration commit must land before any test-split scoring. Tier 2
-(legal QA scored by Jev) is deferred and should reference EXP-033 rather than
-align a second legal QA dataset. Do not overwrite any completed experiment.
+The experiment is complete and its result is negative: the graph arm beats both
+text baselines but loses to the popularity null on the primary metric, and the
+preregistered echo-free secondary is the only stratum where it clearly leads. Do
+not re-report the full-set numbers as a graph win. Tier 2 (legal QA scored by
+Jev) is deferred and should reference EXP-033 rather than align a second legal QA
+dataset. Do not overwrite any completed experiment; a change to the hypothesis,
+metrics, primary comparison or split policy requires a new experiment id.

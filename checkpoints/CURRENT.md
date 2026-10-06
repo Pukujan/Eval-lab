@@ -4,6 +4,35 @@
 
 > Continuity v1 overlay (TASK-0063): this human checkpoint stays authoritative for Eval Lab program and task state. The legacy `tasks/TASK-*.md` histories predate PCM v1 and are preserved as-is; the v1 machine task namespace is `.continuity/tasks`, so `active_task` stays null until a legacy-task migration is authorized. GitHub issues own task progression.
 
+## 2026-10-06 - TASK-0068 Graph RAG axis scored (EXP-034): hypothesis not supported
+
+GitHub issue #92. The preregistration merged as PR #102; the test split is now
+scored and the results checkpoint is published. The headline is a **negative
+result, stated as one**: on test recall@10 the graph arm reaches 0.163 against
+semantic 0.067 and lexical 0.063 - it beats both text baselines by roughly ten
+points - but the popularity null reaches 0.201, so the graph arm **loses to
+"return the most-cited documents" by 3.8 points** and cannot be claimed to have
+added query-conditioned value.
+
+The preregistered echo-free secondary inverts the comparison (graph 0.385,
+popularity 0.128, semantic 0.000, lexical 0.000). A post-hoc in-degree
+stratification - labelled post-hoc, not preregistered - explains the split:
+popularity scores 0.000 on every gold target with retained in-degree <= 7, where
+the graph arm scores 0.042-0.053, while on the 8+ bucket (718 of 1,051 test gold
+pairs) the two are effectively tied (0.219 vs 0.227). Popularity therefore earns
+its aggregate lead almost entirely from high-degree targets it would return for
+any query, and the graph arm's measurable edge is confined to the low-degree and
+echo-free strata. The echo-free stratum is thin (39 gold pairs over 35 of 292
+queries; graph wins 15, ties 16, loses 4), so it is directional evidence, not a
+precise effect size.
+
+`results.json`, `report.md` and telemetry are regenerated in the same checkpoint;
+`report_graphrag_holdout.py --check` and `run_telemetry.py --check` both pass.
+Next atomic action: finalize the results checkpoint (confirm the PR merged with
+required CI, audit tracked/untracked/ignored state, fast-forward the canonical
+checkout). Tier 2 (legal QA scored by Jev) stays deferred and should reference
+EXP-033 rather than align a second legal QA dataset.
+
 ## 2026-10-06 - TASK-0068 Graph RAG retrieval-architecture axis preregistered (EXP-034)
 
 GitHub issue #92. New append-only experiment

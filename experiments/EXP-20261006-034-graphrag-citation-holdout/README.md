@@ -1,6 +1,21 @@
 # EXP-20261006-034 - Graph RAG citation hold-out: graph vs semantic vs lexical retrieval
 
-Status: **preregistered**. No arm has been scored. Nothing here is a result yet.
+Status: **completed**. The test split is scored; see `results.json` and
+`report.md`. Dev-split numbers committed earlier were pipeline evidence only.
+
+## Result in one paragraph
+
+The hypothesis is **not supported on the primary metric**. On test recall@10 the
+graph arm reaches 0.163 against semantic 0.067 and lexical 0.063, so it beats
+both text baselines by roughly ten points - but the popularity null reaches 0.201,
+so the graph arm loses to "return the most-cited documents" by 3.8 points and
+cannot be said to have added query-conditioned value. The preregistered echo-free
+secondary inverts the comparison (graph 0.385 vs popularity 0.128; both text
+baselines 0.000). A post-hoc in-degree stratification explains why: popularity
+scores 0.000 on every gold target with retained in-degree <= 7, where the graph
+arm scores 0.042-0.053, while on the 8+ bucket (718 of 1,051 test gold pairs) the
+two are effectively tied. Popularity's aggregate lead comes almost entirely from
+high-degree targets it would return for any query.
 
 ## The question
 
