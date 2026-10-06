@@ -4,6 +4,55 @@
 
 > Continuity v1 overlay (TASK-0063): this human checkpoint stays authoritative for Eval Lab program and task state. The legacy `tasks/TASK-*.md` histories predate PCM v1 and are preserved as-is; the v1 machine task namespace is `.continuity/tasks`, so `active_task` stays null until a legacy-task migration is authorized. GitHub issues own task progression.
 
+## 2026-10-06 - TASK-0070 EXP-032 Jev closed-set classifier complete
+
+GitHub issue #95. EXP-20261005-032 is complete and scored, and the static viewer
+is built and committed. Jev 1.13 run as a typed `choice` over an explicit closed
+label set on 2142 entity-disjoint blind GLEIF records (714 per family), all
+resolved at full coverage, scored against a majority-class baseline per family.
+
+Headline: the classifier is usable on two families and adds nothing on the
+third, exactly the "raw accuracy is misleading under class imbalance" case the
+preregistration predicted. Entity category (6 classes) accuracy 0.9034 versus
+0.8697 majority, balanced accuracy 0.8399 versus 0.2500, macro-F1 0.7465, ECE
+0.0414, coverage 0.8529 at a 5% risk target. Legal jurisdiction (top-N + `OTHER`)
+accuracy 0.7451 versus 0.2353, balanced accuracy 0.6537, ECE 0.0868. Registration
+status (7 classes) adds essentially nothing: accuracy 0.5686 exactly equals the
+majority baseline, balanced accuracy 0.3333 is identical, ECE 0.3636, and
+coverage at a 5% risk target is 0.0014. Jev predicted `ISSUED` for 710 of 714
+records, so its confidence on that family is uninformative rather than wrong.
+
+The viewer is at `site/gleif-classifier/` (built static assets and JSON only, no
+`node_modules`, `package.json`, or lockfile). It renders all 2142 records as a
+paginated table plus six aggregate charts built from `research-chart-data.v1`:
+family scores against the majority arm, risk versus coverage, reliability,
+coverage at target error, per-label support and recall, and the native
+confidence distribution. Verified in a real browser at 1440px and 390px with
+zero console errors and all nine required `data-testid` hooks present.
+
+Three real chart bugs were found by reviewing screenshots with vision and fixed
+before committing: the lower charts emitted one `<Bar>` per family over an
+unsplit flat data array, so every family's series was plotted against every
+other family's rows (target-error coverage drew 9 x-slots instead of 3, the
+confidence histogram collapsed into stacked triplets, and label performance
+rendered a 300% axis with overlapping labels). Typecheck, lint, and a route
+crawler all passed over the broken build. Label performance is now a composed
+chart (support bars, recall lines) and series colours are stable under filtering.
+
+`paper/data/gleif-classifier.json` and `paper/data/classifier-charts/` (6 charts)
+are exported; `paper/data/index.json` is regenerated. Eight unrelated
+`paper/data/*.json` files carry regenerated provenance only (commit, timestamp,
+exporter hash); their `data` payloads are byte-identical except one genuine
+mojibake fix in `local_qwen_calibration.json` (`Â·` to `·`). EXP-026 artifacts
+(`experiments/EXP-20260922-026-gleif-objective-track/`) are untouched.
+
+Verified: 241 tests passed; workspace policy OK; repository contract OK; export
+`--check` exit 0; run telemetry current at 159 records.
+
+Next atomic action: publish this checkpoint against issue #95, then finalize it
+(confirm the merge, audit tracked/untracked/ignored state, fast-forward the
+canonical checkout to `origin/main`).
+
 ## 2026-10-05 - TASK-0070 EXP-032 Jev closed-set classifier preregistered
 
 GitHub issue #95. New append-only experiment EXP-20261005-032 asks whether Jev
