@@ -8,6 +8,11 @@ experiments/EXP-20260920-012-selective-escalation-qwen-streaming/* text eol=lf
 # the pinned hashes hold on any OS.
 experiments/EXP-20261006-033-legalbench-answer-key-subset/** text eol=lf
 
+# EXP-034 pins frozen binary artifact hashes; binary parquet is byte-stable under
+# core.autocrlf, but normalize the text side (queries, split, predictions) too so
+# any text hashes recorded later hold on any OS.
+experiments/EXP-20261006-034-graphrag-citation-holdout/** text eol=lf
+
 # OIO managed files are hash-checked by .oio/install-manifest.json.
 .oio/** text eol=lf
 .github/scripts/oio_*.py text eol=lf

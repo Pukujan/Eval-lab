@@ -95,6 +95,21 @@ or long-running services. Never upload, commit, or print a gold label, a token,
 or a credential. See `docs/compute/colab-cli.md` and the TASK-0065 checkpoint
 for the exact invocation and revisions.
 
+### TASK-0068 gravebuster pod reconnaissance exception
+
+For TASK-0068 only, dataset reconnaissance may run in a Podman pod on the owner's
+Linux box `gravebuster`, because the patent-law release is large and Linux-native
+to inspect while the canonical `.venv` is Windows-only. The pod holds only the
+frozen public dataset and derived artifacts; it is never given a clone of this
+repository, and **the scored experiment runs in the canonical `.venv`**, so this
+exception authorises reconnaissance and substrate building only — not a second
+project environment. The pod is ephemeral by construction: a systemd user timer
+archives its workspace and then removes the container, pod and volume, and the
+archive step aborts rather than deleting if it fails, so no unique state is lost.
+It publishes no ports and is reached only by `podman exec`. Never upload, commit,
+or print a token or a credential. See the TASK-0068 checkpoint for the exact pod
+name, image, resource caps and the timer's `OnCalendar` value.
+
 Run `python scripts/check_workspace_policy.py --canonical-root D:\development\eval-lab`
 before task work and after cleanup. The repository contract check also enforces
 the canonical path, the no-linked-worktree rule, and the one-environment rule.

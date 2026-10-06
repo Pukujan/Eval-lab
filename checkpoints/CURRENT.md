@@ -4,6 +4,53 @@
 
 > Continuity v1 overlay (TASK-0063): this human checkpoint stays authoritative for Eval Lab program and task state. The legacy `tasks/TASK-*.md` histories predate PCM v1 and are preserved as-is; the v1 machine task namespace is `.continuity/tasks`, so `active_task` stays null until a legacy-task migration is authorized. GitHub issues own task progression.
 
+## 2026-10-06 - TASK-0068 Graph RAG retrieval-architecture axis preregistered (EXP-034)
+
+GitHub issue #92. New append-only experiment
+`EXP-20261006-034-graphrag-citation-holdout` opens the first axis in Eval Lab that
+does not compare judges: does traversing a document citation graph recover a
+citation the retriever cannot read, more often than neural semantic similarity or
+BM25 lexical retrieval, over the same corpus and the same source documents?
+
+The circularity trap is the whole design. If a query names a source document and
+gold is what that document cites, a graph arm just reads its own outgoing edges
+and scores near 100% by construction. A seeded 30% of each eligible source's
+document->document citation edges is therefore **held out**, and the traversal
+index is built without them, so the graph arm's only route to a held-out target
+is structure that survives in the remaining graph. The task is link prediction,
+not question answering - both arms are handed the source document - and that is
+stated as a limitation, not hidden.
+
+Substrate is the pinned `justicedao/patent-legal-ir-graphrag` release
+(`29d51084`, English patent law): 2,174 corpus documents, 8,626 document->document
+citation edges, 2,296 held out, 6,330 retained for traversal. Gold is a
+`deterministic_verifier` structural fact; no model judgment enters it and no
+judge is called, so the Jev integration contract does not apply. Four arms are
+scored: graph (2-hop co-citation entered at the source), **popularity** (retained
+in-degree - the sharpest null, because a citation task is naturally friendly to
+"return the most-cited documents"), semantic (chunked `all-MiniLM-L6-v2` with
+maxP), and lexical (BM25).
+
+Six leak/mapping safeguards are tests rather than convention: gold is never a
+readable out-neighbour; every endpoint resolves to exactly one corpus document;
+reciprocal held edges are demoted; the index holds only document->document edges
+(the 12,260 document->citation-token edges are excluded because slug
+normalisation would reconstruct held-out edges); reachability is reported as a
+diagnostic; and a duplicate-body check fails the build if any gold target shares
+its source's body.
+
+Two defects were found and fixed during review, before any test-split scoring: a
+`build_holdout` bug that dropped 126 reciprocal edges instead of demoting them to
+retained (making the manifest undercount the traversal index), and a semantic arm
+that truncated at 512 tokens although only 41.3% of documents fit one window.
+Verified: `tests/test_patent_ir.py` 32 passed, full suite 329 passed; repo
+contract, workspace policy, Ruff, and mypy green. Dev-split numbers are committed
+as pipeline evidence only and are not the experiment's result.
+
+Next atomic action: publish the preregistration checkpoint against issue #92;
+only after it lands, run the test split, generate `results.json`/`report.md`,
+regenerate telemetry, and publish the results checkpoint.
+
 ## 2026-10-06 - TASK-0069 LegalBench answer-key subset frozen (EXP-033)
 
 GitHub issue #94. The legal objective axis widens beyond the single LegalBench
