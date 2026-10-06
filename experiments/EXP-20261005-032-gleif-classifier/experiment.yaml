@@ -1,5 +1,5 @@
 id: EXP-20261005-032-gleif-classifier
-status: preregistered
+status: completed
 hypothesis: >-
   Jev 1.13 used as a typed closed-set classifier over frozen GLEIF registry
   fields produces honest multi-class accuracy and usable native-probability
@@ -7,13 +7,13 @@ hypothesis: >-
   carries explicit criteria; families differ systematically and raw accuracy is
   misleading under class imbalance.
 created_at: 2026-10-05
-code_commit: pending_task_checkpoint
+code_commit: 7d693f5579b0e1ccb5798656948b35f375011ba9
 seed: 260922
 context_limit: 4096
 dataset:
   name: GLEIF frozen Golden Copy 2026-09-24, multi-class registry fields
   version: 20260924-0000-gleif-goldencopy
-  fingerprint: pending_classifier_dataset_build
+  fingerprint: sha256:041f240549b4161b089ed35e886aed0265126a7a515f1274911d69c7f8cb98c5
   split_policy: entity-disjoint public selection and blind holdout on normalized LEI; all families for one entity share its split
   primary_family: entity-category
   families:
