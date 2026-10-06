@@ -4,6 +4,39 @@
 
 > Continuity v1 overlay (TASK-0063): this human checkpoint stays authoritative for Eval Lab program and task state. The legacy `tasks/TASK-*.md` histories predate PCM v1 and are preserved as-is; the v1 machine task namespace is `.continuity/tasks`, so `active_task` stays null until a legacy-task migration is authorized. GitHub issues own task progression.
 
+## 2026-10-05 - TASK-0067 four-component stack move (PCM 0.7.0 + CGM 0.5.12 + ACS 0.2.0 + OIO 0.1.0)
+
+GitHub issue #90. The whole stack moves to the current certified train:
+`PCM_COMMIT` -> `851bcf72` (0.7.0), `CGM_COMMIT` -> `62340f3d` (0.5.12),
+`ACS_COMMIT` -> `25be219b` (ACS 0.2.0, module 0.1.0) in `.github/workflows/ci.yml`
+and `.github/workflows/boss-watchdog.yml`; `.content-system/system-version.json`
+`helper_commit` and the three CGM commit refs in `.coord/PROMPT_INJECT.md` move
+to `62340f3d`; `.coord/assignment.json` gains a `pins.oio` block at `a4bba77b`
+(0.1.0) and moves `pins.acs`/`pins.pcm`/`pins.cgm` with an updated
+`revision_note`. The train's OIO 0.1.0 content is byte-identical to the prior
+install (LF-normalized), so no OIO file changed.
+
+This resolves the TASK-0066 blocker: the older ACS pack hard-coded PCM/CGM in
+`pins.json`, but ACS 0.2.0 reads the pack's `stack-mesh.json` (derived from the
+train), so the old refusal is gone. New upstream wrinkle, recorded here and in
+issue #90: the train's own ACS entry `589b0a97` still carries a stale mesh
+requiring PCM `197f7ba8` / CGM `b487b48c`, so `mesh.py --check` fails on
+`589b0a97`; ACS main `25be219b` carries the mesh that matches the live train and
+is the mesh-consistent commit we pin. Also corrected here: TASK-0066's
+checkpoint claimed `pins.acs.revision` moved to `c15e53f`, but only the `notes`
+field changed, and `hotload_check.py` never validated `pins.acs.revision`, so CI
+passed silently. The four pins now move explicitly.
+
+Verified with the pinned checkouts: `check_manifest.py` -> `OK: eval-lab agrees
+with release train current (4 components)`; `hotload_check.py` -> `hotload_check:
+OK` (FULL PCM + FULL CGM 0.5.12, `cgm_validate=VALID`); `mesh.py --check` ->
+`OK: this repo requires the mesh versions`; PCM `continuity validate`/`preflight`
+-> `VALID`; repo contract, workspace policy, Ruff, mypy, and the 209 unit tests
+all green.
+
+Next atomic action: publish the TASK-0067 checkpoint against issue #90 and merge
+after required CI (`quality`, `stack`, `gates`).
+
 ## 2026-10-05 - TASK-0066 ACS hotloader moved to the current certified train (ACS 0.2.0)
 
 GitHub issue #88. The CI fetch pins and `.coord/` install were left on an older
