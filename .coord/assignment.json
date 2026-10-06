@@ -1,8 +1,8 @@
 {
   "schema_version": "0.1.0",
   "project": "Eval Lab ACS adopter",
-  "recorded_at": "2026-10-04T20:15:00-04:00",
-  "notes": "ACS multi-agent-hotload adopter state for Pukujan/Eval-lab (TASK-0066, issue #88). ACS hotload pinned at agent-custom-setup 0.2.0 (c15e53fc, module 0.1.0), the version the current certified train names. FULL PCM (4e23854, CLI 0.6.0) + FULL CGM 0.5.12 (6831f91e, eight modules) + OIO 0.1.0 remain at the ACS 0.2.0 pack's own pins: the pack still requires these PCM/CGM commits, so PCM 0.7.0 and CGM b487b48c cannot be fetched without failing hotload_check.py (upstream gap recorded in tasks/TASK-0066). stack-manifest.json follows release train 'current'. Boss lease is minutes (30; range 15-120); the watchdog is agent-less and liveness-only. The decision-boss seat is vacant until the first live continuer claims it.",
+  "recorded_at": "2026-10-05T21:11:43-04:00",
+  "notes": "ACS multi-agent-hotload adopter state for Pukujan/Eval-lab (TASK-0067, issue #90). Full four-component move to the current certified train: FULL PCM 0.7.0 (851bcf72, CLI 0.7.0) + FULL CGM 0.5.12 (62340f3d, eight modules) + OIO 0.1.0 (a4bba77b) + ACS hotload 0.2.0 (25be219b, module 0.1.0). The train's ACS entry is 589b0a97, but that commit's own stack-mesh.json still requires PCM 197f7ba8 / CGM b487b48c and so refuses the train's own PCM/CGM; 25be219b carries the mesh that matches the live train and is the mesh-consistent commit (mesh.py --check passes on it, fails on 589b0a97). stack-manifest.json follows release train 'current'. OIO managed content is unchanged from the prior install (byte-identical modulo line endings) and is recorded here for traceability. Boss lease is minutes (30; range 15-120); the watchdog is agent-less and liveness-only. The decision-boss seat is vacant until the first live continuer claims it.",
   "role_fill": {
     "mode": "join_continue_order",
     "seed_is_hint_only": true,
@@ -54,13 +54,13 @@
       "repo": "https://github.com/Pukujan/agent-custom-setup",
       "module": "modules/coordination/multi-agent-hotload/v0.1.0",
       "version": "0.1.0",
-      "revision": "38f8f52e8d210db3ce258bf911ebb560c6e0fe4c",
-      "revision_note": "agent-custom-setup main at 2026-10-05. Bumped from e1d7732 (reviewed edit, not a silent follow of moving main) to adopt dev-root hygiene: scripts/dev_root_check.py, the dev-root checks in hotload_check.py, and the ACS dev-root boot rule appended to PROMPT_INJECT.md. Module version stays 0.1.0; PCM/CGM pins unchanged."
+      "revision": "25be219bb7341addba8849a8ffb6dba8695ff17d",
+      "revision_note": "agent-custom-setup 0.2.0 at 25be219b (ACS-0029, #78). Bumped from c15e53f to the mesh-consistent commit: the train's ACS entry 589b0a97 still carries a stack-mesh.json requiring PCM 197f7ba8 / CGM b487b48c, which refuses the current train's PCM/CGM. 25be219b's mesh matches the live train (mesh.py --check passes). Module version stays 0.1.0."
     },
     "pcm": {
       "repo": "https://github.com/Pukujan/project-continuity-modules",
-      "revision": "4e2385474b4af9249ca009cbdcb38c4498932475",
-      "cli_version": "0.6.0",
+      "revision": "851bcf72eb618e6fe4f49c3f0b8e26fefb90410f",
+      "cli_version": "0.7.0",
       "protocol": "0.1.0-draft",
       "role": "full_stack",
       "required_features": [
@@ -77,7 +77,7 @@
     },
     "cgm": {
       "repo": "https://github.com/Pukujan/content-generation-modules",
-      "revision": "6831f91e165b62d719c05eb492f7375fa932b560",
+      "revision": "62340f3de702f6d2a7d97b9e16465b98360976a3",
       "version": "0.5.12",
       "role": "full_stack",
       "modules": [
@@ -121,6 +121,15 @@
         "generated_artifact_filenames": "human-output-naming / hon (MUST; basenames + legends)"
       },
       "notes": "FULL CGM 0.5.12 required for ACS and all hotloader adopters. Eight modules including human-output-naming. Not HSW+writing-direction only. MUST load modules per writing-routing.json (README→writing-direction; human-facing prose/HTML/compare/appendable→hsw default ON; basenames→hon). Pin SHA; validate with scripts/validate_content_system.py (full adapter); then apply acs_prompt_inject (application, human_facing_default, routes, apply_checklist). Do not vendor CGM source into ACS."
+    },
+    "oio": {
+      "repo": "https://github.com/Pukujan/observational-issue-ops",
+      "revision": "a4bba77b770e5674d1124383cd0d26704236963d",
+      "version": "0.1.0",
+      "ontology_version": "1.0.0",
+      "role": "full_stack",
+      "managed_by": ".oio/install-manifest.json",
+      "notes": "OIO issue-log ontology 0.1.0 at a4bba77b. Managed files are byte-identical (LF-normalized) to the prior install, so no OIO file changes are needed; recorded here for traceability and so the train mesh check sees the component. Pin SHA; do not follow moving main. On Windows the installer reports a PARTIAL install (coordination surface valid, OIO is the remaining step) and exits non-zero by design; the managed files themselves are already current."
     }
   },
   "ticket_links": {
