@@ -53,6 +53,23 @@ DATASET_ID = "eval-lab/judges-blind-760"
 OUT_DIR = Path("paper/data")
 CHART_DIR = OUT_DIR / "charts"
 DATASET_PATH = OUT_DIR / "judges-blind-760.json"
+CLASSIFIER_DATASET_PATH = OUT_DIR / "gleif-classifier.json"
+CLASSIFIER_CHART_DIR = OUT_DIR / "classifier-charts"
+CLASSIFIER_DATASET_ID = "eval-lab/gleif-classifier"
+CLASSIFIER_EXPERIMENT_SHORT = "EXP-032"
+CLASSIFIER_EXPERIMENT_DIR = Path("experiments/EXP-20261005-032-gleif-classifier")
+CLASSIFIER_RESULTS = CLASSIFIER_EXPERIMENT_DIR / "results.json"
+CLASSIFIER_RECORDS = CLASSIFIER_EXPERIMENT_DIR / "records.jsonl"
+CLASSIFIER_TYPED_SPEC = CLASSIFIER_EXPERIMENT_DIR / "typed-question-spec.json"
+CLASSIFIER_YAML = CLASSIFIER_EXPERIMENT_DIR / "experiment.yaml"
+CLASSIFIER_CHARTS = (
+    "classifier_family_scores",
+    "classifier_risk_coverage",
+    "classifier_reliability",
+    "classifier_coverage_at_target_error",
+    "classifier_class_distribution",
+    "classifier_confidence_histogram",
+)
 INDEX_PATH = OUT_DIR / "index.json"
 ARM_METADATA = OUT_DIR / "sources" / "arm-metadata.yaml"
 ANALYSIS = Path("experiments/EXP-20260924-029-consolidated-judge-analysis/results.json")
@@ -67,6 +84,8 @@ GENERATOR = Path("scripts/export_chart_data.py")
 OUTPUT_PREFIXES = (
     "paper/data/judges-blind-760.json",
     "paper/data/charts/",
+    "paper/data/gleif-classifier.json",
+    "paper/data/classifier-charts/",
     "paper/data/index.json",
 )
 
@@ -188,6 +207,149 @@ LEVELS = [
     },
 ]
 
+CLASSIFIER_POLICY = {
+    "pooling": (
+        "Each entity is one arm on one GLEIF task family. Families are never pooled: they "
+        "have different closed label sets and different gold distributions."
+    ),
+    "aggregates": (
+        "Exporter-computed aggregates carry a `method`: coverage-at-target-error is the "
+        "largest coverage whose selective risk stays at or below the target, from the "
+        "native-confidence risk/coverage curve over resolved items."
+    ),
+    "interval": "95% Wilson score interval, computed from integer counts",
+    "blind_holdout": (
+        "No per-record items, record IDs, or gold labels are exported. The finest level is "
+        "one row per family arm, so the blind holdout cannot be reconstructed from this file."
+    ),
+    "gold": (
+        "Gold is the frozen GLEIF source field value (deterministic_verifier); no model "
+        "judgment is promoted to gold, and the majority-class baseline is reported beside "
+        "every arm because the entity-category family is heavily imbalanced."
+    ),
+    "labels": (
+        "Closed label sets are declared in the experiment's typed-question-spec.json; "
+        "`criteria` gives one description per label on the wire."
+    ),
+}
+
+CLASSIFIER_MEASURES: list[dict[str, Any]] = [
+    {
+        "key": "classifier_accuracy",
+        "label": "Accuracy (resolved)",
+        "unit": "fraction",
+        "format": ".1%",
+        "better": "higher",
+        "interval": "wilson_95",
+        "definition": "correct / resolved items in the family",
+        "n": "resolved items",
+    },
+    {
+        "key": "classifier_all_record_accuracy",
+        "label": "Accuracy (all items)",
+        "unit": "fraction",
+        "format": ".1%",
+        "better": "higher",
+        "interval": "wilson_95",
+        "definition": "correct / all items; an unresolved item earns no credit",
+        "n": "items in the family",
+    },
+    {
+        "key": "classifier_balanced_accuracy",
+        "label": "Balanced accuracy",
+        "unit": "fraction",
+        "format": ".1%",
+        "better": "higher",
+        "interval": "none",
+        "definition": "mean per-class recall over the closed label set",
+        "n": "resolved items",
+    },
+    {
+        "key": "classifier_macro_f1",
+        "label": "Macro-F1",
+        "unit": "fraction",
+        "format": ".1%",
+        "better": "higher",
+        "interval": "none",
+        "definition": "unweighted mean per-class F1 over the closed label set",
+        "n": "resolved items",
+    },
+    {
+        "key": "classifier_coverage",
+        "label": "Coverage (answered)",
+        "unit": "fraction",
+        "format": ".1%",
+        "better": "higher",
+        "interval": "wilson_95",
+        "definition": "items with a terminal ok status and a label, / all items",
+        "n": "items in the family",
+    },
+    {
+        "key": "classifier_valid_label_rate",
+        "label": "Valid label rate",
+        "unit": "fraction",
+        "format": ".1%",
+        "better": "higher",
+        "interval": "none",
+        "definition": "answered items whose label is in the closed label set",
+        "n": "resolved items",
+    },
+    {
+        "key": "classifier_brier",
+        "label": "Brier score",
+        "unit": "score",
+        "format": ".4f",
+        "better": "lower",
+        "interval": "none",
+        "definition": "mean squared error of the native probability vector over the label set",
+        "n": "resolved items with probabilities",
+    },
+    {
+        "key": "classifier_nll",
+        "label": "Negative log-likelihood",
+        "unit": "nats",
+        "format": ".4f",
+        "better": "lower",
+        "interval": "none",
+        "definition": "mean negative log probability assigned to the true label",
+        "n": "resolved items with probabilities",
+    },
+    {
+        "key": "classifier_ece",
+        "label": "Expected calibration error",
+        "unit": "fraction",
+        "format": ".4f",
+        "better": "lower",
+        "interval": "none",
+        "definition": "10-bin gap between confidence and accuracy",
+        "n": "resolved items with probabilities",
+    },
+    {
+        "key": "classifier_cost_per_1000",
+        "label": "Cost per 1000 items",
+        "unit": "usd",
+        "format": ",.4f",
+        "better": "lower",
+        "interval": "none",
+        "definition": "reported provider cost scaled to 1000 items, when the provider reports it",
+        "n": "items in the family",
+    },
+]
+
+CLASSIFIER_LEVELS = [
+    {"key": "summary", "label": "Summary", "description": "one row per family arm, overall slice"},
+    {
+        "key": "families",
+        "label": "Families",
+        "description": "GLEIF task families, each with its own closed label set",
+    },
+    {
+        "key": "table",
+        "label": "Table",
+        "description": "all observations; one row per family arm/metric",
+    },
+]
+
 
 # --------------------------------------------------------------------------- helpers
 def _read_json(path: Path) -> Any:
@@ -195,9 +357,12 @@ def _read_json(path: Path) -> Any:
 
 
 def _git(*args: str) -> str:
+    # Strip only the trailing newline: a porcelain status line begins with a
+    # two-character code, and the leading space of a worktree-only " M" entry
+    # must survive so the path can be read from a fixed offset.
     return subprocess.run(
         ["git", "-C", str(ROOT), *args], capture_output=True, text=True, check=True
-    ).stdout.strip()
+    ).stdout.rstrip("\n")
 
 
 def git_info() -> dict[str, Any]:
@@ -698,9 +863,436 @@ def build_charts(git: dict[str, Any]) -> dict[Path, dict[str, Any]]:
 
 
 def build_all(git: dict[str, Any]) -> dict[Path, dict[str, Any]]:
-    outputs: dict[Path, dict[str, Any]] = {DATASET_PATH: build_dataset(git)}
+    outputs: dict[Path, dict[str, Any]] = {
+        DATASET_PATH: build_dataset(git),
+        CLASSIFIER_DATASET_PATH: build_classifier_dataset(git),
+    }
     outputs.update(build_charts(git))
+    outputs.update(build_classifier_charts(git))
     return outputs
+
+
+# --------------------------------------------------------------------------- classifier dataset
+def _classifier_arm_id(family: str, arm: str) -> str:
+    return f"{arm}_{family.replace('-', '_')}"
+
+
+def _classifier_sources(git: dict[str, Any]) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    families = sorted(_read_json(CLASSIFIER_RESULTS)["families"])
+    prediction_paths = [
+        CLASSIFIER_EXPERIMENT_DIR / "runs" / family / "predictions.jsonl" for family in families
+    ]
+    run_entities = [
+        _entity(git["commit"], path, "classifier_predictions") for path in prediction_paths
+    ]
+    records_entity = _entity(git["commit"], CLASSIFIER_RECORDS, "classifier_records")
+    spec_entity = _entity(git["commit"], CLASSIFIER_TYPED_SPEC, "typed_question_spec")
+    results_entity = _entity(
+        git["commit"],
+        CLASSIFIER_RESULTS,
+        "classifier_results",
+        experimentId=_read_json(CLASSIFIER_RESULTS)["experiment_id"],
+        wasDerivedFrom=[*run_entities, records_entity, spec_entity],
+    )
+    return [results_entity, records_entity, spec_entity], {"prediction_paths": prediction_paths}
+
+
+def build_classifier_dataset(git: dict[str, Any]) -> dict[str, Any]:
+    results = _read_json(CLASSIFIER_RESULTS)
+    typed_spec = _read_json(CLASSIFIER_TYPED_SPEC)
+    manifest = yaml.safe_load((ROOT / CLASSIFIER_YAML).read_text(encoding="utf-8"))
+    sources, derived = _classifier_sources(git)
+    families = sorted(results["families"])
+
+    entities: list[dict[str, Any]] = []
+    observations: list[dict[str, Any]] = []
+    aggregates: list[dict[str, Any]] = []
+    for family in families:
+        report = results["families"][family]
+        metrics = report["metrics"]
+        baseline = report["majority_baseline"]
+        labels = list(typed_spec["families"][family]["legal_labels"])
+        total, resolved, correct = (
+            report["record_count"],
+            report["resolved_count"],
+            report["correct_count"],
+        )
+        if not total:
+            raise ValueError(f"{family}: no items in the blind partition")
+        jev_id = _classifier_arm_id(family, "jev")
+        baseline_id = _classifier_arm_id(family, "baseline")
+        baseline_correct = int(baseline["gold_counts"].get(baseline["label"], 0))
+
+        entities.append(
+            {
+                "id": jev_id,
+                "label": f"Jev 1.13 · {family}",
+                "shortLabel": f"jev {family}",
+                "headline": True,
+                "experiment": CLASSIFIER_EXPERIMENT_SHORT,
+                "experimentIds": [CLASSIFIER_EXPERIMENT_SHORT],
+                "deployment": "api",
+                "modelFamily": "typesafe-jev",
+                "modelId": results["model"],
+                "paramsB": None,
+                "route": "POST https://openrouter.ai/api/alpha/decisions",
+                "harness": "typed choice over a closed GLEIF label set with per-label criteria",
+                "settings": {
+                    "maxOutputTokens": None,
+                    "maxOutputTokensStatus": "not_applicable",
+                    "contextCapTokens": typed_spec["context_limit"],
+                    "thinking": "not_applicable",
+                    "decoding": "native_label_head",
+                    "temperature": None,
+                },
+                "settingsEvidence": [CLASSIFIER_TYPED_SPEC.as_posix()],
+                "derived": False,
+                "family": family,
+                "labelSet": labels,
+                "recordCount": total,
+                "resolved": resolved,
+                "correct": correct,
+                "statusCounts": report["status_counts"],
+            }
+        )
+        entities.append(
+            {
+                "id": baseline_id,
+                "label": f"Majority class · {family}",
+                "shortLabel": f"majority {family}",
+                "headline": False,
+                "experiment": CLASSIFIER_EXPERIMENT_SHORT,
+                "experimentIds": [CLASSIFIER_EXPERIMENT_SHORT],
+                "deployment": "baseline",
+                "modelFamily": "constant",
+                "modelId": f"always {baseline['label']}",
+                "paramsB": None,
+                "route": "constant",
+                "harness": "always answers the most frequent gold label in the family",
+                "settings": {
+                    "maxOutputTokens": None,
+                    "maxOutputTokensStatus": "not_applicable",
+                    "contextCapTokens": None,
+                    "thinking": "not_applicable",
+                    "decoding": "constant",
+                    "temperature": None,
+                },
+                "settingsEvidence": [CLASSIFIER_RESULTS.as_posix()],
+                "derived": False,
+                "family": family,
+                "labelSet": labels,
+                "recordCount": total,
+                "resolved": total,
+                "correct": baseline_correct,
+                "statusCounts": {"ok": total},
+            }
+        )
+
+        observations += [
+            _obs(
+                jev_id,
+                "overall",
+                "all",
+                "classifier_accuracy",
+                metrics["accuracy"],
+                wilson(correct, resolved),
+                resolved,
+            ),
+            _obs(
+                jev_id,
+                "overall",
+                "all",
+                "classifier_all_record_accuracy",
+                correct / total,
+                wilson(correct, total),
+                total,
+            ),
+            _obs(
+                jev_id,
+                "overall",
+                "all",
+                "classifier_balanced_accuracy",
+                metrics["balanced_accuracy"],
+                None,
+                resolved,
+            ),
+            _obs(
+                jev_id, "overall", "all", "classifier_macro_f1", metrics["macro_f1"], None, resolved
+            ),
+            _obs(
+                jev_id,
+                "overall",
+                "all",
+                "classifier_coverage",
+                resolved / total,
+                wilson(resolved, total),
+                total,
+            ),
+            _obs(
+                jev_id,
+                "overall",
+                "all",
+                "classifier_valid_label_rate",
+                report["valid_label_rate"],
+                None,
+                resolved,
+            ),
+            _obs(jev_id, "overall", "all", "classifier_brier", metrics["brier"], None, resolved),
+            _obs(jev_id, "overall", "all", "classifier_nll", metrics["nll"], None, resolved),
+            _obs(jev_id, "overall", "all", "classifier_ece", metrics["ece"], None, resolved),
+            _obs(
+                jev_id,
+                "overall",
+                "all",
+                "classifier_cost_per_1000",
+                report["cost_per_1000"],
+                None,
+                total,
+            ),
+            _obs(
+                baseline_id,
+                "overall",
+                "all",
+                "classifier_accuracy",
+                baseline["accuracy"],
+                wilson(baseline_correct, total),
+                total,
+            ),
+            _obs(
+                baseline_id,
+                "overall",
+                "all",
+                "classifier_all_record_accuracy",
+                baseline["accuracy"],
+                wilson(baseline_correct, total),
+                total,
+            ),
+            _obs(
+                baseline_id,
+                "overall",
+                "all",
+                "classifier_balanced_accuracy",
+                baseline["balanced_accuracy"],
+                None,
+                total,
+            ),
+            _obs(
+                baseline_id,
+                "overall",
+                "all",
+                "classifier_macro_f1",
+                baseline["macro_f1"],
+                None,
+                total,
+            ),
+            _obs(baseline_id, "overall", "all", "classifier_coverage", 1.0, None, total),
+        ]
+        for target in (0.01, 0.02, 0.05):
+            aggregates.append(
+                {
+                    "key": f"{family}:coverage_at_error_{target:g}",
+                    "metric": "classifier_coverage",
+                    "method": (
+                        "max coverage whose selective risk <= target, from the native-confidence "
+                        "risk/coverage curve over resolved items"
+                    ),
+                    "over": f"{family} blind items",
+                    "value": report["risk_coverage"]["coverage_at_target_error"][str(target)],
+                }
+            )
+
+    experiments = [
+        {
+            "id": CLASSIFIER_EXPERIMENT_SHORT,
+            "experimentId": results["experiment_id"],
+            "directory": CLASSIFIER_EXPERIMENT_DIR.as_posix(),
+            "status": manifest.get("status"),
+            "createdAt": str(manifest.get("created_at")) if manifest.get("created_at") else None,
+            "codeCommit": manifest.get("code_commit"),
+            "entities": [entity["id"] for entity in entities],
+        }
+    ]
+    runs = [
+        {
+            "entity": _classifier_arm_id(family, "jev"),
+            "experiment": CLASSIFIER_EXPERIMENT_SHORT,
+            "experimentDirectory": CLASSIFIER_EXPERIMENT_DIR.as_posix(),
+            "runPath": f"runs/{family}",
+            "path": path.as_posix(),
+            "sha256": sha256(ROOT / path),
+            "mergeOrder": index,
+        }
+        for index, (family, path) in enumerate(
+            zip(families, derived["prediction_paths"], strict=True)
+        )
+    ]
+    summary = (
+        f"{CLASSIFIER_EXPERIMENT_SHORT} · {results['aggregate']['record_count']} blind items · "
+        f"{len(families)} families · {GENERATOR.name} @ {git['commit'][:7]}"
+    )
+    return {
+        "@context": CONTEXT,
+        "id": f"{REPO_URL}/blob/main/{CLASSIFIER_DATASET_PATH.as_posix()}",
+        "type": ["schema:Dataset", "prov:Entity"],
+        "kind": "dataset",
+        "schemaVersion": SCHEMA_VERSION,
+        "datasetId": CLASSIFIER_DATASET_ID,
+        "title": "Jev 1.13 as a closed-set GLEIF registry classifier",
+        "description": (
+            "One row per task-family arm (Jev 1.13 answering a typed choice over a closed GLEIF "
+            "label set) plus one majority-class baseline per family, on an entity-disjoint blind "
+            "holdout. Numbers are copied or computed from EXP-032 results.json; no per-record "
+            "data is included."
+        ),
+        "experimentId": CLASSIFIER_EXPERIMENT_SHORT,
+        "recordCount": results["aggregate"]["record_count"],
+        "population": {
+            "partition": "blind_holdout",
+            "records": results["aggregate"]["record_count"],
+            "families": families,
+            "itemsPerFamily": {
+                family: results["families"][family]["record_count"] for family in families
+            },
+        },
+        "provenance": _provenance(git, "gleif-classifier", sources, summary),
+        "levels": CLASSIFIER_LEVELS,
+        "dimensions": [
+            {
+                "key": "family",
+                "label": "GLEIF task family",
+                "type": "nominal",
+                "scope": "entity",
+                "field": "family",
+                "values": families,
+            },
+            {
+                "key": "deployment",
+                "label": "Jev vs baseline",
+                "type": "nominal",
+                "scope": "entity",
+                "field": "deployment",
+                "values": ["api", "baseline"],
+            },
+        ],
+        "measures": CLASSIFIER_MEASURES,
+        "entities": entities,
+        "observations": observations,
+        "aggregates": aggregates,
+        "comparisons": [],
+        "experiments": experiments,
+        "runs": runs,
+        "notes": {
+            "primary_family": typed_spec.get("primary_family", "entity-category"),
+            "labelSets": {
+                family: list(typed_spec["families"][family]["legal_labels"]) for family in families
+            },
+            "provenancePolicy": (
+                "Gold is the frozen GLEIF source field value (deterministic_verifier); model "
+                "judgments are never promoted to gold."
+            ),
+        },
+    }
+
+
+def build_classifier_charts(git: dict[str, Any]) -> dict[Path, dict[str, Any]]:
+    results = _read_json(CLASSIFIER_RESULTS)
+    typed_spec = _read_json(CLASSIFIER_TYPED_SPEC)
+    families = sorted(results["families"])
+    sources, _ = _classifier_sources(git)
+
+    def _family_rows(key: str, subkey: str | None = None) -> list[dict[str, Any]]:
+        rows: list[dict[str, Any]] = []
+        for family in families:
+            items = results["families"][family][key]
+            if subkey is not None:
+                items = items[subkey]
+            for item in items:
+                rows.append({"family": family, **item})
+        return rows
+
+    family_scores: list[dict[str, Any]] = []
+    for family in families:
+        report = results["families"][family]
+        metrics, baseline = report["metrics"], report["majority_baseline"]
+        family_scores += [
+            {
+                "family": family,
+                "arm": "jev",
+                "accuracy": metrics["accuracy"],
+                "balancedAccuracy": metrics["balanced_accuracy"],
+                "macroF1": metrics["macro_f1"],
+                "coverage": report["coverage"],
+                "ece": metrics["ece"],
+                "brier": metrics["brier"],
+            },
+            {
+                "family": family,
+                "arm": "majority",
+                "accuracy": baseline["accuracy"],
+                "balancedAccuracy": baseline["balanced_accuracy"],
+                "macroF1": baseline["macro_f1"],
+                "coverage": 1.0,
+                "ece": None,
+                "brier": None,
+            },
+        ]
+    coverage_at_error: list[dict[str, Any]] = []
+    for family in families:
+        at_error = results["families"][family]["risk_coverage"]["coverage_at_target_error"]
+        for target in (0.01, 0.02, 0.05):
+            coverage_at_error.append(
+                {"family": family, "targetError": target, "coverage": at_error[str(target)]}
+            )
+    distribution: list[dict[str, Any]] = []
+    for family in families:
+        per_class = results["families"][family]["per_class"]
+        labels = list(typed_spec["families"][family]["legal_labels"])
+        for label in labels:
+            distribution.append({"family": family, "label": label, **per_class[label]})
+
+    rows_by_chart = {
+        "classifier_family_scores": family_scores,
+        "classifier_risk_coverage": _family_rows("risk_coverage", "curve"),
+        "classifier_reliability": _family_rows("reliability"),
+        "classifier_coverage_at_target_error": coverage_at_error,
+        "classifier_class_distribution": distribution,
+        "classifier_confidence_histogram": _family_rows("confidence_histogram"),
+    }
+    for chart_id, rows in rows_by_chart.items():
+        if not rows:
+            raise ValueError(f"{chart_id}: no rows to export")
+    titles = {
+        "classifier_family_scores": "Accuracy, balanced accuracy and macro-F1 per GLEIF family",
+        "classifier_risk_coverage": "Selective risk versus coverage per GLEIF family",
+        "classifier_reliability": "Native confidence versus accuracy per GLEIF family",
+        "classifier_coverage_at_target_error": "Coverage retained at 1%, 2% and 5% risk",
+        "classifier_class_distribution": "Per-label support, recall and precision per family",
+        "classifier_confidence_histogram": "Distribution of native confidence per family",
+    }
+    charts: dict[Path, dict[str, Any]] = {}
+    for chart_id in CLASSIFIER_CHARTS:
+        out = CLASSIFIER_CHART_DIR / f"{chart_id}.json"
+        summary = (
+            f"{CLASSIFIER_EXPERIMENT_SHORT} · {chart_id} · {GENERATOR.name} @ {git['commit'][:7]}"
+        )
+        charts[out] = {
+            "@context": CONTEXT,
+            "id": f"{REPO_URL}/blob/main/{out.as_posix()}",
+            "type": ["schema:Dataset", "prov:Entity"],
+            "kind": "chart",
+            "schemaVersion": SCHEMA_VERSION,
+            "chartId": chart_id,
+            "title": titles[chart_id],
+            "experimentId": CLASSIFIER_EXPERIMENT_SHORT,
+            "dataset": CLASSIFIER_DATASET_ID,
+            "figure": {
+                "generator": GENERATOR.as_posix(),
+                "variants": {"data": out.as_posix()},
+            },
+            "provenance": _provenance(git, f"chart:{chart_id}", sources, summary),
+            "data": {"rows": rows_by_chart[chart_id]},
+        }
+    return charts
 
 
 def _compact(value: Any) -> str:
@@ -776,9 +1368,10 @@ def stale_outputs() -> list[str]:
         if not target.is_file() or target.read_text(encoding="utf-8") != text:
             stale.append(path.as_posix())
     expected = {path.as_posix() for path in rendered}
-    for extra in (ROOT / CHART_DIR).glob("*.json"):
-        if extra.relative_to(ROOT).as_posix() not in expected:
-            stale.append(f"unexpected {extra.relative_to(ROOT).as_posix()}")
+    for directory in (CHART_DIR, CLASSIFIER_CHART_DIR):
+        for extra in (ROOT / directory).glob("*.json"):
+            if extra.relative_to(ROOT).as_posix() not in expected:
+                stale.append(f"unexpected {extra.relative_to(ROOT).as_posix()}")
     return stale
 
 
@@ -804,6 +1397,7 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     rendered = render(git)
     (ROOT / CHART_DIR).mkdir(parents=True, exist_ok=True)
+    (ROOT / CLASSIFIER_CHART_DIR).mkdir(parents=True, exist_ok=True)
     for path, text in rendered.items():
         (ROOT / path).write_text(text, encoding="utf-8", newline="\n")
         print(f"wrote {path.as_posix()} ({len(text.encode('utf-8')):,} bytes)")

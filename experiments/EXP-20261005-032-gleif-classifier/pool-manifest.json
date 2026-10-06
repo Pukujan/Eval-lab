@@ -1,0 +1,123 @@
+{
+  "blind_record_counts": {
+    "entity-category": 714,
+    "legal-jurisdiction": 714,
+    "registration-status": 714
+  },
+  "blind_record_ids_fingerprint": "2758307a4724eae6044780f752358f7e73f6aa2b3ce2b4b5f5e5656e82cc56a7",
+  "experiment_id": "EXP-20261005-032-gleif-classifier",
+  "family_counts": {
+    "entity-category": 1400,
+    "legal-jurisdiction": 1400,
+    "registration-status": 1400
+  },
+  "frozen_at_utc": "2026-10-06T03:15:47.322219+00:00",
+  "frozen_snapshot_path": "experiments/EXP-20260922-026-gleif-objective-track/frozen-snapshot.json",
+  "frozen_snapshot_sha256": "e6bd7b9247ad7972635c2eef3496f78d6b7239282676fb6a491c91b41acc8e28",
+  "gold_provenance": [
+    "deterministic_verifier"
+  ],
+  "label_sets": {
+    "entity-category": [
+      "GENERAL",
+      "FUND",
+      "SOLE_PROPRIETOR",
+      "RESIDENT_GOVERNMENT_ENTITY",
+      "BRANCH",
+      "INTERNATIONAL_ORGANIZATION"
+    ],
+    "legal-jurisdiction": [
+      "IN",
+      "IT",
+      "ES",
+      "DE",
+      "FR",
+      "GB",
+      "US-DE",
+      "NL",
+      "SE",
+      "DK",
+      "CN",
+      "NO",
+      "FI",
+      "BE",
+      "KY",
+      "PL",
+      "AT",
+      "IE",
+      "CH",
+      "LI",
+      "OTHER"
+    ],
+    "registration-status": [
+      "ISSUED",
+      "LAPSED",
+      "RETIRED",
+      "DUPLICATE",
+      "ANNULLED",
+      "PENDING_TRANSFER",
+      "PENDING_ARCHIVAL"
+    ]
+  },
+  "label_sets_fingerprint": "3f6c725e93d7ca17eadabf79a7517e2520cebfb7f07ea15eed8593108361d590",
+  "partition_counts": {
+    "blind_holdout": 2142,
+    "public_selection": 2058
+  },
+  "primary_partition": "blind_holdout",
+  "record_count": 4200,
+  "records_fingerprint": "041f240549b4161b089ed35e886aed0265126a7a515f1274911d69c7f8cb98c5",
+  "sampled_label_support": {
+    "entity-category": {
+      "BRANCH": 1919,
+      "FUND": 249570,
+      "GENERAL": 3053417,
+      "INTERNATIONAL_ORGANIZATION": 87,
+      "RESIDENT_GOVERNMENT_ENTITY": 6964,
+      "SOLE_PROPRIETOR": 128328
+    },
+    "registration-status": {
+      "ANNULLED": 1711,
+      "DUPLICATE": 6493,
+      "ISSUED": 1975411,
+      "LAPSED": 1201988,
+      "PENDING_ARCHIVAL": 390,
+      "PENDING_TRANSFER": 657,
+      "RETIRED": 253635
+    }
+  },
+  "skipped_items": {},
+  "snapshot_field_census": {
+    "entity-category": {
+      "BRANCH": 1919,
+      "FUND": 249570,
+      "GENERAL": 3053417,
+      "INTERNATIONAL_ORGANIZATION": 87,
+      "RESIDENT_GOVERNMENT_ENTITY": 6964,
+      "SOLE_PROPRIETOR": 128328
+    },
+    "registration-status": {
+      "ANNULLED": 1711,
+      "DUPLICATE": 6493,
+      "ISSUED": 1975411,
+      "LAPSED": 1201988,
+      "PENDING_ARCHIVAL": 390,
+      "PENDING_TRANSFER": 657,
+      "RETIRED": 253635
+    }
+  },
+  "source_file_sha256": {
+    "20260924-0000-gleif-goldencopy-lei2-golden-copy.csv": "d1b68a0396f7f150c9cc4d3a07538cb407c600ea9066adf08128337d3fe31506",
+    "20260924-0000-gleif-goldencopy-rr-golden-copy.csv": "10f9c10fd157cfe3451f93bd94cd2f11adb3e2d44904f878e82112c18ff10f4d"
+  },
+  "source_files": [
+    "20260924-0000-gleif-goldencopy-lei2-golden-copy.csv",
+    "20260924-0000-gleif-goldencopy-rr-golden-copy.csv"
+  ],
+  "source_problem_id_count": 4200,
+  "status": "frozen_before_blind_evaluation",
+  "typed_question_spec_fingerprint": "24f794e1e6e79d3e861611d139fad6d3aebae6029d7676beabe9ae384455425c",
+  "typed_spec_id": "gleif-registry-classification",
+  "typed_spec_version": "gleif-registry-classification-v1",
+  "verifier_id": "gleif-registry-classification-v1"
+}

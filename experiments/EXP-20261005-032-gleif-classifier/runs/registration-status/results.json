@@ -1,0 +1,40 @@
+{
+  "attempted_this_pass": 714,
+  "attempts_histogram": {
+    "1": 714
+  },
+  "created_at_utc": "2026-10-06T04:43:56.297957+00:00",
+  "elapsed_seconds": 29.672327300009783,
+  "exhausted_budget_count": 0,
+  "experiment_id": "EXP-20261005-032-gleif-classifier",
+  "family": "registration-status",
+  "gold_not_read_by_runner": true,
+  "legal_labels": [
+    "ISSUED",
+    "LAPSED",
+    "RETIRED",
+    "DUPLICATE",
+    "ANNULLED",
+    "PENDING_TRANSFER",
+    "PENDING_ARCHIVAL"
+  ],
+  "max_attempts": 3,
+  "partition": "blind_holdout",
+  "provider": "openrouter",
+  "record_count": 714,
+  "requested_model": "typesafe/jev-1.13",
+  "requests_sha256": "958da4ac239b071d35cc6ef4eba9ac9931498fdf899ca6766fb47069b0d8a729",
+  "resolved_count": 714,
+  "route": "POST https://openrouter.ai/api/alpha/decisions",
+  "run_id": "registration-status",
+  "source_pool": {
+    "blind_record_ids_fingerprint": "2758307a4724eae6044780f752358f7e73f6aa2b3ce2b4b5f5e5656e82cc56a7",
+    "label_sets_fingerprint": "3f6c725e93d7ca17eadabf79a7517e2520cebfb7f07ea15eed8593108361d590",
+    "records_fingerprint": "041f240549b4161b089ed35e886aed0265126a7a515f1274911d69c7f8cb98c5",
+    "typed_question_spec_fingerprint": "24f794e1e6e79d3e861611d139fad6d3aebae6029d7676beabe9ae384455425c"
+  },
+  "status_counts": {
+    "ok": 714
+  },
+  "workers": 8
+}

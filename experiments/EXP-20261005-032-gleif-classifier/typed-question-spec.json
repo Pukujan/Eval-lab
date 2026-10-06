@@ -1,0 +1,111 @@
+{
+  "base_spec_id": "eval-lab-system-one",
+  "base_spec_version": "0.1.0",
+  "confidence_definition": "native normalized provider probabilities only; label-only responses have no confidence metric",
+  "context_limit": 4096,
+  "families": {
+    "entity-category": {
+      "criteria": {
+        "BRANCH": "A branch of a legal entity registered in another jurisdiction.",
+        "FUND": "A collective investment vehicle or fund.",
+        "GENERAL": "A general legal entity that is not one of the other categories.",
+        "INTERNATIONAL_ORGANIZATION": "An international organization established by treaty or intergovernmental agreement.",
+        "RESIDENT_GOVERNMENT_ENTITY": "A government entity resident in the jurisdiction.",
+        "SOLE_PROPRIETOR": "A natural person acting as a sole proprietor."
+      },
+      "gold_field": "EntityCategory",
+      "legal_labels": [
+        "GENERAL",
+        "FUND",
+        "SOLE_PROPRIETOR",
+        "RESIDENT_GOVERNMENT_ENTITY",
+        "BRANCH",
+        "INTERNATIONAL_ORGANIZATION"
+      ],
+      "masked_field": "Entity category",
+      "verifier_id": "gleif-registry-classification-v1"
+    },
+    "legal-jurisdiction": {
+      "criteria": {
+        "AT": "The jurisdiction is AT.",
+        "BE": "The jurisdiction is BE.",
+        "CH": "The jurisdiction is CH.",
+        "CN": "The jurisdiction is CN.",
+        "DE": "The jurisdiction is DE.",
+        "DK": "The jurisdiction is DK.",
+        "ES": "The jurisdiction is ES.",
+        "FI": "The jurisdiction is FI.",
+        "FR": "The jurisdiction is FR.",
+        "GB": "The jurisdiction is GB.",
+        "IE": "The jurisdiction is IE.",
+        "IN": "The jurisdiction is IN.",
+        "IT": "The jurisdiction is IT.",
+        "KY": "The jurisdiction is KY.",
+        "LI": "The jurisdiction is LI.",
+        "NL": "The jurisdiction is NL.",
+        "NO": "The jurisdiction is NO.",
+        "OTHER": "The jurisdiction is not one of the listed options.",
+        "PL": "The jurisdiction is PL.",
+        "SE": "The jurisdiction is SE.",
+        "US-DE": "The jurisdiction is US-DE."
+      },
+      "gold_field": "LegalJurisdiction",
+      "legal_labels": [
+        "IN",
+        "IT",
+        "ES",
+        "DE",
+        "FR",
+        "GB",
+        "US-DE",
+        "NL",
+        "SE",
+        "DK",
+        "CN",
+        "NO",
+        "FI",
+        "BE",
+        "KY",
+        "PL",
+        "AT",
+        "IE",
+        "CH",
+        "LI",
+        "OTHER"
+      ],
+      "masked_field": "Legal jurisdiction",
+      "verifier_id": "gleif-registry-classification-v1"
+    },
+    "registration-status": {
+      "criteria": {
+        "ANNULLED": "The LEI has been annulled.",
+        "DUPLICATE": "The LEI is a duplicate of another record.",
+        "ISSUED": "The LEI is currently issued and the registration is active.",
+        "LAPSED": "The registration has lapsed and the LEI has not been renewed.",
+        "PENDING_ARCHIVAL": "The LEI is pending archival.",
+        "PENDING_TRANSFER": "A transfer of the LEI to another LOU is pending.",
+        "RETIRED": "The LEI has been retired and is no longer in use."
+      },
+      "gold_field": "RegistrationStatus",
+      "legal_labels": [
+        "ISSUED",
+        "LAPSED",
+        "RETIRED",
+        "DUPLICATE",
+        "ANNULLED",
+        "PENDING_TRANSFER",
+        "PENDING_ARCHIVAL"
+      ],
+      "masked_field": "Registration status",
+      "verifier_id": "gleif-registry-classification-v1"
+    }
+  },
+  "question_type": "choice",
+  "spec_id": "gleif-registry-classification",
+  "spec_version": "gleif-registry-classification-v1",
+  "target_error_rates": [
+    0.01,
+    0.02,
+    0.05
+  ]
+}

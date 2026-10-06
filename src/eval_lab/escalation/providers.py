@@ -74,13 +74,28 @@ def _find(payload: Mapping[str, Any], keys: Sequence[str]) -> Any:
     return None
 
 
-def _labels(record: JudgeRecord) -> tuple[str, ...]:
-    return ("pass", "fail") if record.mode is JudgmentMode.SINGLE else tuple(item.value for item in PairwiseLabel)
+def _labels(record: JudgeRecord, label_set: Sequence[str] | None = None) -> tuple[str, ...]:
+    if label_set is not None:
+        return tuple(label_set)
+    return (
+        ("pass", "fail")
+        if record.mode is JudgmentMode.SINGLE
+        else tuple(item.value for item in PairwiseLabel)
+    )
 
 
-def _normalize_label(value: Any, record: JudgeRecord) -> str:
+def _normalize_label(
+    value: Any, record: JudgeRecord, label_set: Sequence[str] | None = None
+) -> str:
     if isinstance(value, Mapping):
         value = _find(value, ("label", "verdict", "prediction", "choice", "value", "is_correct"))
+    if label_set is not None:
+        if isinstance(value, bool):
+            raise ValueError("boolean label is invalid for a custom closed label set")
+        text = str(value).strip()
+        if text not in set(label_set):
+            raise ValueError("provider response contained an illegal label")
+        return text
     if isinstance(value, bool):
         if record.mode is not JudgmentMode.SINGLE:
             raise ValueError("boolean label is invalid for pairwise records")
@@ -96,14 +111,16 @@ def _normalize_label(value: Any, record: JudgeRecord) -> str:
     raise ValueError("provider response contained an illegal label")
 
 
-def _probabilities(value: Any, record: JudgeRecord) -> dict[str, float] | None:
+def _probabilities(
+    value: Any, record: JudgeRecord, label_set: Sequence[str] | None = None
+) -> dict[str, float] | None:
     if value is None:
         return None
     if not isinstance(value, Mapping):
         raise TypeError("provider probabilities must be an object")
     output: dict[str, float] = {}
     for key, raw in value.items():
-        label = _normalize_label(key, record)
+        label = _normalize_label(key, record, label_set)
         number = float(raw)
         if not math.isfinite(number) or number < 0:
             raise ValueError("provider probabilities must be finite and non-negative")
@@ -111,7 +128,7 @@ def _probabilities(value: Any, record: JudgeRecord) -> dict[str, float] | None:
     total = sum(output.values())
     if not total:
         raise ValueError("provider probabilities must have positive mass")
-    legal = _labels(record)
+    legal = _labels(record, label_set)
     normalized = {label: output.get(label, 0.0) / total for label in legal}
     if not math.isclose(sum(normalized.values()), 1.0, abs_tol=1e-6):
         raise ValueError("provider probabilities failed normalization")
@@ -125,6 +142,7 @@ def normalize_typed_response(
     provider: str,
     model: str,
     latency_ms: float | None = None,
+    label_set: Sequence[str] | None = None,
 ) -> JudgePrediction:
     """Normalize provider JSON or OpenAI message content into the canonical schema."""
 
@@ -146,8 +164,10 @@ def normalize_typed_response(
     value = _find(payload, ("label", "verdict", "prediction", "choice", "class", "is_correct"))
     if value is None:
         raise ValueError("provider response has no typed verdict")
-    label = _normalize_label(value, record)
-    probabilities = _probabilities(_find(payload, ("probabilities", "probability_map", "probs")), record)
+    label = _normalize_label(value, record, label_set)
+    probabilities = _probabilities(
+        _find(payload, ("probabilities", "probability_map", "probs")), record, label_set
+    )
     metadata: dict[str, Any] = {
         "provider": provider,
         "model": model,
@@ -166,7 +186,11 @@ def normalize_typed_response(
     if resolved_model is not None:
         metadata["resolved_model"] = str(resolved_model)
     confidence = _find(payload, ("confidence",))
-    if isinstance(confidence, (int, float)) and not isinstance(confidence, bool) and math.isfinite(float(confidence)):
+    if (
+        isinstance(confidence, (int, float))
+        and not isinstance(confidence, bool)
+        and math.isfinite(float(confidence))
+    ):
         metadata["confidence"] = float(confidence)
     return JudgePrediction(
         record_id=record.record_id,
@@ -221,6 +245,7 @@ def _run_http(
     payload_builder: Any,
     client: httpx.Client | None,
     timeout: float,
+    label_set: Sequence[str] | None = None,
 ) -> list[JudgePrediction]:
     if not api_key:
         return [
@@ -267,6 +292,7 @@ def _run_http(
                         provider=provider,
                         model=model,
                         latency_ms=latency,
+                        label_set=label_set,
                     )
                 except (ValueError, TypeError, json.JSONDecodeError):
                     status = ExecutionStatus.PARSE_ERROR
@@ -309,6 +335,8 @@ def run_openrouter_jev(
     timeout: float = 60.0,
     label_orders: Mapping[str, Sequence[str]] | None = None,
     instruction_overrides: Mapping[str, str] | None = None,
+    label_set: Sequence[str] | None = None,
+    criteria: Mapping[str, str] | None = None,
 ) -> list[JudgePrediction]:
     """Run a single isolated pinned or rolling Jev arm."""
 
@@ -321,8 +349,15 @@ def run_openrouter_jev(
             record,
             label_order=(label_orders or {}).get(record.record_id),
             instruction_override=(instruction_overrides or {}).get(record.record_id),
+            label_set=label_set,
+            criteria=criteria,
         )
-        return {"model": model, **spec.provider_payload(), "spec_id": spec.spec_id, "spec_version": spec.spec_version}
+        return {
+            "model": model,
+            **spec.provider_payload(),
+            "spec_id": spec.spec_id,
+            "spec_version": spec.spec_version,
+        }
 
     return _run_http(
         records,
@@ -334,6 +369,7 @@ def run_openrouter_jev(
         payload_builder=payload,
         client=client,
         timeout=timeout,
+        label_set=label_set,
     )
 
 
@@ -352,7 +388,12 @@ def run_yolo_qwen(
 
     if model != YOLO_QWEN_MODEL:
         raise ValueError(f"YOLO-Auto task arm requires {YOLO_QWEN_MODEL!r}")
-    key = api_key or os.getenv("YOLO_AUTO_API_KEY") or os.getenv("YOLO_API_KEY") or os.getenv("QWEN_API_KEY")
+    key = (
+        api_key
+        or os.getenv("YOLO_AUTO_API_KEY")
+        or os.getenv("YOLO_API_KEY")
+        or os.getenv("QWEN_API_KEY")
+    )
 
     def payload(record: JudgeRecord) -> dict[str, Any]:
         spec = build_decision_spec(

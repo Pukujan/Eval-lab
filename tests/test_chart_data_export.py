@@ -34,6 +34,8 @@ from scripts.export_chart_data import (
     ANALYSIS,
     ARM_METADATA,
     CHART_DIR,
+    CLASSIFIER_CHART_DIR,
+    CLASSIFIER_DATASET_PATH,
     DATASET_PATH,
     FIGURE_MANIFEST,
     INDEX_PATH,
@@ -50,7 +52,12 @@ EXP029_YAML = ROOT / "experiments/EXP-20260924-029-consolidated-judge-analysis/e
 
 
 def _exports() -> list[Path]:
-    return [ROOT / DATASET_PATH, *sorted((ROOT / CHART_DIR).glob("*.json"))]
+    return [
+        ROOT / DATASET_PATH,
+        ROOT / CLASSIFIER_DATASET_PATH,
+        *sorted((ROOT / CHART_DIR).glob("*.json")),
+        *sorted((ROOT / CLASSIFIER_CHART_DIR).glob("*.json")),
+    ]
 
 
 def _load(path: Path) -> dict[str, Any]:
@@ -172,6 +179,46 @@ def test_no_blind_items_gold_labels_or_unresolvable_paths_are_exported() -> None
             assert leaked == [], f"{path.name} leaks record ids {leaked[:3]}"
             for node in _walk(_load(path)):
                 assert not any("gold" in key.lower() for key in node), path
+
+
+def test_classifier_exports_leak_no_blind_record_ids_or_gold_labels() -> None:
+    records = ROOT / "experiments/EXP-20261005-032-gleif-classifier/canonical-records.jsonl"
+    blind_ids = set()
+    for line in records.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        record = json.loads(line)
+        if record["split"] == "test":
+            blind_ids.add(record["record_id"])
+    assert len(blind_ids) >= 1000
+    paths = [
+        ROOT / CLASSIFIER_DATASET_PATH,
+        *sorted((ROOT / CLASSIFIER_CHART_DIR).glob("*.json")),
+    ]
+    for path in paths:
+        text = path.read_text(encoding="utf-8")
+        leaked = [rid for rid in blind_ids if rid in text]
+        assert leaked == [], f"{path.name} leaks record ids {leaked[:3]}"
+        for node in _walk(_load(path)):
+            assert not any("gold" in key.lower() for key in node), path
+
+
+def test_classifier_dataset_families_match_results() -> None:
+    doc = _load(ROOT / CLASSIFIER_DATASET_PATH)
+    results = json.loads(
+        (ROOT / "experiments/EXP-20261005-032-gleif-classifier/results.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    entities = {e["id"]: e for e in doc["entities"]}
+    for family, report in results["families"].items():
+        jev = entities[f"jev_{family.replace('-', '_')}"]
+        assert jev["recordCount"] == report["record_count"]
+        assert jev["correct"] == report["correct_count"]
+        assert jev["labelSet"] == report["legal_labels"]
+    measures = {m["key"] for m in doc["measures"]}
+    assert {o["metric"] for o in doc["observations"]} <= measures
+    assert len({p.stem for p in (ROOT / CLASSIFIER_CHART_DIR).glob("*.json")}) >= 4
 
 
 def test_dataset_observations_match_entity_counts_and_pooling_policy() -> None:
