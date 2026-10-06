@@ -1,5 +1,5 @@
 id: EXP-20261006-034-graphrag-citation-holdout
-status: preregistered
+status: completed
 hypothesis: >-
   Over one frozen patent-law corpus, retrieval that traverses the shipped
   document citation graph recovers a held-out citation target more often than
@@ -112,4 +112,19 @@ notes: >-
   embeds the corpus itself. Dev prototypes on a held-out slice (salt 20261006,
   120 sources) measured recall@10 graph 0.467, semantic 0.183, BM25 0.108; those
   are prototype numbers, are not results of this experiment, and the split and
-  arms here are re-derived under this frozen manifest.
+  arms here are re-derived under this frozen manifest. Result: the hypothesis is
+  NOT supported on the primary metric. On the test split recall@10, the graph arm
+  reaches 0.163 against semantic 0.067 and lexical 0.063 - it beats both text
+  baselines by roughly ten points - but the popularity null reaches 0.201, so the
+  graph arm loses to "return the most-cited documents" by 3.8 points and cannot
+  be claimed to have added query-conditioned value. The preregistered echo-free
+  secondary inverts this: graph 0.385 against popularity 0.128, semantic 0.000
+  and lexical 0.000. A post-hoc in-degree stratification (labelled post-hoc, not
+  preregistered) explains the split: popularity scores 0.000 on every gold target
+  with retained in-degree <= 7 and the graph arm scores 0.042-0.053 there, while
+  on the 8+ bucket - 718 of 1,051 test gold pairs - the two are effectively tied
+  (0.219 vs 0.227). Popularity therefore earns its aggregate lead almost entirely
+  from high-degree targets it would return for any query, and the graph arm's
+  measurable edge is confined to the low-degree and echo-free strata. The
+  echo-free stratum is thin (39 gold pairs over 35 of 292 queries; graph wins 15,
+  ties 16, loses 4), so it is directional, not a precise effect size.

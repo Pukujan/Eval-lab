@@ -112,6 +112,96 @@ def load_cost(split: str, arm: str) -> dict[str, Any]:
     return loaded.get(arm, {})
 
 
+def retained_in_degree() -> dict[str, int]:
+    """In-degree of each document in the retained graph the arms may traverse."""
+
+    counts: dict[str, int] = {}
+    with (EXPERIMENT / "citation-edges.jsonl").open(encoding="utf-8") as handle:
+        for line in handle:
+            record = json.loads(line)
+            if record["held_out"]:
+                continue
+            target = record["target_entry_cid"]
+            counts[target] = counts.get(target, 0) + 1
+    return counts
+
+
+def post_hoc_diagnostics(split: str) -> dict[str, Any]:
+    """Descriptive analyses computed after the preregistered result.
+
+    Labelled post-hoc because they were not preregistered. They exist to show
+    whether the popularity arm's edge over the graph arm is a query-independent
+    prior (any target with high in-degree is returned regardless of the query) or
+    a genuine query-conditioned signal, and how thin the echo-free stratum is.
+    """
+
+    graph = {record["query_id"]: record for record in load_predictions("graph", split)}
+    popular = {record["query_id"]: record for record in load_predictions("popularity", split)}
+    if not graph or not popular:
+        return {}
+
+    # per-query win/tie/loss on the echo-free stratum, where a graph win is the
+    # preregistered secondary; the pooled rate can hide a handful of queries
+    wins = ties = losses = 0
+    for query_id, record in graph.items():
+        echoed = record.get("gold_echoed", {})
+        free = [cid for cid in record["gold_entry_cids"] if not echoed.get(cid, False)]
+        if not free:
+            continue
+        top_k = set(record["ranked_entry_cids"][:ECHO_K])
+        graph_hits = sum(1 for cid in free if cid in top_k)
+        popular_top_k = set(popular[query_id]["ranked_entry_cids"][:ECHO_K])
+        popular_hits = sum(1 for cid in free if cid in popular_top_k)
+        if graph_hits > popular_hits:
+            wins += 1
+        elif graph_hits < popular_hits:
+            losses += 1
+        else:
+            ties += 1
+
+    # in-degree stratification: a citation task is naturally friendly to "return
+    # the most-cited documents", so the graph arm's edge should be re-checked
+    # within in-degree buckets rather than only in aggregate
+    in_degree = retained_in_degree()
+    buckets = ((0, 0), (1, 1), (2, 3), (4, 7), (8, 10**9))
+    stratified: list[dict[str, Any]] = []
+    for low, high in buckets:
+        targets = pairs = graph_hits = popular_hits = 0
+        for record in graph.values():
+            for cid in record["gold_entry_cids"]:
+                degree = in_degree.get(cid, 0)
+                if not (low <= degree <= high):
+                    continue
+                targets += 1
+                pairs += 1
+                if cid in set(record["ranked_entry_cids"][:ECHO_K]):
+                    graph_hits += 1
+                if cid in set(popular[record["query_id"]]["ranked_entry_cids"][:ECHO_K]):
+                    popular_hits += 1
+        if not pairs:
+            continue
+        label = f"{low}+" if high >= 10**9 else (str(low) if low == high else f"{low}-{high}")
+        stratified.append(
+            {
+                "in_degree": label,
+                "gold_pairs": pairs,
+                "graph_recall_at_10": graph_hits / pairs,
+                "popularity_recall_at_10": popular_hits / pairs,
+            }
+        )
+
+    return {
+        "note": "post-hoc descriptive analyses, not preregistered",
+        "split": split,
+        "echo_free_graph_vs_popularity_win_tie_loss": {
+            "graph_wins": wins,
+            "ties": ties,
+            "graph_losses": losses,
+        },
+        "recall_at_10_by_target_in_degree": stratified,
+    }
+
+
 def build_results() -> dict[str, Any]:
     freeze = json.loads((EXPERIMENT / "freeze-manifest.json").read_text(encoding="utf-8"))
     manifest = json.loads((EXPERIMENT / "split-manifest.json").read_text(encoding="utf-8"))
@@ -178,6 +268,8 @@ def build_results() -> dict[str, Any]:
         "graph_minus_semantic": delta(graph_test, semantic_test, echo_key),
         "graph_minus_popularity": delta(graph_test, popularity_test, echo_key),
     }
+    results["post_hoc"] = post_hoc_diagnostics("test")
+    results["post_hoc"] = post_hoc_diagnostics("test")
     return results
 
 
@@ -269,11 +361,49 @@ def render_report(results: dict[str, Any]) -> str:
             parts.append(f"{key}={rendered}")
         lines.append(f"- {arm}: " + ", ".join(parts))
     lines.append("")
+    lines.append("## Post-hoc diagnostics (not preregistered)")
+    lines.append("")
+    post_hoc = results.get("post_hoc") or {}
+    win_loss = post_hoc.get("echo_free_graph_vs_popularity_win_tie_loss")
+    if win_loss:
+        lines.append(
+            "On the echo-free stratum, graph versus popularity at recall@10, per query: "
+            f"graph wins {win_loss['graph_wins']}, ties {win_loss['ties']}, "
+            f"loses {win_loss['graph_losses']}. The pooled echo-free rate is carried by a "
+            "small number of queries, so this is reported beside it."
+        )
+        lines.append("")
+    stratified = post_hoc.get("recall_at_10_by_target_in_degree") or []
+    if stratified:
+        lines.append(
+            "Recall@10 by the gold target's retained in-degree. Popularity returns a single "
+            "query-independent ranking, so a high-degree bucket is where it wins without using "
+            "the query at all; a graph edge that survives high in-degree is query-conditioned."
+        )
+        lines.append("")
+        lines.append("| target in-degree | gold pairs | graph R@10 | popularity R@10 |")
+        lines.append("|---|---|---|---|")
+        for row in stratified:
+            lines.append(
+                f"| {row['in_degree']} | {row['gold_pairs']} | "
+                f"{row['graph_recall_at_10']:.3f} | {row['popularity_recall_at_10']:.3f} |"
+            )
+        lines.append("")
     lines.append("## Limitations")
     lines.append("")
     lines.append(
         "- Link prediction, not question answering: the query is the source document's own "
         "text and gold is what it cites, so this is not a question-answering result."
+    )
+    lines.append(
+        "- The popularity null leads the graph arm on the full test set. A graph arm that "
+        "cannot beat 'return the most-cited documents' has not shown that traversal adds "
+        "query-conditioned value; the aggregate result must not be reported as a graph win."
+    )
+    lines.append(
+        "- The echo-free stratum is thin: it covers only the queries whose gold targets are "
+        "not named in the query text, and the pooled rate rests on a few dozen gold pairs. "
+        "Treat it as directional evidence, not a precise effect size."
     )
     lines.append(
         "- Co-citation predicting citation is close to bibliometrics-tautological; the "
