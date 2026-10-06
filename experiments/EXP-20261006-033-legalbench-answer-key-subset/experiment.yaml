@@ -1,0 +1,67 @@
+id: EXP-20261006-033-legalbench-answer-key-subset
+status: frozen
+hypothesis: >-
+  Lightweight objective judges can classify three additional pinned LegalBench
+  answer-key subtasks (overruling, definition_classification,
+  citation_prediction_classification) at measurable task-specific accuracy with
+  native confidence, widening the legal axis beyond the single Hearsay task
+  without introducing any non-objective gold.
+created_at: 2026-10-06
+code_commit: pending_task_checkpoint
+seed: 261006
+context_limit: 4096
+dataset:
+  name: LegalBench answer-key subset
+  version: nguha/legalbench@daec8237410aa23e3faf4bc41ad8b3a7e1696826
+  fingerprint: sha256:e756b17bbbe301d53f43ab3cd0e3bea72812b6c30db354698a1a545d636cb3d7
+  split_policy: >-
+    case-disjoint calibration/test by SHA-256 of the normalized text; all rows
+    sharing a text share a split
+  license: >-
+    per task: overruling CC BY 4.0; definition_classification CC BY-SA 4.0;
+    citation_prediction_classification CC BY 4.0
+judge:
+  provider: selected direct and InferHub routes after public canaries
+  model: qwen_flash; jev_1.13; additional eligible routes only if preregistered
+  adapter_version: legalbench-answer-key-subset-v1
+  prompt_version: legalbench-answer-key-subset-v1
+rubric:
+  version: per-task official LegalBench task labels
+gold:
+  provenance_policy: >-
+    official LegalBench task answer key only; no model judgment is promoted to
+    gold
+calibration:
+  method: split-safe temperature scaling only for routes with native probability vectors
+  split: public calibration cases only; blind holdout untouched
+metrics:
+  - accuracy
+  - balanced_accuracy
+  - macro_f1
+  - coverage
+  - valid_label_rate
+  - per_task_majority_baseline
+  - brier_when_probabilities_available
+  - nll_when_probabilities_available
+  - ece_when_probabilities_available
+  - latency_p95
+artifacts:
+  - source-manifest.json
+  - source/
+  - canonical-records.jsonl
+  - records.jsonl
+  - split-manifest.json
+  - typed-question-spec.json
+  - pool-manifest.json
+  - report.md
+notes: >-
+  The shared single-mode path defaults to a pass/fail label space and coerces
+  yes/no; this subset keeps native Yes/No gold and records the label-set
+  contract in typed-question-spec.json, to be scored through the typed-spec
+  path (label_set ["Yes","No"]) rather than the default pass/fail path.
+  citation_prediction_classification repeats the same text with opposite
+  answers, so the case unit is the text and its majority baseline is an exact
+  tie. definition_classification's task page reports one more test row than the
+  pinned machine-readable source; preserve the source as distributed and do not
+  fabricate a record. This is three binary answer-key tasks, not a general
+  legal-reasoning score. No model has been scored at preregistration.

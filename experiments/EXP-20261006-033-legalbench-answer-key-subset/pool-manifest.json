@@ -1,0 +1,32 @@
+{
+  "blind_record_ids_fingerprint": "087f29c2347b5c790ecbc9e4b4f42724c80fe3d694d17090597d6cd565e6b577",
+  "dataset_revision": "daec8237410aa23e3faf4bc41ad8b3a7e1696826",
+  "experiment_id": "EXP-20261006-033-legalbench-answer-key-subset",
+  "gold_provenance": [
+    "answer_key"
+  ],
+  "partition_counts": {
+    "blind_holdout": 1969,
+    "public_selection": 1870
+  },
+  "primary_partition": "blind_holdout",
+  "record_count": 3839,
+  "records_fingerprint": "e756b17bbbe301d53f43ab3cd0e3bea72812b6c30db354698a1a545d636cb3d7",
+  "source_experiment": "EXP-20261006-033-legalbench-answer-key-subset",
+  "source_files": [
+    "experiments/EXP-20261006-033-legalbench-answer-key-subset/source/overruling/train.tsv",
+    "experiments/EXP-20261006-033-legalbench-answer-key-subset/source/overruling/test.tsv",
+    "experiments/EXP-20261006-033-legalbench-answer-key-subset/source/overruling/base_prompt.txt",
+    "experiments/EXP-20261006-033-legalbench-answer-key-subset/source/definition_classification/train.tsv",
+    "experiments/EXP-20261006-033-legalbench-answer-key-subset/source/definition_classification/test.tsv",
+    "experiments/EXP-20261006-033-legalbench-answer-key-subset/source/definition_classification/base_prompt.txt",
+    "experiments/EXP-20261006-033-legalbench-answer-key-subset/source/citation_prediction_classification/train.tsv",
+    "experiments/EXP-20261006-033-legalbench-answer-key-subset/source/citation_prediction_classification/test.tsv",
+    "experiments/EXP-20261006-033-legalbench-answer-key-subset/source/citation_prediction_classification/base_prompt.txt"
+  ],
+  "source_problem_id_count": 3786,
+  "status": "frozen_before_blind_evaluation",
+  "typed_question_spec_fingerprint": "ef9dce93fb4e2194721fff950f03f179f2c50c6f6ef5166735ed602a0d62cec6",
+  "typed_spec_id": "legalbench-answer-key-subset-v1",
+  "typed_spec_version": "legalbench-answer-key-subset-v1"
+}
