@@ -2,8 +2,10 @@
 
 ## Status
 
-Preregistered. Source snapshot, canonical records, results, and report are
-intentionally absent until the snapshot-freeze checkpoint is committed.
+Dataset frozen. The 2026-09-24 GLEIF Golden Copy snapshot, the 1920-record
+canonical dataset (1000 blind + 920 public), the entity-disjoint split, and the
+typed question spec are committed. `results.json` and `report.md` are absent
+until the scored run; no blind split has been scored.
 
 ## Research question
 

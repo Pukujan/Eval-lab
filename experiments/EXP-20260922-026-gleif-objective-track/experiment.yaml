@@ -1,5 +1,5 @@
 id: EXP-20260922-026-gleif-objective-track
-status: preregistered
+status: frozen
 hypothesis: >-
   Lightweight objective judges can reliably extract and resolve frozen GLEIF
   entity and relationship facts when the task uses a closed label set and
@@ -11,8 +11,8 @@ seed: 260922
 context_limit: 4096
 dataset:
   name: GLEIF frozen Golden Copy or concatenated-file snapshot
-  version: pending_snapshot_freeze
-  fingerprint: pending_snapshot_freeze
+  version: 20260924-0000-gleif-goldencopy
+  fingerprint: sha256:1267c92547dc40d9d63c90be241da85361509f812f9cea63246b28f5f4cc8203
   split_policy: entity-disjoint public calibration and blind holdout
 judge:
   provider: selected direct and InferHub routes after public canaries
