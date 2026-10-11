@@ -4,6 +4,43 @@
 
 > Continuity v1 overlay (TASK-0063): this human checkpoint stays authoritative for Eval Lab program and task state. The legacy `tasks/TASK-*.md` histories predate PCM v1 and are preserved as-is; the v1 machine task namespace is `.continuity/tasks`, so `active_task` stays null until a legacy-task migration is authorized. GitHub issues own task progression.
 
+## 2026-10-11 - TASK-0072 Kaggle GPU compute path recon: T4 confirmed, L4 refused, memlock open
+
+GitHub issue #105. New `docs/compute/kaggle.md` records the owner's Kaggle
+account as a candidate eval compute path, alongside the TASK-0065 Colab guide.
+This is reconnaissance only: no experiment directory was opened, no eval run was
+scored, and no AGENTS.md compute exception was requested. Scratch kernels live at
+`C:\work\kgstrata*`, outside the checkout.
+
+What was measured, by batch (script) kernels rather than from documentation:
+
+- **The account gets `NvidiaTeslaT4` and nothing else.** The T4 request sits in
+  `KernelWorkerStatus.QUEUED`, then runs, and `kaggle quota` moves off zero, so
+  the silicon is real. `NvidiaL4` (GPU L4 x4) is **silently refused**: it starts
+  immediately, never queues, reports `torch 2.11.0+cpu` with no `nvidia-smi`, and
+  leaves GPU quota at 0.00 h. The request is accepted, stored, never honoured.
+  The recorded diagnostic: immediate CPU run means refused, `QUEUED` means real.
+- **Session shape:** 2x Tesla T4 at 15360 MiB **each, not pooled**, cc 7.5,
+  driver 580.178.04; 30 GB cgroup RAM cap (while `/proc/meminfo` lies by
+  reporting the host's 32.8 GB); 4 vCPU with AVX-512f; root in-container; and a
+  writable overlay root with ~1.1 TB free at ~3.6 GB/s, so a 70 GB model **can**
+  be downloaded into a session. HuggingFace runs ~27+ MB/s.
+- **Answer to the question that started it:** two T4s do not make the dense
+  27B GSQ-RCO faster. Generation is layer-sequential across cards and a dense
+  model is bandwidth-capped (~320 GB/s against ~9.4 GB read per token) - the same
+  wall the Colab T4 hit at ~8 t/s. The only speed lever on this class of hardware
+  is an MoE with small active params, and the L4 shape that would have run
+  Flash-Next densely is not offered.
+- **One blocker is open.** `RLIMIT_MEMLOCK` is 8 MB soft and hard, which stops
+  Strata, the MoE engine that pins its full expert set in host RAM. Whether root
+  can lift that cap in-container is under test in
+  `pujan3645/strata-probe-2-memlock` (still queued at the time of writing). If it
+  comes back red, Kaggle is T4-class compute only and Strata is dropped here.
+
+Next atomic action: read the memlock verdict, record it in `docs/compute/kaggle.md`
+and the task file, then publish this checkpoint against issue #105. Also delete
+the four private probe kernels once the owner confirms.
+
 ## 2026-10-06 - TASK-0068 Graph RAG axis scored (EXP-034): hypothesis not supported
 
 GitHub issue #92. The preregistration merged as PR #102; the test split is now
